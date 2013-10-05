@@ -2,7 +2,6 @@ package net.bubbaland.trivia.server;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
-import javax.swing.JComboBox;
 import javax.swing.Timer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -20,18 +19,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import net.bubbaland.trivia.Answer;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
-import net.bubbaland.trivia.client.CorrectEntryPanel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.*;
 import java.text.SimpleDateFormat;
@@ -44,7 +40,7 @@ import java.util.Date;
  * The Class TriviaServer.
  */
 @WebService
-public class TriviaServer extends UnicastRemoteObject implements TriviaInterface, ActionListener {
+public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -8062985452301507239L;
@@ -101,7 +97,7 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 	 */
 	public static void main(String args[]) throws Exception {
 
-		LocateRegistry.createRegistry( 1099 );
+		Registry registry = LocateRegistry.createRegistry( 1099 );
 
 		if ( System.getSecurityManager() == null ) {
 			// System.setSecurityManager(new RMISecurityManager());
@@ -110,11 +106,13 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 		TriviaServer server = new TriviaServer();
 
 		try {
-			Naming.bind( "TriviaInterface", server );
+			registry.rebind("TriviaInterface", server );
 			System.out.println( "Trivia Server is Ready" );
 		} catch ( Exception e ) {
 			e.printStackTrace();
 		}
+		
+		UnicastRemoteObject.exportObject(server, 1100);
 
 		// server.test();
 
@@ -284,9 +282,7 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 			element = doc.createElement("Current_Round");			
 			element.appendChild(doc.createTextNode(trivia.getRoundNumber() + ""));
 			triviaElement.appendChild(element);
-			
-			int nRounds = trivia.getNRounds();
-			
+						
 			for(int r=0; r<trivia.getRoundNumber(); r++) {
 				Element roundElement = doc.createElement("Round");
 				triviaElement.appendChild(roundElement);

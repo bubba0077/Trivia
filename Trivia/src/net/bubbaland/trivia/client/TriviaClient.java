@@ -36,7 +36,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	final static private float	STATUS_FONT_SIZE	= 12.0f;
 	
 	// URL for RMI server
-	final static private String	TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net/TriviaInterface";
+	final static private String	TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
 	
 	// URL for the IRC server
 	final static private String	IRC_CLIENT_URL		= "http://webchat.freenode.net/";
@@ -70,25 +70,6 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		
 		this.server = server;
 		
-		// Create a local copy of the Trivia object
-		int tryNumber = 0;
-		boolean success = false;
-		while ( tryNumber < TriviaClient.MAX_RETRIES && success == false ) {
-			tryNumber++;
-			try {
-				this.trivia = server.getTrivia();
-				success = true;
-			} catch ( RemoteException e ) {
-//				this.log( "Couldn't retrive trivia data from server (try #" + tryNumber + ")." );
-				e.printStackTrace();
-				System.exit(0);
-			}
-		}
-
-		if ( !success ) {
-			this.disconnected();
-			return;
-		}
 		
 		JMenuBar menuBar = new JMenuBar();
 		
@@ -116,38 +97,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		
 		// Create tabbed pane
 		this.book = new JTabbedPane();
-
-		// The individual tabs
-		pages = new TriviaPanel[7];
-
-		// Create content for workflow tab
-		pages[0] = new WorkflowPanel( server, this );
-		book.addTab( "Workflow", pages[0] );
-
-		// Create content for current round tab
-		pages[1] = new RoundPanel( server, this );
-		book.addTab( "Current", pages[1] );
-
-		// Create content for history tab
-		pages[2] = new HistoryPanel( server, this );
-		book.addTab( "History", pages[2] );
-
-		// Create content for Score by Round tab
-		pages[3] = new ScoreByRoundPanel( server, this );
-		book.addTab( "By Round", pages[3] );
-
-		// Create place chart
-		pages[4] = new PlaceChartPanel( this );
-		book.addTab( "Place Chart", pages[4] );
-
-		// Create score by round chart
-		pages[5] = new ScoreByRoundChartPanel( this );
-		book.addTab( "Score Chart", pages[5] );
-
-		// Create cumulative score chart
-		pages[6] = new CumulativePointsChartPanel( this );
-		book.addTab( "Cumulative Score Chart", pages[6] );
-
+		
 		// Create panel that contains web browser for IRC
 		String url = IRC_CLIENT_URL + "?nick=" + user + "&channels=" + IRC_CHANNEL;
 		BrowserPanel browser = new BrowserPanel( url );
@@ -161,7 +111,6 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		c.weightx = 1.0;	c.weighty = 1.0;
 		splitPane.setResizeWeight(1.0);
 		add( splitPane, c );
-
 		
 		// Put the status bar at the bottom and do not adjust the size of the status bar
 		c.gridx = 0;			c.gridy = 1;
@@ -169,12 +118,65 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 				
 		// Create status bar
 		this.statusBar = enclosedLabel( "", 0, STATUS_HEIGHT, book.getForeground(), book.getBackground(), c,
-				STATUS_FONT_SIZE, JLabel.LEFT, JLabel.CENTER );		
+				STATUS_FONT_SIZE, JLabel.LEFT, JLabel.CENTER );
+		
+		// Create a local copy of the Trivia object
+		int tryNumber = 0;
+		boolean success = false;
+		while ( tryNumber < TriviaClient.MAX_RETRIES && success == false ) {
+			tryNumber++;
+			try {
+				this.trivia = server.getTrivia();
+				success = true;
+			} catch ( RemoteException e ) {
+				this.log( "Couldn't retrive trivia data from server (try #" + tryNumber + ")." );
+				e.printStackTrace();
+			}
+		}
+
+		if ( !success ) {
+			this.disconnected();
+			return;
+		}
+
+		// The individual tabs
+			pages = new TriviaPanel[7];
+
+			// Create content for workflow tab
+			pages[0] = new WorkflowPanel( server, this );
+			book.addTab( "Workflow", pages[0] );
+
+			// Create content for current round tab
+			pages[1] = new RoundPanel( server, this );
+			book.addTab( "Current", pages[1] );
+
+			// Create content for history tab
+			pages[2] = new HistoryPanel( server, this );
+			book.addTab( "History", pages[2] );
+
+			// Create content for Score by Round tab
+			pages[3] = new ScoreByRoundPanel( server, this );
+			book.addTab( "By Round", pages[3] );
+
+			// Create place chart
+			pages[4] = new PlaceChartPanel( this );
+			book.addTab( "Place Chart", pages[4] );
+
+			// Create score by round chart
+			pages[5] = new ScoreByRoundChartPanel( this );
+			book.addTab( "Score Chart", pages[5] );
+
+			// Create cumulative score chart
+			pages[6] = new CumulativePointsChartPanel( this );
+			book.addTab( "Cumulative Score Chart", pages[6] );
+
 		
 		// Create timer that will poll server for changes		
 		Timer refreshTimer = new Timer( REFRESH_RATE, this );
 		refreshTimer.setActionCommand("Timer");
 		refreshTimer.start();
+		
+		
 
 		// Post welcome to status bar
 		this.log( "Welcome " + this.user );
@@ -219,7 +221,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 			}
 		}
 		System.out.println( "Connected to trivia server (" + TRIVIA_SERVER_URL + ")." );
-				
+
 		// Create the application window
 		JFrame frame = new JFrame( "Trivia" );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
