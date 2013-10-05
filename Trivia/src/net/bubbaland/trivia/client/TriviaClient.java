@@ -60,7 +60,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	 *
 	 * @param server RMI Server
 	 */
-	private TriviaClient( TriviaInterface server ) {
+	private TriviaClient( JFrame parent, TriviaInterface server ) {
 
 		// Call parent constructor and use a GridBagLayout
 		super( new GridBagLayout() );
@@ -89,6 +89,26 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 			this.disconnected();
 			return;
 		}
+		
+		JMenuBar menuBar = new JMenuBar();
+		
+		JMenu menu = new JMenu("User");
+		JMenuItem menuItem = new JMenuItem("Change name", KeyEvent.VK_N);
+		menuItem.setActionCommand("Change name");
+		menuItem.addActionListener(this);		
+		menu.add(menuItem);
+		menuBar.add(menu);
+		
+		menuBar.add(Box.createHorizontalGlue());
+		menu = new JMenu("Admin");
+		menuBar.add(menu);		
+		
+		menuItem = new JMenuItem("Load state", KeyEvent.VK_L);
+		menuItem.setActionCommand("Load state");
+		menuItem.addActionListener(this);		
+		menu.add(menuItem);
+				
+		parent.setJMenuBar(menuBar);
 		
 		// Set up layout constraints
 		GridBagConstraints c = new GridBagConstraints();
@@ -153,6 +173,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		
 		// Create timer that will poll server for changes		
 		Timer refreshTimer = new Timer( REFRESH_RATE, this );
+		refreshTimer.setActionCommand("Timer");
 		refreshTimer.start();
 
 		// Post welcome to status bar
@@ -197,14 +218,14 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 				}
 			}
 		}
-		System.out.println( "Connected to trivia server (" + TRIVIA_SERVER_URL + ")." );		
+		System.out.println( "Connected to trivia server (" + TRIVIA_SERVER_URL + ")." );
 				
 		// Create the application window
 		JFrame frame = new JFrame( "Trivia" );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		
 		// Initialize GUI and place in window
-		frame.add( new TriviaClient( triviaServer ), BorderLayout.CENTER );
+		frame.add( new TriviaClient( frame, triviaServer ), BorderLayout.CENTER );
 
 		// Display the window.
 		frame.pack();
@@ -231,7 +252,22 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		this.update();
+		String command = e.getActionCommand();
+		switch(command) {
+		
+		case "Timer":
+			this.update();
+			break;
+		case "Change name":
+			new UserLogin(this);
+			break;
+		case "Load state":
+			new LoadStatePrompt(this.server, this);
+			break;
+		case "Set team number":
+//			new TeamNumberPrompt(this);
+			break;
+		}
 	}
 
 	/**

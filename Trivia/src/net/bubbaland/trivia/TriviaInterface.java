@@ -133,5 +133,9 @@ public interface TriviaInterface extends Remote {
 	public void close(int qNumber) throws RemoteException;
 	
 	public Trivia getTrivia() throws RemoteException;
+	
+	public String[] listSaves() throws RemoteException;
+	
+	public void loadState(String stateFile) throws RemoteException;
 
 }

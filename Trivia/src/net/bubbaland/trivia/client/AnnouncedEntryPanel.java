@@ -12,7 +12,7 @@ import net.bubbaland.trivia.TriviaInterface;
 /**
  * Creates a dialog box that prompts for announced score and place 
  */
-public class AnnouncedEntryPanel extends TriviaPanel {
+public class AnnouncedEntryPanel extends JPanel {
 
 	private static final long	serialVersionUID	= -363168881130169668L;
 	
@@ -202,14 +202,6 @@ public class AnnouncedEntryPanel extends TriviaPanel {
 			return false;
 		}
 		
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.TriviaPanel#update()
-	 */
-	@Override
-	public void update() {
-				
 	}
 
 }

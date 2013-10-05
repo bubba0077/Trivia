@@ -49,23 +49,28 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -8062985452301507239L;
 	
-	/** The Constant N_ROUNDS. */
+	// The number of rounds
 	private static final int	N_ROUNDS			= 50;
 	
-	/** The Constant N_QUESTIONS. */
-	private static final int	N_QUESTIONS			= 18;
+	// The number of questions in a normal round
+	private static final int	N_QUESTIONS_NORMAL	= 9;
+		
+	// The number of questions in a speed round
+	private static final int	N_QUESTIONS_SPEED	= 18;
 	
-	/** The Constant N_NORMAL_Q. */
-	private static final int	N_NORMAL_Q			= 9;
-	
+	// Frequency of backups (milliseconds)
 	private static final int	SAVE_FREQUENCY		= 5 * 60000;
 	
+	// Directory to hold backups
 	private static final String SAVE_DIR			= "saves";
 	
+	// Date format to use for backup file names
 	private static final SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy_MMM_dd_HHmm");
-	private static final SimpleDateFormat stringDateFormat = new SimpleDateFormat("yyyy MMM dd HH:mm:ss");
 	
-	/** The trivia. */
+	// Date format to use inside backup files
+	private static final SimpleDateFormat stringDateFormat = new SimpleDateFormat("yyyy MMM dd HH:mm:ss");
+			
+	// The Trivia object that holds all of the contest data
 	private Trivia				trivia;
 
 	/**
@@ -74,14 +79,14 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 	 * @throws RemoteException the remote exception
 	 */
 	public TriviaServer() throws RemoteException {
-		this.trivia = new Trivia( N_ROUNDS, N_QUESTIONS, N_NORMAL_Q );
+		this.trivia = new Trivia( N_ROUNDS, N_QUESTIONS_SPEED, N_QUESTIONS_NORMAL );
 		
-		loadState("saves/Rd01_2013_Oct_05_1100.xml");
+//		loadState("saves/Rd01_2013_Oct_05_1100.xml");
 		
-		String[] saves = listSaves();
-		for(String save : saves) {
-			System.out.println(save);
-		}
+//		String[] saves = listSaves();
+//		for(String save : saves) {
+//			System.out.println(save);
+//		}
 		
 		// Create timer that will poll server for changes		
 		Timer backupTimer = new Timer( SAVE_FREQUENCY, this );
@@ -420,7 +425,8 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 		
 	}
 	
-	public synchronized void loadState(String stateFile) {
+	public synchronized void loadState(String stateFile) throws RemoteException {
+		stateFile = SAVE_DIR + "/" + stateFile;
 		trivia.reset();
 		try {
 			File infile = new File(stateFile);
@@ -538,7 +544,7 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 			
 	}
 	
-	public String[] listSaves() {
+	public String[] listSaves() throws RemoteException {
 		File folder = new File(SAVE_DIR);
 		File[] files = folder.listFiles();
 		int nFiles = files.length;

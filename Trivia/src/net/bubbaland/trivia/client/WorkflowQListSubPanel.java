@@ -130,8 +130,6 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
 		
-		System.out.println(nQuestionsMax + "");
-		
 		this.qNumberLabels = new JLabel[nQuestionsMax];
 		this.qValueLabels = new JLabel[nQuestionsMax];
 		this.qTextAreas = new JTextArea[nQuestionsMax];
