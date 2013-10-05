@@ -3,6 +3,9 @@ package net.bubbaland.trivia.server;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
+import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.TriviaInterface;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.*;
@@ -66,326 +69,6 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 	}
 
 	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getRoundNumber()
-	 */
-	@WebMethod
-	public int getRoundNumber() throws RemoteException {
-		return trivia.getRoundNumber();
-	}
-	
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getNTeams()
-	 */
-	public int getNTeams() throws RemoteException {
-		return trivia.getNTeams();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getMaxQuestions()
-	 */
-	public int getMaxQuestions() throws RemoteException {
-		return TriviaServer.N_QUESTIONS;
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getNQuestions()
-	 */
-	public int getNQuestions() throws RemoteException {
-		return trivia.getNQuestions();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getNQuestions(int)
-	 */
-	public int getNQuestions(int rNumber) throws RemoteException {
-		return trivia.getNQuestions( rNumber );
-	}
-	
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getNRounds()
-	 */
-	public int getNRounds() throws RemoteException {
-		return trivia.getNRounds();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#nextToOpen()
-	 */
-	public int nextToOpen() throws RemoteException {
-		return trivia.nextToOpen();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getValue()
-	 */
-	@WebMethod
-	public int getValue() throws RemoteException {
-		return trivia.getValue();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getValue(int)
-	 */
-	public int getValue(int rNumber) throws RemoteException {
-		return trivia.getValue( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getCumulativeValue(int)
-	 */
-	public int getCumulativeValue(int rNumber) throws RemoteException {
-		return trivia.getCumulativeValue( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getValue(int, int)
-	 */
-	public int getValue(int rNumber, int qNumber) throws RemoteException {
-		return trivia.getValue( rNumber, qNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getEarned()
-	 */
-	@WebMethod
-	public int getEarned() throws RemoteException {
-		return trivia.getEarned();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getEarned(int)
-	 */
-	public int getEarned(int rNumber) throws RemoteException {
-		return trivia.getEarned( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getCumulativeEarned(int)
-	 */
-	public int getCumulativeEarned(int rNumber) throws RemoteException {
-		return trivia.getCumulativeEarned( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getEarned(int, int)
-	 */
-	public int getEarned(int rNumber, int qNumber) throws RemoteException {
-		return trivia.getEarned( rNumber, qNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getQuestionText(int)
-	 */
-	public String getQuestionText(int qNumber) throws RemoteException {
-		return trivia.getQuestionText( qNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getQuestionText(int, int)
-	 */
-	public String getQuestionText(int rNumber, int qNumber) throws RemoteException {
-		return trivia.getQuestionText( rNumber, qNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#beenOpen(int, int)
-	 */
-	public boolean beenOpen(int rNumber, int qNumber) throws RemoteException {
-		return trivia.beenOpen( rNumber, qNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getEachEarned(int)
-	 */
-	public int[] getEachEarned(int rNumber) throws RemoteException {
-		return trivia.getEachEarned( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getEachValue(int)
-	 */
-	public int[] getEachValue(int rNumber) throws RemoteException {
-		return trivia.getEachValue( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getEachQuestionText(int)
-	 */
-	public String[] getEachQuestionText(int rNumber) throws RemoteException {
-		return trivia.getEachQuestionText( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getEachAnswerText(int)
-	 */
-	public String[] getEachAnswerText(int rNumber) throws RemoteException {
-		return trivia.getEachAnswerText( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getEachSubmitter(int)
-	 */
-	public String[] getEachSubmitter(int rNumber) throws RemoteException {
-		return trivia.getEachSubmitter( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getEachOperator(int)
-	 */
-	public String[] getEachOperator(int rNumber) throws RemoteException {
-		return trivia.getEachOperator( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#eachBeenOpen(int)
-	 */
-	public boolean[] eachBeenOpen(int rNumber) throws RemoteException {
-		return trivia.eachBeenOpen( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#eachOpen(int)
-	 */
-	public boolean[] eachOpen(int rNumber) throws RemoteException {
-		return trivia.eachOpen( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#eachCorrect(int)
-	 */
-	public boolean[] eachCorrect(int rNumber) throws RemoteException {
-		return trivia.eachCorrect( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getCurrentRoundValue()
-	 */
-	@WebMethod
-	public int getCurrentRoundValue() throws RemoteException {
-		return trivia.getCurrentRoundValue();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getCurrentRoundEarned()
-	 */
-	@WebMethod
-	public int getCurrentRoundEarned() throws RemoteException {
-		return trivia.getCurrentRoundEarned();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnnouncedPoints(int)
-	 */
-	public int getAnnouncedPoints(int rNumber) throws RemoteException {
-		return trivia.getAnnouncedPoints( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnnouncedPlace(int)
-	 */
-	public int getAnnouncedPlace(int rNumber) throws RemoteException {
-		return trivia.getAnnouncedPlace( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnswerQueueSize()
-	 */
-	public int getAnswerQueueSize() throws RemoteException {
-		return trivia.getAnswerQueueSize();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getOpenQuestionText()
-	 */
-	public String[] getOpenQuestionText() throws RemoteException {
-		return trivia.getOpenQuestionText();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getOpenQuestionNumbers()
-	 */
-	public String[] getOpenQuestionNumbers() throws RemoteException {
-		return trivia.getOpenQuestionNumbers();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getOpenQuestionValues()
-	 */
-	public String[] getOpenQuestionValues() throws RemoteException {
-		return trivia.getOpenQuestionValues();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnswerQueueTimestamps()
-	 */
-	public String[] getAnswerQueueTimestamps() throws RemoteException {
-		return trivia.getAnswerQueueTimestamps();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnswerQueueQNumbers()
-	 */
-	public int[] getAnswerQueueQNumbers() throws RemoteException {
-		return trivia.getAnswerQueueQNumbers();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnswerQueueAnswers()
-	 */
-	public String[] getAnswerQueueAnswers() throws RemoteException {
-		return trivia.getAnswerQueueAnswers();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnswerQueueSubmitters()
-	 */
-	public String[] getAnswerQueueSubmitters() throws RemoteException {
-		return trivia.getAnswerQueueSubmitters();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnswerQueueConfidences()
-	 */
-	public int[] getAnswerQueueConfidences() throws RemoteException {
-		return trivia.getAnswerQueueConfidences();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnswerQueueCallers()
-	 */
-	public String[] getAnswerQueueCallers() throws RemoteException {
-		return trivia.getAnswerQueueCallers();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnswerQueueOperators()
-	 */
-	public String[] getAnswerQueueOperators() throws RemoteException {
-		return trivia.getAnswerQueueOperators();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnswerQueueStatuses()
-	 */
-	public String[] getAnswerQueueStatuses() throws RemoteException {
-		return trivia.getAnswerQueueStatuses();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getAnswerQueueStatus(int)
-	 */
-	public String getAnswerQueueStatus(int queueIndex) throws RemoteException {
-		return trivia.getAnswerQueueStatus( queueIndex );
-	}
-	
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#getDiscrepencyText(int)
-	 */
-	public String getDiscrepencyText(int rNumber) throws RemoteException {
-		return trivia.getDiscrepencyText(rNumber);
-	}
-
-	/* (non-Javadoc)
 	 * @see net.bubbaland.trivia.server.TriviaInterface#setDiscrepencyText(int, java.lang.String)
 	 */
 	public void setDiscrepencyText(int rNumber, String discrepencyText) throws RemoteException{
@@ -408,7 +91,6 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 		trivia.setNTeams(nTeams);
 	}
 	
-
 	/* (non-Javadoc)
 	 * @see net.bubbaland.trivia.server.TriviaInterface#setSpeed()
 	 */
@@ -467,7 +149,7 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 	public void markCorrect(int queueIndex, String caller, String operator) throws RemoteException {
 		trivia.markCorrect( queueIndex, caller, operator );
 		System.out.println( "Item " + queueIndex + " in the queue is correct, "
-				+ trivia.getValue( trivia.getRoundNumber(), getAnswerQueueQNumbers()[queueIndex] ) + " points earned!" );
+				+ trivia.getValue( trivia.getRoundNumber(), trivia.getAnswerQueueQNumbers()[queueIndex] ) + " points earned!" );
 	}
 
 	/* (non-Javadoc)
@@ -487,41 +169,40 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 		trivia.unsetSpeed();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#isCurrentSpeed()
-	 */
-	public boolean isCurrentSpeed() throws RemoteException {
-		return trivia.isCurrentSpeed();
-	}
-	
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#isSpeed(int)
-	 */
-	public boolean isSpeed(int rNumber) throws RemoteException {
-		return trivia.isSpeed(rNumber);
-	}
-
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#isOpen(int)
-	 */
-	public boolean isOpen(int qNumber) throws RemoteException {
-		return trivia.isOpen( qNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#isAnnounced(int)
-	 */
-	public boolean isAnnounced(int rNumber) throws RemoteException {
-		return trivia.isAnnounced( rNumber );
-	}
-
-	/* (non-Javadoc)
-	 * @see net.bubbaland.trivia.server.TriviaInterface#roundOver()
-	 */
-	public boolean roundOver() throws RemoteException {
-		return trivia.roundOver();
-	}
+//	/* (non-Javadoc)
+//	 * @see net.bubbaland.trivia.server.TriviaInterface#isCurrentSpeed()
+//	 */
+//	public boolean isCurrentSpeed() throws RemoteException {
+//		return trivia.isCurrentSpeed();
+//	}
+//	
+//	/* (non-Javadoc)
+//	 * @see net.bubbaland.trivia.server.TriviaInterface#isSpeed(int)
+//	 */
+//	public boolean isSpeed(int rNumber) throws RemoteException {
+//		return trivia.isSpeed(rNumber);
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see net.bubbaland.trivia.server.TriviaInterface#isOpen(int)
+//	 */
+//	public boolean isOpen(int qNumber) throws RemoteException {
+//		return trivia.isOpen( qNumber );
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see net.bubbaland.trivia.server.TriviaInterface#isAnnounced(int)
+//	 */
+//	public boolean isAnnounced(int rNumber) throws RemoteException {
+//		return trivia.isAnnounced( rNumber );
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see net.bubbaland.trivia.server.TriviaInterface#roundOver()
+//	 */
+//	public boolean roundOver() throws RemoteException {
+//		return trivia.roundOver();
+//	}
 
 	/* (non-Javadoc)
 	 * @see net.bubbaland.trivia.server.TriviaInterface#open(int, int, java.lang.String)
@@ -537,23 +218,27 @@ public class TriviaServer extends UnicastRemoteObject implements TriviaInterface
 	 */
 	public void close(int qNumber) throws RemoteException {
 		trivia.close( qNumber );
-		System.out.println( "Question " + qNumber + " closed, " + getValue( this.getRoundNumber(), qNumber )
+		System.out.println( "Question " + qNumber + " closed, " + trivia.getValue( trivia.getRoundNumber(), qNumber )
 				+ " points earned." );
 	}
-
-	/**
-	 * Test.
-	 */
-	public void test() {
-		try {
-			String[] timestamps = getAnswerQueueTimestamps();
-			for ( int i = 0; i < timestamps.length; i++ ) {
-				System.out.println( timestamps[i] );
-			}
-		} catch ( Exception e ) {
-			e.getStackTrace();
-		}
-
+	
+	public Trivia getTrivia() throws RemoteException {
+		return trivia;
 	}
+
+//	/**
+//	 * Test.
+//	 */
+//	public void test() {
+//		try {
+//			String[] timestamps = getAnswerQueueTimestamps();
+//			for ( int i = 0; i < timestamps.length; i++ ) {
+//				System.out.println( timestamps[i] );
+//			}
+//		} catch ( Exception e ) {
+//			e.getStackTrace();
+//		}
+//
+//	}
 
 }
