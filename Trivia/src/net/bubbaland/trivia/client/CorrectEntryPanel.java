@@ -74,7 +74,7 @@ public class CorrectEntryPanel extends JPanel {
 				return;
 			}
 			
-			client.log( "Marked answer #" + (queueIndex+1) + "correct" );			
+			client.log( "Marked answer # " + (queueIndex+1) + "correct" );			
 			
 		} else {
 			statusComboBox.setSelectedItem( client.getTrivia().getAnswerQueueStatus( queueIndex ) );

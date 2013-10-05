@@ -30,8 +30,8 @@ public class Round implements Serializable {
 	/** The answer queue. */
 	private volatile ArrayList<Answer>	answerQueue;
 	
-	/** The discrepency text. */
-	private String discrepencyText;
+	/** The discrepancy text. */
+	private String discrepancyText;
 
 	/**
 	 * Instantiates a new round.
@@ -50,7 +50,7 @@ public class Round implements Serializable {
 		this.announced = false;
 		this.announcedPoints = 0;
 		this.place = 1;
-		this.discrepencyText =  "";
+		this.discrepancyText =  "";
 
 		for ( int q = 0; q < nQuestions; q++ ) {
 			this.questions[q] = new Question( this, q + 1 );
@@ -524,6 +524,10 @@ public class Round implements Serializable {
 		}
 		return timestamps;
 	}
+	
+	public String getAnswerQueueTimestamp(int queueIndex) {
+		return answerQueue.get( queueIndex ).getTimestamp();
+	}
 
 	/**
 	 * Gets the answer queue q numbers.
@@ -538,6 +542,11 @@ public class Round implements Serializable {
 		}
 		return qNumbers;
 	}
+	
+	public int getAnswerQueueQNumber(int queueIndex) {
+		return answerQueue.get( queueIndex ).getQNumber();
+	}
+	
 
 	/**
 	 * Gets the answer queue answers.
@@ -552,6 +561,11 @@ public class Round implements Serializable {
 		}
 		return answers;
 	}
+	
+	public String getAnswerQueueAnswer(int queueIndex) {
+		return answerQueue.get( queueIndex ).getAnswer();
+	}
+
 
 	/**
 	 * Gets the answer queue submitters.
@@ -566,6 +580,11 @@ public class Round implements Serializable {
 		}
 		return submitters;
 	}
+	
+	public String getAnswerQueueSubmitter(int queueIndex) {
+		return answerQueue.get( queueIndex ).getSubmitter();
+	}
+
 
 	/**
 	 * Gets the answer queue confidences.
@@ -580,6 +599,11 @@ public class Round implements Serializable {
 		}
 		return confidences;
 	}
+	
+	public int getAnswerQueueConfidence(int queueIndex) {
+		return answerQueue.get( queueIndex ).getConfidence();
+	}
+
 
 	/**
 	 * Gets the answer queue callers.
@@ -594,6 +618,11 @@ public class Round implements Serializable {
 		}
 		return callers;
 	}
+	
+	public String getAnswerQueueCaller(int queueIndex) {
+		return answerQueue.get( queueIndex ).getCaller();
+	}
+
 
 	/**
 	 * Gets the answer queue operators.
@@ -607,6 +636,10 @@ public class Round implements Serializable {
 			operators[a] = answerQueue.get( a ).getOperator();
 		}
 		return operators;
+	}
+	
+	public String getAnswerQueueOperator(int queueIndex) {
+		return answerQueue.get( queueIndex ).getOperator();
 	}
 
 	/**
@@ -639,17 +672,17 @@ public class Round implements Serializable {
 	 *
 	 * @return the discrepency text
 	 */
-	public String getDiscrepencyText() {
-		return discrepencyText;
+	public String getDiscrepancyText() {
+		return discrepancyText;
 	}
 
 	/**
 	 * Sets the discrepency text.
 	 *
-	 * @param discrepencyText the new discrepency text
+	 * @param discrepancyText the new discrepency text
 	 */
-	public void setDiscrepencyText(String discrepencyText) {
-		this.discrepencyText = discrepencyText;
+	public void setDiscrepancyText(String discrepancyText) {
+		this.discrepancyText = discrepancyText;
 	}
 
 	/**
@@ -769,6 +802,10 @@ public class Round implements Serializable {
 		int qNumber = answer.getQNumber();
 		String answerText = answer.getAnswer();
 		String submitter = answer.getSubmitter();
+		questions[qNumber - 1].markCorrect( answerText, submitter, operator );
+	}
+	
+	public void markCorrect(int qNumber, String answerText, String submitter, String operator) {
 		questions[qNumber - 1].markCorrect( answerText, submitter, operator );
 	}
 

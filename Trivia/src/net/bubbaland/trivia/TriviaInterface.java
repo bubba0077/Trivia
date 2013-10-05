@@ -11,13 +11,13 @@ public interface TriviaInterface extends Remote {
 	// need all the methods of TriviaServer here
 
 	/**
-	 * Sets the discrepency text.
+	 * Sets the discrepancy text.
 	 *
 	 * @param rNumber the r number
-	 * @param discrepencyText the discrepency text
+	 * @param discrepancyText the discrepancy text
 	 * @throws RemoteException the remote exception
 	 */
-	public void setDiscrepencyText(int rNumber, String discrepencyText) throws RemoteException;
+	public void setDiscrepancyText(int rNumber, String discrepancyText) throws RemoteException;
 
 	/**
 	 * New round.

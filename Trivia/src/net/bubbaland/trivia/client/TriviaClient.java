@@ -136,9 +136,10 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		// Put the tabbed pane and browser panel in an adjustable vertical split pane
 		JSplitPane splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT, this.book, browser );
 		// Put the split pane at the top of the window
-		c.gridx = 0;		c.gridy = 0;		
+		c.gridx = 0;		c.gridy = 0;	
 		// When the window resizes, adjust the split pane size
 		c.weightx = 1.0;	c.weighty = 1.0;
+		splitPane.setResizeWeight(1.0);
 		add( splitPane, c );
 
 		
