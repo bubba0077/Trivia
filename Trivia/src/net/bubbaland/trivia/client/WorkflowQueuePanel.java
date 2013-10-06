@@ -49,13 +49,13 @@ public class WorkflowQueuePanel extends TriviaPanel {
 	protected static final int		QNUM_WIDTH				= 40;
 	
 	/** The Constant ANSWER_WIDTH. */
-	protected static final int		ANSWER_WIDTH			= 200;
+	protected static final int		ANSWER_WIDTH			= 50;
 	
 	/** The Constant CONFIDENCE_WIDTH. */
 	protected static final int		CONFIDENCE_WIDTH		= 30;
 	
 	/** The Constant SUBMITTER_WIDTH. */
-	protected static final int		SUB_CALLER_WIDTH			= 100;
+	protected static final int		SUB_CALLER_WIDTH		= 100;
 	
 	/** The Constant OPERATOR_WIDTH. */
 	protected static final int		OPERATOR_WIDTH			= 100;
