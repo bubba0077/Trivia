@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_40"/>
-	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JFreeChart"/>
-	<classpathentry kind="lib" path="C:/Apache/html/trivia/lib/jcommon-1.0.20.jar"/>
-	<classpathentry kind="lib" path="C:/Apache/html/trivia/lib/jfreechart-1.0.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Apache/html/trivia/lib/jcommon-1.0.20.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Apache/html/trivia/lib/jfreechart-1.0.16.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_40"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

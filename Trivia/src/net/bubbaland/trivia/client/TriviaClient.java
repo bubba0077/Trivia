@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Properties;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -64,12 +65,30 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 
 		// Call parent constructor and use a GridBagLayout
 		super( new GridBagLayout() );
-
+		
 		// Create a prompt requesting the user name
 		new UserLogin( this );
 		
 		this.server = server;
 		
+		// Create a local copy of the Trivia object
+		int tryNumber = 0;
+		boolean success = false;
+		while ( tryNumber < TriviaClient.MAX_RETRIES && success == false ) {
+			tryNumber++;
+			try {
+				this.trivia = server.getTrivia();
+				success = true;
+			} catch ( RemoteException e ) {
+				this.log( "Couldn't retrive trivia data from server (try #" + tryNumber + ")." );
+				e.printStackTrace();
+			}
+		}
+
+		if ( !success ) {
+			this.disconnected();
+			return;
+		}
 		
 		JMenuBar menuBar = new JMenuBar();
 		
@@ -82,7 +101,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		
 		menuBar.add(Box.createHorizontalGlue());
 		menu = new JMenu("Admin");
-		menuBar.add(menu);		
+		menuBar.add(menu);
 		
 		menuItem = new JMenuItem("Load state", KeyEvent.VK_L);
 		menuItem.setActionCommand("Load state");
@@ -120,25 +139,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		this.statusBar = enclosedLabel( "", 0, STATUS_HEIGHT, book.getForeground(), book.getBackground(), c,
 				STATUS_FONT_SIZE, JLabel.LEFT, JLabel.CENTER );
 		
-		// Create a local copy of the Trivia object
-		int tryNumber = 0;
-		boolean success = false;
-		while ( tryNumber < TriviaClient.MAX_RETRIES && success == false ) {
-			tryNumber++;
-			try {
-				this.trivia = server.getTrivia();
-				success = true;
-			} catch ( RemoteException e ) {
-				this.log( "Couldn't retrive trivia data from server (try #" + tryNumber + ")." );
-				e.printStackTrace();
-			}
-		}
-
-		if ( !success ) {
-			this.disconnected();
-			return;
-		}
-
+		
 		// The individual tabs
 			pages = new TriviaPanel[7];
 
@@ -176,8 +177,6 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		refreshTimer.setActionCommand("Timer");
 		refreshTimer.start();
 		
-		
-
 		// Post welcome to status bar
 		this.log( "Welcome " + this.user );
 
@@ -187,8 +186,18 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	 * Creates and shows the GUI.
 	 */
 	private static void createAndShowGUI() {
+		// Create the application window
+		System.out.println("Creating Frame");
+		JFrame frame = new JFrame( "Trivia" );
+		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		// Initialize server variable
 		TriviaInterface triviaServer = null;
+		
+		Properties props = System.getProperties();
+		props.put("sun.rmi.transport.proxy.connectTimeout", 3000);		
+		props.put("sun.rmi.transport.tcp.handshakeTimeout", 3000);		
+		props.put("sun.rmi.transport.tcp.responseTimeout", 3000);		
+		System.setProperties(props);
 
 		// Initiate connection to RMI server
 		int tryNumber = 0;
@@ -221,17 +230,21 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 			}
 		}
 		System.out.println( "Connected to trivia server (" + TRIVIA_SERVER_URL + ")." );
-
-		// Create the application window
-		JFrame frame = new JFrame( "Trivia" );
-		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		
+				
 		// Initialize GUI and place in window
-		frame.add( new TriviaClient( frame, triviaServer ), BorderLayout.CENTER );
-
+		try {
+			frame.add( new TriviaClient( frame, triviaServer ), BorderLayout.CENTER );
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+		
 		// Display the window.
 		frame.pack();
-		frame.setVisible( true );	
+		frame.setVisible( true );
+		
+		
+		
 	}
 
 	/**
@@ -295,7 +308,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	 *
 	 * @param message message to log
 	 */
-	public synchronized void log(String message) {
+	public void log(String message) {
 		// Display message in status bar
 		this.statusBar.setText( message );
 		// Print message to console

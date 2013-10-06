@@ -206,7 +206,7 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
-	public void actionPerformed(ActionEvent event) {
+	public synchronized void actionPerformed(ActionEvent event) {
 		JButton source = (JButton)event.getSource();
 		for ( int q = 0; q < nQuestionsMax; q++ ) {
 			if ( this.answerButtons[q].equals( event.getSource() ) ) {

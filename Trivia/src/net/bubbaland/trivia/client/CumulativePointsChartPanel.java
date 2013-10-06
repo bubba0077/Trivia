@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.text.NumberFormat;
 
 import net.bubbaland.trivia.Trivia;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -92,7 +93,7 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public void update() {
+	public synchronized void update() {
 		
 		Trivia trivia = client.getTrivia();
 		

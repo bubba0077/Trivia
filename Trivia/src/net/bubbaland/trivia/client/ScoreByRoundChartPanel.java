@@ -93,7 +93,7 @@ public class ScoreByRoundChartPanel extends TriviaPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public void update() {
+	public synchronized void update() {
 		
 		Trivia trivia = client.getTrivia();
 		

@@ -42,9 +42,6 @@ import java.util.Date;
 @WebService
 public class TriviaServer implements TriviaInterface, ActionListener {
 
-	/** The Constant serialVersionUID. */
-	private static final long	serialVersionUID	= -8062985452301507239L;
-	
 	// The number of rounds
 	private static final int	N_ROUNDS			= 50;
 	
@@ -104,16 +101,15 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		}
 
 		TriviaServer server = new TriviaServer();
-
+		
 		try {
-			registry.rebind("TriviaInterface", server );
+			registry.bind("TriviaInterface", UnicastRemoteObject.exportObject(server, 1100) );
 			System.out.println( "Trivia Server is Ready" );
 		} catch ( Exception e ) {
 			e.printStackTrace();
 		}
 		
-		UnicastRemoteObject.exportObject(server, 1100);
-
+		
 		// server.test();
 
 	}
@@ -421,7 +417,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		
 	}
 	
-	public synchronized void loadState(String stateFile) throws RemoteException {
+	public void loadState(String stateFile) throws RemoteException {
 		stateFile = SAVE_DIR + "/" + stateFile;
 		trivia.reset();
 		try {
@@ -493,7 +489,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 				
 				int qNumber = Integer.parseInt(answerElement.getElementsByTagName("Question_Number").item(0).getTextContent());
 				String status = answerElement.getElementsByTagName("Status").item(0).getTextContent();
-				String timestamp = answerElement.getElementsByTagName("Timestamp").item(0).getTextContent();
+				answerElement.getElementsByTagName("Timestamp").item(0).getTextContent();
 				String answer = answerElement.getElementsByTagName("Answer_Text").item(0).getTextContent();
 				String submitter = answerElement.getElementsByTagName("Submitter").item(0).getTextContent();
 				int confidence = Integer.parseInt(answerElement.getElementsByTagName("Confidence").item(0).getTextContent());

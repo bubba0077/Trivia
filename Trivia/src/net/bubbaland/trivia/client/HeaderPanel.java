@@ -274,7 +274,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
-	public void actionPerformed(ActionEvent event) {
+	public synchronized void actionPerformed(ActionEvent event) {
 		JComponent source = (JComponent)event.getSource();
 		if ( source.equals( this.speedButton ) ) {
 			if ( this.speedButton.isSelected() ) {

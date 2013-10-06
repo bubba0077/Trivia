@@ -208,7 +208,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update() {
+	public void update() {
 		this.internalScrollPanel.update();		
 	}
 	
@@ -342,7 +342,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
-		public synchronized void update() {
+		public void update() {
 			
 			Trivia trivia = client.getTrivia();
 					
@@ -384,7 +384,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public synchronized void actionPerformed(ActionEvent e) {
 			JTextField source = (JTextField)e.getSource();
 			for(int r=0; r<nRounds; r++) {
 				if(source.equals(this.discrepencyTextField[r])) {

@@ -130,7 +130,7 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public void update() {
+	public synchronized void update() {
 		this.roundQListPanel.update();
 
 	}
@@ -140,7 +140,7 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 	 */
 	@SuppressWarnings( "unchecked" )
 	@Override
-	public void itemStateChanged(ItemEvent e) {
+	public synchronized void itemStateChanged(ItemEvent e) {
 		JComboBox<String> source = (JComboBox<String>)e.getSource();
 		int rNumber = Integer.parseInt( (String)source.getSelectedItem() );
 		this.roundQListPanel.setRound( rNumber );
