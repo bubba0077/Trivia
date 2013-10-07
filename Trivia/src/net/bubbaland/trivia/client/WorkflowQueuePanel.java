@@ -43,7 +43,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 	protected static final int		HEADER_HEIGHT			= 20;
 
 	/** The Constant TIME_WIDTH. */
-	protected static final int		TIME_WIDTH				= 52;
+	protected static final int		TIME_WIDTH				= 60;
 	
 	/** The Constant QNUM_WIDTH. */
 	protected static final int		QNUM_WIDTH				= 40;
@@ -52,7 +52,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 	protected static final int		ANSWER_WIDTH			= 50;
 	
 	/** The Constant CONFIDENCE_WIDTH. */
-	protected static final int		CONFIDENCE_WIDTH		= 30;
+	protected static final int		CONFIDENCE_WIDTH		= 35;
 	
 	/** The Constant SUBMITTER_WIDTH. */
 	protected static final int		SUB_CALLER_WIDTH		= 100;
@@ -61,7 +61,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 	protected static final int		OPERATOR_WIDTH			= 100;
 	
 	/** The Constant STATUS_WIDTH. */
-	protected static final int		STATUS_WIDTH			= 100;
+	protected static final int		STATUS_WIDTH			= 120;
 
 	/** The workflow queue sub panel. */
 	private WorkflowQueueSubPanel	workflowQueueSubPanel;

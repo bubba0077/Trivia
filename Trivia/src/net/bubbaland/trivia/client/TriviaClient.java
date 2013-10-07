@@ -36,7 +36,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	final static private float	STATUS_FONT_SIZE	= 12.0f;
 	
 	// URL for RMI server
-	final static private String	TRIVIA_SERVER_URL	= "rmi://bubbaland.net:1099/TriviaInterface";
+	final static private String	TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
 	
 	// URL for the IRC server
 	final static private String	IRC_CLIENT_URL		= "http://webchat.freenode.net/";
@@ -190,7 +190,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		// Initialize server variable
 		TriviaInterface triviaServer = null;
-		
+
 		// Initiate connection to RMI server
 		int tryNumber = 0;
 		boolean success = false;
