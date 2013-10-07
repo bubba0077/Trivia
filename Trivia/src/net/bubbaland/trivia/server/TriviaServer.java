@@ -93,12 +93,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 * @throws Exception the exception
 	 */
 	public static void main(String args[]) throws Exception {
-
+		System.setProperty("java.rmi.server.hostname", "www.bubbaland.net");
+		
 		Registry registry = LocateRegistry.createRegistry( 1099 );
-
-		if ( System.getSecurityManager() == null ) {
-			// System.setSecurityManager(new RMISecurityManager());
-		}
 
 		TriviaServer server = new TriviaServer();
 		
