@@ -13,7 +13,6 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.Properties;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -37,7 +36,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	final static private float	STATUS_FONT_SIZE	= 12.0f;
 	
 	// URL for RMI server
-	final static private String	TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
+	final static private String	TRIVIA_SERVER_URL	= "rmi://bubbaland.net:1099/TriviaInterface";
 	
 	// URL for the IRC server
 	final static private String	IRC_CLIENT_URL		= "http://webchat.freenode.net/";
@@ -85,7 +84,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 			}
 		}
 
-		if ( !success ) {
+		if ( !success || this.trivia == null ) {
 			this.disconnected();
 			return;
 		}
@@ -187,18 +186,11 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	 */
 	private static void createAndShowGUI() {
 		// Create the application window
-		System.out.println("Creating Frame");
 		JFrame frame = new JFrame( "Trivia" );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		// Initialize server variable
 		TriviaInterface triviaServer = null;
 		
-		Properties props = System.getProperties();
-		props.put("sun.rmi.transport.proxy.connectTimeout", 3000);		
-		props.put("sun.rmi.transport.tcp.handshakeTimeout", 3000);		
-		props.put("sun.rmi.transport.tcp.responseTimeout", 3000);		
-		System.setProperties(props);
-
 		// Initiate connection to RMI server
 		int tryNumber = 0;
 		boolean success = false;
