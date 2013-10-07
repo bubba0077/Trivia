@@ -13,12 +13,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import net.bubbaland.trivia.ScoreEntry;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
@@ -31,6 +35,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -51,8 +56,11 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	// The number of questions in a speed round
 	private static final int	N_QUESTIONS_SPEED	= 18;
 	
+	// The team name
+	private static final String TEAM_NAME 			= "Knee Deep in Theses";
+	
 	// Frequency of backups (milliseconds)
-	private static final int	SAVE_FREQUENCY		= 5 * 60000;
+	private static final int	SAVE_FREQUENCY		= 1 * 60000;
 	
 	// Directory to hold backups
 	private static final String SAVE_DIR			= "saves";
@@ -62,7 +70,10 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	
 	// Date format to use inside backup files
 	private static final SimpleDateFormat stringDateFormat = new SimpleDateFormat("yyyy MMM dd HH:mm:ss");
-			
+	
+	// Base URL for hourly standings
+	final public static String baseURL = "http://www.kvsc.org/trivia/points/hour";
+
 	// The Trivia object that holds all of the contest data
 	private Trivia				trivia;
 
@@ -72,14 +83,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 * @throws RemoteException the remote exception
 	 */
 	public TriviaServer() throws RemoteException {
-		this.trivia = new Trivia( N_ROUNDS, N_QUESTIONS_SPEED, N_QUESTIONS_NORMAL );
-		
-//		loadState("saves/Rd01_2013_Oct_05_1100.xml");
-		
-//		String[] saves = listSaves();
-//		for(String save : saves) {
-//			System.out.println(save);
-//		}
+		this.trivia = new Trivia( TEAM_NAME, N_ROUNDS, N_QUESTIONS_SPEED, N_QUESTIONS_NORMAL );
 		
 		// Create timer that will poll server for changes		
 		Timer backupTimer = new Timer( SAVE_FREQUENCY, this );
@@ -105,8 +109,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		} catch ( Exception e ) {
 			e.printStackTrace();
 		}
-		
-		
+				
 		// server.test();
 
 	}
@@ -123,7 +126,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@WebMethod
 	public void newRound() throws RemoteException {
-		System.out.println( "New round starting..." );
+		log( "New round starting..." );
 		trivia.newRound();
 	}
 	
@@ -139,7 +142,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@WebMethod
 	public void setSpeed() throws RemoteException {
-		System.out.println( "Making round " + trivia.getRoundNumber() + " a speed round" );
+		log( "Making round " + trivia.getRoundNumber() + " a speed round" );
 		trivia.setSpeed();
 	}
 
@@ -148,8 +151,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public void setAnnounced(int rNumber, int score, int place) throws RemoteException {
 		trivia.setAnnounced( rNumber, score, place );
-		System.out.println( "Announced for round " + rNumber + ":" );
-		System.out.println( "Score: " + score + "  Place: " + place );
+		log( "Announced for round " + rNumber + ":" );
+		log( "Score: " + score + "  Place: " + place );
 	}
 
 	/* (non-Javadoc)
@@ -157,9 +160,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) throws RemoteException {
 		trivia.proposeAnswer( qNumber, answer, submitter, confidence );
-		System.out.println( submitter + " submitted an answer for Q" + qNumber + " with a confidence of " + confidence
-				+ ":" );
-		System.out.println( answer );
+		log( submitter + " submitted an answer for Q" + qNumber + " with a confidence of " + confidence + ":\n" + answer );
 	}
 
 	/* (non-Javadoc)
@@ -167,7 +168,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public void callIn(int queueIndex, String caller) throws RemoteException {
 		trivia.callIn( queueIndex, caller );
-		System.out.println( caller + " is calling in item " + queueIndex + " in the answer queue." );
+		log( caller + " is calling in item " + queueIndex + " in the answer queue." );
 	}
 
 	/* (non-Javadoc)
@@ -175,7 +176,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public void markIncorrect(int queueIndex, String caller) throws RemoteException {
 		trivia.markIncorrect( queueIndex, caller );
-		System.out.println( "Item " + queueIndex + " in the queue is incorrect." );
+		log( "Item " + queueIndex + " in the queue is incorrect." );
 	}
 
 	/* (non-Javadoc)
@@ -183,7 +184,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public void markPartial(int queueIndex, String caller) throws RemoteException {
 		trivia.markPartial( queueIndex, caller );
-		System.out.println( "Item " + queueIndex + " in the queue is partially correct." );
+		log( "Item " + queueIndex + " in the queue is partially correct." );
 	}
 
 	/* (non-Javadoc)
@@ -191,7 +192,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public void markCorrect(int queueIndex, String caller, String operator) throws RemoteException {
 		trivia.markCorrect( queueIndex, caller, operator );
-		System.out.println( "Item " + queueIndex + " in the queue is correct, "
+		log( "Item " + queueIndex + " in the queue is correct, "
 				+ trivia.getValue( trivia.getRoundNumber(), trivia.getAnswerQueueQNumbers()[queueIndex] ) + " points earned!" );
 	}
 
@@ -200,7 +201,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public void markUncalled(int queueIndex) throws RemoteException {
 		trivia.markUncalled( queueIndex );
-		System.out.println( "Item " + queueIndex + " status reset to uncalled." );
+		log( "Item " + queueIndex + " status reset to uncalled." );
 	}
 
 	/* (non-Javadoc)
@@ -208,7 +209,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@WebMethod
 	public void unsetSpeed() throws RemoteException {
-		System.out.println( "Making round " + trivia.getRoundNumber() + " a normal round" );
+		log( "Making round " + trivia.getRoundNumber() + " a normal round" );
 		trivia.unsetSpeed();
 	}
 
@@ -217,8 +218,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public void open(int qNumber, int qValue, String question) throws RemoteException {
 		trivia.open( qNumber, qValue, question );
-		System.out.println( "Question " + qNumber + " opened for " + qValue + " Points:" );
-		System.out.println( question );
+		log( "Question " + qNumber + " opened for " + qValue + " Points:\n" + question );
 	}
 
 	/* (non-Javadoc)
@@ -226,12 +226,17 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public void close(int qNumber) throws RemoteException {
 		trivia.close( qNumber );
-		System.out.println( "Question " + qNumber + " closed, " + trivia.getValue( trivia.getRoundNumber(), qNumber )
+		log( "Question " + qNumber + " closed, " + trivia.getValue( trivia.getRoundNumber(), qNumber )
 				+ " points earned." );
 	}
 	
 	public Trivia getTrivia() throws RemoteException {
 		return trivia;
+	}
+	
+	private void log(String message) {
+		Date date = new Date();
+		System.out.println( stringDateFormat.format(date) + ": " + message );		
 	}
 
 //	/**
@@ -402,7 +407,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			
 			transformer.transform(source, result);
 			
-			System.out.println("Saved state to " + filename );
+			log("Saved state to " + filename );
 			
 		} catch (ParserConfigurationException e) {
 			System.out.println("Couldn't save data to file " + filename);
@@ -479,8 +484,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			Element element = (Element) triviaElement.getElementsByTagName("Answer_Queue").item(0);
 			NodeList answerElements = element.getElementsByTagName("Proposed_Answer");
 			
-			System.out.println(answerElements.getLength());
-
 			for(int a=0; a<answerElements.getLength(); a++) {
 				Element answerElement = (Element) answerElements.item(a);
 				
@@ -529,7 +532,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Loaded state from " + stateFile);
+		log("Loaded state from " + stateFile);
 			
 	}
 	
@@ -547,7 +550,48 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		this.saveState();		
+		int rNumber = trivia.getRoundNumber();
+		if(rNumber>1 && !trivia.isAnnounced(rNumber-1)) {
+			ScoreEntry[] standings = getStandings( rNumber - 1);
+			trivia.setStandings(rNumber-1, standings);
+		}
+		
+		this.saveState();
+	}
+	
+	public static ScoreEntry[] getStandings(int rNumber) {
+		
+		ArrayList<ScoreEntry> standingsList = new ArrayList<ScoreEntry>(0);
+		
+		String urlString = baseURL + String.format("%02d", rNumber) + ".htm";	
+		try {
+			org.jsoup.nodes.Document htmlDoc = Jsoup.connect(urlString).get();
+			Elements table = htmlDoc.select("table");
+			for(org.jsoup.nodes.Element row : table.select("tr:gt(0)")) {
+				Elements rowData = row.select("td");
+				int place = Integer.parseInt(rowData.get(0).text());
+				String team = rowData.get(1).text();
+				int score = Integer.parseInt(rowData.get(2).text().replaceAll(",", ""));
+				
+				int entryNumber = standingsList.size();
+				if(entryNumber > 0 ) {
+					int lastPlace = standingsList.get(entryNumber-1).getPlace();
+					int lastScore = standingsList.get(entryNumber-1).getScore();
+					if(score == lastScore) {	place = lastPlace;	}
+				}
+				
+				standingsList.add( new ScoreEntry( place, team, score ) );
+			}
+			
+		} catch (HttpStatusException e) {
+			System.out.println("Standings for round " + rNumber + " not available yet.");
+			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("Standings for round " + rNumber + " parsed.");		
+		return standingsList.toArray(new ScoreEntry[standingsList.size()]);
 	}
 	
 

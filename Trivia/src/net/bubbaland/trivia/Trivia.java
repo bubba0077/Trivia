@@ -12,6 +12,8 @@ public class Trivia implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -1849743738638088417L;
+	
+	private String teamName;
 
 	/** The n teams. */
 	private int				nRounds, nTeams, nMaxQuestions, nNormalQ;
@@ -29,13 +31,14 @@ public class Trivia implements Serializable {
 	 * @param nMaxQuestions the n questions
 	 * @param nNormalQ the n normal q
 	 */
-	public Trivia( int nRounds, int nMaxQuestions, int nNormalQ ) {
+	public Trivia( String teamName, int nRounds, int nMaxQuestions, int nNormalQ ) {
+		this.teamName = teamName;
 		this.nRounds = nRounds;
 		this.nMaxQuestions = nMaxQuestions;
 		this.nNormalQ = nNormalQ;
 		this.rounds = new Round[nRounds];
 		for ( int r = 0; r < nRounds; r++ ) {
-			this.rounds[r] = new Round( r + 1, nMaxQuestions, nNormalQ );
+			this.rounds[r] = new Round( teamName, r + 1, nMaxQuestions, nNormalQ );
 		}
 		this.currentRound = rounds[0];
 		this.nTeams = 100;
@@ -756,9 +759,22 @@ public class Trivia implements Serializable {
 		this.rounds[rNumber-1].close( qNumber );
 	}
 	
+	public void setStandings(int rNumber, ScoreEntry[] standings) {
+		this.nTeams = standings.length;
+		this.rounds[rNumber-1].setStandings(standings);
+	}
+	
+	public ScoreEntry[] getStandings(int rNumber) {
+		return this.rounds[rNumber-1].getStandings();
+	}
+	
+	public String getTeamName() {
+		return this.teamName;
+	}
+	
 	public void reset() {
 		for ( int r = 0; r < nRounds; r++ ) {
-			this.rounds[r] = new Round( r + 1, nMaxQuestions, nNormalQ );
+			this.rounds[r] = new Round( this.teamName, r + 1, nMaxQuestions, nNormalQ );
 		}
 	}
 

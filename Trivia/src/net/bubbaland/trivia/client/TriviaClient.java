@@ -70,6 +70,24 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		
 		this.server = server;
 		
+		// Create tabbed pane
+		this.book = new JTabbedPane();
+		
+		
+		// Set up layout constraints
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+				
+		
+		// Put the status bar at the bottom and do not adjust the size of the status bar
+		constraints.gridx = 0;			constraints.gridy = 1;
+		constraints.weightx = 0.0;		constraints.weighty = 0.0;
+				
+		// Create status bar
+		this.statusBar = enclosedLabel( "", 0, STATUS_HEIGHT, book.getForeground(), book.getBackground(), constraints,
+				STATUS_FONT_SIZE, JLabel.LEFT, JLabel.CENTER );
+		
+		
 		// Create a local copy of the Trivia object
 		int tryNumber = 0;
 		boolean success = false;
@@ -108,13 +126,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		menu.add(menuItem);
 				
 		parent.setJMenuBar(menuBar);
-		
-		// Set up layout constraints
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		
-		// Create tabbed pane
-		this.book = new JTabbedPane();
+				
 		
 		// Create panel that contains web browser for IRC
 		String url = IRC_CLIENT_URL + "?nick=" + user + "&channels=" + IRC_CHANNEL;
@@ -124,20 +136,11 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		// Put the tabbed pane and browser panel in an adjustable vertical split pane
 		JSplitPane splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT, this.book, browser );
 		// Put the split pane at the top of the window
-		c.gridx = 0;		c.gridy = 0;	
+		constraints.gridx = 0;		constraints.gridy = 0;	
 		// When the window resizes, adjust the split pane size
-		c.weightx = 1.0;	c.weighty = 1.0;
+		constraints.weightx = 1.0;	constraints.weighty = 1.0;
 		splitPane.setResizeWeight(1.0);
-		add( splitPane, c );
-		
-		// Put the status bar at the bottom and do not adjust the size of the status bar
-		c.gridx = 0;			c.gridy = 1;
-		c.weightx = 0.0;		c.weighty = 0.0;
-				
-		// Create status bar
-		this.statusBar = enclosedLabel( "", 0, STATUS_HEIGHT, book.getForeground(), book.getBackground(), c,
-				STATUS_FONT_SIZE, JLabel.LEFT, JLabel.CENTER );
-		
+		add( splitPane, constraints );
 		
 		// The individual tabs
 			pages = new TriviaPanel[7];
@@ -368,6 +371,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 				this.trivia = server.getTrivia();
 				success = true;
 			} catch ( RemoteException e ) {
+				e.printStackTrace();
 				this.log( "Couldn't retrive trivia data from server (try #" + tryNumber + ")." );
 			}
 		}

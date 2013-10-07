@@ -74,19 +74,13 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 	private static final int		COL4_WIDTH				= 120;
 
 	/** The Constant COL5_WIDTH. */
-	private static final int		COL5_WIDTH				= 85;
+	private static final int		COL5_WIDTH				= 75;
 
 	/** The Constant CENTER_BUTTON_WIDTH. */
 	private static final int		CENTER_BUTTON_WIDTH		= 100;
 
 	/** The Constant CENTER_BUTTON_HEIGHT. */
 	private static final int		CENTER_BUTTON_HEIGHT	= BOTTOM_ROW_HEIGHT - 4;
-
-	/** The Constant ANNOUNCED_BUTTON_WIDTH. */
-	private static final int		ANNOUNCED_BUTTON_WIDTH	= 90;
-
-	/** The Constant ANNOUNCED_BUTTON_HEIGHT. */
-	private static final int		ANNOUNCED_BUTTON_HEIGHT	= TOP_ROW_HEIGHT - 4;
 
 	/** The total earned label. */
 	private JLabel					roundEarnedLabel, roundValueLabel, totalEarnedLabel;
@@ -101,7 +95,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 	private JToggleButton			speedButton;
 
 	/** The new round button. */
-	private JButton					announcedButton, newRoundButton;
+	private JButton					newRoundButton;
 
 	/** The server. */
 	private TriviaInterface			server;
@@ -159,29 +153,32 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 		constraints.gridx = 3;
 		constraints.gridy = 0;
 		constraints.weightx = 1.0;
-		enclosedLabel( "Knee Deep in Theses", COL3_WIDTH, TOP_ROW_HEIGHT, LABEL_COLOR, BACKGROUND_COLOR_NORMAL,
+		enclosedLabel( client.getTrivia().getTeamName(), COL3_WIDTH, TOP_ROW_HEIGHT, LABEL_COLOR, BACKGROUND_COLOR_NORMAL,
 				constraints, LABEL_FONT_SIZE, JLabel.CENTER, JLabel.CENTER );
-		constraints.gridwidth = 1;
 		constraints.weightx = 0.0;
 
 		constraints.gridx = 4;
 		constraints.gridy = 0;
+		constraints.gridwidth = 2;
 		enclosedLabel( "Last Round ", COL4_WIDTH, TOP_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR_NORMAL,
 				constraints, LABEL_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER );
-
-		constraints.gridx = 5;
-		constraints.gridy = 0;
-		panel = new JPanel( new GridBagLayout() );
-		panel.setPreferredSize( new Dimension( COL5_WIDTH, TOP_ROW_HEIGHT ) );
-		panel.setMinimumSize( new Dimension( COL5_WIDTH, TOP_ROW_HEIGHT ) );
-		panel.setBackground( BACKGROUND_COLOR_NORMAL );
-		this.add( panel, constraints );
-		this.announcedButton = new JButton( "Announced" );
-		this.announcedButton.setMargin( new Insets( 0, 0, 0, 0 ) );
-		this.announcedButton.setPreferredSize( new Dimension( ANNOUNCED_BUTTON_WIDTH, ANNOUNCED_BUTTON_HEIGHT ) );
-		this.announcedButton.setMinimumSize( new Dimension( ANNOUNCED_BUTTON_WIDTH, ANNOUNCED_BUTTON_HEIGHT ) );
-		panel.add( announcedButton, buttonConstraints );
-		this.announcedButton.addActionListener( this );
+		constraints.gridwidth = 1;
+		
+//		constraints.gridx = 5;
+//		constraints.gridy = 0;
+//		enclosedLabel( "Announced", COL5_WIDTH, TOP_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR_NORMAL,
+//				constraints, LABEL_FONT_SIZE, JLabel.CENTER, JLabel.CENTER );
+//		panel = new JPanel( new GridBagLayout() );
+//		panel.setPreferredSize( new Dimension( COL5_WIDTH, TOP_ROW_HEIGHT ) );
+//		panel.setMinimumSize( new Dimension( COL5_WIDTH, TOP_ROW_HEIGHT ) );
+//		panel.setBackground( BACKGROUND_COLOR_NORMAL );
+//		this.add( panel, constraints );
+//		this.announcedButton = new JButton( "Announced" );
+//		this.announcedButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+//		this.announcedButton.setPreferredSize( new Dimension( ANNOUNCED_BUTTON_WIDTH, ANNOUNCED_BUTTON_HEIGHT ) );
+//		this.announcedButton.setMinimumSize( new Dimension( ANNOUNCED_BUTTON_WIDTH, ANNOUNCED_BUTTON_HEIGHT ) );
+//		panel.add( announcedButton, buttonConstraints );
+//		this.announcedButton.addActionListener( this );
 
 		// Middle Row
 		constraints.gridx = 0;
@@ -318,11 +315,6 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 
 				client.log( "Made this a normal round" );
 
-			}
-		} else if ( source.equals( this.announcedButton ) ) {
-			int lastRound = client.getTrivia().getRoundNumber() - 1;
-			if ( lastRound > 0 ) {
-				new AnnouncedEntryPanel( this.server, this.client, lastRound );
 			}
 		} else if ( source.equals( this.newRoundButton ) ) {
 			int tryNumber = 0;

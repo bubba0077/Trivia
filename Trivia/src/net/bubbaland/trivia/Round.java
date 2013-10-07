@@ -27,6 +27,10 @@ public class Round implements Serializable {
 	/** The place. */
 	private volatile int				announcedPoints, place;
 	
+	private volatile ScoreEntry[] standings;
+	
+	private final String teamName;
+	
 	/** The answer queue. */
 	private volatile ArrayList<Answer>	answerQueue;
 	
@@ -40,8 +44,9 @@ public class Round implements Serializable {
 	 * @param nQuestions the n questions
 	 * @param nNormalQ the n normal q
 	 */
-	public Round( int rNumber, int nQuestions, int nNormalQ ) {
+	public Round( String teamName, int rNumber, int nQuestions, int nNormalQ ) {
 
+		this.teamName = teamName;
 		this.speed = false;
 		this.rNumber = rNumber;
 		this.nQuestions = nQuestions;
@@ -745,6 +750,22 @@ public class Round implements Serializable {
 		this.announced = true;
 		this.announcedPoints = announcedPoints;
 		this.place = place;
+	}
+	
+	public void setStandings(ScoreEntry[] standings) {
+		this.announced = true;
+		this.standings = standings;
+		for(ScoreEntry entry : standings) {
+			if(entry.getTeamName().equals(this.teamName)) {
+				this.announcedPoints = entry.getScore();
+				this.place = entry.getPlace();
+			}
+		}
+		
+	}
+	
+	public ScoreEntry[] getStandings() {
+		return this.standings;
 	}
 
 	/**
