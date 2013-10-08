@@ -27,7 +27,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	private static final long	serialVersionUID	= 5464403297756091690L;
 
 	// The refresh rate of the GUI elements (in milliseconds) 
-	final private static int	REFRESH_RATE		= 100;
+	final private static int	REFRESH_RATE		= 500;
 	// The maximum number of retries the client will make when failing in communication with the server
 	protected static final int	MAX_RETRIES			= 10;
 	// Height of the status bar at the bottom of the GUI
