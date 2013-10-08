@@ -60,7 +60,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	private static final String TEAM_NAME 			= "Knee Deep in Theses";
 	
 	// Frequency of backups (milliseconds)
-	private static final int	SAVE_FREQUENCY		= 1 * 60000;
+	private static final int	SAVE_FREQUENCY		= 5 * 60000;
 	
 	// Directory to hold backups
 	private static final String SAVE_DIR			= "saves";
@@ -551,11 +551,12 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		int rNumber = trivia.getRoundNumber();
-		if(rNumber>1 && !trivia.isAnnounced(rNumber-1)) {
-			ScoreEntry[] standings = getStandings( rNumber - 1);
-			trivia.setStandings(rNumber-1, standings);
-		}
-		
+		for(int r=1; r<rNumber; r++) {
+			if(!trivia.isAnnounced(r)) {
+				ScoreEntry[] standings = getStandings( r );
+				trivia.setStandings( r, standings );
+			}
+		}		
 		this.saveState();
 	}
 	

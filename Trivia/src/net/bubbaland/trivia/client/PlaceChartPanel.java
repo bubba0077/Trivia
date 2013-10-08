@@ -97,7 +97,7 @@ public class PlaceChartPanel extends TriviaPanel {
 	 */
 	private JFreeChart createChart(final XYDataset dataset) {
 		
-		final JFreeChart chart = ChartFactory.createXYLineChart("Place by Round", "Round", "Place", dataset, PlotOrientation.VERTICAL, false, false, false);		
+		final JFreeChart chart = ChartFactory.createXYLineChart("Place by Round", "Round", "Place", dataset, PlotOrientation.VERTICAL, false, true, false);		
 		return chart;
 		
 	}
@@ -160,7 +160,7 @@ public class PlaceChartPanel extends TriviaPanel {
 			rend.setSeriesStroke( 0, new BasicStroke(3.0f) );
 						
 			if(this.chartPanel != null) {
-				this.remove(this.chartPanel);		
+				this.remove(this.chartPanel);
 			}
 			this.chartPanel = new ChartPanel(chart);
 			

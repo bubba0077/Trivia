@@ -143,7 +143,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		add( splitPane, constraints );
 		
 		// The individual tabs
-			pages = new TriviaPanel[7];
+			pages = new TriviaPanel[8];
 
 			// Create content for workflow tab
 			pages[0] = new WorkflowPanel( server, this );
@@ -172,7 +172,10 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 			// Create cumulative score chart
 			pages[6] = new CumulativePointsChartPanel( this );
 			book.addTab( "Cumulative Score Chart", pages[6] );
-
+			
+			// Create cumulative score chart
+			pages[7] = new TeamComparisonPanel( this );
+			book.addTab( "Team Comparison", pages[7] );
 		
 		// Create timer that will poll server for changes		
 		Timer refreshTimer = new Timer( REFRESH_RATE, this );

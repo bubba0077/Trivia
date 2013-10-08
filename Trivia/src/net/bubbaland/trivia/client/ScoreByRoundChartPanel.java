@@ -130,7 +130,6 @@ public class ScoreByRoundChartPanel extends TriviaPanel {
 			renderer.setShadowVisible(false);
 			renderer.setSeriesPaint( 0, EARNED_COLOR );
 			renderer.setSeriesPaint( 1, VALUE_COLOR );
-			
 			XYPlot plot = new XYPlot(dataset, new NumberAxis("Round"), new NumberAxis("Points"), renderer);
 			plot.setBackgroundPaint(BACKGROUND_COLOR);			
 			

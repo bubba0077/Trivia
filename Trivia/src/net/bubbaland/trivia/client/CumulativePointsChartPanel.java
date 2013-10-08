@@ -39,9 +39,9 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 	/** The Constant AXIS_FONT_SIZE. */
 	final private static float AXIS_FONT_SIZE = 16.0f;
 	
-	/** The Constant MAX_POINTS. */
-	final private static int MAX_POINTS = 750;
-	
+//	/** The Constant MAX_POINTS. */
+//	final private static int MAX_POINTS = 750;
+//	
 	/** The client. */
 	private TriviaClient client;
 	
@@ -128,7 +128,7 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 			dataset.addSeries(earnedSeries);
 			dataset.addSeries(valueSeries);
 
-			JFreeChart chart = ChartFactory.createStackedXYAreaChart("Cumulative Score", "Round", "Points",dataset, PlotOrientation.VERTICAL, true, true, false);
+			JFreeChart chart = ChartFactory.createStackedXYAreaChart("Cumulative Score", "Round", "Points", dataset, PlotOrientation.VERTICAL, true, true, false);
 			XYItemRenderer renderer = chart.getXYPlot().getRenderer();
 			renderer.setSeriesPaint( 0, EARNED_COLOR );
 			renderer.setSeriesPaint( 1, VALUE_COLOR );
@@ -138,13 +138,13 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 			
 			NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
 			NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
-			xAxis.setRange( 0, nRounds+0.5 );
+			xAxis.setRange( 0.5, nRounds + 0.5 );
 			xAxis.setAutoRange( false );
 			xAxis.setTickUnit(new NumberTickUnit(5));
 			xAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance() );
 			xAxis.setLabelFont( xAxis.getLabelFont().deriveFont( AXIS_FONT_SIZE ) );
 			xAxis.setTickLabelFont( xAxis.getTickLabelFont().deriveFont( AXIS_FONT_SIZE ) );
-			yAxis.setRange( 0, MAX_POINTS );
+			yAxis.setLowerBound( 0 );
 			yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance() );
 			yAxis.setLabelFont( yAxis.getLabelFont().deriveFont( AXIS_FONT_SIZE ) );
 			yAxis.setTickLabelFont( yAxis.getTickLabelFont().deriveFont( AXIS_FONT_SIZE ) );
