@@ -14,67 +14,52 @@ public class RoundQListSubPanel extends TriviaPanel {
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID				= 4030677705507400609L;
 
-	/** The Constant ODD_QUESTION_TEXT_COLOR. */
-	private static final Color	ODD_QUESTION_TEXT_COLOR			= Color.black;
-	
-	/** The Constant EVEN_QUESTION_TEXT_COLOR. */
-	private static final Color	EVEN_QUESTION_TEXT_COLOR		= Color.black;
-	
-	/** The Constant ODD_QUESTION_BACKGROUND_COLOR. */
-	private static final Color	ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
-	
-	/** The Constant EVEN_QUESTION_BACKGROUND_COLOR. */
-	private static final Color	EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
-
-	/** The Constant LARGE_FONT_SIZE. */
+	/**
+	 * Font sizes
+	 */
 	private static final float	LARGE_FONT_SIZE					= (float)36.0;
-	
-	/** The Constant SMALL_FONT_SIZE. */
 	private static final float	SMALL_FONT_SIZE					= (float)12.0;
 
-	/** The Constant QUESTION_HEIGHT. */
-	private static final int	QUESTION_HEIGHT					= 50;
+	/**
+	 * Colors
+	 */
+	private static final Color	ODD_QUESTION_TEXT_COLOR			= Color.black;
+	private static final Color	EVEN_QUESTION_TEXT_COLOR		= Color.black;
+	private static final Color	ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
+	private static final Color	EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
 
-	/** The Constant QNUM_WIDTH. */
+	/**
+	 * Sizes (most are taken from the parent panel)
+	 */
+	private static final int	QUESTION_HEIGHT					= 50;
+	
 	private static final int	QNUM_WIDTH						= RoundQlistPanel.QNUM_WIDTH;
-	
-	/** The Constant EARNED_WIDTH. */
 	private static final int	EARNED_WIDTH					= RoundQlistPanel.EARNED_WIDTH;
-	
-	/** The Constant VALUE_WIDTH. */
 	private static final int	VALUE_WIDTH						= RoundQlistPanel.VALUE_WIDTH;
-	
-	/** The Constant QUESTION_WIDTH. */
 	private static final int	QUESTION_WIDTH					= RoundQlistPanel.QUESTION_WIDTH;
-	
-	/** The Constant ANSWER_WIDTH. */
 	private static final int	ANSWER_WIDTH					= RoundQlistPanel.ANSWER_WIDTH;
-	
-	/** The Constant SUBOP_WIDTH. */
 	private static final int	SUBOP_WIDTH						= RoundQlistPanel.SUBOP_WIDTH;
 
-	/** The operator labels. */
-	private JLabel[]			qNumberLabels, earnedLabels, valueLabels, submitterLabels, operatorLabels;
+	/**
+	 * GUI Elements that will need to be updated
+	 */
+	private final JLabel[]			qNumberLabels, earnedLabels, valueLabels, submitterLabels, operatorLabels;
+	private final JTextArea[]			questionTextAreas, answerTextAreas;
 	
-	/** The answer text areas. */
-	private JTextArea[]			questionTextAreas, answerTextAreas;
-	
-	/** The live. */
+	/** Status variables */
 	private boolean				speed, live;
-
-	/** The r number. */
 	private int					maxQuestions, rNumber;
 	
-	/** The client. */
-	private TriviaClient		client;
+	/** Data source */
+	private final TriviaClient		client;
 	
 	/**
-	 * Instantiates a new round q list sub panel.
+	 * Instantiates a new question list sub-panel.
 	 *
 	 * @param server the server
-	 * @param client the client
-	 * @param live the live
-	 * @param rNumber the r number
+	 * @param client the client application
+	 * @param live whether this panel should always show the current round 
+	 * @param rNumber the round number
 	 */
 	public RoundQListSubPanel( TriviaClient client, boolean live, int rNumber ) {
 		super( new GridBagLayout() );
@@ -84,7 +69,6 @@ public class RoundQListSubPanel extends TriviaPanel {
 		this.live = live;
 		this.rNumber = rNumber;
 
-		this.maxQuestions = 0;
 		this.maxQuestions = client.getTrivia().getMaxQuestions();
 
 		this.qNumberLabels = new JLabel[maxQuestions];
@@ -94,7 +78,8 @@ public class RoundQListSubPanel extends TriviaPanel {
 		this.operatorLabels = new JLabel[maxQuestions];
 		this.questionTextAreas = new JTextArea[maxQuestions];
 		this.answerTextAreas = new JTextArea[maxQuestions];
-
+		
+		// Set up layout constraints		
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.NORTH;
@@ -102,7 +87,8 @@ public class RoundQListSubPanel extends TriviaPanel {
 		constraints.weighty = 0.0;
 
 		for ( int q = 0; q < maxQuestions; q++ ) {
-			Color color, bColor;
+			// Set the color for this row
+			Color color, bColor;			
 			if ( q % 2 == 1 ) {
 				color = ODD_QUESTION_TEXT_COLOR;
 				bColor = ODD_QUESTION_BACKGROUND_COLOR;
@@ -110,7 +96,10 @@ public class RoundQListSubPanel extends TriviaPanel {
 				color = EVEN_QUESTION_TEXT_COLOR;
 				bColor = EVEN_QUESTION_BACKGROUND_COLOR;
 			}
-
+			
+			/**
+			 * Plot this row
+			 */
 			constraints.gridheight = 2;
 
 			constraints.gridx = 0;
@@ -158,26 +147,27 @@ public class RoundQListSubPanel extends TriviaPanel {
 
 		}
 
+		/**
+		 * Extra row at the bottom to soak up any extra space
+		 */
 		constraints.gridx = 0;
 		constraints.gridy = this.maxQuestions;
 		constraints.gridwidth = 6;
 		constraints.weighty = 1.0;
-		JPanel blank = new JPanel();
+		final JPanel blank = new JPanel();
 		blank.setBackground( HeaderPanel.BACKGROUND_COLOR_NORMAL );
 		blank.setPreferredSize( new Dimension(0,0) );
 		this.add( blank, constraints );
 	}
 
 	/**
-	 * Instantiates a new round q list sub panel.
+	 * Instantiates a new question list sub-panel that will show data for the current round.
 	 *
 	 * @param server the server
 	 * @param client the client
 	 */
 	public RoundQListSubPanel( TriviaClient client ) {
-
 		this( client, true, 0);
-
 	}
 
 	/* (non-Javadoc)
@@ -186,7 +176,7 @@ public class RoundQListSubPanel extends TriviaPanel {
 	@Override
 	public synchronized void update(){
 
-		Trivia trivia = client.getTrivia();
+		final Trivia trivia = client.getTrivia();
 		int currentRound = 0;
 		
 		if(this.live) {
@@ -194,18 +184,19 @@ public class RoundQListSubPanel extends TriviaPanel {
 		} else {
 			currentRound = this.rNumber;
 		}
-		int nQuestions = trivia.getNQuestions();
-		boolean newSpeed = trivia.isSpeed(currentRound);
-		boolean[] beenOpens = trivia.eachBeenOpen( currentRound );
-		boolean[] opens = trivia.eachOpen( currentRound );
-		boolean[] corrects = trivia.eachCorrect( currentRound );
-		int[] earneds = trivia.getEachEarned( currentRound );
-		int[] values = trivia.getEachValue( currentRound );
-		String[] questions = trivia.getEachQuestionText( currentRound );
-		String[] answers = trivia.getEachAnswerText( currentRound );
-		String[] submitters = trivia.getEachSubmitter( currentRound );
-		String[] operators = trivia.getEachOperator( currentRound );
+		final int nQuestions = trivia.getNQuestions();
+		final boolean newSpeed = trivia.isSpeed(currentRound);
+		final boolean[] beenOpens = trivia.eachBeenOpen( currentRound );
+		final boolean[] opens = trivia.eachOpen( currentRound );
+		final boolean[] corrects = trivia.eachCorrect( currentRound );
+		final int[] earneds = trivia.getEachEarned( currentRound );
+		final int[] values = trivia.getEachValue( currentRound );
+		final String[] questions = trivia.getEachQuestionText( currentRound );
+		final String[] answers = trivia.getEachAnswerText( currentRound );
+		final String[] submitters = trivia.getEachSubmitter( currentRound );
+		final String[] operators = trivia.getEachOperator( currentRound );
 
+		// Determine which questions have been updated
 		boolean[] qUpdated = new boolean[nQuestions];
 		for ( int q = 0; q < nQuestions; q++ ) {
 			if ( beenOpens[q] ) {
@@ -225,25 +216,29 @@ public class RoundQListSubPanel extends TriviaPanel {
 				qUpdated[q] = this.speed == newSpeed;
 			}
 		}
-
+				
 		for ( int q = 0; q < nQuestions; q++ ) {
 			if ( qUpdated[q] ) {
 				this.speed = newSpeed;
 				if ( beenOpens[q] ) {
+					// Only show questions that have been asked
 					valueLabels[q].setText( values[q] + "" );
 					questionTextAreas[q].setText( questions[q] );
 					questionTextAreas[q].setCaretPosition( 0 );
 				} else {
+					// Hide questions that haven't been asked yet
 					valueLabels[q].setText( "" );
 					questionTextAreas[q].setText( "" );
 				}
 				if ( corrects[q] || ( beenOpens[q] && !opens[q] ) ) {
+					// Only show answers and earned points if the question is correct or closed
 					earnedLabels[q].setText( earneds[q] + "" );
 					answerTextAreas[q].setText( answers[q] );
 					answerTextAreas[q].setCaretPosition( 0 );
 					submitterLabels[q].setText( submitters[q] );
 					operatorLabels[q].setText( operators[q] );
 				} else {
+					// Hide answer data for questions that haven't been closed
 					earnedLabels[q].setText( "" );
 					answerTextAreas[q].setText( "" );
 					submitterLabels[q].setText( "" );
@@ -262,6 +257,7 @@ public class RoundQListSubPanel extends TriviaPanel {
 			}
 		}
 
+		// Hide rows for speed questions in non-speed rounds
 		for ( int q = nQuestions; q < this.maxQuestions; q++ ) {
 			qNumberLabels[q].getParent().setVisible( false );
 			earnedLabels[q].getParent().setVisible( false );
@@ -277,7 +273,7 @@ public class RoundQListSubPanel extends TriviaPanel {
 	}
 
 	/**
-	 * Sets the round.
+	 * Sets the round to display. This will be overridden with the current round number if this is a "live" panel.
 	 *
 	 * @param rNumber the new round
 	 */

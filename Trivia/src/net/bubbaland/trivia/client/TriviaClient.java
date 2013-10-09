@@ -14,7 +14,6 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class provides the root function for connecting to the trivia server and creating the associated GUI.
  *
@@ -30,35 +29,41 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	final private static int	REFRESH_RATE		= 500;
 	// The maximum number of retries the client will make when failing in communication with the server
 	protected static final int	MAX_RETRIES			= 10;
-	// Height of the status bar at the bottom of the GUI
+	
+	// Height of the status bar at the bottom of the GUI	
 	final static private int	STATUS_HEIGHT		= 14;
 	// Font size of the status text
 	final static private float	STATUS_FONT_SIZE	= 12.0f;
 	
+	
 	// URL for RMI server
 	final static private String	TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
-	
-	// URL for the IRC server
+	// URL for the IRC client
 	final static private String	IRC_CLIENT_URL		= "http://webchat.freenode.net/";
 	// IRC channel to join on connection to IRC server
 	final static private String	IRC_CHANNEL			= "%23kneedeeptrivia";
 	
+	// The local trivia object holding all contest data
 	private volatile Trivia trivia;
+	// The remote server
 	private TriviaInterface server;
 
+	/**
+	 * GUI Components
+	 */	
 	// The tabbed pane
 	private JTabbedPane		book;
 	// Individual pages in the tabbed pane
 	private TriviaPanel[]	pages;
 	// The status bar at the bottom
 	private JLabel			statusBar;
-	// User name
+	// The user's name
 	private String			user;
 	
 	/**
 	 * Creates a new trivia client GUI
 	 *
-	 * @param server RMI Server
+	 * @param server The RMI Server
 	 */
 	private TriviaClient( JFrame parent, TriviaInterface server ) {
 
@@ -70,25 +75,53 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		
 		this.server = server;
 		
-		// Create tabbed pane
-		this.book = new JTabbedPane();
+		
+		/**
+		 * Setup the menu
+		 */
+		JMenuBar menuBar = new JMenuBar();
+		// Add the menu to the parent frame
+		parent.setJMenuBar(menuBar);
+		
+		// Make User Menu
+		JMenu menu = new JMenu("User");
+		menuBar.add(menu);
+		
+		JMenuItem menuItem = new JMenuItem("Change name", KeyEvent.VK_N);
+		menuItem.setActionCommand("Change name");
+		menuItem.addActionListener(this);		
+		menu.add(menuItem);
+		
+		// Make Admin Menu pinned to the right
+		menuBar.add(Box.createHorizontalGlue());
+		menu = new JMenu("Admin");
+		menuBar.add(menu);
+		
+		menuItem = new JMenuItem("Load state", KeyEvent.VK_L);
+		menuItem.setActionCommand("Load state");
+		menuItem.addActionListener(this);		
+		menu.add(menuItem);
 		
 		
+		/**
+		 * Setup status bar at bottom
+		 */		
 		// Set up layout constraints
 		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.BOTH;
-				
+		constraints.fill = GridBagConstraints.BOTH;				
 		
 		// Put the status bar at the bottom and do not adjust the size of the status bar
 		constraints.gridx = 0;			constraints.gridy = 1;
 		constraints.weightx = 0.0;		constraints.weighty = 0.0;
 				
 		// Create status bar
-		this.statusBar = enclosedLabel( "", 0, STATUS_HEIGHT, book.getForeground(), book.getBackground(), constraints,
+		this.statusBar = enclosedLabel( "", 0, STATUS_HEIGHT, this.getForeground(), this.getBackground(), constraints,
 				STATUS_FONT_SIZE, JLabel.LEFT, JLabel.CENTER );
 		
 		
-		// Create a local copy of the Trivia object
+		/**
+		 *  Create a local copy of the Trivia object
+		 */
 		int tryNumber = 0;
 		boolean success = false;
 		while ( tryNumber < TriviaClient.MAX_RETRIES && success == false ) {
@@ -102,47 +135,28 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 			}
 		}
 
+		// Show disconnected dialog if we could not retrieve the Trivia data
 		if ( !success || this.trivia == null ) {
 			this.disconnected();
 			return;
 		}
 		
-		JMenuBar menuBar = new JMenuBar();
 		
-		JMenu menu = new JMenu("User");
-		JMenuItem menuItem = new JMenuItem("Change name", KeyEvent.VK_N);
-		menuItem.setActionCommand("Change name");
-		menuItem.addActionListener(this);		
-		menu.add(menuItem);
-		menuBar.add(menu);
-		
-		menuBar.add(Box.createHorizontalGlue());
-		menu = new JMenu("Admin");
-		menuBar.add(menu);
-		
-		menuItem = new JMenuItem("Load state", KeyEvent.VK_L);
-		menuItem.setActionCommand("Load state");
-		menuItem.addActionListener(this);		
-		menu.add(menuItem);
-				
-		parent.setJMenuBar(menuBar);
-				
-		
+		/**
+		 * Create browser pane for IRC web client
+		 */		
 		// Create panel that contains web browser for IRC
 		String url = IRC_CLIENT_URL + "?nick=" + user + "&channels=" + IRC_CHANNEL;
 		BrowserPanel browser = new BrowserPanel( url );
 		browser.setPreferredSize( new Dimension( 0, 204 ) );
 		
-		// Put the tabbed pane and browser panel in an adjustable vertical split pane
-		JSplitPane splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT, this.book, browser );
-		// Put the split pane at the top of the window
-		constraints.gridx = 0;		constraints.gridy = 0;	
-		// When the window resizes, adjust the split pane size
-		constraints.weightx = 1.0;	constraints.weighty = 1.0;
-		splitPane.setResizeWeight(1.0);
-		add( splitPane, constraints );
+		/**
+		 * Create main content area
+		 */		
+		// Create the tabbed pane
+		this.book = new JTabbedPane();
 		
-		// The individual tabs
+			// Array of the tabs
 			pages = new TriviaPanel[8];
 
 			// Create content for workflow tab
@@ -173,10 +187,25 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 			pages[6] = new CumulativePointsChartPanel( this );
 			book.addTab( "Cumulative Score Chart", pages[6] );
 			
-			// Create cumulative score chart
+			// Create team copmarison chart
 			pages[7] = new TeamComparisonPanel( this );
 			book.addTab( "Team Comparison", pages[7] );
 		
+		/**
+		 * Create the split pane separating the tabbed pane and the broswer pane
+		 */
+		// Put the tabbed pane and browser panel in an adjustable vertical split pane
+		JSplitPane splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT, this.book, browser );
+		// Put the split pane at the top of the window
+		constraints.gridx = 0;		constraints.gridy = 0;	
+		// When the window resizes, adjust the split pane size
+		constraints.weightx = 1.0;	constraints.weighty = 1.0;
+		splitPane.setResizeWeight(1.0);
+		add( splitPane, constraints );
+			
+		/**
+		 * 
+		 */
 		// Create timer that will poll server for changes		
 		Timer refreshTimer = new Timer( REFRESH_RATE, this );
 		refreshTimer.setActionCommand("Timer");
@@ -184,16 +213,16 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		
 		// Post welcome to status bar
 		this.log( "Welcome " + this.user );
-
 	}
 
 	/**
-	 * Creates and shows the GUI.
+	 * Create and show the GUI.
 	 */
 	private static void createAndShowGUI() {
 		// Create the application window
 		JFrame frame = new JFrame( "Trivia" );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		
 		// Initialize server variable
 		TriviaInterface triviaServer = null;
 
@@ -269,12 +298,15 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 		switch(command) {
 		
 		case "Timer":
+			// Triggered by update timer
 			this.update();
 			break;
 		case "Change name":
+			// Triggered by change name, prompt for new name
 			new UserLogin(this);
 			break;
 		case "Load state":
+			// Triggered by change state, prompt for save file
 			new LoadStatePrompt(this.server, this);
 			break;
 		case "Set team number":
@@ -302,7 +334,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	}
 
 	/**
-	 * Display message in the status bar and console
+	 * Display message in the status bar and in console
 	 *
 	 * @param message message to log
 	 */
@@ -332,6 +364,12 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 
 	}
 	
+	/**
+	 * Return the local Trivia object. When updating the GUI, always get the current Trivia object first to ensure the
+	 * most recent data is used. Components should always use this local version to read data to limit server traffic.
+	 * 
+	 * @return the local Trivia object
+	 */
 	public Trivia getTrivia() {
 		return this.trivia;
 	}
@@ -339,23 +377,23 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	/**
 	 * Convert a cardinal number into its ordinal counterpart
 	 *
-	 * @param ordinal The number to convert to ordinal form
+	 * @param cardinal The number to convert to ordinal form
 	 * @return String with the ordinal representation of the number (e.g., 1st, 2nd, 3rd, etc.)
 	 */
-	public static String ordinalize(int ordinal) {
+	public static String ordinalize(int cardinal) {
 		// Short-circuit for teen numbers that don't follow normal rules
-		if ( 10 < ordinal % 100 && ordinal % 100 < 14 ) { return ordinal + "th"; }
+		if ( 10 < cardinal % 100 && cardinal % 100 < 14 ) { return cardinal + "th"; }
 		// Ordinal suffix depends on the ones digit
-		int modulus = ordinal % 10;
+		int modulus = cardinal % 10;
 		switch ( modulus ) {
 			case 1:
-				return ordinal + "st";
+				return cardinal + "st";
 			case 2:
-				return ordinal + "nd";
+				return cardinal + "nd";
 			case 3:
-				return ordinal + "rd";
+				return cardinal + "rd";
 			default:
-				return ordinal + "th";
+				return cardinal + "th";
 
 		}
 	}
@@ -366,6 +404,7 @@ public class TriviaClient extends TriviaPanel  implements ActionListener {
 	@Override
 	public synchronized void update() {
 		
+		// Synchronize the local Trivia data to match the server 
 		int tryNumber = 0;
 		boolean success = false;
 		while ( tryNumber < TriviaClient.MAX_RETRIES && success == false ) {

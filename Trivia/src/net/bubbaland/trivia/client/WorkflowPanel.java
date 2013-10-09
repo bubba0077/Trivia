@@ -5,26 +5,18 @@ import java.awt.*;
 
 import net.bubbaland.trivia.*;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class WorkflowPanel.
+ * Panel for the workflow tab, which contains most of the trivia operations
  */
 public class WorkflowPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -5608314912146842278L;
 
-	/** The workflow header panel. */
-	private HeaderPanel			workflowHeaderPanel;
-	
-	/** The workflow qlist panel. */
-	private WorkflowQlistPanel	workflowQlistPanel;
-	
-	/** The workflow queue panel. */
-	private WorkflowQueuePanel	workflowQueuePanel;
-
-	/** The Constant REFRESH_RATE. */
-	final public static int		REFRESH_RATE		= 100;
+	// Sub-panels of the workflow panel
+	private final HeaderPanel			workflowHeaderPanel;
+	private final WorkflowQlistPanel	workflowQlistPanel;
+	private final WorkflowQueuePanel	workflowQueuePanel;
 
 	/**
 	 * Instantiates a new workflow panel.
@@ -36,28 +28,28 @@ public class WorkflowPanel extends TriviaPanel {
 
 		super( new GridBagLayout() );
 		
+		// Create the sub-panels
+		workflowHeaderPanel = new HeaderPanel( server, client );
+		workflowQlistPanel = new WorkflowQlistPanel( server, client );
+		workflowQueuePanel = new WorkflowQueuePanel( server, client );
+		
+		// Set up layout constraints		
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 
-		workflowHeaderPanel = new HeaderPanel( server, client );
-		workflowQlistPanel = new WorkflowQlistPanel( server, client );
-		workflowQueuePanel = new WorkflowQueuePanel( server, client );
-				
+		// Place the sub-panels
 		c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = 0;
+		c.gridx = 0;	c.gridy = 0;
 		this.add( workflowHeaderPanel, c );
-		c.gridx = 0;
-		c.gridy = 1;
-		// c.weighty = 0.1;
+		
+		c.gridx = 0;	c.gridy = 1;
 		this.add( workflowQlistPanel, c );
-		c.gridx = 0;
-		c.gridy = 2;
+		
 		c.weighty = 1.0;
+		c.gridx = 0;	c.gridy = 2;
 		this.add( workflowQueuePanel, c );
-
 	}
 
 	/* (non-Javadoc)

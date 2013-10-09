@@ -1,50 +1,47 @@
 package net.bubbaland.trivia.client;
 
-//imports for GUI
 import java.awt.*;
 
 import net.bubbaland.trivia.TriviaInterface;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class RoundPanel.
+ * Panel for the current round data.
  */
 public class RoundPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 9190017804155701978L;
 	
-	/** The round header panel. */
-	private HeaderPanel			roundHeaderPanel;
-	
-	/** The round qlist panel. */
-	private RoundQlistPanel		roundQlistPanel;
+	// Sub-panels of the round panel
+	private final HeaderPanel			roundHeaderPanel;
+	private final RoundQlistPanel		roundQlistPanel;
 
 	/**
 	 * Instantiates a new round panel.
 	 *
 	 * @param server the server
-	 * @param client the client
+	 * @param client the client application
 	 */
 	public RoundPanel( TriviaInterface server, TriviaClient client ) {
 
 		super( new GridBagLayout() );
-
+		
+		// Create the sub-panels
 		roundHeaderPanel = new HeaderPanel( server, client );
 		roundQlistPanel = new RoundQlistPanel( server, client );
 
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.weighty = 0.0;
+		// Set up layout constraints
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.weightx = 1.0;	constraints.weighty = 0.0;
 
-		c.gridx = 0;
-		c.gridy = 0;
-		this.add( roundHeaderPanel, c );
-		c.gridx = 0;
-		c.gridy = 1;
-		c.weighty = 1.0;
-		this.add( roundQlistPanel, c );
+		// Place the sub-panels
+		constraints.gridx = 0;	constraints.gridy = 0;
+		this.add( roundHeaderPanel, constraints );
+		
+		constraints.gridx = 0;	constraints.gridy = 1;
+		constraints.weighty = 1.0;
+		this.add( roundQlistPanel, constraints );
 
 	}
 
@@ -53,10 +50,8 @@ public class RoundPanel extends TriviaPanel {
 	 */
 	@Override
 	public synchronized void update() {
-
 		this.roundHeaderPanel.update();
 		this.roundQlistPanel.update();
-
 	}
 
 }

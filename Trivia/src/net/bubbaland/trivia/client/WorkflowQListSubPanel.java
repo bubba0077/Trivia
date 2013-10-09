@@ -19,87 +19,67 @@ import javax.swing.ScrollPaneConstants;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class WorkflowQListSubPanel.
+ * Panel which displays a list of the current open questions.
  */
 public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener {
 	
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID				= 6049067322505905668L;
 
-	/** The Constant MIN_QUESTIONS_SHOW. */
+	// The number of open questions to show at one time
 	protected static final int	MIN_QUESTIONS_SHOW				= 4;
 	
-	/** The n questions max. */
-	private int nQuestionsMax;
+	// Maximum number of questions in a round
+	private final int nQuestionsMax;
 	
-	/** The Constant ODD_QUESTION_TEXT_COLOR. */
+	/**
+	 * Colors
+	 */
 	private static final Color	ODD_QUESTION_TEXT_COLOR			= Color.black;
-	
-	/** The Constant EVEN_QUESTION_TEXT_COLOR. */
 	private static final Color	EVEN_QUESTION_TEXT_COLOR		= Color.black;
-	
-	/** The Constant ODD_QUESTION_BACKGROUND_COLOR. */
 	private static final Color	ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
-	
-	/** The Constant EVEN_QUESTION_BACKGROUND_COLOR. */
 	private static final Color	EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
 
-	/** The Constant QNUM_FONT_SIZE. */
+	/**
+	 * Font sizes
+	 */
 	private static final float	QNUM_FONT_SIZE					= (float)32.0;
-	
-	/** The Constant VALUE_FONT_SIZE. */
 	private static final float	VALUE_FONT_SIZE					= (float)32.0;
-	
-	/** The Constant QUESTION_FONT_SIZE. */
 	private static final float	QUESTION_FONT_SIZE				= (float)12.0;
 
-	/** The Constant QUESTION_HEIGHT. */
+	/**
+	 * Sizes (most are taken from the parent panel)
+	 */
 	protected static final int	QUESTION_HEIGHT					= 46;
-
-	/** The Constant QNUM_WIDTH. */
+	
 	private static final int	QNUM_WIDTH						= WorkflowQlistPanel.QNUM_WIDTH;
-	
-	/** The Constant QUESTION_WIDTH. */
 	private static final int	QUESTION_WIDTH					= WorkflowQlistPanel.QUESTION_WIDTH;
-	
-	/** The Constant VALUE_WIDTH. */
 	private static final int	VALUE_WIDTH						= WorkflowQlistPanel.VALUE_WIDTH;
-	
-	/** The Constant ANSWER_WIDTH. */
 	private static final int	ANSWER_WIDTH					= WorkflowQlistPanel.ANSWER_WIDTH;
-	
-	/** The Constant CLOSE_WIDTH. */
 	private static final int	CLOSE_WIDTH						= WorkflowQlistPanel.CLOSE_WIDTH;
 	
-	/** The Constant ANSWER_BUTTON_HEIGHT. */
+	/**
+	 * Button sizes
+	 */
 	private static final int	ANSWER_BUTTON_HEIGHT			= 32;
-	
-	/** The Constant ANSWER_BUTTON_WIDTH. */
 	private static final int	ANSWER_BUTTON_WIDTH				= 64;
-	
-	/** The Constant CLOSE_BUTTON_HEIGHT. */
 	private static final int	CLOSE_BUTTON_HEIGHT				= 32;
-	
-	/** The Constant CLOSE_BUTTON_WIDTH. */
 	private static final int	CLOSE_BUTTON_WIDTH				= 64;
 	
-	/** The server. */
-	private TriviaInterface		server;
-	
-	/** The client. */
-	private TriviaClient		client;
-	
-	/** The q value labels. */
-	private JLabel[]			qNumberLabels, qValueLabels;
-	
-	/** The q text areas. */
-	private JTextArea[]			qTextAreas;
-	
-	/** The close buttons. */
-	private JButton[]			answerButtons, closeButtons;
+	/**
+	 * GUI Elements that will need to be updated
+	 */
+	private final JLabel[]			qNumberLabels, qValueLabels;
+	private final JTextArea[]		qTextAreas;
+	private final JButton[]			answerButtons, closeButtons;
 
+	/**
+	 * Data sources
+	 */
+	private final TriviaInterface	server;
+	private final TriviaClient		client;
+	
 	/**
 	 * Instantiates a new workflow q list sub panel.
 	 *
@@ -112,16 +92,14 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 
 		this.server = server;
 		this.client = client;
-		
 		this.nQuestionsMax = client.getTrivia().getMaxQuestions();
-		
-		GridBagConstraints solo = new GridBagConstraints();		
-		solo.fill = GridBagConstraints.BOTH;
-		solo.anchor = GridBagConstraints.CENTER;
-		solo.weightx = 1.0; solo.weighty = 1.0;
-		solo.gridx = 0; solo.gridy = 0;		
-		
-		GridBagConstraints buttonConstraints = solo;
+
+		// Set up layout constraints		
+		GridBagConstraints buttonConstraints = new GridBagConstraints();
+		buttonConstraints.fill = GridBagConstraints.BOTH;
+		buttonConstraints.anchor = GridBagConstraints.CENTER;
+		buttonConstraints.weightx = 1.0; buttonConstraints.weighty = 1.0;
+		buttonConstraints.gridx = 0; buttonConstraints.gridy = 0;	
 		buttonConstraints.fill = GridBagConstraints.NONE;	
 
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -130,6 +108,9 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
 		
+		/**
+		 * Create the GUI elements
+		 */
 		this.qNumberLabels = new JLabel[nQuestionsMax];
 		this.qValueLabels = new JLabel[nQuestionsMax];
 		this.qTextAreas = new JTextArea[nQuestionsMax];
@@ -207,9 +188,10 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 	 */
 	@Override
 	public synchronized void actionPerformed(ActionEvent event) {
-		JButton source = (JButton)event.getSource();
+		final JButton source = (JButton)event.getSource();
 		for ( int q = 0; q < nQuestionsMax; q++ ) {
 			if ( this.answerButtons[q].equals( event.getSource() ) ) {
+				// Answer button q was pressed
 				answerQuestion( Integer.parseInt( this.qNumberLabels[q].getText() ) );
 				return;
 			}
@@ -217,9 +199,11 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 		for ( int q = 0; q < nQuestionsMax; q++ ) {
 			if ( this.closeButtons[q].equals( event.getSource() ) ) {
 				if ( source.getText() == "Close" ) {
+					// Close button q was pressed
 					int qNumber = Integer.parseInt( this.qNumberLabels[q].getText() );
 					close( qNumber );
 				} else {
+					// Open button was pressed
 					open();
 				}
 				return;
@@ -229,18 +213,18 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 	}
 
 	/**
-	 * Answer question.
+	 * Propose an answer for the designated question. Creates a prompt to submit the answer.
 	 *
-	 * @param qNumber the q number
+	 * @param qNumber the question number
 	 */
 	private void answerQuestion(int qNumber) {
 		new AnswerEntryPanel( server, client, qNumber, client.getUser() );
 	}
 
 	/**
-	 * Close.
+	 * Close the designated question.
 	 *
-	 * @param qNumber the q number
+	 * @param qNumber the question number
 	 */
 	private void close(int qNumber) {
 		int tryNumber = 0;
@@ -265,14 +249,14 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 	}
 
 	/**
-	 * Open.
+	 * Open a new question. Creates a prompt to enter the question.
 	 */
 	private void open() {
 		
-		Trivia trivia = client.getTrivia();
+		final Trivia trivia = client.getTrivia();
 		
-		int nQuestions = trivia.getNQuestions();
-		int	nextToOpen = trivia.nextToOpen();
+		final int nQuestions = trivia.getNQuestions();
+		final int nextToOpen = trivia.nextToOpen();
 				
 		new QuestionEntryWindow( server, client, nQuestions, nextToOpen );
 		
@@ -284,17 +268,19 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 	@Override
 	public synchronized void update() {
 		
-		Trivia trivia = client.getTrivia();
+		// Get the local copy of the Trivia data
+		final Trivia trivia = client.getTrivia();
 		
-		String[] openQuestionNumbers = trivia.getOpenQuestionNumbers();
-		String[] openQuestionText = trivia.getOpenQuestionText();
-		String[] openQuestionValues = trivia.getOpenQuestionValues();
+		// Get the data for any open questions
+		final String[] openQuestionNumbers = trivia.getOpenQuestionNumbers();
+		final String[] openQuestionText = trivia.getOpenQuestionText();
+		final String[] openQuestionValues = trivia.getOpenQuestionValues();
 
-		int nOpen = openQuestionNumbers.length;
-
+		final int nOpen = openQuestionNumbers.length;
+		
+		// Check if there were any changes to the list of open questions
 		boolean[] qUpdated = new boolean[nOpen];
 		boolean anyUpdate = false;
-
 		for ( int q = 0; q < nOpen; q++ ) {
 			qUpdated[q] = !( this.qNumberLabels[q].getText().equals( openQuestionNumbers[q] )
 					&& this.qValueLabels[q].getText().equals( openQuestionValues[q] ) && this.qTextAreas[q].getText()
@@ -302,6 +288,7 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 			anyUpdate = anyUpdate || qUpdated[q];
 		}
 
+		// Show data for open questions
 		for ( int q = 0; q < nOpen; q++ ) {
 			if ( qUpdated[q] ) {
 				this.qNumberLabels[q].setText( openQuestionNumbers[q] );
@@ -315,6 +302,7 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 			}
 		}
 
+		// Blank unused lines and hide buttons (except one Open button)
 		for ( int q = nOpen; q < nQuestionsMax; q++ ) {
 			this.qNumberLabels[q].setText( "" );
 			this.qValueLabels[q].setText( "" );
@@ -329,6 +317,7 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 			}
 		}
 		
+		// Show rows equal to the greater of the number of questions to show and the number of open questions
 		for ( int q = 0; q < Math.max( nOpen+1, MIN_QUESTIONS_SHOW ); q++ ) {
 			this.qNumberLabels[q].setVisible( true );
 			this.qValueLabels[q].setVisible( true );
@@ -342,6 +331,7 @@ public class WorkflowQListSubPanel extends TriviaPanel implements ActionListener
 			this.closeButtons[q].getParent().setVisible( true );
 		}
 		
+		// Hide the rest of the rows
 		for ( int q = Math.max( nOpen+1, MIN_QUESTIONS_SHOW ); q < nQuestionsMax; q++ ) {
 			this.qNumberLabels[q].setVisible( false );
 			this.qValueLabels[q].setVisible( false );
