@@ -67,7 +67,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	private static final String				TEAM_NAME			= "Knee Deep in Theses";
 
 	// Frequency of backups (milliseconds)
-	private static final int				SAVE_FREQUENCY		= 5 * 60000;
+	private static final int				SAVE_FREQUENCY		= 1 * 60000;
 
 	// Directory to hold backups
 	private static final String				SAVE_DIR			= "saves";
@@ -124,7 +124,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 				}
 
 				// Create a new ScoreEntry to hold the standing and add it to the list
-				standingsList.add(new ScoreEntry(place, team, score));
+				standingsList.add(new ScoreEntry(team, score, place));
 			}
 
 		} catch (final HttpStatusException e) {
