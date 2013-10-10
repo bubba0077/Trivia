@@ -1,51 +1,63 @@
 package net.bubbaland.trivia.client;
 
-import java.awt.*;
+import java.awt.GridBagConstraints;
 
 import net.bubbaland.trivia.TriviaInterface;
 
 /**
- * Panel for the current round data.
+ * A panel for the current round data.
+ * 
+ * <code>RoundPanel</code> is a panel that displays a summary and question data for the current round. There are two parts: a <code>HeaderPanel</code> to display summary information, and a <RoundQlistPanel> to display the question data. 
+ * 
+ * @author Walter Kolczynski
+ * 
  */
 public class RoundPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long	serialVersionUID	= 9190017804155701978L;
-	
+	private static final long		serialVersionUID	= 9190017804155701978L;
+
 	// Sub-panels of the round panel
-	private final HeaderPanel			roundHeaderPanel;
-	private final RoundQlistPanel		roundQlistPanel;
+	private final HeaderPanel		roundHeaderPanel;
+	private final RoundQlistPanel	roundQlistPanel;
 
 	/**
 	 * Instantiates a new round panel.
-	 *
-	 * @param server the server
-	 * @param client the client application
+	 * 
+	 * @param server
+	 *            The remote trivia server
+	 * @param client
+	 *            The local trivia client
 	 */
-	public RoundPanel( TriviaInterface server, TriviaClient client ) {
+	public RoundPanel(TriviaInterface server, TriviaClient client) {
 
-		super( new GridBagLayout() );
-		
+		super();
+
 		// Create the sub-panels
-		roundHeaderPanel = new HeaderPanel( server, client );
-		roundQlistPanel = new RoundQlistPanel( server, client );
+		this.roundHeaderPanel = new HeaderPanel(server, client);
+		this.roundQlistPanel = new RoundQlistPanel(server, client);
 
 		// Set up layout constraints
-		GridBagConstraints constraints = new GridBagConstraints();
+		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
-		constraints.weightx = 1.0;	constraints.weighty = 0.0;
+		constraints.weightx = 1.0;
+		constraints.weighty = 0.0;
 
 		// Place the sub-panels
-		constraints.gridx = 0;	constraints.gridy = 0;
-		this.add( roundHeaderPanel, constraints );
-		
-		constraints.gridx = 0;	constraints.gridy = 1;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		this.add(this.roundHeaderPanel, constraints);
+
+		constraints.gridx = 0;
+		constraints.gridy = 1;
 		constraints.weighty = 1.0;
-		this.add( roundQlistPanel, constraints );
+		this.add(this.roundQlistPanel, constraints);
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override

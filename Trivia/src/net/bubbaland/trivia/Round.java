@@ -4,127 +4,545 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class Round.
+ * A data structure for rounds.
+ * 
+ * The <code>Round</code> class contains a number of fields with parameters for the round. There is also an array of
+ * <code>Question</code>s that holds data for the individual questions in the round, and a list of <code>Answer</code>s
+ * that contain the submitted answers for this round.
+ * 
+ * @author Walter Kolczynski
  */
 public class Round implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1601712912797562923L;
+	private static final long			serialVersionUID	= 1601712912797562923L;
 
-	/** The n normal q. */
-	private int							rNumber, nQuestions, nNormalQ;
-	
-	/** The questions. */
-	private Question[]					questions;
-	
-	/** The announced. */
-	private volatile boolean			speed, announced;
-	
-	/** The place. */
-	private volatile int				announcedPoints, place;
-	
-	private volatile ScoreEntry[] standings;
-	
-	private final String teamName;
-	
-	/** The answer queue. */
+	// The round number
+	final private int					rNumber;
+
+	// The number of questions in a speed round
+	final private int					nQuestionsSpeed;
+
+	// The number of questions in a normal round
+	final private int					nQuestions;
+
+	// The array holding the questions
+	final private Question[]			questions;
+
+	// Whether this is a speed round
+	private volatile boolean			speed;
+
+	// Whether the scores for this round have been announced
+	private volatile boolean			announced;
+
+	// The announced score for our team
+	private volatile int				announcedPoints;
+
+	// The announced place for our team
+	private volatile int				place;
+
+	// All announced scores and places for this round
+	private volatile ScoreEntry[]		standings;
+
+	// Our team name
+	private final String				teamName;
+
+	// The answer queue for this round
 	private volatile ArrayList<Answer>	answerQueue;
-	
-	/** The discrepancy text. */
-	private String discrepancyText;
+
+	// The discrepancy text for this round, used if the announced score does not match the calculated score
+	private String						discrepancyText;
 
 	/**
-	 * Instantiates a new round.
-	 *
-	 * @param rNumber the r number
-	 * @param nQuestions the n questions
-	 * @param nNormalQ the n normal q
+	 * Creates a new round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param nQuestionsSpeed
+	 *            The number of questions in a speed round
+	 * @param nQuestions
+	 *            The number of questions in a normal round
 	 */
-	public Round( String teamName, int rNumber, int nQuestions, int nNormalQ ) {
+	public Round(String teamName, int rNumber, int nQuestionsSpeed, int nQuestions) {
 
 		this.teamName = teamName;
 		this.speed = false;
 		this.rNumber = rNumber;
+		this.nQuestionsSpeed = nQuestionsSpeed;
 		this.nQuestions = nQuestions;
-		this.nNormalQ = nNormalQ;
-		this.questions = new Question[nQuestions];
+		this.questions = new Question[nQuestionsSpeed];
 		this.announced = false;
 		this.announcedPoints = 0;
 		this.place = 1;
-		this.discrepancyText =  "";
+		this.discrepancyText = "";
 
-		for ( int q = 0; q < nQuestions; q++ ) {
-			this.questions[q] = new Question( this, q + 1 );
+		for (int q = 0; q < nQuestionsSpeed; q++) {
+			this.questions[q] = new Question(this, q + 1);
 		}
 
-		this.answerQueue = new ArrayList<Answer>( 0 );
+		this.answerQueue = new ArrayList<Answer>(0);
 	}
 
 	/**
-	 * Checks if is speed.
-	 *
-	 * @return true, if is speed
+	 * Checks if a question has been open
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return true, if the question has been open
 	 */
-	public boolean isSpeed() {
-		return speed;
+	public boolean beenOpen(int qNumber) {
+		return this.questions[qNumber - 1].beenOpen();
 	}
 
 	/**
-	 * Checks if is announced.
-	 *
-	 * @return true, if is announced
+	 * Call an answer in the queue in.
+	 * 
+	 * @param queueIndex
+	 *            The index of the answer in the queue
+	 * @param caller
+	 *            The user calling the answer in
 	 */
-	public boolean isAnnounced() {
-		return announced;
+	public void callIn(int queueIndex, String caller) {
+		this.answerQueue.get(queueIndex).callIn(caller);
 	}
 
 	/**
-	 * Gets the round number.
-	 *
-	 * @return the round number
+	 * Close a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
 	 */
-	public int getRoundNumber() {
-		return rNumber;
+	public void close(int qNumber) {
+		this.questions[qNumber - 1].close();
 	}
 
 	/**
-	 * Gets the n questions.
-	 *
-	 * @return the n questions
+	 * Get whether each question in this round has been open.
+	 * 
+	 * @return Array indicating whether each question has been open
+	 */
+	public boolean[] eachBeenOpen() {
+		final boolean[] beenOpens = new boolean[this.nQuestionsSpeed];
+		for (int q = 0; q < beenOpens.length; q++) {
+			beenOpens[q] = this.questions[q].beenOpen();
+		}
+		return beenOpens;
+	}
+
+	/**
+	 * Get whether each question in this round was answered correctly.
+	 * 
+	 * @return Array indicating whether each question is correct
+	 */
+	public boolean[] eachCorrect() {
+		final boolean[] corrects = new boolean[this.nQuestionsSpeed];
+		for (int q = 0; q < corrects.length; q++) {
+			corrects[q] = this.questions[q].isCorrect();
+		}
+		return corrects;
+	}
+
+	/**
+	 * Get whether each question in this round is open.
+	 * 
+	 * @return Array indicating whether each question is open
+	 */
+	public boolean[] eachOpen() {
+		final boolean[] opens = new boolean[this.nQuestionsSpeed];
+		for (int q = 0; q < opens.length; q++) {
+			opens[q] = this.questions[q].isOpen();
+		}
+		return opens;
+	}
+
+	/**
+	 * Gets whether the score for this round has been announced
+	 * 
+	 * @return Whether the score for this round has been announced
+	 */
+	public int getAnnounced() {
+		return this.announcedPoints;
+	}
+
+	/**
+	 * Gets the answer queue.
+	 * 
+	 * @return The answer queue
+	 */
+	public Answer[] getAnswerQueue() {
+		return (Answer[]) this.answerQueue.toArray();
+	}
+
+	/**
+	 * Gets the proposed answer text of an answer in the queue.
+	 * 
+	 * @param queueIndex
+	 *            The index in the queue of the answer
+	 * @return The proposed answer
+	 */
+	public String getAnswerQueueAnswer(int queueIndex) {
+		return this.answerQueue.get(queueIndex).getAnswer();
+	}
+
+	/**
+	 * Gets the proposed answers in the queue.
+	 * 
+	 * @return Array of the proposed answers
+	 */
+	public String[] getAnswerQueueAnswers() {
+		final int nAnswers = this.getAnswerQueueSize();
+		final String[] answers = new String[nAnswers];
+		for (int a = 0; a < nAnswers; a++) {
+			answers[a] = this.answerQueue.get(a).getAnswer();
+		}
+		return answers;
+	}
+
+	/**
+	 * Gets the caller of an answer in the queue. An uncalled answer return an empty string.
+	 * 
+	 * @param queueIndex
+	 *            The index in the queue of the answer
+	 * @return The caller's name
+	 */
+	public String getAnswerQueueCaller(int queueIndex) {
+		return this.answerQueue.get(queueIndex).getCaller();
+	}
+
+	/**
+	 * Gets the callers of answers in the queue. Uncalled answers return empty strings.
+	 * 
+	 * @return Array of caller names
+	 */
+	public String[] getAnswerQueueCallers() {
+		final int nAnswers = this.getAnswerQueueSize();
+		final String[] callers = new String[nAnswers];
+		for (int a = 0; a < nAnswers; a++) {
+			callers[a] = this.answerQueue.get(a).getCaller();
+		}
+		return callers;
+	}
+
+	/**
+	 * Gets the confidence of an answer in the queue.
+	 * 
+	 * @param queueIndex
+	 *            The index in the queue of the answer
+	 * @return The confidence
+	 */
+	public int getAnswerQueueConfidence(int queueIndex) {
+		return this.answerQueue.get(queueIndex).getConfidence();
+	}
+
+	/**
+	 * Gets the confidences of answers in the queue.
+	 * 
+	 * @return Array of confidences
+	 */
+	public int[] getAnswerQueueConfidences() {
+		final int nAnswers = this.getAnswerQueueSize();
+		final int[] confidences = new int[nAnswers];
+		for (int a = 0; a < nAnswers; a++) {
+			confidences[a] = this.answerQueue.get(a).getConfidence();
+		}
+		return confidences;
+	}
+
+	/**
+	 * Gets the operator of an answer in the queue. A non-correct answer returns an empty string.
+	 * 
+	 * @param queueIndex
+	 *            The index in the queue of the answer
+	 * @return The operator
+	 */
+	public String getAnswerQueueOperator(int queueIndex) {
+		return this.answerQueue.get(queueIndex).getOperator();
+	}
+
+	/**
+	 * Gets the operators who accepted correct answers in the queue. Non-correct answers return empty strings.
+	 * 
+	 * @return Array of operators
+	 */
+	public String[] getAnswerQueueOperators() {
+		final int nAnswers = this.getAnswerQueueSize();
+		final String[] operators = new String[nAnswers];
+		for (int a = 0; a < nAnswers; a++) {
+			operators[a] = this.answerQueue.get(a).getOperator();
+		}
+		return operators;
+	}
+
+	/**
+	 * Gets the question number of an answer in the queue.
+	 * 
+	 * @param queueIndex
+	 *            The index in the queue of the answer
+	 * @return The question number
+	 */
+	public int getAnswerQueueQNumber(int queueIndex) {
+		return this.answerQueue.get(queueIndex).getQNumber();
+	}
+
+	/**
+	 * Gets the question number of answers in the queue.
+	 * 
+	 * @return Array of question numbers
+	 */
+	public int[] getAnswerQueueQNumbers() {
+		final int nAnswers = this.getAnswerQueueSize();
+		final int[] qNumbers = new int[nAnswers];
+		for (int a = 0; a < nAnswers; a++) {
+			qNumbers[a] = this.answerQueue.get(a).getQNumber();
+		}
+		return qNumbers;
+	}
+
+	/**
+	 * Gets the size of the answer queue.
+	 * 
+	 * @return The answer queue size
+	 */
+	public int getAnswerQueueSize() {
+		return this.answerQueue.size();
+	}
+
+	/**
+	 * Gets the status of each answer in the queue.
+	 * 
+	 * @return Array of statuses
+	 */
+	public String[] getAnswerQueueStatus() {
+		final int nAnswers = this.getAnswerQueueSize();
+		final String[] statuses = new String[nAnswers];
+		for (int a = 0; a < nAnswers; a++) {
+			statuses[a] = this.answerQueue.get(a).getStatusString();
+		}
+		return statuses;
+	}
+
+	/**
+	 * Gets the status of an answer in the queue.
+	 * 
+	 * @param queueIndex
+	 *            The index in the queue of the answer
+	 * @return The status
+	 */
+	public String getAnswerQueueStatus(int queueIndex) {
+		final String status = this.answerQueue.get(queueIndex).getStatusString();
+		return status;
+	}
+
+	/**
+	 * Gets the submitter of an answer in the queue.
+	 * 
+	 * @param queueIndex
+	 *            The index in the queue of the answer
+	 * @return The submitter's name
+	 */
+	public String getAnswerQueueSubmitter(int queueIndex) {
+		return this.answerQueue.get(queueIndex).getSubmitter();
+	}
+
+	/**
+	 * Gets the submitters of answers in the queue.
+	 * 
+	 * @return Array of answer submitters
+	 */
+	public String[] getAnswerQueueSubmitters() {
+		final int nAnswers = this.getAnswerQueueSize();
+		final String[] submitters = new String[nAnswers];
+		for (int a = 0; a < nAnswers; a++) {
+			submitters[a] = this.answerQueue.get(a).getSubmitter();
+		}
+		return submitters;
+	}
+
+	/**
+	 * Gets the timestamp of an answer in the queue.
+	 * 
+	 * @param queueIndex
+	 *            The index in the queue of the answer
+	 * @return The timestamp
+	 */
+	public String getAnswerQueueTimestamp(int queueIndex) {
+		return this.answerQueue.get(queueIndex).getTimestamp();
+	}
+
+	/**
+	 * Gets the timestamp of each answer in the queue.
+	 * 
+	 * @return Array of timestamps
+	 */
+	public String[] getAnswerQueueTimestamps() {
+		final int nAnswers = this.getAnswerQueueSize();
+		final String[] timestamps = new String[nAnswers];
+		for (int a = 0; a < nAnswers; a++) {
+			timestamps[a] = this.answerQueue.get(a).getTimestamp();
+		}
+		return timestamps;
+	}
+
+	/**
+	 * Gets the correct answer for a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return the answer text
+	 */
+	public String getAnswerText(int qNumber) {
+		return this.questions[qNumber - 1].getAnswerText();
+	}
+
+	/**
+	 * Gets the discrepancy text for this round.
+	 * 
+	 * @return The discrepancy text
+	 */
+	public String getDiscrepancyText() {
+		return this.discrepancyText;
+	}
+
+	/**
+	 * Gets the answer of each question in this round.
+	 * 
+	 * @return Array of answers
+	 */
+	public String[] getEachAnswerText() {
+		final String[] answers = new String[this.nQuestionsSpeed];
+		for (int q = 0; q < answers.length; q++) {
+			answers[q] = this.questions[q].getAnswerText();
+		}
+		return answers;
+	}
+
+	/**
+	 * Gets the points earned for each question in this round.
+	 * 
+	 * @return Array of points earned
+	 */
+	public int[] getEachEarned() {
+		final int[] earneds = new int[this.nQuestionsSpeed];
+		for (int q = 0; q < earneds.length; q++) {
+			earneds[q] = this.questions[q].getEarned();
+		}
+		return earneds;
+	}
+
+	/**
+	 * Gets the operator for each correct answer in this round.
+	 * 
+	 * @return Array of operators
+	 */
+	public String[] getEachOperator() {
+		final String[] operators = new String[this.nQuestionsSpeed];
+		for (int q = 0; q < operators.length; q++) {
+			operators[q] = this.questions[q].getOperator();
+		}
+		return operators;
+	}
+
+	/**
+	 * Gets the text for each question in this round.
+	 * 
+	 * @return Array of question text
+	 */
+	public String[] getEachQuestionText() {
+		final String[] questions = new String[this.nQuestionsSpeed];
+		for (int q = 0; q < questions.length; q++) {
+			questions[q] = this.questions[q].getQuestionText();
+		}
+		return questions;
+	}
+
+	/**
+	 * Gets the name of the submitter for each correct answer in this round.
+	 * 
+	 * @return Array of submitter names
+	 */
+	public String[] getEachSubmitter() {
+		final String[] submitters = new String[this.nQuestionsSpeed];
+		for (int q = 0; q < submitters.length; q++) {
+			submitters[q] = this.questions[q].getSubmitter();
+		}
+		return submitters;
+	}
+
+	/**
+	 * Gets the value of each question in this round.
+	 * 
+	 * @return Array of question values
+	 */
+	public int[] getEachValue() {
+		final int[] values = new int[this.nQuestionsSpeed];
+		for (int q = 0; q < values.length; q++) {
+			values[q] = this.questions[q].getValue();
+		}
+		return values;
+	}
+
+	/**
+	 * Gets the total points earned for questions in this round.
+	 * 
+	 * @return The total points earned
+	 */
+	public int getEarned() {
+		int value = 0;
+		for (final Question q : this.questions) {
+			value += q.getEarned();
+		}
+		return value;
+	}
+
+	/**
+	 * Gets the points earned for a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return The points earned
+	 */
+	public int getEarned(int qNumber) {
+		return this.questions[qNumber - 1].getEarned();
+	}
+
+	/**
+	 * Gets the number of questions in this round.
+	 * 
+	 * @return The number of questions in this round
 	 */
 	public int getNQuestions() {
-		if ( this.speed ) {
-			return nQuestions;
-		} else {
-			return nNormalQ;
-		}
+		if (this.speed)
+			return this.nQuestionsSpeed;
+		else
+			return this.nQuestions;
 	}
 
 	/**
-	 * Gets the question.
-	 *
-	 * @param qNumber the q number
-	 * @return the question
+	 * Gets the question numbers of currently open questions.
+	 * 
+	 * @return Array of open question numbers
 	 */
-	public Question getQuestion(int qNumber) {
-		return questions[qNumber - 1];
+	public String[] getOpenQuestionNumbers() {
+		final Question[] questions = this.getOpenQuestions();
+		final int nOpen = questions.length;
+		final String[] qNumbers = new String[nOpen];
+		for (int q = 0; q < nOpen; q++) {
+			qNumbers[q] = "" + questions[q].getNumber();
+		}
+		return qNumbers;
 	}
 
 	/**
-	 * Gets the open questions.
-	 *
-	 * @return the open questions
+	 * Gets the current open questions.
+	 * 
+	 * @return Array of the open Questions
 	 */
 	private Question[] getOpenQuestions() {
-		int nOpen = this.nOpen();
-		Question[] questions = new Question[nOpen];
+		final int nOpen = this.nOpen();
+		final Question[] questions = new Question[nOpen];
 		int q1 = 0;
-		for ( Question q : this.questions ) {
-			if ( q.isOpen() ) {
+		for (final Question q : this.questions) {
+			if (q.isOpen()) {
 				questions[q1] = q;
 				q1++;
 			}
@@ -133,220 +551,275 @@ public class Round implements Serializable {
 	}
 
 	/**
-	 * Gets the open question text.
-	 *
-	 * @return the open question text
+	 * Gets the text of currently open questions.
+	 * 
+	 * @return Array of text for open questions
 	 */
 	public String[] getOpenQuestionText() {
-		Question[] questions = getOpenQuestions();
-		int nOpen = questions.length;
-		String[] questionText = new String[nOpen];
-		for ( int q = 0; q < nOpen; q++ ) {
+		final Question[] questions = this.getOpenQuestions();
+		final int nOpen = questions.length;
+		final String[] questionText = new String[nOpen];
+		for (int q = 0; q < nOpen; q++) {
 			questionText[q] = questions[q].getQuestionText();
 		}
 		return questionText;
 	}
 
 	/**
-	 * Gets the open question numbers.
-	 *
-	 * @return the open question numbers
-	 */
-	public String[] getOpenQuestionNumbers() {
-		Question[] questions = getOpenQuestions();
-		int nOpen = questions.length;
-		String[] qNumbers = new String[nOpen];
-		for ( int q = 0; q < nOpen; q++ ) {
-			qNumbers[q] = "" + questions[q].getNumber();
-		}
-		return qNumbers;
-	}
-
-	/**
-	 * Gets the open question values.
-	 *
-	 * @return the open question values
+	 * Gets the values of currently open questions.
+	 * 
+	 * @return Array of the values for open questions
 	 */
 	public String[] getOpenQuestionValues() {
-		Question[] questions = getOpenQuestions();
-		int nOpen = questions.length;
-		String[] questionValues = new String[nOpen];
-		for ( int q = 0; q < nOpen; q++ ) {
+		final Question[] questions = this.getOpenQuestions();
+		final int nOpen = questions.length;
+		final String[] questionValues = new String[nOpen];
+		for (int q = 0; q < nOpen; q++) {
 			questionValues[q] = "" + questions[q].getValue();
 		}
 		return questionValues;
 	}
 
 	/**
-	 * Gets the value.
-	 *
-	 * @return the value
+	 * Gets the operator who accepted the correct answer for a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return The operator
 	 */
-	public int getValue() {
-		int value = 0;
-		for ( Question q : this.questions ) {
-			value += q.getValue();
-		}
-		return value;
+	public String getOperator(int qNumber) {
+		return this.questions[qNumber - 1].getOperator();
 	}
 
 	/**
-	 * Gets the each value.
-	 *
-	 * @return the each value
-	 */
-	public int[] getEachValue() {
-		int[] values = new int[nQuestions];
-		for ( int q = 0; q < values.length; q++ ) {
-			values[q] = this.questions[q].getValue();
-		}
-		return values;
-	}
-
-	/**
-	 * Gets the earned.
-	 *
-	 * @return the earned
-	 */
-	public int getEarned() {
-		int value = 0;
-		for ( Question q : this.questions ) {
-			value += q.getEarned();
-		}
-		return value;
-	}
-
-	/**
-	 * Gets the each earned.
-	 *
-	 * @return the each earned
-	 */
-	public int[] getEachEarned() {
-		int[] earneds = new int[nQuestions];
-		for ( int q = 0; q < earneds.length; q++ ) {
-			earneds[q] = this.questions[q].getEarned();
-		}
-		return earneds;
-	}
-
-	/**
-	 * Gets the each question text.
-	 *
-	 * @return the each question text
-	 */
-	public String[] getEachQuestionText() {
-		String[] questions = new String[nQuestions];
-		for ( int q = 0; q < questions.length; q++ ) {
-			questions[q] = this.questions[q].getQuestionText();
-		}
-		return questions;
-	}
-
-	/**
-	 * Gets the each answer text.
-	 *
-	 * @return the each answer text
-	 */
-	public String[] getEachAnswerText() {
-		String[] answers = new String[nQuestions];
-		for ( int q = 0; q < answers.length; q++ ) {
-			answers[q] = this.questions[q].getAnswerText();
-		}
-		return answers;
-	}
-
-	/**
-	 * Gets the each submitter.
-	 *
-	 * @return the each submitter
-	 */
-	public String[] getEachSubmitter() {
-		String[] submitters = new String[nQuestions];
-		for ( int q = 0; q < submitters.length; q++ ) {
-			submitters[q] = this.questions[q].getSubmitter();
-		}
-		return submitters;
-	}
-
-	/**
-	 * Gets the each operator.
-	 *
-	 * @return the each operator
-	 */
-	public String[] getEachOperator() {
-		String[] operators = new String[nQuestions];
-		for ( int q = 0; q < operators.length; q++ ) {
-			operators[q] = this.questions[q].getOperator();
-		}
-		return operators;
-	}
-
-	/**
-	 * Each been open.
-	 *
-	 * @return the boolean[]
-	 */
-	public boolean[] eachBeenOpen() {
-		boolean[] beenOpens = new boolean[nQuestions];
-		for ( int q = 0; q < beenOpens.length; q++ ) {
-			beenOpens[q] = this.questions[q].beenOpen();
-		}
-		return beenOpens;
-	}
-
-	/**
-	 * Each open.
-	 *
-	 * @return the boolean[]
-	 */
-	public boolean[] eachOpen() {
-		boolean[] opens = new boolean[nQuestions];
-		for ( int q = 0; q < opens.length; q++ ) {
-			opens[q] = this.questions[q].isOpen();
-		}
-		return opens;
-	}
-
-	/**
-	 * Each correct.
-	 *
-	 * @return the boolean[]
-	 */
-	public boolean[] eachCorrect() {
-		boolean[] corrects = new boolean[nQuestions];
-		for ( int q = 0; q < corrects.length; q++ ) {
-			corrects[q] = this.questions[q].isCorrect();
-		}
-		return corrects;
-	}
-
-	/**
-	 * Gets the announced.
-	 *
-	 * @return the announced
-	 */
-	public int getAnnounced() {
-		return this.announcedPoints;
-	}
-
-	/**
-	 * Gets the place.
-	 *
-	 * @return the place
+	 * Gets the announced place for this round.
+	 * 
+	 * @return The place
 	 */
 	public int getPlace() {
 		return this.place;
 	}
 
 	/**
-	 * N correct.
-	 *
-	 * @return the int
+	 * Gets the question text for the specified question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return The Question
+	 */
+	public Question getQuestion(int qNumber) {
+		return this.questions[qNumber - 1];
+	}
+
+
+	/**
+	 * Gets the question text for a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return the question text
+	 */
+	public String getQuestionText(int qNumber) {
+		return this.questions[qNumber - 1].getQuestionText();
+	}
+
+	/**
+	 * Gets the round number.
+	 * 
+	 * @return The round number
+	 */
+	public int getRoundNumber() {
+		return this.rNumber;
+	}
+
+
+	/**
+	 * Gets the announced standings for this round.
+	 * 
+	 * @return Array of ScoreEntry representing each team's score this round
+	 */
+	public ScoreEntry[] getStandings() {
+		return this.standings;
+	}
+
+	/**
+	 * Gets the submitter of the correct answer for a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return The submitter's user name
+	 */
+	public String getSubmitter(int qNumber) {
+		return this.questions[qNumber - 1].getSubmitter();
+	}
+
+
+	/**
+	 * Gets the total value of questions in this round.
+	 * 
+	 * @return The total value of this round
+	 */
+	public int getValue() {
+		int value = 0;
+		for (final Question q : this.questions) {
+			value += q.getValue();
+		}
+		return value;
+	}
+
+	/**
+	 * Gets the value of a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return The value of the question
+	 */
+	public int getValue(int qNumber) {
+		return this.questions[qNumber - 1].getValue();
+	}
+
+
+	/**
+	 * Checks if this round's score has been announced.
+	 * 
+	 * @return true if the score for this round has been announced
+	 */
+	public boolean isAnnounced() {
+		return this.announced;
+	}
+
+	/**
+	 * Checks if a question was answered correctly
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return true, if the question is correct
+	 */
+	public boolean isCorrect(int qNumber) {
+		return this.questions[qNumber - 1].isCorrect();
+	}
+
+	/**
+	 * Checks if there is a mismatch between the announced score and the calculated score
+	 * 
+	 * @return true, if there is a mismatch
+	 */
+	public boolean isMismatch() {
+		if (this.announcedPoints != -1) return ( this.announcedPoints != this.getValue() );
+		return false;
+	}
+
+	/**
+	 * Checks if a question is currently open
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return true, if the question is open
+	 */
+	public boolean isOpen(int qNumber) {
+		return this.questions[qNumber - 1].isOpen();
+	}
+
+	/**
+	 * Checks if this is a speed round.
+	 * 
+	 * @return true if this is a speed round
+	 */
+	public boolean isSpeed() {
+		return this.speed;
+	}
+
+	/**
+	 * Mark an answer in the queue as partially correct.
+	 * 
+	 * @param queueIndex
+	 *            The index of the answer in the queue
+	 * @param caller
+	 *            The user calling the answer in
+	 * @param operator
+	 *            The operator who accepted the correct answer
+	 * 
+	 */
+	public void markCorrect(int queueIndex, String caller, String operator) {
+		final Answer answer = this.answerQueue.get(queueIndex);
+		answer.markCorrect(caller, operator);
+		final int qNumber = answer.getQNumber();
+		final String answerText = answer.getAnswer();
+		final String submitter = answer.getSubmitter();
+		this.questions[qNumber - 1].markCorrect(answerText, submitter, operator);
+	}
+
+	/**
+	 * Mark a specific question correct (used when loading saves)
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param answerText
+	 *            The correct answer
+	 * @param submitter
+	 *            The user who submitted the correct answer
+	 * @param operator
+	 *            The operator who accepted the correct answer
+	 * 
+	 */
+	public void markCorrect(int qNumber, String answerText, String submitter, String operator) {
+		this.questions[qNumber - 1].markCorrect(answerText, submitter, operator);
+	}
+
+	/**
+	 * Mark a question as incorrect.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 */
+	public void markIncorrect(int qNumber) {
+		this.questions[qNumber - 1].markIncorrect();
+	}
+
+	/**
+	 * Mark an answer in the queue as incorrect.
+	 * 
+	 * @param queueIndex
+	 *            The index of the answer in the queue
+	 * @param caller
+	 *            The user calling the answer in
+	 */
+	public void markIncorrect(int queueIndex, String caller) {
+		this.answerQueue.get(queueIndex).markIncorrect(caller);
+	}
+
+	/**
+	 * Mark an answer in the queue as partially correct.
+	 * 
+	 * @param queueIndex
+	 *            The index of the answer in the queue
+	 * @param caller
+	 *            The user calling the answer in
+	 */
+	public void markPartial(int queueIndex, String caller) {
+		this.answerQueue.get(queueIndex).markPartial(caller);
+	}
+
+	/**
+	 * Mark an answer in the queue as uncalled.
+	 * 
+	 * @param queueIndex
+	 *            The index of the answer in the queue
+	 * 
+	 */
+	public void markUncalled(int queueIndex) {
+		this.answerQueue.get(queueIndex).markUncalled();
+	}
+
+	/**
+	 * Get the number of correct answers in this round
+	 * 
+	 * @return The number of correct answers
 	 */
 	public int nCorrect() {
 		int nCorrect = 0;
-		for ( Question q : this.questions ) {
-			if ( q.isCorrect() ) {
+		for (final Question q : this.questions) {
+			if (q.isCorrect()) {
 				nCorrect++;
 			}
 		}
@@ -354,14 +827,33 @@ public class Round implements Serializable {
 	}
 
 	/**
-	 * N open.
-	 *
-	 * @return the int
+	 * Get the lowest unopened question number. If all questions have been opened, returns the last question number.
+	 * 
+	 * @return The question number that should be opened next
+	 */
+	public int nextToOpen() {
+		int nextToOpen = 18;
+		for (final Question q : this.questions) {
+			if (!q.beenOpen()) {
+				nextToOpen = q.getNumber();
+				break;
+			}
+		}
+		if (nextToOpen > this.getNQuestions())
+			return this.getNQuestions();
+		else
+			return nextToOpen;
+	}
+
+	/**
+	 * Get the number of open questions in this round
+	 * 
+	 * @return The number of open questions
 	 */
 	public int nOpen() {
 		int nOpen = 0;
-		for ( Question q : this.questions ) {
-			if ( q.isOpen() ) {
+		for (final Question q : this.questions) {
+			if (q.isOpen()) {
 				nOpen++;
 			}
 		}
@@ -369,547 +861,164 @@ public class Round implements Serializable {
 	}
 
 	/**
-	 * Next to open.
-	 *
-	 * @return the int
-	 */
-	public int nextToOpen() {
-		int nextToOpen = 18;
-		for ( Question q : questions ) {
-			if ( !q.beenOpen() ) {
-				nextToOpen = q.getNumber();
-				break;
-			}
-		}
-		if ( nextToOpen > getNQuestions() ) {
-			return getNQuestions();
-		} else {
-			return nextToOpen;
-		}
-	}
-
-	/**
-	 * Checks if is open.
-	 *
-	 * @param qNumber the q number
-	 * @return true, if is open
-	 */
-	public boolean isOpen(int qNumber) {
-		return questions[qNumber - 1].isOpen();
-	}
-
-	/**
-	 * Been open.
-	 *
-	 * @param qNumber the q number
-	 * @return true, if successful
-	 */
-	public boolean beenOpen(int qNumber) {
-		return questions[qNumber - 1].beenOpen();
-	}
-
-	/**
-	 * Checks if is correct.
-	 *
-	 * @param qNumber the q number
-	 * @return true, if is correct
-	 */
-	public boolean isCorrect(int qNumber) {
-		return questions[qNumber - 1].isCorrect();
-	}
-
-	/**
-	 * Checks if is mismatch.
-	 *
-	 * @return true, if is mismatch
-	 */
-	public boolean isMismatch() {
-		if ( this.announcedPoints != -1 ) { return ( this.announcedPoints != this.getValue() ); }
-		return false;
-	}
-
-	/**
-	 * Gets the number.
-	 *
-	 * @param qNumber the q number
-	 * @return the number
-	 */
-	public int getNumber(int qNumber) {
-		return questions[qNumber - 1].getNumber();
-	}
-
-	/**
-	 * Gets the value.
-	 *
-	 * @param qNumber the q number
-	 * @return the value
-	 */
-	public int getValue(int qNumber) {
-		return questions[qNumber - 1].getValue();
-	}
-
-	/**
-	 * Gets the earned.
-	 *
-	 * @param qNumber the q number
-	 * @return the earned
-	 */
-	public int getEarned(int qNumber) {
-		return questions[qNumber - 1].getEarned();
-	}
-
-	/**
-	 * Gets the question text.
-	 *
-	 * @param qNumber the q number
-	 * @return the question text
-	 */
-	public String getQuestionText(int qNumber) {
-		return questions[qNumber - 1].getQuestionText();
-	}
-
-	/**
-	 * Gets the answer text.
-	 *
-	 * @param qNumber the q number
-	 * @return the answer text
-	 */
-	public String getAnswerText(int qNumber) {
-		return questions[qNumber - 1].getAnswerText();
-	}
-
-	/**
-	 * Gets the operator.
-	 *
-	 * @param qNumber the q number
-	 * @return the operator
-	 */
-	public String getOperator(int qNumber) {
-		return questions[qNumber - 1].getOperator();
-	}
-
-	/**
-	 * Gets the submitter.
-	 *
-	 * @param qNumber the q number
-	 * @return the submitter
-	 */
-	public String getSubmitter(int qNumber) {
-		return questions[qNumber - 1].getSubmitter();
-	}
-
-	/**
-	 * Gets the answer queue size.
-	 *
-	 * @return the answer queue size
-	 */
-	public int getAnswerQueueSize() {
-		return answerQueue.size();
-	}
-
-	/**
-	 * Gets the answer queue.
-	 *
-	 * @return the answer queue
-	 */
-	public Answer[] getAnswerQueue() {
-		return (Answer[])answerQueue.toArray();
-	}
-
-	/**
-	 * Gets the answer queue timestamps.
-	 *
-	 * @return the answer queue timestamps
-	 */
-	public String[] getAnswerQueueTimestamps() {
-		int nAnswers = getAnswerQueueSize();
-		String[] timestamps = new String[nAnswers];
-		for ( int a = 0; a < nAnswers; a++ ) {
-			timestamps[a] = answerQueue.get( a ).getTimestamp();
-		}
-		return timestamps;
-	}
-	
-	public String getAnswerQueueTimestamp(int queueIndex) {
-		return answerQueue.get( queueIndex ).getTimestamp();
-	}
-
-	/**
-	 * Gets the answer queue q numbers.
-	 *
-	 * @return the answer queue q numbers
-	 */
-	public int[] getAnswerQueueQNumbers() {
-		int nAnswers = getAnswerQueueSize();
-		int[] qNumbers = new int[nAnswers];
-		for ( int a = 0; a < nAnswers; a++ ) {
-			qNumbers[a] = answerQueue.get( a ).getQNumber();
-		}
-		return qNumbers;
-	}
-	
-	public int getAnswerQueueQNumber(int queueIndex) {
-		return answerQueue.get( queueIndex ).getQNumber();
-	}
-	
-
-	/**
-	 * Gets the answer queue answers.
-	 *
-	 * @return the answer queue answers
-	 */
-	public String[] getAnswerQueueAnswers() {
-		int nAnswers = getAnswerQueueSize();
-		String[] answers = new String[nAnswers];
-		for ( int a = 0; a < nAnswers; a++ ) {
-			answers[a] = answerQueue.get( a ).getAnswer();
-		}
-		return answers;
-	}
-	
-	public String getAnswerQueueAnswer(int queueIndex) {
-		return answerQueue.get( queueIndex ).getAnswer();
-	}
-
-
-	/**
-	 * Gets the answer queue submitters.
-	 *
-	 * @return the answer queue submitters
-	 */
-	public String[] getAnswerQueueSubmitters() {
-		int nAnswers = getAnswerQueueSize();
-		String[] submitters = new String[nAnswers];
-		for ( int a = 0; a < nAnswers; a++ ) {
-			submitters[a] = answerQueue.get( a ).getSubmitter();
-		}
-		return submitters;
-	}
-	
-	public String getAnswerQueueSubmitter(int queueIndex) {
-		return answerQueue.get( queueIndex ).getSubmitter();
-	}
-
-
-	/**
-	 * Gets the answer queue confidences.
-	 *
-	 * @return the answer queue confidences
-	 */
-	public int[] getAnswerQueueConfidences() {
-		int nAnswers = getAnswerQueueSize();
-		int[] confidences = new int[nAnswers];
-		for ( int a = 0; a < nAnswers; a++ ) {
-			confidences[a] = answerQueue.get( a ).getConfidence();
-		}
-		return confidences;
-	}
-	
-	public int getAnswerQueueConfidence(int queueIndex) {
-		return answerQueue.get( queueIndex ).getConfidence();
-	}
-
-
-	/**
-	 * Gets the answer queue callers.
-	 *
-	 * @return the answer queue callers
-	 */
-	public String[] getAnswerQueueCallers() {
-		int nAnswers = getAnswerQueueSize();
-		String[] callers = new String[nAnswers];
-		for ( int a = 0; a < nAnswers; a++ ) {
-			callers[a] = answerQueue.get( a ).getCaller();
-		}
-		return callers;
-	}
-	
-	public String getAnswerQueueCaller(int queueIndex) {
-		return answerQueue.get( queueIndex ).getCaller();
-	}
-
-
-	/**
-	 * Gets the answer queue operators.
-	 *
-	 * @return the answer queue operators
-	 */
-	public String[] getAnswerQueueOperators() {
-		int nAnswers = getAnswerQueueSize();
-		String[] operators = new String[nAnswers];
-		for ( int a = 0; a < nAnswers; a++ ) {
-			operators[a] = answerQueue.get( a ).getOperator();
-		}
-		return operators;
-	}
-	
-	public String getAnswerQueueOperator(int queueIndex) {
-		return answerQueue.get( queueIndex ).getOperator();
-	}
-
-	/**
-	 * Gets the answer queue status.
-	 *
-	 * @return the answer queue status
-	 */
-	public String[] getAnswerQueueStatus() {
-		int nAnswers = getAnswerQueueSize();
-		String[] statuses = new String[nAnswers];
-		for ( int a = 0; a < nAnswers; a++ ) {
-			statuses[a] = answerQueue.get( a ).getStatusString();
-		}
-		return statuses;
-	}
-
-	/**
-	 * Gets the answer queue status.
-	 *
-	 * @param queueIndex the queue index
-	 * @return the answer queue status
-	 */
-	public String getAnswerQueueStatus(int queueIndex) {
-		String status = answerQueue.get( queueIndex ).getStatusString();
-		return status;
-	}
-
-	/**
-	 * Gets the discrepency text.
-	 *
-	 * @return the discrepency text
-	 */
-	public String getDiscrepancyText() {
-		return discrepancyText;
-	}
-
-	/**
-	 * Sets the discrepency text.
-	 *
-	 * @param discrepancyText the new discrepency text
-	 */
-	public void setDiscrepancyText(String discrepancyText) {
-		this.discrepancyText = discrepancyText;
-	}
-
-	/**
-	 * Sets the value.
-	 *
-	 * @param qNumber the q number
-	 * @param value the value
-	 */
-	public void setValue(int qNumber, int value) {
-		questions[qNumber - 1].setValue( value );
-	}
-
-	/**
-	 * Sets the question text.
-	 *
-	 * @param qNumber the q number
-	 * @param question the question
-	 */
-	public void setQuestionText(int qNumber, String question) {
-		questions[qNumber - 1].setQuestionText( question );
-	}
-
-	/**
-	 * Sets the answer text.
-	 *
-	 * @param qNumber the q number
-	 * @param answer the answer
-	 */
-	public void setAnswerText(int qNumber, String answer) {
-		questions[qNumber - 1].setAnswerText( answer );
-	}
-
-	/**
-	 * Sets the operator.
-	 *
-	 * @param qNumber the q number
-	 * @param operator the operator
-	 */
-	public void setOperator(int qNumber, String operator) {
-		questions[qNumber - 1].setOperator( operator );
-	}
-
-	/**
-	 * Sets the submitter.
-	 *
-	 * @param qNumber the q number
-	 * @param submitter the submitter
-	 */
-	public void setSubmitter(int qNumber, String submitter) {
-		questions[qNumber - 1].setSubmitter( submitter );
-	}
-
-	/**
-	 * Sets the announced.
-	 *
-	 * @param announcedPoints the announced points
-	 * @param place the place
-	 */
-	public void setAnnounced(int announcedPoints, int place) {
-		this.announced = true;
-		this.announcedPoints = announcedPoints;
-		this.place = place;
-	}
-	
-	public void setStandings(ScoreEntry[] standings) {
-		this.announced = true;
-		this.standings = standings;
-		for(ScoreEntry entry : standings) {
-			if(entry.getTeamName().equals(this.teamName)) {
-				this.announcedPoints = entry.getScore();
-				this.place = entry.getPlace();
-			}
-		}
-		
-	}
-	
-	public ScoreEntry[] getStandings() {
-		return this.standings;
-	}
-
-	/**
-	 * Propose answer.
-	 *
-	 * @param qNumber the q number
-	 * @param answer the answer
-	 * @param submitter the submitter
-	 * @param confidence the confidence
-	 */
-	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) {
-		answerQueue.add( new Answer( qNumber, answer, submitter, confidence ) );
-	}
-
-	/**
-	 * Call in.
-	 *
-	 * @param queueIndex the queue index
-	 * @param caller the caller
-	 */
-	public void callIn(int queueIndex, String caller) {
-		answerQueue.get( queueIndex ).callIn( caller );
-	}
-
-	/**
-	 * Mark incorrect.
-	 *
-	 * @param queueIndex the queue index
-	 * @param caller the caller
-	 */
-	public void markIncorrect(int queueIndex, String caller) {
-		answerQueue.get( queueIndex ).markIncorrect( caller );
-	}
-
-	/**
-	 * Mark partial.
-	 *
-	 * @param queueIndex the queue index
-	 * @param caller the caller
-	 */
-	public void markPartial(int queueIndex, String caller) {
-		answerQueue.get( queueIndex ).markPartial( caller );
-	}
-
-	/**
-	 * Mark correct.
-	 *
-	 * @param queueIndex the queue index
-	 * @param caller the caller
-	 * @param operator the operator
-	 */
-	public void markCorrect(int queueIndex, String caller, String operator) {
-		Answer answer = answerQueue.get( queueIndex );
-		answer.markCorrect( caller, operator );
-		int qNumber = answer.getQNumber();
-		String answerText = answer.getAnswer();
-		String submitter = answer.getSubmitter();
-		questions[qNumber - 1].markCorrect( answerText, submitter, operator );
-	}
-	
-	public void markCorrect(int qNumber, String answerText, String submitter, String operator) {
-		questions[qNumber - 1].markCorrect( answerText, submitter, operator );
-	}
-
-	/**
-	 * Mark uncalled.
-	 *
-	 * @param queueIndex the queue index
-	 */
-	public void markUncalled(int queueIndex) {
-		answerQueue.get( queueIndex ).markUncalled();
-	}
-
-	/**
-	 * Mark incorrect.
-	 *
-	 * @param qNumber the q number
-	 */
-	public void markIncorrect(int qNumber) {
-		questions[qNumber - 1].markIncorrect();
-	}
-
-	/**
-	 * Open.
-	 *
-	 * @param qNumber the q number
-	 * @param value the value
-	 * @param question the question
+	 * Open a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param value
+	 *            The value of the question
+	 * @param question
+	 *            The text of the question
 	 */
 	public void open(int qNumber, int value, String question) {
-		questions[qNumber - 1].setValue( value );
-		questions[qNumber - 1].setQuestionText( question );
-		questions[qNumber - 1].open();
+		this.questions[qNumber - 1].setValue(value);
+		this.questions[qNumber - 1].setQuestionText(question);
+		this.questions[qNumber - 1].open();
 	}
 
 	/**
-	 * Close.
-	 *
-	 * @param qNumber the q number
+	 * Propose an answer for a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param answer
+	 *            The proposed answer
+	 * @param submitter
+	 *            The user submitting the answer
+	 * @param confidence
+	 *            The confidence in the answer
 	 */
-	public void close(int qNumber) {
-		questions[qNumber - 1].close();
+	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) {
+		this.answerQueue.add(new Answer(qNumber, answer, submitter, confidence));
 	}
 
 	/**
-	 * Sets the speed.
-	 */
-	public void setSpeed() {
-		this.speed = true;
-	}
-
-	/**
-	 * Unset speed.
-	 */
-	public void unsetSpeed() {
-		this.speed = false;
-	}
-
-	/**
-	 * Round over.
-	 *
-	 * @return true, if successful
+	 * Returns if the round is over (all questions have been opened and are now closed).
+	 * 
+	 * @return true, if the round is over
 	 */
 	public boolean roundOver() {
 		boolean roundOver = true;
-		for ( Question q : Arrays.copyOfRange( questions, 0, getNQuestions() ) ) {
+		for (final Question q : Arrays.copyOfRange(this.questions, 0, this.getNQuestions())) {
 			roundOver = roundOver && ( q.beenOpen() && !q.isOpen() );
 		}
 		return roundOver;
 	}
 
 	/**
-	 * Adds the answer.
-	 *
-	 * @param qNumber the q number
-	 * @param answer the answer
-	 * @param submitter the submitter
-	 * @param confidence the confidence
-	 * @return the answer
+	 * Sets the announced score for this round.
+	 * 
+	 * @param announcedPoints
+	 *            The announced score
+	 * @param place
+	 *            The announced place
 	 */
-	public Answer addAnswer(int qNumber, String answer, String submitter, int confidence) {
-		Answer a = new Answer( qNumber, answer, submitter, confidence );
-		answerQueue.add( a );
-		return a;
+	public void setAnnounced(int announcedPoints, int place) {
+		this.announced = true;
+		this.announcedPoints = announcedPoints;
+		this.place = place;
+	}
+
+	/**
+	 * Sets the correct answer text of a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param answer
+	 *            The correct answer
+	 */
+	public void setAnswerText(int qNumber, String answer) {
+		this.questions[qNumber - 1].setAnswerText(answer);
+	}
+
+	/**
+	 * Sets the discrepancy text for this round.
+	 * 
+	 * @param discrepancyText
+	 *            The new discrepancy text
+	 */
+	public void setDiscrepancyText(String discrepancyText) {
+		this.discrepancyText = discrepancyText;
+	}
+
+	/**
+	 * Sets the operator who accepted the correct answer for a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param operator
+	 *            The operator
+	 */
+	public void setOperator(int qNumber, String operator) {
+		this.questions[qNumber - 1].setOperator(operator);
+	}
+
+	/**
+	 * Sets the question text of a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param question
+	 *            The new value
+	 */
+	public void setQuestionText(int qNumber, String question) {
+		this.questions[qNumber - 1].setQuestionText(question);
+	}
+
+	/**
+	 * Make this a speed round
+	 */
+	public void setSpeed() {
+		this.speed = true;
+	}
+
+	/**
+	 * Sets the announced standings for this round.
+	 * 
+	 * @param standings
+	 *            Array of ScoreEntry representing each team's score this round
+	 */
+	public void setStandings(ScoreEntry[] standings) {
+		this.announced = true;
+		this.standings = standings;
+		for (final ScoreEntry entry : standings) {
+			if (entry.getTeamName().equals(this.teamName)) {
+				this.announcedPoints = entry.getScore();
+				this.place = entry.getPlace();
+			}
+		}
+
+	}
+
+	/**
+	 * Sets the user who submitted a correct answer to a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param submitter
+	 *            the submitter
+	 */
+	public void setSubmitter(int qNumber, String submitter) {
+		this.questions[qNumber - 1].setSubmitter(submitter);
+	}
+
+	/**
+	 * Sets the value of a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param value
+	 *            The new value
+	 */
+	public void setValue(int qNumber, int value) {
+		this.questions[qNumber - 1].setValue(value);
+	}
+
+	/**
+	 * Make this a normal round
+	 */
+	public void unsetSpeed() {
+		this.speed = false;
 	}
 
 }

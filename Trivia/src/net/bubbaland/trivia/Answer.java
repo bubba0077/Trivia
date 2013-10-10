@@ -4,151 +4,149 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class Answer.
+ * A data structure for proposed answers.
+ * 
+ * The <code>Answer</code> class contains the data and status for a proposed answer. Answers are originally created with the status of NOT_CALLED_IN, and this status is then updated as someone calls the answer in and then receives a response on the correctness of the answer.
+ * 
+ * @author Walter Kolczynski
  */
 public class Answer implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2367986992067473980L;
-
-	/** The q number. */
-	private int				qNumber;
-	
-	/** The answer. */
-	private String			answer;
-	
-	/** The confidence. */
-	private volatile int	confidence;
-	
-	/** The operator. */
-	private volatile String	timestamp, submitter, caller, operator;
-	
-	/** The status. */
-	private volatile Status	status;
-
-	/**
-	 * The Enum Status.
-	 */
+	// Valid statuses
 	protected static enum Status {
-		
-		/** The not called in. */
-		NOT_CALLED_IN, 
- /** The calling. */
- CALLING, 
- /** The incorrect. */
- INCORRECT, 
- /** The partial. */
- PARTIAL, 
- /** The correct. */
- CORRECT
-	};
+		NOT_CALLED_IN, CALLING, INCORRECT, PARTIAL, CORRECT
+	}
+
+	private static final long	serialVersionUID	= -2367986992067473980L;
+
+	// The question number
+	final private int			qNumber;
+
+	// The answer text
+	final private String		answer;
+
+	// The confidence in the answer
+	final private int			confidence;
+
+	// The timestamp of when the answer was submitted
+	final private String		timestamp;
+
+	// The user name of the answer submitter
+	final private String		submitter;
+
+	// The user name of the person who is calling in the answer
+	private volatile String		caller;
+
+	// The operator who accepted a correct answer
+	private volatile String		operator;
+
+	// The current status of the question
+	private volatile Status		status;											;
 
 	/**
-	 * Instantiates a new answer.
-	 *
-	 * @param qNumber the q number
-	 * @param answer the answer
-	 * @param submitter the submitter
+	 * Create a new answer
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param answer
+	 *            The proposed answer text
+	 * @param submitter
+	 *            The user submitting the answer
 	 */
-	public Answer( int qNumber, String answer, String submitter ) {
-		this( qNumber, answer, submitter, -1 );
+	public Answer(int qNumber, String answer, String submitter) {
+		this(qNumber, answer, submitter, -1);
 	}
 
 	/**
 	 * Instantiates a new answer.
-	 *
-	 * @param qNumber the q number
-	 * @param answer the answer
-	 * @param submitter the submitter
-	 * @param confidence the confidence
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param answer
+	 *            The proposed answer text
+	 * @param submitter
+	 *            The user submitting the answer
+	 * @param confidence
+	 *            Confidence in the proposed answer
 	 */
-	public Answer( int qNumber, String answer, String submitter, int confidence ) {
+	public Answer(int qNumber, String answer, String submitter, int confidence) {
 		this.qNumber = qNumber;
 		this.answer = answer;
 		this.submitter = submitter;
 		this.confidence = confidence;
-		Date time = new Date();
-		SimpleDateFormat timeFormat = new SimpleDateFormat( "HH:mm:ss" );
-		this.timestamp = timeFormat.format( time );
+		final Date time = new Date();
+		final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+		this.timestamp = timeFormat.format(time);
 		this.caller = "";
 		this.operator = "";
 		this.status = Status.NOT_CALLED_IN;
 	}
 
 	/**
-	 * Gets the q number.
-	 *
-	 * @return the q number
+	 * Mark this answer as being called in
+	 * 
+	 * @param caller
+	 *            The caller's user name
 	 */
-	public int getQNumber() {
-		return qNumber;
+	public void callIn(String caller) {
+		this.caller = caller;
+		this.operator = "";
+		this.status = Status.CALLING;
 	}
 
 	/**
-	 * Gets the timestamp.
-	 *
-	 * @return the timestamp
-	 */
-	public String getTimestamp() {
-		return timestamp;
-	}
-
-	/**
-	 * Gets the answer.
-	 *
-	 * @return the answer
+	 * Gets the answer text
+	 * 
+	 * @return The answer text
 	 */
 	public String getAnswer() {
-		return answer;
+		return this.answer;
 	}
 
 	/**
-	 * Gets the submitter.
-	 *
-	 * @return the submitter
-	 */
-	public String getSubmitter() {
-		return submitter;
-	}
-
-	/**
-	 * Gets the caller.
-	 *
-	 * @return the caller
+	 * Gets the last person who updated the status
+	 * 
+	 * @return The caller's user name
 	 */
 	public String getCaller() {
-		return caller;
+		return this.caller;
 	}
 
 	/**
-	 * Gets the operator.
-	 *
-	 * @return the operator
-	 */
-	public String getOperator() {
-		return operator;
-	}
-
-	/**
-	 * Gets the confidence.
-	 *
-	 * @return the confidence
+	 * Gets the confidence in the answer
+	 * 
+	 * @return The confidence
 	 */
 	public int getConfidence() {
-		return confidence;
+		return this.confidence;
 	}
 
 	/**
-	 * Gets the status string.
-	 *
-	 * @return the status string
+	 * Gets the operator name
+	 * 
+	 * @return The operator name
+	 */
+	public String getOperator() {
+		return this.operator;
+	}
+
+	/**
+	 * Gets the question number of this answer
+	 * 
+	 * @return The question number
+	 */
+	public int getQNumber() {
+		return this.qNumber;
+	}
+
+	/**
+	 * Gets a string representation of the status of this answer
+	 * 
+	 * @return The current status
 	 */
 	public String getStatusString() {
-		switch ( status ) {
+		switch (this.status) {
 			case NOT_CALLED_IN:
 				return "Not Called In";
 			case CALLING:
@@ -165,43 +163,30 @@ public class Answer implements Serializable {
 	}
 
 	/**
-	 * Call in.
-	 *
-	 * @param caller the caller
+	 * Gets the submitter's user name
+	 * 
+	 * @return The submitter's user name
 	 */
-	public void callIn(String caller) {
-		this.caller = caller;
-		this.operator = "";
-		this.status = Status.CALLING;
+	public String getSubmitter() {
+		return this.submitter;
 	}
 
 	/**
-	 * Mark incorrect.
-	 *
-	 * @param caller the caller
+	 * Gets the timestamp
+	 * 
+	 * @return The timestamp
 	 */
-	public void markIncorrect(String caller) {
-		this.caller = caller;
-		this.operator = "";
-		this.status = Status.INCORRECT;
+	public String getTimestamp() {
+		return this.timestamp;
 	}
 
 	/**
-	 * Mark partial.
-	 *
-	 * @param caller the caller
-	 */
-	public void markPartial(String caller) {
-		this.caller = caller;
-		this.operator = "";
-		this.status = Status.PARTIAL;
-	}
-
-	/**
-	 * Mark correct.
-	 *
-	 * @param caller the caller
-	 * @param operator the operator
+	 * Mark this answer as correct
+	 * 
+	 * @param caller
+	 *            The caller's user name
+	 * @param operator
+	 *            The operator who awarded the question
 	 */
 	public void markCorrect(String caller, String operator) {
 		this.caller = caller;
@@ -210,7 +195,31 @@ public class Answer implements Serializable {
 	}
 
 	/**
-	 * Mark uncalled.
+	 * Mark this answer as incorrect
+	 * 
+	 * @param caller
+	 *            The caller's user name
+	 */
+	public void markIncorrect(String caller) {
+		this.caller = caller;
+		this.operator = "";
+		this.status = Status.INCORRECT;
+	}
+
+	/**
+	 * Mark this answer as partially correct
+	 * 
+	 * @param caller
+	 *            The caller's user name
+	 */
+	public void markPartial(String caller) {
+		this.caller = caller;
+		this.operator = "";
+		this.status = Status.PARTIAL;
+	}
+
+	/**
+	 * Reset this answer to uncalled
 	 */
 	public void markUncalled() {
 		this.caller = "";

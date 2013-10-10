@@ -2,780 +2,1017 @@ package net.bubbaland.trivia;
 
 import java.io.Serializable;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class Trivia.
+ * The primary data structure for the trivia contest.
+ * 
+ * The <code>Trivia</code> class holds all of the data for a trivia contest. There are a number of fields representing
+ * different parameters of the contest, and an array of <code>Round</code>s that hold data for individual rounds.
+ * 
+ * @author Walter Kolczynski
  */
 public class Trivia implements Serializable {
-	
+
+	private static final long	serialVersionUID	= -1849743738638088417L;
+
+	// The team name
+	final private String		teamName;
+
+	// The number of rounds
+	final private int			nRounds;
+
+	// The number of questions in a normal round
+	final private int			nQuestions;
+
+	// The number of questions in a speed round
+	final private int			nQuestionsSpeed;
+
+	// The number of teams in the contest
+	private int					nTeams;
+
+	// The current round
+	private volatile Round		currentRound;
+
+	// Array of all the rounds in the contest
+	private final Round[]		rounds;
+
 	/**
+	 * Creates a new trivia contest
 	 * 
+	 * @param nRounds
+	 *            The number of rounds
+	 * @param nQuestions
+	 *            The number of questions in a normal round
+	 * @param nQuestionsSpeed
+	 *            The number of questions in a speed round
 	 */
-	private static final long serialVersionUID = -1849743738638088417L;
-	
-	private String teamName;
-
-	/** The n teams. */
-	private int				nRounds, nTeams, nMaxQuestions, nNormalQ;
-	
-	/** The current round. */
-	private volatile Round	currentRound;
-	
-	/** The rounds. */
-	private Round[]			rounds;
-
-	/**
-	 * Instantiates a new trivia.
-	 *
-	 * @param nRounds the n rounds
-	 * @param nMaxQuestions the n questions
-	 * @param nNormalQ the n normal q
-	 */
-	public Trivia( String teamName, int nRounds, int nMaxQuestions, int nNormalQ ) {
+	public Trivia(String teamName, int nRounds, int nQuestions, int nQuestionsSpeed) {
 		this.teamName = teamName;
 		this.nRounds = nRounds;
-		this.nMaxQuestions = nMaxQuestions;
-		this.nNormalQ = nNormalQ;
+		this.nQuestions = nQuestions;
+		this.nQuestionsSpeed = nQuestionsSpeed;
 		this.rounds = new Round[nRounds];
-		for ( int r = 0; r < nRounds; r++ ) {
-			this.rounds[r] = new Round( teamName, r + 1, nMaxQuestions, nNormalQ );
+		for (int r = 0; r < nRounds; r++) {
+			this.rounds[r] = new Round(teamName, r + 1, nQuestionsSpeed, nQuestions);
 		}
-		this.currentRound = rounds[0];
+		this.currentRound = this.rounds[0];
 		this.nTeams = 100;
 	}
 
 	/**
-	 * Gets the round number.
-	 *
-	 * @return the round number
-	 */
-	public int getRoundNumber() {
-		return this.currentRound.getRoundNumber();
-	}
-	
-	/**
-	 * Gets the n teams.
-	 *
-	 * @return the n teams
-	 */
-	public int getNTeams() {
-		return this.nTeams;
-	}
-
-	/**
-	 * Gets the n questions.
-	 *
-	 * @return the n questions
-	 */
-	public int getNQuestions() {
-		return this.currentRound.getNQuestions();
-	}
-	
-	public int getMaxQuestions() {
-		return this.nMaxQuestions;
-	}
-
-	/**
-	 * Gets the n questions.
-	 *
-	 * @param rNumber the r number
-	 * @return the n questions
-	 */
-	public int getNQuestions(int rNumber) {
-		return this.rounds[rNumber - 1].getNQuestions();
-	}
-	
-	/**
-	 * Gets the n rounds.
-	 *
-	 * @return the n rounds
-	 */
-	public int getNRounds() {
-		return this.nRounds;
-	}
-
-	/**
-	 * Next to open.
-	 *
-	 * @return the int
-	 */
-	public int nextToOpen() {
-		return currentRound.nextToOpen();
-	}
-
-	/**
-	 * Gets the open question text.
-	 *
-	 * @return the open question text
-	 */
-	public String[] getOpenQuestionText() {
-		return currentRound.getOpenQuestionText();
-	}
-
-	/**
-	 * Gets the open question numbers.
-	 *
-	 * @return the open question numbers
-	 */
-	public String[] getOpenQuestionNumbers() {
-		return currentRound.getOpenQuestionNumbers();
-	}
-
-	/**
-	 * Gets the open question values.
-	 *
-	 * @return the open question values
-	 */
-	public String[] getOpenQuestionValues() {
-		return currentRound.getOpenQuestionValues();
-	}
-
-	/**
-	 * Gets the value.
-	 *
-	 * @return the value
-	 */
-	public int getValue() {
-		int value = 0;
-		for ( Round r : this.rounds ) {
-			value += r.getValue();
-		}
-		return value;
-	}
-
-	/**
-	 * Gets the value.
-	 *
-	 * @param rNumber the r number
-	 * @return the value
-	 */
-	public int getValue(int rNumber) {
-		return rounds[rNumber - 1].getValue();
-	}
-	
-	/**
-	 * Gets the value.
-	 *
-	 * @param rNumber the r number
-	 * @param qNumber the q number
-	 * @return the value
-	 */
-	public int getValue(int rNumber, int qNumber) {
-		return rounds[rNumber - 1].getValue( qNumber );
-	}
-
-	/**
-	 * Gets the cumulative value.
-	 *
-	 * @param rNumber the r number
-	 * @return the cumulative value
-	 */
-	public int getCumulativeValue(int rNumber) {
-		int value = 0;
-		for(int r=0; r<rNumber; r++) {
-			value += rounds[r].getValue();
-		}
-		return value;
-	}
-	
-	/**
-	 * Gets the earned.
-	 *
-	 * @return the earned
-	 */
-	public int getEarned() {
-		int earned = 0;
-		for ( Round r : this.rounds ) {
-			earned += r.getEarned();
-		}
-		return earned;
-	}
-
-	/**
-	 * Gets the earned.
-	 *
-	 * @param rNumber the r number
-	 * @return the earned
-	 */
-	public int getEarned(int rNumber) {
-		return rounds[rNumber - 1].getEarned();
-	}
-
-	/**
-	 * Gets the earned.
-	 *
-	 * @param rNumber the r number
-	 * @param qNumber the q number
-	 * @return the earned
-	 */
-	public int getEarned(int rNumber, int qNumber) {
-		return rounds[rNumber - 1].getEarned( qNumber );
-	}
-
-	/**
-	 * Gets the cumulative earned.
-	 *
-	 * @param rNumber the r number
-	 * @return the cumulative earned
-	 */
-	public int getCumulativeEarned(int rNumber) {
-		int earned = 0;
-		for(int r=0; r<rNumber; r++) {
-			earned += rounds[r].getEarned();
-		}
-		return earned;
-	}
-	
-	/**
-	 * Gets the question text.
-	 *
-	 * @param qNumber the q number
-	 * @return the question text
-	 */
-	public String getQuestionText(int qNumber) {
-		return this.currentRound.getQuestionText( qNumber );
-	}
-
-	/**
-	 * Gets the question text.
-	 *
-	 * @param rNumber the r number
-	 * @param qNumber the q number
-	 * @return the question text
-	 */
-	public String getQuestionText(int rNumber, int qNumber) {
-		return rounds[rNumber - 1].getQuestionText( qNumber );
-	}
-	
-	public String getAnswerText(int rNumber, int qNumber) {
-		return rounds[rNumber - 1].getAnswerText( qNumber );
-	}
-	
-	public String getSubmitter(int rNumber, int qNumber) {
-		return rounds[rNumber - 1].getSubmitter( qNumber );
-	}
-	
-	public String getOperator(int rNumber, int qNumber) {
-		return rounds[rNumber - 1].getOperator( qNumber );
-	}
-	
-	/**
-	 * Been open.
-	 *
-	 * @param rNumber the r number
-	 * @param qNumber the q number
-	 * @return true, if successful
+	 * Gets whether a question has ever been opened.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @return true, if the question has been open
 	 */
 	public boolean beenOpen(int rNumber, int qNumber) {
-		return rounds[rNumber - 1].beenOpen( qNumber );
+		return this.rounds[rNumber - 1].beenOpen(qNumber);
 	}
 
 	/**
-	 * Gets the current round value.
-	 *
-	 * @return the current round value
+	 * Call an answer in.
+	 * 
+	 * @param queueIndex
+	 *            The location of the answer in the queue
+	 * @param caller
+	 *            The caller's name
 	 */
-	public int getCurrentRoundValue() {
-		return this.currentRound.getValue();
+	public void callIn(int queueIndex, String caller) {
+		this.currentRound.callIn(queueIndex, caller);
 	}
 
 	/**
-	 * Gets the current round earned.
-	 *
-	 * @return the current round earned
+	 * Close a question in the current round.
+	 * 
+	 * @param qNumber
+	 *            The question number
 	 */
-	public int getCurrentRoundEarned() {
-		return this.currentRound.getEarned();
+	public void close(int qNumber) {
+		this.currentRound.close(qNumber);
 	}
 
 	/**
-	 * Gets the answer queue.
-	 *
-	 * @return the answer queue
+	 * Close a question.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 */
+	public void close(int rNumber, int qNumber) {
+		this.rounds[rNumber - 1].close(qNumber);
+	}
+
+	/**
+	 * Gets whether each question in a round has been open.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array specifying whether each question has been open
+	 */
+	public boolean[] eachBeenOpen(int rNumber) {
+		return this.rounds[rNumber - 1].eachBeenOpen();
+	}
+
+	/**
+	 * Gets whether each question in a round was answered correctly.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array specifying whether each question is correct
+	 */
+	public boolean[] eachCorrect(int rNumber) {
+		return this.rounds[rNumber - 1].eachCorrect();
+	}
+
+	/**
+	 * Gets whether each question in a round is open.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array specifying whether each question is open
+	 */
+	public boolean[] eachOpen(int rNumber) {
+		return this.rounds[rNumber - 1].eachOpen();
+	}
+
+	/**
+	 * Gets the announced place.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return The announced place
+	 */
+	public int getAnnouncedPlace(int rNumber) {
+		if (rNumber > 0) return this.rounds[rNumber - 1].getPlace();
+		return 0;
+	}
+
+	/**
+	 * Gets the announced score for a round
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return The announced score
+	 */
+	public int getAnnouncedPoints(int rNumber) {
+		if (rNumber > 0) return this.rounds[rNumber - 1].getAnnounced();
+		return 0;
+	}
+
+	/**
+	 * Gets the answer queue for the current round.
+	 * 
+	 * @return The answer queue
 	 */
 	public Answer[] getAnswerQueue() {
 		return this.currentRound.getAnswerQueue();
 	}
 
 	/**
-	 * Gets the announced points.
-	 *
-	 * @param rNumber the r number
-	 * @return the announced points
+	 * Gets the proposed answer in the queue for the current round.
+	 * 
+	 * @param queueIndex
+	 *            The location in the queue
+	 * @return The answer text
 	 */
-	public int getAnnouncedPoints(int rNumber) {
-		if ( rNumber > 0 ) { return rounds[rNumber - 1].getAnnounced(); }
-		return 0;
+	public String getAnswerQueueAnswer(int queueIndex) {
+		return this.currentRound.getAnswerQueueAnswer(queueIndex);
 	}
 
 	/**
-	 * Gets the announced place.
-	 *
-	 * @param rNumber the r number
-	 * @return the announced place
-	 */
-	public int getAnnouncedPlace(int rNumber) {
-		if ( rNumber > 0 ) { return rounds[rNumber - 1].getPlace(); }
-		return 0;
-	}
-	
-	/**
-	 * Gets the answer queue size.
-	 *
-	 * @return the answer queue size
-	 */
-	public int getAnswerQueueSize() {
-		return currentRound.getAnswerQueueSize();
-	}
-
-	/**
-	 * Gets the answer queue timestamps.
-	 *
-	 * @return the answer queue timestamps
-	 */
-	public String[] getAnswerQueueTimestamps() {
-		return currentRound.getAnswerQueueTimestamps();
-	}
-
-	public String getAnswerQueueTimestamp(int queueIndex) {
-		return currentRound.getAnswerQueueTimestamp(queueIndex);
-	}	
-	
-	/**
-	 * Gets the answer queue q numbers.
-	 *
-	 * @return the answer queue q numbers
-	 */
-	public int[] getAnswerQueueQNumbers() {
-		return currentRound.getAnswerQueueQNumbers();
-	}
-
-	public int getAnswerQueueQNumber(int queueIndex) {
-		return currentRound.getAnswerQueueQNumber(queueIndex);
-	}
-	
-	/**
-	 * Gets the answer queue answers.
-	 *
-	 * @return the answer queue answers
+	 * Gets the proposed answers in the queue for the current round.
+	 * 
+	 * @return Array of answers
 	 */
 	public String[] getAnswerQueueAnswers() {
-		return currentRound.getAnswerQueueAnswers();
-	}
-	
-	public String getAnswerQueueAnswer(int queueIndex) {
-		return currentRound.getAnswerQueueAnswer(queueIndex);
+		return this.currentRound.getAnswerQueueAnswers();
 	}
 
 	/**
-	 * Gets the answer queue submitters.
-	 *
-	 * @return the answer queue submitters
+	 * Gets the caller of an answer in the queue for the current round.
+	 * 
+	 * @param queueIndex
+	 *            The location in the queue
+	 * @return The caller's name
 	 */
-	public String[] getAnswerQueueSubmitters() {
-		return currentRound.getAnswerQueueSubmitters();
+	public String getAnswerQueueCaller(int queueIndex) {
+		return this.currentRound.getAnswerQueueCaller(queueIndex);
 	}
 
-	public String getAnswerQueueSubmitter(int queueIndex) {
-		return currentRound.getAnswerQueueSubmitter(queueIndex);
-	}
-	
 	/**
-	 * Gets the answer queue confidences.
-	 *
-	 * @return the answer queue confidences
-	 */
-	public int[] getAnswerQueueConfidences() {
-		return currentRound.getAnswerQueueConfidences();
-	}
-
-	public int getAnswerQueueConfidence(int queueIndex) {
-		return currentRound.getAnswerQueueConfidence(queueIndex);
-	}	
-	
-	/**
-	 * Gets the answer queue callers.
-	 *
-	 * @return the answer queue callers
+	 * Gets the callers of answers in the queue for the current round.
+	 * 
+	 * @return Array of caller names
 	 */
 	public String[] getAnswerQueueCallers() {
-		return currentRound.getAnswerQueueCallers();
-	}
-
-	public String getAnswerQueueCaller(int queueIndex) {
-		return currentRound.getAnswerQueueCaller(queueIndex);
+		return this.currentRound.getAnswerQueueCallers();
 	}
 
 	/**
-	 * Gets the answer queue operators.
-	 *
-	 * @return the answer queue operators
+	 * Gets the confidence in answer in the queue for the current round.
+	 * 
+	 * @param queueIndex
+	 *            The location in the queue
+	 * @return The confidence
+	 */
+	public int getAnswerQueueConfidence(int queueIndex) {
+		return this.currentRound.getAnswerQueueConfidence(queueIndex);
+	}
+
+	/**
+	 * Gets the confidences in answers in the queue for the current round.
+	 * 
+	 * @return Array of confidences
+	 */
+	public int[] getAnswerQueueConfidences() {
+		return this.currentRound.getAnswerQueueConfidences();
+	}
+
+	/**
+	 * Gets the operators who accepted a correct answer in the queue for the current round.
+	 * 
+	 * @param queueIndex
+	 *            The location in the queue
+	 * @return The operator
+	 */
+	public String getAnswerQueueOperator(int queueIndex) {
+		return this.currentRound.getAnswerQueueOperator(queueIndex);
+	}
+
+	/**
+	 * Gets the operators who accepted correct answers in the queue for the current round.
+	 * 
+	 * @return Array of operators
 	 */
 	public String[] getAnswerQueueOperators() {
-		return currentRound.getAnswerQueueOperators();
+		return this.currentRound.getAnswerQueueOperators();
 	}
 
-	public String getAnswerQueueOperator(int queueIndex) {
-		return currentRound.getAnswerQueueOperator(queueIndex);
-	}
-	
 	/**
-	 * Gets the answer queue statuses.
-	 *
-	 * @return the answer queue statuses
+	 * Gets the question number of an answer in the queue for the current round.
+	 * 
+	 * @param queueIndex
+	 *            The location in the queue
+	 * @return The question number
 	 */
-	public String[] getAnswerQueueStatuses() {
-		return currentRound.getAnswerQueueStatus();
+	public int getAnswerQueueQNumber(int queueIndex) {
+		return this.currentRound.getAnswerQueueQNumber(queueIndex);
 	}
 
 	/**
-	 * Gets the answer queue status.
-	 *
-	 * @param queueIndex the queue index
-	 * @return the answer queue status
+	 * Gets the question number for answers in the queue for the current round.
+	 * 
+	 * @return Array of question numbers
+	 */
+	public int[] getAnswerQueueQNumbers() {
+		return this.currentRound.getAnswerQueueQNumbers();
+	}
+
+	/**
+	 * Gets the size of the answer queue for the current round.
+	 * 
+	 * @return The answer queue size
+	 */
+	public int getAnswerQueueSize() {
+		return this.currentRound.getAnswerQueueSize();
+	}
+
+	/**
+	 * Gets the status of an answer in the queue.
+	 * 
+	 * @param queueIndex
+	 *            The location in the queue
+	 * @return The answer status
 	 */
 	public String getAnswerQueueStatus(int queueIndex) {
-		return currentRound.getAnswerQueueStatus( queueIndex );
+		return this.currentRound.getAnswerQueueStatus(queueIndex);
 	}
-	
+
 	/**
-	 * Gets the discrepancy text.
-	 *
-	 * @param rNumber the r number
-	 * @return the discrepancy text
+	 * Gets the status of answers in the queue
+	 * 
+	 * @return Array of statuses
+	 */
+	public String[] getAnswerQueueStatuses() {
+		return this.currentRound.getAnswerQueueStatus();
+	}
+
+	/**
+	 * Gets the submitter of an answer in the queue for the current round.
+	 * 
+	 * @param queueIndex
+	 *            The location in the queue
+	 * @return The submitter's name
+	 */
+	public String getAnswerQueueSubmitter(int queueIndex) {
+		return this.currentRound.getAnswerQueueSubmitter(queueIndex);
+	}
+
+	/**
+	 * Gets the submitters for answers in the queue of the current round.
+	 * 
+	 * @return Array of submitters' names
+	 */
+	public String[] getAnswerQueueSubmitters() {
+		return this.currentRound.getAnswerQueueSubmitters();
+	}
+
+	/**
+	 * Gets the timestamp of an answer in the queue for the current round.
+	 * 
+	 * @param queueIndex
+	 *            The location in the queue
+	 * @return The timestamp of the proposed answer
+	 */
+	public String getAnswerQueueTimestamp(int queueIndex) {
+		return this.currentRound.getAnswerQueueTimestamp(queueIndex);
+	}
+
+	/**
+	 * Gets the timestamps of answers in the queue for the current round.
+	 * 
+	 * @return Array of timestamps
+	 */
+	public String[] getAnswerQueueTimestamps() {
+		return this.currentRound.getAnswerQueueTimestamps();
+	}
+
+	/**
+	 * Gets the answer to a question.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @return The answer text
+	 */
+	public String getAnswerText(int rNumber, int qNumber) {
+		return this.rounds[rNumber - 1].getAnswerText(qNumber);
+	}
+
+	/**
+	 * Gets the cumulative points earned through a round
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return The cumulative number of points earned
+	 */
+	public int getCumulativeEarned(int rNumber) {
+		int earned = 0;
+		for (int r = 0; r < rNumber; r++) {
+			earned += this.rounds[r].getEarned();
+		}
+		return earned;
+	}
+
+	/**
+	 * Gets the cumulative value of questions through a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return The cumulative value
+	 */
+	public int getCumulativeValue(int rNumber) {
+		int value = 0;
+		for (int r = 0; r < rNumber; r++) {
+			value += this.rounds[r].getValue();
+		}
+		return value;
+	}
+
+	/**
+	 * Gets the points earned for questions in the current round.
+	 * 
+	 * @return The points earned
+	 */
+	public int getCurrentRoundEarned() {
+		return this.currentRound.getEarned();
+	}
+
+	/**
+	 * Gets the current round number.
+	 * 
+	 * @return The current round number
+	 */
+	public int getCurrentRoundNumber() {
+		return this.currentRound.getRoundNumber();
+	}
+
+	/**
+	 * Gets the value of questions in the current round.
+	 * 
+	 * @return The value
+	 */
+	public int getCurrentRoundValue() {
+		return this.currentRound.getValue();
+	}
+
+	/**
+	 * Gets the discrepancy text for a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return The discrepancy text
 	 */
 	public String getDiscrepencyText(int rNumber) {
-		return rounds[rNumber - 1].getDiscrepancyText();
+		return this.rounds[rNumber - 1].getDiscrepancyText();
 	}
 
 	/**
-	 * Sets the discrepancy text.
-	 *
-	 * @param rNumber the r number
-	 * @param discrepencyText the discrepancy text
-	 */
-	public void setDiscrepencyText(int rNumber, String discrepencyText) {
-		rounds[rNumber - 1].setDiscrepancyText(discrepencyText);
-	}
-
-	/**
-	 * Gets the each earned.
-	 *
-	 * @param rNumber the r number
-	 * @return the each earned
-	 */
-	public int[] getEachEarned(int rNumber) {
-		return rounds[rNumber - 1].getEachEarned();
-	}
-
-	/**
-	 * Gets the each value.
-	 *
-	 * @param rNumber the r number
-	 * @return the each value
-	 */
-	public int[] getEachValue(int rNumber) {
-		return rounds[rNumber - 1].getEachValue();
-	}
-
-	/**
-	 * Gets the each question text.
-	 *
-	 * @param rNumber the r number
-	 * @return the each question text
-	 */
-	public String[] getEachQuestionText(int rNumber) {
-		return rounds[rNumber - 1].getEachQuestionText();
-	}
-
-	/**
-	 * Gets the each answer text.
-	 *
-	 * @param rNumber the r number
-	 * @return the each answer text
+	 * Gets the answer for each question in a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array of answers
 	 */
 	public String[] getEachAnswerText(int rNumber) {
-		return rounds[rNumber - 1].getEachAnswerText();
-	}
-		
-	/**
-	 * Gets the each submitter.
-	 *
-	 * @param rNumber the r number
-	 * @return the each submitter
-	 */
-	public String[] getEachSubmitter(int rNumber) {
-		return rounds[rNumber - 1].getEachSubmitter();
+		return this.rounds[rNumber - 1].getEachAnswerText();
 	}
 
 	/**
-	 * Gets the each operator.
-	 *
-	 * @param rNumber the r number
-	 * @return the each operator
+	 * Gets the earned points for each question in a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array of points earned
+	 */
+	public int[] getEachEarned(int rNumber) {
+		return this.rounds[rNumber - 1].getEachEarned();
+	}
+
+	/**
+	 * Gets the operator for each question in a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array of operators
 	 */
 	public String[] getEachOperator(int rNumber) {
-		return rounds[rNumber - 1].getEachOperator();
+		return this.rounds[rNumber - 1].getEachOperator();
 	}
 
 	/**
-	 * Each been open.
-	 *
-	 * @param rNumber the r number
-	 * @return the boolean[]
+	 * Gets the text of each question in a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array of questions
 	 */
-	public boolean[] eachBeenOpen(int rNumber) {
-		return rounds[rNumber - 1].eachBeenOpen();
+	public String[] getEachQuestionText(int rNumber) {
+		return this.rounds[rNumber - 1].getEachQuestionText();
 	}
 
 	/**
-	 * Each open.
-	 *
-	 * @param rNumber the r number
-	 * @return the boolean[]
+	 * Gets the submitter for each question in a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array of submitter names
 	 */
-	public boolean[] eachOpen(int rNumber) {
-		return rounds[rNumber - 1].eachOpen();
+	public String[] getEachSubmitter(int rNumber) {
+		return this.rounds[rNumber - 1].getEachSubmitter();
 	}
 
 	/**
-	 * Each correct.
-	 *
-	 * @param rNumber the r number
-	 * @return the boolean[]
+	 * Gets the value of each question in a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array of values
 	 */
-	public boolean[] eachCorrect(int rNumber) {
-		return rounds[rNumber - 1].eachCorrect();
+	public int[] getEachValue(int rNumber) {
+		return this.rounds[rNumber - 1].getEachValue();
 	}
 
 	/**
-	 * Checks if is speed.
-	 *
-	 * @param rNumber the r number
-	 * @return true, if is speed
+	 * Gets the total points earned for the contest.
+	 * 
+	 * @return The number of points earned
 	 */
-	public boolean isSpeed(int rNumber) {
-		return rounds[rNumber - 1].isSpeed();
+	public int getEarned() {
+		int earned = 0;
+		for (final Round r : this.rounds) {
+			earned += r.getEarned();
+		}
+		return earned;
 	}
-	
+
 	/**
-	 * Checks if is current speed.
-	 *
-	 * @return true, if is current speed
+	 * Gets the total points earned in a round
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return The number of points earned
+	 */
+	public int getEarned(int rNumber) {
+		return this.rounds[rNumber - 1].getEarned();
+	}
+
+	/**
+	 * Gets the points earned on a question.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @return The number of points earned
+	 */
+	public int getEarned(int rNumber, int qNumber) {
+		return this.rounds[rNumber - 1].getEarned(qNumber);
+	}
+
+
+	/**
+	 * Gets the number of questions in a speed round.
+	 * 
+	 * @return The number of questions
+	 */
+	public int getMaxQuestions() {
+		return this.nQuestionsSpeed;
+	}
+
+	/**
+	 * Gets the number of questions in the current round.
+	 * 
+	 * @return The number of questions
+	 */
+	public int getNQuestions() {
+		return this.currentRound.getNQuestions();
+	}
+
+	/**
+	 * Gets the number of questions in a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return The number of questions
+	 */
+	public int getNQuestions(int rNumber) {
+		return this.rounds[rNumber - 1].getNQuestions();
+	}
+
+	/**
+	 * Gets the number of rounds.
+	 * 
+	 * @return The number of rounds
+	 */
+	public int getNRounds() {
+		return this.nRounds;
+	}
+
+	/**
+	 * Gets the number of teams in the trivia contest
+	 * 
+	 * @return The number of teams
+	 */
+	public int getNTeams() {
+		return this.nTeams;
+	}
+
+	/**
+	 * Gets the currently open question numbers.
+	 * 
+	 * @return Array of question numbers
+	 */
+	public String[] getOpenQuestionNumbers() {
+		return this.currentRound.getOpenQuestionNumbers();
+	}
+
+	/**
+	 * Gets the currently open questions.
+	 * 
+	 * @return Array of questions
+	 */
+	public String[] getOpenQuestionText() {
+		return this.currentRound.getOpenQuestionText();
+	}
+
+	/**
+	 * Gets the currently open questions' values
+	 * 
+	 * @return Array of question values
+	 */
+	public String[] getOpenQuestionValues() {
+		return this.currentRound.getOpenQuestionValues();
+	}
+
+	/**
+	 * Gets the operator who accepted a correct answer to a question.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @return The operator
+	 */
+	public String getOperator(int rNumber, int qNumber) {
+		return this.rounds[rNumber - 1].getOperator(qNumber);
+	}
+
+	/**
+	 * Gets the text of a question in the current round.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return The question text
+	 */
+	public String getQuestionText(int qNumber) {
+		return this.currentRound.getQuestionText(qNumber);
+	}
+
+	/**
+	 * Gets the text of a question.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @return The question text
+	 */
+	public String getQuestionText(int rNumber, int qNumber) {
+		return this.rounds[rNumber - 1].getQuestionText(qNumber);
+	}
+
+	/**
+	 * Get the standings for a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array of ScoreEntry
+	 */
+	public ScoreEntry[] getStandings(int rNumber) {
+		return this.rounds[rNumber - 1].getStandings();
+	}
+
+	/**
+	 * Gets the submitter of a correct answer to a question.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @return The submitter's name
+	 */
+	public String getSubmitter(int rNumber, int qNumber) {
+		return this.rounds[rNumber - 1].getSubmitter(qNumber);
+	}
+
+	/**
+	 * Gets the team name.
+	 * 
+	 * @return The team name
+	 */
+	public String getTeamName() {
+		return this.teamName;
+	}
+
+	/**
+	 * Gets the total value of all questions in the contest.
+	 * 
+	 * @return The total value
+	 */
+	public int getValue() {
+		int value = 0;
+		for (final Round r : this.rounds) {
+			value += r.getValue();
+		}
+		return value;
+	}
+
+	/**
+	 * Gets the value of all questions in a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return The value
+	 */
+	public int getValue(int rNumber) {
+		return this.rounds[rNumber - 1].getValue();
+	}
+
+	/**
+	 * Gets the value of a question.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @return the value
+	 */
+	public int getValue(int rNumber, int qNumber) {
+		return this.rounds[rNumber - 1].getValue(qNumber);
+	}
+
+	/**
+	 * Checks if the score has been announced for a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return true, if the score has been announced
+	 */
+	public boolean isAnnounced(int rNumber) {
+		if (rNumber > 0) return this.rounds[rNumber - 1].isAnnounced();
+		return false;
+	}
+
+	/**
+	 * Checks if the question was answered correctly.
+	 * 
+	 * @return true, if the question is correct
+	 */
+	public boolean isCorrect(int rNumber, int qNumber) {
+		return this.rounds[rNumber - 1].isCorrect(qNumber);
+	}
+
+	/**
+	 * Checks if the current round is a speed round.
+	 * 
+	 * @return true, if the round is a speed round
 	 */
 	public boolean isCurrentSpeed() {
 		return this.currentRound.isSpeed();
 	}
 
 	/**
-	 * Checks if is open.
-	 *
-	 * @param qNumber the q number
-	 * @return true, if is open
+	 * Checks if the question in the current round is open.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @return true, if the question is open
 	 */
 	public boolean isOpen(int qNumber) {
-		return this.currentRound.isOpen( qNumber );
-	}
-	
-	public boolean isOpen(int rNumber, int qNumber) {
-		return rounds[rNumber-1].isOpen( qNumber );
-	}	
-
-	public boolean isCorrect(int rNumber, int qNumber) {
-		return rounds[rNumber-1].isCorrect( qNumber );
+		return this.currentRound.isOpen(qNumber);
 	}
 
 	/**
-	/**
-	 * Checks if is announced.
-	 *
-	 * @param rNumber the r number
-	 * @return true, if is announced
+	 * Checks if the question is open.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @return true, if the question is open
 	 */
-	public boolean isAnnounced(int rNumber) {
-		if ( rNumber > 0 ) { return rounds[rNumber - 1].isAnnounced(); }
-		return false;
+	public boolean isOpen(int rNumber, int qNumber) {
+		return this.rounds[rNumber - 1].isOpen(qNumber);
 	}
 
 	/**
-	 * Round over.
-	 *
-	 * @return true, if successful
+	 * Checks if the round is a speed round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return true, if the round is a speed round
+	 */
+	public boolean isSpeed(int rNumber) {
+		return this.rounds[rNumber - 1].isSpeed();
+	}
+
+	/**
+	 * Mark an question as correct.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @param answer
+	 *            The answer
+	 * @param submitter
+	 *            The user who submitted the correct answer
+	 * @param operator
+	 *            The operator who accepted the answer
+	 */
+	public void markCorrect(int rNumber, int qNumber, String answer, String submitter, String operator) {
+		this.rounds[rNumber - 1].markCorrect(qNumber, answer, submitter, operator);
+	}
+
+	/**
+	 * Mark an answer as correct.
+	 * 
+	 * @param queueIndex
+	 *            The location of the answer in the queue
+	 * @param caller
+	 *            The caller's name
+	 * @param operator
+	 *            The operator who accepted the answer
+	 */
+	public void markCorrect(int queueIndex, String caller, String operator) {
+		this.currentRound.markCorrect(queueIndex, caller, operator);
+	}
+
+	/**
+	 * Mark an answer as incorrect.
+	 * 
+	 * @param queueIndex
+	 *            The location of the answer in the queue
+	 * @param caller
+	 *            The caller's name
+	 */
+	public void markIncorrect(int queueIndex, String caller) {
+		this.currentRound.markIncorrect(queueIndex, caller);
+	}
+
+	/**
+	 * Mark an answer as partially correct.
+	 * 
+	 * @param queueIndex
+	 *            The location of the answer in the queue
+	 * @param caller
+	 *            The caller's name
+	 */
+	public void markPartial(int queueIndex, String caller) {
+		this.currentRound.markPartial(queueIndex, caller);
+	}
+
+	/**
+	 * Mark an answer as uncalled.
+	 * 
+	 * @param queueIndex
+	 *            The location of the answer in the queue
+	 */
+	public void markUncalled(int queueIndex) {
+		this.currentRound.markUncalled(queueIndex);
+	}
+
+	/**
+	 * Start a new round.
+	 */
+	public void newRound() {
+		int currentRoundNumber = this.getCurrentRoundNumber();
+		if (currentRoundNumber++ <= this.nRounds) {
+			this.currentRound = this.rounds[currentRoundNumber - 1];
+		}
+	}
+
+	/**
+	 * Gets the next question that needs to be opened.
+	 * 
+	 * @return The question number
+	 */
+	public int nextToOpen() {
+		return this.currentRound.nextToOpen();
+	}
+
+	/**
+	 * Open a question.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @param qValue
+	 *            The question's value
+	 * @param question
+	 *            The question text
+	 */
+	public void open(int rNumber, int qNumber, int qValue, String question) {
+		this.rounds[rNumber - 1].open(qNumber, qValue, question);
+	}
+
+	/**
+	 * Open a question in the current round.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param qValue
+	 *            The question's value
+	 * @param question
+	 *            The question text
+	 */
+	public void open(int qNumber, int qValue, String question) {
+		this.currentRound.open(qNumber, qValue, question);
+	}
+
+	/**
+	 * Propose an answer.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param answer
+	 *            The answer
+	 * @param user
+	 *            The user's name
+	 * @param confidence
+	 *            The confidence in the answer
+	 */
+	public void proposeAnswer(int qNumber, String answer, String user, int confidence) {
+		this.currentRound.proposeAnswer(qNumber, answer, user, confidence);
+	}
+
+	/**
+	 * Reset the entire trivia contest.
+	 */
+	public void reset() {
+		for (int r = 0; r < this.nRounds; r++) {
+			this.rounds[r] = new Round(this.teamName, r + 1, this.nQuestionsSpeed, this.nQuestions);
+		}
+	}
+
+	/**
+	 * Checks if the current round is over.
+	 * 
+	 * @return true, if the round is over
 	 */
 	public boolean roundOver() {
 		return this.currentRound.roundOver();
 	}
 
 	/**
-	 * New round.
-	 */
-	public void newRound() {
-		int currentRoundNumber = this.getRoundNumber();
-		if ( currentRoundNumber++ <= this.nRounds ) {
-			this.currentRound = rounds[currentRoundNumber - 1];
-		}
-	}
-
-	public void setCurrentRound(int rNumber) {
-		this.currentRound = rounds[rNumber -1];
-	}
-	
-	/**
-	 * Sets the n teams.
-	 *
-	 * @param nTeams the new n teams
-	 */
-	public void setNTeams(int nTeams) {
-		this.nTeams = nTeams;
-	}
-	
-	/**
-	 * Sets the speed.
-	 */
-	public void setSpeed() {
-		this.currentRound.setSpeed();
-	}
-	
-	public void setSpeed(int rNumber) {
-		rounds[rNumber-1].setSpeed();
-	}
-
-	/**
-	 * Sets the announced.
-	 *
-	 * @param rNumber the r number
-	 * @param score the score
-	 * @param place the place
+	 * Sets the announced score for a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param score
+	 *            The announced score
+	 * @param place
+	 *            The announced place
 	 */
 	public void setAnnounced(int rNumber, int score, int place) {
-		if ( rNumber > 0 ) {
-			rounds[rNumber - 1].setAnnounced( score, place );
+		if (rNumber > 0) {
+			this.rounds[rNumber - 1].setAnnounced(score, place);
 		}
 		return;
 	}
 
 	/**
-	 * Propose answer.
-	 *
-	 * @param qNumber the q number
-	 * @param answer the answer
-	 * @param user the user
-	 * @param confidence the confidence
+	 * Change the current round.
+	 * 
+	 * @param rNumber The new current round number
 	 */
-	public void proposeAnswer(int qNumber, String answer, String user, int confidence) {
-		this.currentRound.proposeAnswer( qNumber, answer, user, confidence );
+	public void setCurrentRound(int rNumber) {
+		this.currentRound = this.rounds[rNumber - 1];
 	}
 
 	/**
-	 * Call in.
-	 *
-	 * @param queueIndex the queue index
-	 * @param caller the caller
+	 * Sets the discrepancy text for a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param discrepencyText
+	 *            The new discrepancy text
 	 */
-	public void callIn(int queueIndex, String caller) {
-		this.currentRound.callIn( queueIndex, caller );
+	public void setDiscrepencyText(int rNumber, String discrepencyText) {
+		this.rounds[rNumber - 1].setDiscrepancyText(discrepencyText);
 	}
 
 	/**
-	 * Mark incorrect.
-	 *
-	 * @param queueIndex the queue index
-	 * @param caller the caller
+	 * Sets the number of teams.
+	 * 
+	 * @param nTeams
+	 *            The new number of teams
 	 */
-	public void markIncorrect(int queueIndex, String caller) {
-		this.currentRound.markIncorrect( queueIndex, caller );
+	public void setNTeams(int nTeams) {
+		this.nTeams = nTeams;
 	}
 
 	/**
-	 * Mark partial.
-	 *
-	 * @param queueIndex the queue index
-	 * @param caller the caller
+	 * Makes the current round a speed round.
 	 */
-	public void markPartial(int queueIndex, String caller) {
-		this.currentRound.markPartial( queueIndex, caller );
+	public void setSpeed() {
+		this.currentRound.setSpeed();
 	}
 
 	/**
-	 * Mark correct.
-	 *
-	 * @param queueIndex the queue index
-	 * @param caller the caller
-	 * @param operator the operator
+	 * Makes a round a speed round.
+	 * 
+	 * @param rNumber
+	 *            The round number
 	 */
-	public void markCorrect(int queueIndex, String caller, String operator) {
-		this.currentRound.markCorrect( queueIndex, caller, operator );
-	}
-	
-	public void markCorrect(int rNumber, int qNumber, String answer, String submitter, String operator) {
-		this.rounds[rNumber-1].markCorrect( qNumber, answer, submitter, operator );
+	public void setSpeed(int rNumber) {
+		this.rounds[rNumber - 1].setSpeed();
 	}
 
 	/**
-	 * Mark uncalled.
-	 *
-	 * @param queueIndex the queue index
+	 * Set the standings for a round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param standings
+	 *            An array of ScoreEntry
 	 */
-	public void markUncalled(int queueIndex) {
-		this.currentRound.markUncalled( queueIndex );
+	public void setStandings(int rNumber, ScoreEntry[] standings) {
+		this.nTeams = standings.length;
+		this.rounds[rNumber - 1].setStandings(standings);
 	}
 
 	/**
-	 * Unset speed.
+	 * Make the current round a normal round.
 	 */
 	public void unsetSpeed() {
 		this.currentRound.unsetSpeed();
 	}
-	
+
+	/**
+	 * Make the round a normal round.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 */
 	public void unsetSpeed(int rNumber) {
-		rounds[rNumber-1].unsetSpeed();
-	}
-
-	/**
-	 * Open.
-	 *
-	 * @param nQuestion the n question
-	 * @param qValue the q value
-	 * @param question the question
-	 */
-	public void open(int qNumber, int qValue, String question) {
-		this.currentRound.open( qNumber, qValue, question );
-	}
-	
-	public void open(int rNumber, int qNumber, int qValue, String question) {
-		this.rounds[rNumber-1].open( qNumber, qValue, question );
-	}
-
-	/**
-	 * Close.
-	 *
-	 * @param nQuestion the n question
-	 */
-	public void close(int qNumber) {
-		this.currentRound.close( qNumber );
-	}
-	
-	public void close(int rNumber, int qNumber) {
-		this.rounds[rNumber-1].close( qNumber );
-	}
-	
-	public void setStandings(int rNumber, ScoreEntry[] standings) {
-		this.nTeams = standings.length;
-		this.rounds[rNumber-1].setStandings(standings);
-	}
-	
-	public ScoreEntry[] getStandings(int rNumber) {
-		return this.rounds[rNumber-1].getStandings();
-	}
-	
-	public String getTeamName() {
-		return this.teamName;
-	}
-	
-	public void reset() {
-		for ( int r = 0; r < nRounds; r++ ) {
-			this.rounds[r] = new Round( this.teamName, r + 1, nMaxQuestions, nNormalQ );
-		}
+		this.rounds[rNumber - 1].unsetSpeed();
 	}
 
 }

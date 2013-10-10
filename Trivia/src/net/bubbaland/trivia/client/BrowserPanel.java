@@ -8,152 +8,158 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.JPanel;
-
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
-import javafx.scene.*;
-import javafx.scene.layout.*;
+import javafx.scene.Scene;
+import javafx.scene.layout.Region;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
-// TODO: Auto-generated Javadoc
+import javax.swing.JPanel;
+
 /**
- * The Class BrowserPanel.
+ * Creates a browser inside a Swing Panel using JavaFX.
+ * 
+ * @author Walter Kolczynski
  */
 public class BrowserPanel extends JPanel {
-	
+
+	/**
+	 * A Web Browser
+	 */
+	private static class Browser extends Region {
+
+		/** The browser. */
+		final private WebView	browser		= new WebView();
+
+		/** The web engine. */
+		final private WebEngine	webEngine	= this.browser.getEngine();
+
+		/**
+		 * Instantiates a new browser
+		 * 
+		 * @param url
+		 *            the URL to load
+		 */
+		public Browser(String url) {
+			this.getStyleClass().add("browser");
+			this.webEngine.load(url);
+			this.getChildren().add(this.browser);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see javafx.scene.Parent#layoutChildren()
+		 */
+		@Override
+		protected void layoutChildren() {
+			// make the browser fill the entire area
+			final double w = this.getWidth();
+			final double h = this.getHeight();
+			this.layoutInArea(this.browser, 0, 0, w, h, 0, HPos.CENTER, VPos.CENTER);
+		}
+
+	}
+
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 7479243065048312762L;
 
 	/**
-	 * Instantiates a new browser panel.
-	 *
-	 * @param url the url
+	 * Initializes the JavaFX panel and load the given URL.
+	 * 
+	 * @param fxPanel
+	 *            The JavaFX Panel that will hold the browser
+	 * @param url
+	 *            The URL to load
 	 */
-	public BrowserPanel (final String url) {
-		
+	public static void initFX(JFXPanel fxPanel, String url) {
+		final Browser pane = new Browser(url);
+		final Scene scene = new Scene(pane);
+		fxPanel.setScene(scene);
+	}
+
+	/**
+	 * Creates a new panel with a browser inside
+	 * 
+	 * @param url
+	 *            The URL to load
+	 */
+	public BrowserPanel(final String url) {
+
 		super(new GridBagLayout());
-				
-		GridBagConstraints solo = new GridBagConstraints();		
+
+		// Set up layout constraints
+		final GridBagConstraints solo = new GridBagConstraints();
 		solo.fill = GridBagConstraints.BOTH;
 		solo.anchor = GridBagConstraints.CENTER;
-		solo.weightx = 1.0; solo.weighty = 1.0;
-		solo.gridx = 0; solo.gridy = 0;
-		
+		solo.weightx = 1.0;
+		solo.weighty = 1.0;
+		solo.gridx = 0;
+		solo.gridy = 0;
+
+		// Create a JavaFX panel that fills the entire Swing panel
 		final JFXPanel fxPanel = new JFXPanel();
-		this.add( fxPanel, solo );
-		
+		this.add(fxPanel, solo);
+
+		// Enter key was appearing as line feed (ASCII 10) instead of carriage return (ASCII 13), so intercept and
+		// repost as correct key
 		fxPanel.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
 
-		    public void keyTyped(KeyEvent e) {
-		        if (e.getKeyChar() == 10) {
-		            e.setKeyChar((char) 13);
-		            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(e);
-		        }
-		    }
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
 
-		    public void keyPressed(KeyEvent e) {}
-
-		    public void keyReleased(KeyEvent e) {}
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (e.getKeyChar() == 10) {
+					e.setKeyChar((char) 13);
+					Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(e);
+				}
+			}
 		});
-		
-		
+
+		// This is from a test of higher-numbered mouse buttons not working
 		fxPanel.addMouseListener(new MouseListener() {
-
-		    @Override
+			@Override
 			public void mouseClicked(MouseEvent e) {
-		    	try {
-//		    		System.out.println("Button "+e.getButton());
-		    	} catch (NullPointerException e2) {
-		    		
-		    	}
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub				
-				
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
+				// try {
+				// System.out.println("Button "+e.getButton());
+				// } catch (NullPointerException e2) {
+				// e2.printStackTrace();
+				// }
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
 			}
 		});
-		
-		
+
+		// Initialize the JavaFX Panel
 		Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                initFX(fxPanel, url);
-            }
-        });
-		
-	}
-	
-	/**
-	 * Inits the fx.
-	 *
-	 * @param fxPanel the fx panel
-	 * @param url the url
-	 */
-	public static void initFX( JFXPanel fxPanel, String url) {
-		Browser pane = new Browser(url);
-		Scene scene = new Scene(pane);
-		fxPanel.setScene(scene);		
-	}
-		
-	/**
-	 * The Class Browser.
-	 */
-	private static class Browser extends Region {
-		
-		/** The browser. */
-		final private WebView browser = new WebView(  );
-    	
-	    /** The web engine. */
-	    final private WebEngine webEngine = browser.getEngine();
-		
-        /**
-         * Instantiates a new browser.
-         *
-         * @param url the url
-         */
-        public Browser(String url) {
-        	
-        	getStyleClass().add("browser");        	
-        	webEngine.load( url );        	
-        	getChildren().add(browser);        	
-        	
-        }
-        
-        /* (non-Javadoc)
-         * @see javafx.scene.Parent#layoutChildren()
-         */
-        @Override protected void layoutChildren() {
-            double w = getWidth();
-            double h = getHeight();
-            layoutInArea(browser,0,0,w,h,0, HPos.CENTER, VPos.CENTER);
-        }
-    		
+			@Override
+			public void run() {
+				initFX(fxPanel, url);
+			}
+		});
+
 	}
 
 
