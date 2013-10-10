@@ -263,7 +263,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			final String[] openQuestionValues = trivia.getOpenQuestionValues();
 
 			final int nOpen = openQuestionNumbers.length;
-
+			
 			// Check if there were any changes to the list of open questions
 			final boolean[] qUpdated = new boolean[nOpen];
 			boolean anyUpdate = false;

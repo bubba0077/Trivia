@@ -1,6 +1,7 @@
 package net.bubbaland.trivia;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * The primary data structure for the trivia contest.
@@ -33,7 +34,7 @@ public class Trivia implements Serializable {
 	private volatile Round		currentRound;
 
 	// Array of all the rounds in the contest
-	private final Round[]		rounds;
+	private volatile Round[]	rounds;
 
 	/**
 	 * Creates a new trivia contest
@@ -161,16 +162,7 @@ public class Trivia implements Serializable {
 		if (rNumber > 0) return this.rounds[rNumber - 1].getAnnounced();
 		return 0;
 	}
-
-	/**
-	 * Gets the answer queue for the current round.
-	 * 
-	 * @return The answer queue
-	 */
-	public Answer[] getAnswerQueue() {
-		return this.currentRound.getAnswerQueue();
-	}
-
+	
 	/**
 	 * Gets the proposed answer in the queue for the current round.
 	 * 
@@ -1013,6 +1005,43 @@ public class Trivia implements Serializable {
 	 */
 	public void unsetSpeed(int rNumber) {
 		this.rounds[rNumber - 1].unsetSpeed();
+	}
+	
+	public int[] getVersions() {
+		int[] versions = new int[nRounds];
+		for(int r=0; r<nRounds; r++) {
+			versions[r] = rounds[r].getVersion();
+		}
+		return versions;
+	}
+	
+	public Round[] getChangedRounds(int[] oldVersions) {
+		ArrayList<Round> changedRoundList = new ArrayList<Round>(0);
+		for(int r=0; r<nRounds; r++) {
+			Round round = rounds[r];
+			if(oldVersions[r] != round.getVersion()) {
+				changedRoundList.add(round);
+			}
+		}
+		Round[] changedRounds= new Round[changedRoundList.size()];
+		changedRoundList.toArray(changedRounds);
+		return changedRounds;
+	}
+	
+	public void updateRounds(Round[] newRounds) {
+		int nNew = newRounds.length;
+		for(int r=0; r<nNew; r++) {
+			Round newRound = newRounds[r];
+			int rNumber = newRound.getRoundNumber();
+			this.rounds[rNumber-1] = newRound;
+			if(this.currentRound.getRoundNumber() == r+1) {
+				this.currentRound = newRound;
+			}			
+			if(newRound.isAnnounced()) {
+				this.nTeams = newRound.getStandings().length;
+			}
+			
+		}
 	}
 
 }

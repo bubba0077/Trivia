@@ -28,6 +28,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
@@ -90,12 +91,13 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 
 		// Initiate connection to RMI server
 		int tryNumber = 0;
-		final boolean success = false;
+		boolean success = false;
 		while (tryNumber < MAX_RETRIES && success == false) {
 			tryNumber++;
 			try {
 				// Connect to RMI server
 				triviaServer = (TriviaInterface) Naming.lookup(TRIVIA_SERVER_URL);
+				success = true;
 			} catch (MalformedURLException | NotBoundException | RemoteException e) {
 				// Connection failed
 				System.out.println("Initial connection to server failed (try #" + tryNumber + ")");
@@ -118,6 +120,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 				}
 			}
 		}
+		
 		System.out.println("Connected to trivia server (" + TRIVIA_SERVER_URL + ").");
 
 		// Initialize GUI and place in window
@@ -330,7 +333,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		final Timer refreshTimer = new Timer(REFRESH_RATE, this);
 		refreshTimer.setActionCommand("Timer");
 		refreshTimer.start();
-
+		
 		// Post welcome to status bar
 		this.log("Welcome " + this.user);
 	}
@@ -427,14 +430,17 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	 */
 	@Override
 	public synchronized void update() {
-
+		
+		Round[] newRounds = null;
+		int[] oldVersions = this.trivia.getVersions();
+		
 		// Synchronize the local Trivia data to match the server
 		int tryNumber = 0;
 		boolean success = false;
 		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 			tryNumber++;
 			try {
-				this.trivia = this.server.getTrivia();
+				newRounds = this.server.getChangedRounds(oldVersions);
 				success = true;
 			} catch (final RemoteException e) {
 				e.printStackTrace();
@@ -446,6 +452,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 			this.disconnected();
 			return;
 		}
+		
+		this.trivia.updateRounds(newRounds);
 
 		// Update each individual tab in the GUI
 		for (final TriviaPanel page : this.pages) {
