@@ -47,6 +47,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	final private static int	REFRESH_RATE		= 500;
 	// The maximum number of retries the client will make when failing in communication with the server
 	protected static final int	MAX_RETRIES			= 10;
+	// The amount of time (in seconds) a user is considered "active"
+	final static private int	USER_LIST_WINDOW	= 1 * 60;
 
 	// Height of the status bar at the bottom of the GUI
 	final static private int	STATUS_HEIGHT		= 14;
@@ -433,6 +435,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		
 		Round[] newRounds = null;
 		int[] oldVersions = this.trivia.getVersions();
+		String[] userList = null;
 		int currentRound = 0;
 		
 		// Synchronize the local Trivia data to match the server
@@ -441,8 +444,9 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 			tryNumber++;
 			try {
-				newRounds = this.server.getChangedRounds(oldVersions);
+				newRounds = this.server.getChangedRounds(this.user, oldVersions);
 				currentRound = this.server.getCurrentRound();
+				userList = this.server.getUserList(USER_LIST_WINDOW); 
 				success = true;
 			} catch (final RemoteException e) {
 				e.printStackTrace();

@@ -81,6 +81,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	// Base URL for hourly standings
 	final public static String				baseURL				= "http://www.kvsc.org/trivia/points/hour";
+	
+	// A user list to track last contact
+	final private UserList					userList;
 
 	// The Trivia object that holds all of the contest data
 	final private Trivia					trivia;
@@ -178,6 +181,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public TriviaServer() throws RemoteException {
 		this.trivia = new Trivia(TEAM_NAME, N_ROUNDS, N_QUESTIONS_NORMAL, N_QUESTIONS_SPEED);
+		this.userList = new UserList();
 
 		// Create timer that will make save files
 		final Timer backupTimer = new Timer(SAVE_FREQUENCY, this);
@@ -782,12 +786,17 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		this.trivia.unsetSpeed();
 	}
 	
-	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException {
+	public Round[] getChangedRounds(String user, int[] oldVersions) throws RemoteException {
+		userList.updateUser(user);
 		return this.trivia.getChangedRounds(oldVersions);
 	}
 	
 	public int getCurrentRound() throws RemoteException {
-		return trivia.getCurrentRoundNumber();		
+		return trivia.getCurrentRoundNumber();
+	}
+	
+	public String[] getUserList(int window) throws RemoteException {
+		return this.userList.getRecent(window);
 	}
 
 }
