@@ -202,5 +202,9 @@ public interface TriviaInterface extends Remote {
 	 *             A remote exception
 	 */
 	public void unsetSpeed() throws RemoteException;
+	
+	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException;
+	
+	public int getCurrentRound() throws RemoteException;
 
 }

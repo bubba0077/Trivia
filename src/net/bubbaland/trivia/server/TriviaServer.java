@@ -27,6 +27,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.ScoreEntry;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
@@ -780,6 +781,13 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a normal round");
 		this.trivia.unsetSpeed();
 	}
-
+	
+	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException {
+		return this.trivia.getChangedRounds(oldVersions);
+	}
+	
+	public int getCurrentRound() throws RemoteException {
+		return trivia.getCurrentRoundNumber();		
+	}
 
 }
