@@ -1034,14 +1034,14 @@ public class Trivia implements Serializable {
 			Round newRound = newRounds[r];
 			int rNumber = newRound.getRoundNumber();
 			this.rounds[rNumber-1] = newRound;
-			if(this.currentRound.getRoundNumber() == r+1) {
-				this.currentRound = newRound;
-			}			
 			if(newRound.isAnnounced()) {
 				this.nTeams = newRound.getStandings().length;
-			}
-			
+			}			
 		}
+	}
+	
+	public int getCurrentRoundnumber() {
+		return this.currentRound.getRoundNumber();
 	}
 
 }

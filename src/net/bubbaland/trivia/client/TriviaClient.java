@@ -413,6 +413,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		
 		Round[] newRounds = null;
 		int[] oldVersions = this.trivia.getVersions();
+		int currentRound = 0;
 		
 		// Synchronize the local Trivia data to match the server
 		int tryNumber = 0;
@@ -421,6 +422,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 			tryNumber++;
 			try {
 				newRounds = this.server.getChangedRounds(oldVersions);
+				currentRound = this.server.getCurrentRound();
 				success = true;
 			} catch (final RemoteException e) {
 				e.printStackTrace();
@@ -434,6 +436,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		}
 		
 		this.trivia.updateRounds(newRounds);
+		this.trivia.setCurrentRound(currentRound);
 
 		// Update each individual tab in the GUI
 		for (final TriviaPanel page : this.pages) {
