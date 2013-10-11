@@ -107,7 +107,10 @@ public class Round implements Serializable {
 	 *            The user calling the answer in
 	 */
 	public void callIn(int queueIndex, String caller) {
-		this.answerQueue.get(queueIndex).callIn(caller);
+		final Answer answer = this.answerQueue.get(queueIndex);
+		answer.callIn(caller);
+		final int qNumber = answer.getQNumber();
+		this.questions[qNumber - 1].markIncorrect();
 		this.version++;
 	}
 
@@ -116,9 +119,10 @@ public class Round implements Serializable {
 	 * 
 	 * @param qNumber
 	 *            The question number
+	 * @param answer TODO
 	 */
-	public void close(int qNumber) {
-		this.questions[qNumber - 1].close();
+	public void close(int qNumber, String answer) {
+		this.questions[qNumber - 1].close(answer);
 		this.version++;
 	}
 
@@ -785,7 +789,10 @@ public class Round implements Serializable {
 	 *            The user calling the answer in
 	 */
 	public void markIncorrect(int queueIndex, String caller) {
-		this.answerQueue.get(queueIndex).markIncorrect(caller);
+		final Answer answer = this.answerQueue.get(queueIndex);
+		answer.markIncorrect(caller);
+		final int qNumber = answer.getQNumber();
+		this.questions[qNumber - 1].markIncorrect();
 		this.version++;
 	}
 
@@ -798,7 +805,10 @@ public class Round implements Serializable {
 	 *            The user calling the answer in
 	 */
 	public void markPartial(int queueIndex, String caller) {
-		this.answerQueue.get(queueIndex).markPartial(caller);
+		final Answer answer = this.answerQueue.get(queueIndex);
+		answer.markPartial(caller);
+		final int qNumber = answer.getQNumber();
+		this.questions[qNumber - 1].markIncorrect();
 		this.version++;
 	}
 
@@ -810,7 +820,10 @@ public class Round implements Serializable {
 	 * 
 	 */
 	public void markUncalled(int queueIndex) {
-		this.answerQueue.get(queueIndex).markUncalled();
+		final Answer answer = this.answerQueue.get(queueIndex);
+		answer.markUncalled();
+		final int qNumber = answer.getQNumber();
+		this.questions[qNumber - 1].markIncorrect();
 		this.version++;
 	}
 

@@ -3,60 +3,35 @@ package net.bubbaland.trivia.client;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.rmi.RemoteException;
-import java.util.Hashtable;
-
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-import javax.swing.event.AncestorListener;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
 /**
- * Creates a dialog box that prompts user to propose an answer.
+ * Creates a dialog box that prompts user for the correct answer when closing a question.
  * 
  * @author Walter Kolczynski
  */
-public class AnswerEntryPanel extends TriviaDialog implements AncestorListener {
-
+public class CloseQuestionDialog extends TriviaDialog {
+	private static final long	serialVersionUID	= 8533094210282632603L;
+	
 	/**
 	 * Font sizes
 	 */
 	private static final float	LABEL_FONT_SIZE			= 20.0f;
 	private static final float	TEXTBOX_FONT_SIZE		= 16.0f;
 
-	/**
-	 * Slider paddings
-	 */
-	private static final int	SLIDER_PADDING_BOTTOM	= 10;
-	private static final int	SLIDER_PADDING_LEFT		= 10;
-	private static final int	SLIDER_PADDING_RIGHT	= 10;
-	private static final int	SLIDER_PADDING_TOP		= 10;
-	
-	/**
-	 * Creates a dialog box and prompt for response
-	 * 
-	 * @param server
-	 *            The remote trivia server
-	 * @param client
-	 *            The local trivia client
-	 * @param qNumber
-	 *            The question number
-	 * @param user
-	 *            The user's name
-	 */
-	public AnswerEntryPanel(TriviaInterface server, TriviaClient client, int qNumber, String user) {
-
-		super(new GridBagLayout());
+	public CloseQuestionDialog(TriviaInterface server, TriviaClient client, int qNumber) {
+		
+		super(new GridBagLayout());		
 
 		// Retrieve current trivia data object
 		final Trivia trivia = client.getTrivia();
@@ -115,34 +90,10 @@ public class AnswerEntryPanel extends TriviaDialog implements AncestorListener {
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
 		this.add(scrollPane, c);
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-
-		// Create confidence slider
-		c.gridwidth = 1;
-		c.gridx = 0;
-		c.gridy = 4;
-		label = new JLabel("Confidence", SwingConstants.RIGHT);
-		label.setVerticalAlignment(SwingConstants.CENTER);
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
-		this.add(label, c);
-
-		c.gridx = 1;
-		c.gridy = 4;
-		c.insets = new Insets(SLIDER_PADDING_BOTTOM, SLIDER_PADDING_LEFT, SLIDER_PADDING_RIGHT, SLIDER_PADDING_TOP);
-		final JSlider confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 3);
-		confidenceSlider.setMajorTickSpacing(1);
-		final Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
-		labelTable.put(new Integer(1), new JLabel("Guess"));
-		labelTable.put(new Integer(5), new JLabel("Sure"));
-		confidenceSlider.setLabelTable(labelTable);
-		confidenceSlider.setPaintLabels(true);
-		confidenceSlider.setPaintTicks(true);
-		this.add(confidenceSlider, c);
-
+		
 		// Display the dialog box
 		final JOptionPane pane = new JOptionPane(this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-		final JDialog dialog = pane.createDialog(this.getParent(), "Submit Answer for Question " + qNumber);
+		final JDialog dialog = pane.createDialog(this.getParent(), "Close question " + qNumber);
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.setResizable(true);
 		dialog.setVisible(true);
@@ -151,17 +102,16 @@ public class AnswerEntryPanel extends TriviaDialog implements AncestorListener {
 		final int option = ( (Integer) pane.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			final String answer = answerTextArea.getText();
-			final int confidence = confidenceSlider.getValue();
 
 			int tryNumber = 0;
 			boolean success = false;
 			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 				tryNumber++;
 				try {
-					server.proposeAnswer(qNumber, answer, user, confidence);
+					server.close(client.getUser(), qNumber, answer);
 					success = true;
 				} catch (final RemoteException e) {
-					client.log("Couldn't set announced round scores on server (try #" + tryNumber + ").");
+					client.log("Couldn't close question on server (try #" + tryNumber + ").");
 				}
 			}
 
@@ -170,10 +120,11 @@ public class AnswerEntryPanel extends TriviaDialog implements AncestorListener {
 				return;
 			}
 
-			client.log("Submitted an answer for Question #" + qNumber);
+			client.log("Closed Question #" + qNumber);
 
 		}
 
 	}
+			
 
 }

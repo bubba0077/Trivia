@@ -56,10 +56,10 @@ public class Question implements Serializable {
 		this.round = round;
 		this.qNumber = qNumber;
 		this.value = 0;
-		this.question = null;
-		this.answer = null;
-		this.operator = null;
-		this.submitter = null;
+		this.question = "";
+		this.answer = "";
+		this.operator = "";
+		this.submitter = "";
 		this.open = false;
 		this.beenOpen = false;
 		this.correct = false;
@@ -76,8 +76,10 @@ public class Question implements Serializable {
 
 	/**
 	 * Close this question
+	 * @param answer TODO
 	 */
-	public void close() {
+	public void close(String answer) {
+		this.answer = answer;
 		this.open = false;
 	}
 
@@ -197,9 +199,9 @@ public class Question implements Serializable {
 	 */
 	public void markIncorrect() {
 		this.correct = false;
-		this.answer = null;
-		this.operator = null;
-		this.submitter = null;
+		this.answer = "";
+		this.operator = "";
+		this.submitter = "";
 	}
 
 	/**
@@ -215,10 +217,10 @@ public class Question implements Serializable {
 	 */
 	public void reset() {
 		this.value = 0;
-		this.question = null;
-		this.answer = null;
-		this.operator = null;
-		this.submitter = null;
+		this.question = "";
+		this.answer = "";
+		this.operator = "";
+		this.submitter = "";
 		this.open = false;
 		this.beenOpen = false;
 		this.correct = false;

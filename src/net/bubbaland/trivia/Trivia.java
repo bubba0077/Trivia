@@ -89,9 +89,10 @@ public class Trivia implements Serializable {
 	 * 
 	 * @param qNumber
 	 *            The question number
+	 * @param answer TODO
 	 */
-	public void close(int qNumber) {
-		this.currentRound.close(qNumber);
+	public void close(int qNumber, String answer) {
+		this.currentRound.close(qNumber, answer);
 	}
 
 	/**
@@ -101,9 +102,10 @@ public class Trivia implements Serializable {
 	 *            The round number
 	 * @param qNumber
 	 *            The question number
+	 * @param answer TODO
 	 */
-	public void close(int rNumber, int qNumber) {
-		this.rounds[rNumber - 1].close(qNumber);
+	public void close(int rNumber, int qNumber, String answer) {
+		this.rounds[rNumber - 1].close(qNumber, answer);
 	}
 
 	/**
