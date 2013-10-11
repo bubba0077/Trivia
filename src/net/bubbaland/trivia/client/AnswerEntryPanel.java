@@ -10,13 +10,13 @@ import java.util.Hashtable;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.event.AncestorListener;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
@@ -27,10 +27,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * 
  * @author Walter Kolczynski
  */
-public class AnswerEntryPanel extends JPanel {
-
-	/** The Constant serialVersionUID. */
-	private static final long	serialVersionUID		= -4127179718225373888L;
+public class AnswerEntryPanel extends TriviaDialog implements AncestorListener {
 
 	/**
 	 * Font sizes
@@ -45,7 +42,7 @@ public class AnswerEntryPanel extends JPanel {
 	private static final int	SLIDER_PADDING_LEFT		= 10;
 	private static final int	SLIDER_PADDING_RIGHT	= 10;
 	private static final int	SLIDER_PADDING_TOP		= 10;
-
+	
 	/**
 	 * Creates a dialog box and prompt for response
 	 * 
@@ -115,6 +112,7 @@ public class AnswerEntryPanel extends JPanel {
 		answerTextArea.setLineWrap(true);
 		answerTextArea.setWrapStyleWord(true);
 		answerTextArea.setFont(answerTextArea.getFont().deriveFont(TEXTBOX_FONT_SIZE));
+		answerTextArea.addAncestorListener(this);
 		scrollPane = new JScrollPane(answerTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
