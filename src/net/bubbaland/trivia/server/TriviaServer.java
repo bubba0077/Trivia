@@ -211,6 +211,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void callIn(int queueIndex, String caller) throws RemoteException {
+		userList.updateUser(caller);
 		this.trivia.callIn(queueIndex, caller);
 		this.log(caller + " is calling in item " + queueIndex + " in the answer queue.");
 	}
@@ -221,7 +222,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 * @see net.bubbaland.trivia.server.TriviaInterface#close(int)
 	 */
 	@Override
-	public void close(int qNumber) throws RemoteException {
+	public void close(String user, int qNumber) throws RemoteException {
+		userList.updateUser(user);
 		this.trivia.close(qNumber);
 		this.log("Question " + qNumber + " closed, "
 				+ this.trivia.getValue(this.trivia.getCurrentRoundNumber(), qNumber) + " points earned.");
@@ -257,12 +259,12 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/**
 	 * Loads a trivia state from file.
-	 * 
 	 * @param stateFile
 	 *            The name of the file to load
 	 */
 	@Override
-	public void loadState(String stateFile) throws RemoteException {
+	public void loadState(String user, String stateFile) throws RemoteException {
+		userList.updateUser(user);
 		// The full qualified file name
 		stateFile = SAVE_DIR + "/" + stateFile;
 		// Clear all data from the trivia contest
@@ -398,10 +400,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 
 		} catch (final SAXException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (final IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -435,6 +435,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markCorrect(int queueIndex, String caller, String operator) throws RemoteException {
+		userList.updateUser(caller);
 		this.trivia.markCorrect(queueIndex, caller, operator);
 		this.log("Item "
 				+ queueIndex
@@ -450,6 +451,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markIncorrect(int queueIndex, String caller) throws RemoteException {
+		userList.updateUser(caller);
 		this.trivia.markIncorrect(queueIndex, caller);
 		this.log("Item " + queueIndex + " in the queue is incorrect.");
 	}
@@ -461,6 +463,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markPartial(int queueIndex, String caller) throws RemoteException {
+		userList.updateUser(caller);
 		this.trivia.markPartial(queueIndex, caller);
 		this.log("Item " + queueIndex + " in the queue is partially correct.");
 	}
@@ -471,7 +474,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 * @see net.bubbaland.trivia.server.TriviaInterface#markUncalled(int)
 	 */
 	@Override
-	public void markUncalled(int queueIndex) throws RemoteException {
+	public void markUncalled(String user, int queueIndex) throws RemoteException {
+		userList.updateUser(user);
 		this.trivia.markUncalled(queueIndex);
 		this.log("Item " + queueIndex + " status reset to uncalled.");
 	}
@@ -483,7 +487,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	@WebMethod
-	public void newRound() throws RemoteException {
+	public void newRound(String user) throws RemoteException {
+		userList.updateUser(user);
 		this.log("New round starting...");
 		this.trivia.newRound();
 	}
@@ -494,7 +499,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 * @see net.bubbaland.trivia.server.TriviaInterface#open(int, int, java.lang.String)
 	 */
 	@Override
-	public void open(int qNumber, int qValue, String question) throws RemoteException {
+	public void open(String user, int qNumber, int qValue, String question) throws RemoteException {
+		userList.updateUser(user);
 		this.trivia.open(qNumber, qValue, question);
 		this.log("Question " + qNumber + " opened for " + qValue + " Points:\n" + question);
 	}
@@ -506,6 +512,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) throws RemoteException {
+		userList.updateUser(submitter);
 		this.trivia.proposeAnswer(qNumber, answer, submitter, confidence);
 		this.log(submitter + " submitted an answer for Q" + qNumber + " with a confidence of " + confidence + ":\n"
 				+ answer);
@@ -730,17 +737,17 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	//
 	// }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.bubbaland.trivia.server.TriviaInterface#setAnnounced(int, int, int)
-	 */
-	@Override
-	public void setAnnounced(int rNumber, int score, int place) throws RemoteException {
-		this.trivia.setAnnounced(rNumber, score, place);
-		this.log("Announced for round " + rNumber + ":");
-		this.log("Score: " + score + "  Place: " + place);
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see net.bubbaland.trivia.server.TriviaInterface#setAnnounced(int, int, int)
+//	 */
+//	@Override
+//	public void setAnnounced(int rNumber, int score, int place) throws RemoteException {
+//		this.trivia.setAnnounced(rNumber, score, place);
+//		this.log("Announced for round " + rNumber + ":");
+//		this.log("Score: " + score + "  Place: " + place);
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -748,19 +755,20 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 * @see net.bubbaland.trivia.server.TriviaInterface#setDiscrepancyText(int, java.lang.String)
 	 */
 	@Override
-	public void setDiscrepancyText(int rNumber, String discrepancyText) throws RemoteException {
+	public void setDiscrepancyText(String user, int rNumber, String discrepancyText) throws RemoteException {
+		userList.updateUser(user);
 		this.trivia.setDiscrepencyText(rNumber, discrepancyText);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.bubbaland.trivia.server.TriviaInterface#setNTeams(int)
-	 */
-	@Override
-	public void setNTeams(int nTeams) throws RemoteException {
-		this.trivia.setNTeams(nTeams);
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see net.bubbaland.trivia.server.TriviaInterface#setNTeams(int)
+//	 */
+//	@Override
+//	public void setNTeams(int nTeams) throws RemoteException {
+//		this.trivia.setNTeams(nTeams);
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -769,7 +777,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	@WebMethod
-	public void setSpeed() throws RemoteException {
+	public void setSpeed(String user) throws RemoteException {
+		userList.updateUser(user);
 		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a speed round");
 		this.trivia.setSpeed();
 	}
@@ -780,14 +789,13 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 * @see net.bubbaland.trivia.server.TriviaInterface#unsetSpeed()
 	 */
 	@Override
-	@WebMethod
-	public void unsetSpeed() throws RemoteException {
+	public void unsetSpeed(String user) throws RemoteException {
+		userList.updateUser(user);
 		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a normal round");
 		this.trivia.unsetSpeed();
 	}
 	
-	public Round[] getChangedRounds(String user, int[] oldVersions) throws RemoteException {
-		userList.updateUser(user);
+	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException {
 		return this.trivia.getChangedRounds(oldVersions);
 	}
 	
@@ -797,6 +805,10 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	
 	public String[] getUserList(int window) throws RemoteException {
 		return this.userList.getRecent(window);
+	}
+	
+	public void handshake(String user) throws RemoteException {
+		userList.updateUser(user);
 	}
 
 }

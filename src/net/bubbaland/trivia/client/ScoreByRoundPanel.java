@@ -183,7 +183,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 					while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 						tryNumber++;
 						try {
-							this.server.setDiscrepancyText(r + 1, source.getText());
+							this.server.setDiscrepancyText(client.getUser(), r + 1, source.getText());
 							success = true;
 						} catch (final Exception exception) {
 							this.client.log("Couldn't set discrepency text on server (try #" + tryNumber + ").");

@@ -100,7 +100,7 @@ public class LoadStatePrompt extends JPanel {
 				tryNumber++;
 				try {
 					// Set the announced values
-					server.loadState(saveFile);
+					server.loadState(client.getUser(), saveFile);
 					success = true;
 				} catch (final RemoteException e) {
 					// Retry if the connection is broken

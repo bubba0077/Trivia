@@ -216,7 +216,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 				tryNumber++;
 				try {
-					this.server.close(qNumber);
+					this.server.close(client.getUser(), qNumber);
 					success = true;
 				} catch (final RemoteException e) {
 					this.client.log("Couldn't retrive question data from server (try #" + tryNumber + ").");

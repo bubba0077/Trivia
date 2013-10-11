@@ -264,7 +264,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 				while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 					tryNumber++;
 					try {
-						this.server.setSpeed();
+						this.server.setSpeed(client.getUser());
 						success = true;
 					} catch (final Exception e) {
 						this.client.log("Couldn't make this a speed round (try #" + tryNumber + ").");
@@ -285,7 +285,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 				while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 					tryNumber++;
 					try {
-						this.server.unsetSpeed();
+						this.server.unsetSpeed(client.getUser());
 						success = true;
 					} catch (final RemoteException e) {
 						this.client.log("Couldn't make this a normal round (try #" + tryNumber + ").");
@@ -308,7 +308,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 				tryNumber++;
 				try {
-					this.server.newRound();
+					this.server.newRound(client.getUser());
 					success = true;
 				} catch (final Exception e) {
 					this.client.log("Couldn't get current round number from server (try #" + tryNumber + ").");

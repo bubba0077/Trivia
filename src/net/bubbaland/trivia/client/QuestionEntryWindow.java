@@ -245,7 +245,7 @@ public class QuestionEntryWindow extends JPanel {
 			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 				tryNumber++;
 				try {
-					server.open(qNumber, qValue, qText);
+					server.open(client.getUser(), qNumber, qValue, qText);
 					success = true;
 				} catch (final RemoteException e) {
 					client.log("Couldn't open question on server (try #" + tryNumber + ").");
