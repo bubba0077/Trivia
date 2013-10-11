@@ -25,7 +25,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-public class QuestionEntryWindow extends JPanel {
+public class QuestionEntryWindow extends TriviaDialog {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 8250659442772286086L;
@@ -122,6 +122,7 @@ public class QuestionEntryWindow extends JPanel {
 		qTextArea.setLineWrap(true);
 		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
+		qTextArea.addAncestorListener(this);
 		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));

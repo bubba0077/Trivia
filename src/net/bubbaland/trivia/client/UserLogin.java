@@ -19,7 +19,7 @@ import javax.swing.event.AncestorListener;
  * @author Walter Kolczynski
  * 
  */
-public class UserLogin extends JPanel implements AncestorListener {
+public class UserLogin extends TriviaDialog {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 7708693892976942384L;
@@ -74,36 +74,5 @@ public class UserLogin extends JPanel implements AncestorListener {
 		// }
 
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.swing.event.AncestorListener#ancestorAdded(javax.swing.event.AncestorEvent)
-	 */
-	@Override
-	public void ancestorAdded(AncestorEvent event) {
-		// Change the focus to the text area when created
-		final JComponent component = event.getComponent();
-		component.requestFocusInWindow();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.swing.event.AncestorListener#ancestorMoved(javax.swing.event.AncestorEvent)
-	 */
-	@Override
-	public void ancestorMoved(AncestorEvent event) {
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.swing.event.AncestorListener#ancestorRemoved(javax.swing.event.AncestorEvent)
-	 */
-	@Override
-	public void ancestorRemoved(AncestorEvent event) {
-	}
-
 
 }

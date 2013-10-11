@@ -222,9 +222,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 * @see net.bubbaland.trivia.server.TriviaInterface#close(int)
 	 */
 	@Override
-	public void close(String user, int qNumber) throws RemoteException {
+	public void close(String user, int qNumber, String answer) throws RemoteException {
 		userList.updateUser(user);
-		this.trivia.close(qNumber);
+		this.trivia.close(qNumber, answer);
 		this.log("Question " + qNumber + " closed, "
 				+ this.trivia.getValue(this.trivia.getCurrentRoundNumber(), qNumber) + " points earned.");
 	}
@@ -345,7 +345,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 						if (isCorrect) {
 							this.trivia.markCorrect(rNumber, qNumber, answer, submitter, operator);
 						} else if (!isOpen) {
-							this.trivia.close(rNumber, qNumber);
+							this.trivia.close(rNumber, qNumber, answer);
 						}
 					}
 				}

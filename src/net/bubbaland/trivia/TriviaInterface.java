@@ -32,11 +32,11 @@ public interface TriviaInterface extends Remote {
 	 * @param user TODO
 	 * @param qNumber
 	 *            The question number
-	 * 
+	 * @param answer TODO
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void close(String user, int qNumber) throws RemoteException;
+	public void close(String user, int qNumber, String answer) throws RemoteException;
 
 	/**
 	 * Get the trivia data structure.

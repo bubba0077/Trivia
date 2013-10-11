@@ -183,7 +183,8 @@ public class WorkflowQlistPanel extends TriviaPanel {
 					if (source.getText() == "Close") {
 						// Close button q was pressed
 						final int qNumber = Integer.parseInt(this.qNumberLabels[q].getText());
-						this.close(qNumber);
+						new CloseQuestionDialog(server, client, qNumber);
+//						this.close(qNumber);
 					} else {
 						// Open button was pressed
 						this.open();
@@ -204,33 +205,33 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			new AnswerEntryPanel(this.server, this.client, qNumber, this.client.getUser());
 		}
 
-		/**
-		 * Close the designated question.
-		 * 
-		 * @param qNumber
-		 *            the question number
-		 */
-		private void close(int qNumber) {
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
-				tryNumber++;
-				try {
-					this.server.close(client.getUser(), qNumber);
-					success = true;
-				} catch (final RemoteException e) {
-					this.client.log("Couldn't retrive question data from server (try #" + tryNumber + ").");
-				}
-			}
-
-			if (!success) {
-				this.client.disconnected();
-				return;
-			}
-
-			this.client.log("Closed Question #" + qNumber);
-
-		}
+//		/**
+//		 * Close the designated question.
+//		 * 
+//		 * @param qNumber
+//		 *            the question number
+//		 */
+//		private void close(int qNumber) {
+//			int tryNumber = 0;
+//			boolean success = false;
+//			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+//				tryNumber++;
+//				try {
+//					this.server.close(client.getUser(), qNumber, answer1);
+//					success = true;
+//				} catch (final RemoteException e) {
+//					this.client.log("Couldn't retrive question data from server (try #" + tryNumber + ").");
+//				}
+//			}
+//
+//			if (!success) {
+//				this.client.disconnected();
+//				return;
+//			}
+//
+//			this.client.log("Closed Question #" + qNumber);
+//
+//		}
 
 		/**
 		 * Open a new question. Creates a prompt to enter the question.

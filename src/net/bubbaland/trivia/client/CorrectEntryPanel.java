@@ -19,7 +19,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * 
  * @author Walter Kolczynski
  */
-public class CorrectEntryPanel extends JPanel {
+public class CorrectEntryPanel extends TriviaDialog {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -8974614016214193902L;
@@ -63,6 +63,7 @@ public class CorrectEntryPanel extends JPanel {
 		c.gridy = 1;
 		final JTextField operatorTextField = new JTextField("", 15);
 		operatorTextField.setFont(operatorTextField.getFont().deriveFont(FONT_SIZE));
+		operatorTextField.addAncestorListener(this);
 		this.add(operatorTextField, c);
 
 		// Display the dialog box

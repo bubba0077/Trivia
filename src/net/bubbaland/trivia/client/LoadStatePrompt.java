@@ -20,7 +20,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-public class LoadStatePrompt extends JPanel {
+public class LoadStatePrompt extends TriviaDialog {
 
 	private static final long	serialVersionUID	= -3297076605620744620L;
 	private static final float	FONT_SIZE			= 20f;
@@ -79,6 +79,7 @@ public class LoadStatePrompt extends JPanel {
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		JComboBox<String> chooser = new JComboBox<String>(saveList);
+		chooser.addAncestorListener(this);
 		this.add(chooser, constraints);
 
 		// Create dialog box with OK and CANCEL buttons
