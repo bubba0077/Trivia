@@ -78,6 +78,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 	private final JLabel			currentHourLabel;
 	private final JToggleButton		speedButton;
 	private final JButton			newRoundButton;
+	private final UserListPanel		userListPanel;
 
 	/**
 	 * Data sources
@@ -237,6 +238,12 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 		constraints.gridy = 2;
 		this.placeLabel = this.enclosedLabel("", COL5_WIDTH, BOTTOM_ROW_HEIGHT, ANNOUNCED_COLOR,
 				BACKGROUND_COLOR_NORMAL, constraints, LABEL_FONT_SIZE, SwingConstants.RIGHT, SwingConstants.CENTER);
+		
+		constraints.gridx = 6;
+		constraints.gridy = 0;
+		constraints.gridheight = 3;
+		this.userListPanel = new UserListPanel(client);
+		this.add(this.userListPanel, constraints);
 
 	}
 
@@ -372,6 +379,8 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 				}
 			}
 		}
+		
+		this.userListPanel.update();
 
 	}
 
