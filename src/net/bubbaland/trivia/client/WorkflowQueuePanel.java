@@ -201,7 +201,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 					try {
 						switch (newStatus) {
 							case "Not Called In":
-								this.server.markUncalled(queueIndex);
+								this.server.markUncalled(client.getUser(), queueIndex);
 								break;
 							case "Calling":
 								this.server.callIn(queueIndex, this.client.getUser());

@@ -46,7 +46,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	// The maximum number of retries the client will make when failing in communication with the server
 	protected static final int	MAX_RETRIES			= 10;
 	// The amount of time (in seconds) a user is considered "active"
-	final static private int	USER_LIST_WINDOW	= 1 * 60;
+	final static private int	USER_LIST_WINDOW	= 5 * 60;
 
 	// Height of the status bar at the bottom of the GUI
 	final static private int	STATUS_HEIGHT		= 14;
@@ -61,6 +61,9 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	private volatile Trivia		trivia;
 	// The remote server
 	private TriviaInterface		server;
+	
+	//
+	private volatile String[] userList;
 
 	/**
 	 * GUI Components
@@ -245,6 +248,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 			tryNumber++;
 			try {
 				this.trivia = server.getTrivia();
+				server.handshake(this.user);				
 				success = true;
 			} catch (final RemoteException e) {
 				this.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
@@ -307,10 +311,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
 		this.add(book, constraints);
-
-		/**
-		 * 
-		 */
+		
 		// Create timer that will poll server for changes
 		final Timer refreshTimer = new Timer(REFRESH_RATE, this);
 		refreshTimer.setActionCommand("Timer");
@@ -415,7 +416,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		
 		Round[] newRounds = null;
 		int[] oldVersions = this.trivia.getVersions();
-		String[] userList = null;
 		int currentRound = 0;
 		
 		// Synchronize the local Trivia data to match the server
@@ -424,9 +424,9 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 			tryNumber++;
 			try {
-				newRounds = this.server.getChangedRounds(this.user, oldVersions);
+				newRounds = this.server.getChangedRounds(oldVersions);
 				currentRound = this.server.getCurrentRound();
-				userList = this.server.getUserList(USER_LIST_WINDOW); 
+				this.userList = this.server.getUserList(USER_LIST_WINDOW);
 				success = true;
 			} catch (final RemoteException e) {
 				e.printStackTrace();
@@ -446,6 +446,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		for (final TriviaPanel page : this.pages) {
 			page.update();
 		}
+	}
+	
+	public String[] getUserList() {
+		return this.userList;
 	}
 
 }

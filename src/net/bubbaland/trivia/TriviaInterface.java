@@ -29,13 +29,14 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Close a question.
-	 * 
+	 * @param user TODO
 	 * @param qNumber
 	 *            The question number
+	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void close(int qNumber) throws RemoteException;
+	public void close(String user, int qNumber) throws RemoteException;
 
 	/**
 	 * Get the trivia data structure.
@@ -57,13 +58,14 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Load a save state from file.
-	 * 
+	 * @param user TODO
 	 * @param stateFile
 	 *            The name of the save state file to load.
+	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void loadState(String stateFile) throws RemoteException;
+	public void loadState(String user, String stateFile) throws RemoteException;
 
 	/**
 	 * Mark a question correct.
@@ -105,35 +107,38 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Mark uncalled.
-	 * 
+	 * @param user TODO
 	 * @param queueIndex
 	 *            The location of the answer in the queue
+	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void markUncalled(int queueIndex) throws RemoteException;
+	public void markUncalled(String user, int queueIndex) throws RemoteException;
 
 	/**
 	 * Starts a new round.
+	 * @param user TODO
 	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void newRound() throws RemoteException;
+	public void newRound(String user) throws RemoteException;
 
 	/**
 	 * Open a question
-	 * 
+	 * @param user TODO
 	 * @param qNumber
 	 *            The question number
 	 * @param qValue
 	 *            The question's value
 	 * @param question
 	 *            The question
+	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void open(int qNumber, int qValue, String question) throws RemoteException;
+	public void open(String user, int qNumber, int qValue, String question) throws RemoteException;
 
 	/**
 	 * Propose an answer.
@@ -163,19 +168,20 @@ public interface TriviaInterface extends Remote {
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void setAnnounced(int rNumber, int score, int place) throws RemoteException;
+//	public void setAnnounced(int rNumber, int score, int place) throws RemoteException;
 
 	/**
 	 * Sets the discrepancy text.
-	 * 
+	 * @param user TODO
 	 * @param rNumber
 	 *            The round number
 	 * @param discrepancyText
 	 *            The discrepancy text
+	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void setDiscrepancyText(int rNumber, String discrepancyText) throws RemoteException;
+	public void setDiscrepancyText(String user, int rNumber, String discrepancyText) throws RemoteException;
 
 	/**
 	 * Sets the number of teams.
@@ -185,28 +191,32 @@ public interface TriviaInterface extends Remote {
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void setNTeams(int nTeams) throws RemoteException;
+//	public void setNTeams(int nTeams) throws RemoteException;
 
 	/**
 	 * Makes the current round a speed round.
+	 * @param user TODO
 	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void setSpeed() throws RemoteException;
+	public void setSpeed(String user) throws RemoteException;
 
 	/**
 	 * Makes the current round a normal round.
+	 * @param user TODO
 	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void unsetSpeed() throws RemoteException;
+	public void unsetSpeed(String user) throws RemoteException;
 	
-	public Round[] getChangedRounds(String user, int[] oldVersions) throws RemoteException;
+	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException;
 	
 	public int getCurrentRound() throws RemoteException;
 	
 	public String[] getUserList(int window) throws RemoteException;
+	
+	public void handshake(String user) throws RemoteException;
 
 }
