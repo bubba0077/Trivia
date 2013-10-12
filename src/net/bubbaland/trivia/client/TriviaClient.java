@@ -2,6 +2,7 @@ package net.bubbaland.trivia.client;
 
 // imports for GUI
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -24,6 +25,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
@@ -60,6 +62,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 
 	// URL for RMI server
 	final static private String	TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
+	// URL for the IRC client
+	final static private String	IRC_CLIENT_URL		= "http://webchat.freenode.net/";
+	// IRC channel to join on connection to IRC server
+	final static private String	IRC_CHANNEL			= "%23kneedeeptrivia";
 
 	// The local trivia object holding all contest data
 	private volatile Trivia		trivia;
@@ -365,14 +371,28 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		// Create team copmarison chart
 		this.pages[7] = new TeamComparisonPanel(this);
 		this.book.addTab("Team Comparison", this.pages[7]);
+		
+		/**
+		 * Create browser pane for IRC web client
+		 */
+		// Create panel that contains web browser for IRC
+		final String url = IRC_CLIENT_URL + "?nick=" + this.user + "&channels=" + IRC_CHANNEL;
+		final BrowserPanel browser = new BrowserPanel(url);
+		browser.setPreferredSize(new Dimension(0, 204));
 
-		// Put the tabbed pane at the top of the window
+		/**
+		 * Create the split pane separating the tabbed pane and the broswer pane
+		 */
+		// Put the tabbed pane and browser panel in an adjustable vertical split pane
+		final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.book, browser);
+		// Put the split pane at the top of the window
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		// When the window resizes, adjust the tabbed pane size
+		// When the window resizes, adjust the split pane size
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
-		this.add(book, constraints);
+		splitPane.setResizeWeight(1.0);
+		this.add(splitPane, constraints);
 		
 		// Create timer that will poll server for changes
 		final Timer refreshTimer = new Timer(REFRESH_RATE, this);

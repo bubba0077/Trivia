@@ -125,7 +125,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 				constraints.weightx = 1.0;
 				this.answerTextAreas[a] = this.scrollableTextArea("", ANSWER_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
 						BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, Component.LEFT_ALIGNMENT,
-						Component.TOP_ALIGNMENT, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+						Component.CENTER_ALIGNMENT, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.answerTextAreas[a].setEditable(false);
 				constraints.weightx = 0.0;
