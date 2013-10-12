@@ -159,9 +159,8 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update() {
-		this.roundQListPanel.update();
-
+	public synchronized void update(boolean force) {
+		this.roundQListPanel.update(force);
 	}
 
 }

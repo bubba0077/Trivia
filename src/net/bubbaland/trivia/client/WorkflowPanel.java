@@ -66,10 +66,10 @@ public class WorkflowPanel extends TriviaPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update() {
-		this.workflowHeaderPanel.update();
-		this.workflowQlistPanel.update();
-		this.workflowQueuePanel.update();
+	public synchronized void update(boolean force) {
+		this.workflowHeaderPanel.update(force);
+		this.workflowQlistPanel.update(force);
+		this.workflowQueuePanel.update(force);
 	}
 
 }

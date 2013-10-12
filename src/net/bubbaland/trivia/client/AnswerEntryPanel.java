@@ -28,6 +28,8 @@ import net.bubbaland.trivia.TriviaInterface;
  */
 public class AnswerEntryPanel extends TriviaDialog implements AncestorListener {
 
+	private static final long	serialVersionUID	= -5797789908178154492L;
+	
 	/**
 	 * Font sizes
 	 */

@@ -2,6 +2,7 @@ package net.bubbaland.trivia;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -19,6 +20,9 @@ public class Answer implements Serializable {
 	}
 
 	private static final long	serialVersionUID	= -2367986992067473980L;
+	
+	// Place in the queue
+	final private int			queueLocation;
 
 	// The question number
 	final private int			qNumber;
@@ -54,8 +58,8 @@ public class Answer implements Serializable {
 	 * @param submitter
 	 *            The user submitting the answer
 	 */
-	public Answer(int qNumber, String answer, String submitter) {
-		this(qNumber, answer, submitter, -1);
+	public Answer(int queueLocation, int qNumber, String answer, String submitter) {
+		this(queueLocation, qNumber, answer, submitter, -1);
 	}
 
 	/**
@@ -70,7 +74,8 @@ public class Answer implements Serializable {
 	 * @param confidence
 	 *            Confidence in the proposed answer
 	 */
-	public Answer(int qNumber, String answer, String submitter, int confidence) {
+	public Answer(int queueLocation, int qNumber, String answer, String submitter, int confidence) {
+		this.queueLocation = queueLocation;
 		this.qNumber = qNumber;
 		this.answer = answer;
 		this.submitter = submitter;
@@ -225,6 +230,37 @@ public class Answer implements Serializable {
 		this.caller = "";
 		this.operator = "";
 		this.status = Status.NOT_CALLED_IN;
+	}
+	
+	public int getQueueLocation() {
+		return queueLocation;
+	}
+
+	public static class TimestampCompare implements Comparator<Answer> {
+
+		@Override
+		public int compare(Answer o1, Answer o2) {
+			return o1.getTimestamp().compareTo(o2.getTimestamp());
+		}	
+		
+	}
+	
+	public static class QNumberCompare implements Comparator<Answer> {
+
+		@Override
+		public int compare(Answer o1, Answer o2) {
+			return ((Integer)o1.getQNumber()).compareTo((Integer)o2.getQNumber());
+		}
+		
+	}
+	
+	public static class StatusCompare implements Comparator<Answer> {
+
+		@Override
+		public int compare(Answer o1, Answer o2) {
+			return o1.status.compareTo(o2.status);
+		}
+		
 	}
 
 }

@@ -72,7 +72,7 @@ public class UserListPanel extends TriviaPanel {
 	
 	
 	@Override
-	public void update() {
+	public void update(boolean force) {
 		this.users = client.getUserList();
 		Arrays.sort(this.users);
 		this.header.setText("Active (" + users.length + ")");

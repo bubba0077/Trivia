@@ -8,8 +8,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -253,13 +251,13 @@ public class WorkflowQlistPanel extends TriviaPanel {
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
-		public synchronized void update() {
+		public synchronized void update(boolean force) {
 
 			// Get the local copy of the Trivia data
 			final Trivia trivia = this.client.getTrivia();
 
 			// Get the data for any open questions
-			final String[] openQuestionNumbers = trivia.getOpenQuestionNumbers();
+			final int[] openQuestionNumbers = trivia.getOpenQuestionNumbers();
 			final String[] openQuestionText = trivia.getOpenQuestionText();
 			final String[] openQuestionValues = trivia.getOpenQuestionValues();
 
@@ -277,8 +275,8 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 			// Show data for open questions
 			for (int q = 0; q < nOpen; q++) {
-				if (qUpdated[q]) {
-					this.qNumberLabels[q].setText(openQuestionNumbers[q]);
+				if (qUpdated[q] || force) {
+					this.qNumberLabels[q].setText(openQuestionNumbers[q]+"");
 					this.qValueLabels[q].setText(openQuestionValues[q]);
 					this.qTextAreas[q].setText(openQuestionText[q]);
 					this.qTextAreas[q].setCaretPosition(0);
@@ -455,8 +453,8 @@ public class WorkflowQlistPanel extends TriviaPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update() {
-		this.workflowQListSubPanel.update();
+	public synchronized void update(boolean force) {
+		this.workflowQListSubPanel.update(force);
 	}
 
 }

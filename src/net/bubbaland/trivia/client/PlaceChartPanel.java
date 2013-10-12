@@ -89,7 +89,7 @@ public class PlaceChartPanel extends TriviaPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update() {
+	public synchronized void update(boolean force) {
 
 		// Get the current Trivia data object
 		final Trivia trivia = this.client.getTrivia();
@@ -105,7 +105,7 @@ public class PlaceChartPanel extends TriviaPanel {
 		}
 
 		// If there are changes, remake the plot
-		if (change) {
+		if (change || force) {
 			// Create a new dataset
 			final XYSeriesCollection dataset = new XYSeriesCollection();
 			// Create a new series

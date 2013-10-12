@@ -173,6 +173,12 @@ public class Round implements Serializable {
 	public int getAnnounced() {
 		return this.announcedPoints;
 	}
+	
+	public Answer[] getAnswerQueue() {
+		Answer[] queue = new Answer[getAnswerQueueSize()]; 
+		this.answerQueue.toArray(queue);
+		return queue;
+	}
 
 	/**
 	 * Gets the proposed answer text of an answer in the queue.
@@ -523,12 +529,12 @@ public class Round implements Serializable {
 	 * 
 	 * @return Array of open question numbers
 	 */
-	public String[] getOpenQuestionNumbers() {
+	public int[] getOpenQuestionNumbers() {
 		final Question[] questions = this.getOpenQuestions();
 		final int nOpen = questions.length;
-		final String[] qNumbers = new String[nOpen];
+		final int[] qNumbers = new int[nOpen];
 		for (int q = 0; q < nOpen; q++) {
-			qNumbers[q] = "" + questions[q].getNumber();
+			qNumbers[q] = questions[q].getNumber();
 		}
 		return qNumbers;
 	}
@@ -906,7 +912,7 @@ public class Round implements Serializable {
 	 *            The confidence in the answer
 	 */
 	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) {
-		this.answerQueue.add(new Answer(qNumber, answer, submitter, confidence));
+		this.answerQueue.add(new Answer(this.answerQueue.size()+1, qNumber, answer, submitter, confidence));
 		this.version++;
 	}
 

@@ -76,7 +76,7 @@ public class ScoreByRoundChartPanel extends TriviaPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update() {
+	public synchronized void update(boolean force) {
 		// Get the current Trivia data object
 		final Trivia trivia = this.client.getTrivia();
 
@@ -91,7 +91,7 @@ public class ScoreByRoundChartPanel extends TriviaPanel {
 		}
 
 		// If the data has changed, remake the chart
-		if (change) {
+		if (change || force) {
 			// Create a new dataset
 			final DefaultTableXYDataset dataset = new DefaultTableXYDataset();
 			// Create series for the earned and possible points

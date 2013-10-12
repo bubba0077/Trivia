@@ -16,14 +16,18 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -82,6 +86,12 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	private JLabel				statusBar;
 	// The user's name
 	private String				user;
+	// The Hide Closed menu item
+	private boolean hideClosed;
+	// Queue sort option
+	public static enum QueueSort {TIMESTAMP, QNUMBER, STATUS}; 
+	private QueueSort queueSort;
+	
 
 	/**
 	 * Create and show the GUI.
@@ -207,15 +217,67 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		// Add the menu to the parent frame
 		parent.setJMenuBar(menuBar);
 
+		// Make Queue Menu
+		JMenu menu = new JMenu("Queue");
+		menuBar.add(menu);
+		
+		JCheckBoxMenuItem hideClosedMenuItem = new JCheckBoxMenuItem("Hide closed questions");
+		hideClosedMenuItem.setMnemonic(KeyEvent.VK_C);
+		hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+		hideClosedMenuItem.setActionCommand("Hide Closed");
+		hideClosedMenuItem.addActionListener(this);
+		hideClosedMenuItem.setSelected(true);
+		this.hideClosed = true;
+		menu.add(hideClosedMenuItem);
+		
+		JMenu sortMenu = new JMenu("Sort by...");
+		sortMenu.setMnemonic(KeyEvent.VK_S);
+		
+		ButtonGroup sortOptions = new ButtonGroup();
+		JRadioButtonMenuItem sortOption = new JRadioButtonMenuItem("Timestamp");
+		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
+		sortOption.setActionCommand("Sort Timestamp");
+		sortOption.addActionListener(this);
+		sortOption.setSelected(true);
+		this.queueSort = QueueSort.TIMESTAMP;
+		sortOptions.add(sortOption);
+		sortMenu.add(sortOption);
+		
+		sortOption = new JRadioButtonMenuItem("Question Number");
+		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+		sortOption.setActionCommand("Sort Question Number");
+		sortOption.addActionListener(this);
+		sortOption.setSelected(false);
+		sortOptions.add(sortOption);
+		sortMenu.add(sortOption);
+		
+		sortOption = new JRadioButtonMenuItem("Status");
+		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		sortOption.setActionCommand("Sort Status");
+		sortOption.addActionListener(this);
+		sortOption.setSelected(false);
+		sortOptions.add(sortOption);
+		sortMenu.add(sortOption);
+		
+		menu.add(sortMenu);	
+		
+//		sortOption = new JRadioButtonMenuItem("Status");
+//		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+//		sortOption.setActionCommand("Status");
+//		sortOption.setSelected(false);
+//		this.queueSort = "Status";
+//		sortOptions.add(sortOption);
+//		sortMenu.add(sortOption);
+
 		// Make User Menu
-		JMenu menu = new JMenu("User");
+		menu = new JMenu("User");
 		menuBar.add(menu);
 
 		JMenuItem menuItem = new JMenuItem("Change name", KeyEvent.VK_N);
 		menuItem.setActionCommand("Change name");
 		menuItem.addActionListener(this);
 		menu.add(menuItem);
-
+		
 		// Make Admin Menu pinned to the right
 		menuBar.add(Box.createHorizontalGlue());
 		menu = new JMenu("Admin");
@@ -361,8 +423,22 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 				// Triggered by change state, prompt for save file
 				new LoadStatePrompt(this.server, this);
 				break;
-			case "Set team number":
-				// new TeamNumberPrompt(this);
+			case "Hide Closed":
+				// Triggered by change to Hide Closed menu item
+				this.hideClosed = ((JCheckBoxMenuItem)e.getSource()).isSelected();
+				this.update(true);
+				break;
+			case "Sort Timestamp":
+				this.queueSort = QueueSort.TIMESTAMP;
+				this.update(true);
+				break;
+			case "Sort Question Number":
+				this.queueSort = QueueSort.QNUMBER;
+				this.update(true);
+				break;
+			case "Sort Status":
+				this.queueSort = QueueSort.STATUS;
+				this.update(true);
 				break;
 		}
 	}
@@ -404,6 +480,17 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	public String getUser() {
 		return this.user;
 	}
+	
+	/**
+	 * 
+	 */
+	public boolean hideClosed() {
+		return this.hideClosed;
+	}
+	
+	public QueueSort getQueueSort() {
+		return this.queueSort;
+	}
 
 	/**
 	 * Display message in the status bar and in console
@@ -432,7 +519,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	 * Update the GUI
 	 */
 	@Override
-	public synchronized void update() {
+	public synchronized void update(boolean force) {
 		
 		Round[] newRounds = null;
 		int[] oldVersions = this.trivia.getVersions();
@@ -464,7 +551,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 
 		// Update each individual tab in the GUI
 		for (final TriviaPanel page : this.pages) {
-			page.update();
+			page.update(force);
 		}
 	}
 	

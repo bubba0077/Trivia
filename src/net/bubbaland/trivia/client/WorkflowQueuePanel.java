@@ -21,8 +21,10 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import net.bubbaland.trivia.Answer;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
+import net.bubbaland.trivia.client.TriviaClient.QueueSort;
 
 /**
  * A panel that show the current answers in the queue
@@ -50,6 +52,8 @@ public class WorkflowQueuePanel extends TriviaPanel {
 				submitterLabels, operatorLabels, callerLabels;
 		final private JComboBox<String>[]	statusComboBoxes;
 		final private JTextArea[]			answerTextAreas;
+		
+		private Answer[] answerQueue;
 
 		/**
 		 * Data sources
@@ -73,6 +77,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 
 			this.server = server;
 			this.client = client;
+			this.answerQueue = new Answer[0];
 
 			// Set up layout constraints
 			final GridBagConstraints constraints = new GridBagConstraints();
@@ -243,44 +248,63 @@ public class WorkflowQueuePanel extends TriviaPanel {
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
-		public synchronized void update() {
+		public synchronized void update(boolean force) {
 			// Get the current Trivia data object
 			final Trivia trivia = this.client.getTrivia();
-
+			
+			final boolean hideClosed = this.client.hideClosed();
+			final QueueSort sortMethod = this.client.getQueueSort();
+			
 			// Get the queue data from the server
-			final String[] newTimestamps = trivia.getAnswerQueueTimestamps();
-			final int[] newQNumbers = trivia.getAnswerQueueQNumbers();
-			final String[] newAnswers = trivia.getAnswerQueueAnswers();
-			final int[] newConfidences = trivia.getAnswerQueueConfidences();
-			final String[] newSubmitters = trivia.getAnswerQueueSubmitters();
-			final String[] newOperators = trivia.getAnswerQueueOperators();
-			final String[] newCallers = trivia.getAnswerQueueCallers();
-			final String[] newStatuses = trivia.getAnswerQueueStatuses();
-
-			final int queueSize = newTimestamps.length;
+			final Answer[] newAnswerQueue = trivia.getAnswerQueue();
+			
+			switch (sortMethod) {
+				case TIMESTAMP:
+					Arrays.sort(newAnswerQueue, new Answer.TimestampCompare());
+					break;
+				case QNUMBER:
+					Arrays.sort(newAnswerQueue, new Answer.QNumberCompare());
+					break;
+				case STATUS:
+					Arrays.sort(newAnswerQueue, new Answer.StatusCompare());
+					break;
+			}
+			
+			final int queueSize = newAnswerQueue.length;
 
 			// Determine if each item in the queue has been updated
 			final boolean[] qUpdated = new boolean[queueSize];
 			for (int a = 0; a < queueSize; a++) {
-				qUpdated[a] = !( this.timestampLabels[a].getText().equals(newTimestamps[a])
-						&& this.qNumberLabels[a].getText().equals(newQNumbers[a] + "")
-						&& this.answerTextAreas[a].getText().equals(newAnswers[a])
-						&& this.confidenceLabels[a].getText().equals(newConfidences[a] + "")
-						&& this.submitterLabels[a].getText().equals(newSubmitters[a])
-						&& this.operatorLabels[a].getText().equals(newOperators[a])
-						&& this.callerLabels[a].getText().equals(newCallers[a]) && this.lastStatus[a]
-						.equals(newStatuses[a]) );
+				if( a < answerQueue.length ) {
+					qUpdated[a] = !(answerQueue[a].equals(newAnswerQueue[a]));
+				} else {
+					qUpdated[a]= true;
+				}
 			}
-
+			
+			this.answerQueue = newAnswerQueue;
+			
 			for (int a = 0; a < queueSize; a++) {
+				
+				final int newQueueNumber = answerQueue[a].getQueueLocation(); 
+				final String newTimestamp = answerQueue[a].getTimestamp();
+				final int newQNumber = answerQueue[a].getQNumber();
+				final String newAnswer = answerQueue[a].getAnswer();
+				final int newConfidence = answerQueue[a].getConfidence();
+				final String newSubmitter = answerQueue[a].getSubmitter();
+				final String newOperator = answerQueue[a].getOperator();
+				final String newCaller = answerQueue[a].getCaller();
+				final String newStatus = answerQueue[a].getStatusString();
 
-				this.lastStatus[a] = newStatuses[a];
-
-				if (qUpdated[a]) {
+				this.lastStatus[a] = newStatus;
+								
+				boolean closed = !trivia.isOpen(newQNumber);
+				
+				if (qUpdated[a] || force) {
 					// If the status has changed, update the labels and color
 					Color color = NOT_CALLED_IN_COLOR;
-					final int statusIndex = Arrays.asList(STATUSES).indexOf(newStatuses[a]);
-					switch (newStatuses[a]) {
+					final int statusIndex = Arrays.asList(STATUSES).indexOf(newStatus);
+					switch (newStatus) {
 						case "Not Called In":
 							color = NOT_CALLED_IN_COLOR;
 							break;
@@ -300,27 +324,29 @@ public class WorkflowQueuePanel extends TriviaPanel {
 							color = NOT_CALLED_IN_COLOR;
 							break;
 					}
+					
+					this.queuenumberLabels[a].setText("#" + newQueueNumber);
 
-					this.timestampLabels[a].setText(newTimestamps[a]);
+					this.timestampLabels[a].setText(newTimestamp);
 					this.timestampLabels[a].setForeground(color);
 
-					this.qNumberLabels[a].setText(newQNumbers[a] + "");
+					this.qNumberLabels[a].setText(newQNumber + "");
 					this.qNumberLabels[a].setForeground(color);
 
-					this.answerTextAreas[a].setText(newAnswers[a]);
+					this.answerTextAreas[a].setText(newAnswer);
 					this.answerTextAreas[a].setForeground(color);
 					this.answerTextAreas[a].setCaretPosition(0);
 
-					this.confidenceLabels[a].setText(newConfidences[a] + "");
+					this.confidenceLabels[a].setText(newConfidence + "");
 					this.confidenceLabels[a].setForeground(color);
 
-					this.submitterLabels[a].setText(newSubmitters[a]);
+					this.submitterLabels[a].setText(newSubmitter);
 					this.submitterLabels[a].setForeground(color);
 
-					this.operatorLabels[a].setText(newOperators[a]);
+					this.operatorLabels[a].setText(newOperator);
 					this.operatorLabels[a].setForeground(color);
 
-					this.callerLabels[a].setText(newCallers[a]);
+					this.callerLabels[a].setText(newCaller);
 					this.callerLabels[a].setForeground(color);
 
 					// Temporarily remove the status box listener to prevent trigger when we change it to match server
@@ -336,29 +362,55 @@ public class WorkflowQueuePanel extends TriviaPanel {
 						this.statusComboBoxes[a].addItemListener(listener);
 					}
 
-					// Make this row visible
-					this.queuenumberLabels[a].setVisible(true);
-					this.timestampLabels[a].setVisible(true);
-					this.qNumberLabels[a].setVisible(true);
-					this.answerTextAreas[a].setVisible(true);
-					this.answerTextAreas[a].getParent().setVisible(true);
-					this.answerTextAreas[a].getParent().getParent().setVisible(true);
-					this.confidenceLabels[a].setVisible(true);
-					this.submitterLabels[a].setVisible(true);
-					this.operatorLabels[a].setVisible(true);
-					this.callerLabels[a].setVisible(true);
-					this.statusComboBoxes[a].setVisible(true);
-
-					this.queuenumberLabels[a].getParent().setVisible(true);
-					this.timestampLabels[a].getParent().setVisible(true);
-					this.qNumberLabels[a].getParent().setVisible(true);
-					this.answerTextAreas[a].getParent().setVisible(true);
-					this.answerTextAreas[a].getParent().getParent().setVisible(true);
-					this.confidenceLabels[a].getParent().setVisible(true);
-					this.submitterLabels[a].getParent().setVisible(true);
-					this.operatorLabels[a].getParent().setVisible(true);
-					this.callerLabels[a].getParent().setVisible(true);
-					this.statusComboBoxes[a].getParent().setVisible(true);
+					if(hideClosed && closed) {
+						// Hide this row
+						this.queuenumberLabels[a].setVisible(false);
+						this.timestampLabels[a].setVisible(false);
+						this.qNumberLabels[a].setVisible(false);
+						this.answerTextAreas[a].setVisible(false);
+						this.answerTextAreas[a].getParent().setVisible(false);
+						this.answerTextAreas[a].getParent().getParent().setVisible(false);
+						this.confidenceLabels[a].setVisible(false);
+						this.submitterLabels[a].setVisible(false);
+						this.operatorLabels[a].setVisible(false);
+						this.callerLabels[a].setVisible(false);
+						this.statusComboBoxes[a].setVisible(false);
+	
+						this.queuenumberLabels[a].getParent().setVisible(false);
+						this.timestampLabels[a].getParent().setVisible(false);
+						this.qNumberLabels[a].getParent().setVisible(false);
+						this.answerTextAreas[a].getParent().setVisible(false);
+						this.answerTextAreas[a].getParent().getParent().setVisible(false);
+						this.confidenceLabels[a].getParent().setVisible(false);
+						this.submitterLabels[a].getParent().setVisible(false);
+						this.operatorLabels[a].getParent().setVisible(false);
+						this.callerLabels[a].getParent().setVisible(false);
+						this.statusComboBoxes[a].getParent().setVisible(false);
+					} else {
+						// Make this row visible
+						this.queuenumberLabels[a].setVisible(true);
+						this.timestampLabels[a].setVisible(true);
+						this.qNumberLabels[a].setVisible(true);
+						this.answerTextAreas[a].setVisible(true);
+						this.answerTextAreas[a].getParent().setVisible(true);
+						this.answerTextAreas[a].getParent().getParent().setVisible(true);
+						this.confidenceLabels[a].setVisible(true);
+						this.submitterLabels[a].setVisible(true);
+						this.operatorLabels[a].setVisible(true);
+						this.callerLabels[a].setVisible(true);
+						this.statusComboBoxes[a].setVisible(true);
+	
+						this.queuenumberLabels[a].getParent().setVisible(true);
+						this.timestampLabels[a].getParent().setVisible(true);
+						this.qNumberLabels[a].getParent().setVisible(true);
+						this.answerTextAreas[a].getParent().setVisible(true);
+						this.answerTextAreas[a].getParent().getParent().setVisible(true);
+						this.confidenceLabels[a].getParent().setVisible(true);
+						this.submitterLabels[a].getParent().setVisible(true);
+						this.operatorLabels[a].getParent().setVisible(true);
+						this.callerLabels[a].getParent().setVisible(true);
+						this.statusComboBoxes[a].getParent().setVisible(true);
+					}
 
 				}
 
@@ -390,6 +442,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 			}
 
 		}
+		
 
 	}
 
@@ -547,11 +600,11 @@ public class WorkflowQueuePanel extends TriviaPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update() {
+	public synchronized void update(boolean force) {
 		// Update the queue size
 		final int queueSize = this.client.getTrivia().getAnswerQueueSize();
 		this.queueSizeLabel.setText(queueSize + "");
-		this.workflowQueueSubPanel.update();
+		this.workflowQueueSubPanel.update(force);
 	}
 
 }
