@@ -333,7 +333,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update() {
+	public synchronized void update(boolean force) {
 		// Get the current Trivia object from the client
 		final Trivia trivia = this.client.getTrivia();
 
@@ -380,7 +380,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 			}
 		}
 		
-		this.userListPanel.update();
+		this.userListPanel.update(force);
 
 	}
 

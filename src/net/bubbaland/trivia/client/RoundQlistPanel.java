@@ -184,7 +184,7 @@ public class RoundQlistPanel extends TriviaPanel {
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
-		public synchronized void update() {
+		public synchronized void update(boolean force) {
 
 			final Trivia trivia = this.client.getTrivia();
 			int currentRound = 0;
@@ -228,7 +228,7 @@ public class RoundQlistPanel extends TriviaPanel {
 			}
 
 			for (int q = 0; q < nQuestions; q++) {
-				if (qUpdated[q]) {
+				if (qUpdated[q] || force) {
 					this.speed = newSpeed;
 					if (beenOpens[q]) {
 						// Only show questions that have been asked
@@ -434,8 +434,8 @@ public class RoundQlistPanel extends TriviaPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update() {
-		this.roundQlistSubPanel.update();
+	public synchronized void update(boolean force) {
+		this.roundQlistSubPanel.update(force);
 	}
 
 }

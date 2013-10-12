@@ -207,7 +207,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
-		public void update() {
+		public void update(boolean force) {
 			// Get the current Trivia data object
 			final Trivia trivia = this.client.getTrivia();
 
@@ -436,8 +436,8 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public void update() {
-		this.internalScrollPanel.update();
+	public void update(boolean force) {
+		this.internalScrollPanel.update(force);
 	}
 
 

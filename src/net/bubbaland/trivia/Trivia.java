@@ -166,6 +166,29 @@ public class Trivia implements Serializable {
 	}
 	
 	/**
+	 * Gets the Answers in the queue for the current round.
+	 * 
+	 * @param queueIndex
+	 *            The location in the queue
+	 * @return The Answers
+	 */
+	public Answer[] getAnswerQueue() {
+		return this.currentRound.getAnswerQueue();
+	}
+	
+	/**
+	 * Gets the Answers in the queue for the current round.
+	 * 
+	 * @param queueIndex
+	 *            The location in the queue
+	 * @return The Answers
+	 */
+	public Answer[] getAnswerQueue(int rNumber) {
+		return rounds[rNumber-1].getAnswerQueue();
+	}
+	
+	
+	/**
 	 * Gets the proposed answer in the queue for the current round.
 	 * 
 	 * @param queueIndex
@@ -571,7 +594,7 @@ public class Trivia implements Serializable {
 	 * 
 	 * @return Array of question numbers
 	 */
-	public String[] getOpenQuestionNumbers() {
+	public int[] getOpenQuestionNumbers() {
 		return this.currentRound.getOpenQuestionNumbers();
 	}
 
