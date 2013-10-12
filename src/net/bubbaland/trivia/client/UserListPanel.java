@@ -54,7 +54,7 @@ public class UserListPanel extends TriviaPanel {
 		constraints.weighty = 1.0;
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-				
+
 		this.userList = new JList<String>();
 		this.userList.setLayoutOrientation(JList.VERTICAL);
 		this.userList.setVisibleRowCount(-1);

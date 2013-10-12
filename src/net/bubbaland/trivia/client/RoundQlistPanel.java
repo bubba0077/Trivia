@@ -158,7 +158,7 @@ public class RoundQlistPanel extends TriviaPanel {
 			constraints.gridwidth = 6;
 			constraints.weighty = 1.0;
 			final JPanel blank = new JPanel();
-			blank.setBackground(HeaderPanel.BACKGROUND_COLOR_NORMAL);
+			blank.setBackground(HeaderPanel.BACKGROUND_COLOR);
 			blank.setPreferredSize(new Dimension(0, 0));
 			this.add(blank, constraints);
 		}
