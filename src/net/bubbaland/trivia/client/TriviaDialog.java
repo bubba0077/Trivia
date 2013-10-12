@@ -5,6 +5,7 @@ import java.awt.LayoutManager;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
@@ -36,10 +37,19 @@ public class TriviaDialog extends JPanel implements AncestorListener {
 	}
 
 	@Override
-	public void ancestorAdded(AncestorEvent event) {
+	public void ancestorAdded(final AncestorEvent event) {
 		// Change the focus to the text area when created
-		final JComponent component = event.getComponent();
-		component.requestFocusInWindow();
+		final AncestorListener al= this;
+        SwingUtilities.invokeLater(new Runnable(){
+
+            @Override
+            public void run()
+            {
+                JComponent component = (JComponent)event.getComponent();
+                component.requestFocusInWindow();
+                component.removeAncestorListener( al );
+            }
+        });
 	}
 
 	@Override

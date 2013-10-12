@@ -16,7 +16,6 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-import javax.swing.event.AncestorListener;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
@@ -26,7 +25,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * 
  * @author Walter Kolczynski
  */
-public class AnswerEntryPanel extends TriviaDialog implements AncestorListener {
+public class AnswerEntryPanel extends TriviaDialog {
 
 	private static final long	serialVersionUID	= -5797789908178154492L;
 	
