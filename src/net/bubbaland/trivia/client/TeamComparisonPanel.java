@@ -85,7 +85,7 @@ public class TeamComparisonPanel extends TriviaPanel {
 			this.scores.add(roundStandings);
 		}
 
-		if (change || force) {
+		if (change) {
 			final int nTeams = this.scores.get(0).length;
 			final DefaultTableXYDataset dataset = new DefaultTableXYDataset();
 			final JFreeChart chart = ChartFactory.createXYLineChart("Team Comparison", "Round", "Point Differential",
