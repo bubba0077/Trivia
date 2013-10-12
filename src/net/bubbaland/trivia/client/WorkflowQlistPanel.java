@@ -1,13 +1,13 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -115,9 +115,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				constraints.gridy = q;
 				constraints.weightx = 1.0;
 				this.qTextAreas[q] = this.scrollableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
-						constraints, QUESTION_FONT_SIZE, Component.LEFT_ALIGNMENT, Component.TOP_ALIGNMENT,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+						constraints, QUESTION_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.qTextAreas[q].setEditable(false);
 				constraints.weightx = 0.0;
 

@@ -2,7 +2,6 @@ package net.bubbaland.trivia.client;
 
 // imports for GUI
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -106,26 +105,25 @@ public class WorkflowQueuePanel extends TriviaPanel {
 				constraints.gridx = 0;
 				constraints.gridy = 2 * a;
 				this.queuenumberLabels[a] = this.enclosedLabel("#" + ( a + 1 ), TIME_WIDTH, ANSWER_HEIGHT / 2,
-						NOT_CALLED_IN_COLOR, BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
+						NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
 						SwingConstants.CENTER);
 
 				constraints.gridx = 0;
 				constraints.gridy = 2 * a + 1;
 				this.timestampLabels[a] = this.enclosedLabel("", TIME_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
-						BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+						HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 
 				constraints.gridheight = 2;
 				constraints.gridx = 1;
 				constraints.gridy = 2 * a;
 				this.qNumberLabels[a] = this.enclosedLabel("", QNUM_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-						BACKGROUND_COLOR, constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+						HEADER_BACKGROUND_COLOR, constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 
 				constraints.gridx = 2;
 				constraints.gridy = 2 * a;
 				constraints.weightx = 1.0;
 				this.answerTextAreas[a] = this.scrollableTextArea("", ANSWER_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-						BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, Component.LEFT_ALIGNMENT,
-						Component.CENTER_ALIGNMENT, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+						HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.answerTextAreas[a].setEditable(false);
 				constraints.weightx = 0.0;
@@ -133,37 +131,37 @@ public class WorkflowQueuePanel extends TriviaPanel {
 				constraints.gridx = 3;
 				constraints.gridy = 2 * a;
 				this.confidenceLabels[a] = this.enclosedLabel("", CONFIDENCE_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-						BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+						HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 
 				constraints.gridheight = 1;
 				constraints.gridx = 4;
 				constraints.gridy = 2 * a;
 				this.submitterLabels[a] = this.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2,
-						NOT_CALLED_IN_COLOR, BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
+						NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
 						SwingConstants.CENTER);
 
 				constraints.gridx = 4;
 				constraints.gridy = 2 * a + 1;
 				this.callerLabels[a] = this.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
-						BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+						HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 				constraints.gridheight = 2;
 
 				constraints.gridx = 5;
 				constraints.gridy = 2 * a;
 				this.operatorLabels[a] = this.enclosedLabel("", OPERATOR_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-						BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+						HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 
 				constraints.gridx = 6;
 				constraints.gridy = 2 * a;
 				final JPanel panel = new JPanel(new GridBagLayout());
-				panel.setBackground(BACKGROUND_COLOR);
+				panel.setBackground(HEADER_BACKGROUND_COLOR);
 				panel.setPreferredSize(new Dimension(STATUS_WIDTH, ANSWER_HEIGHT));
 				panel.setMinimumSize(new Dimension(STATUS_WIDTH, ANSWER_HEIGHT));
 				this.add(panel, constraints);
 				this.statusComboBoxes[a] = new JComboBox<String>(STATUSES);
 				this.statusComboBoxes[a].setName(a + "");
 				this.statusComboBoxes[a].addItemListener(this);
-				this.statusComboBoxes[a].setBackground(BACKGROUND_COLOR);
+				this.statusComboBoxes[a].setBackground(HEADER_BACKGROUND_COLOR);
 				panel.add(this.statusComboBoxes[a]);
 
 				this.lastStatus[a] = "new";
@@ -179,7 +177,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 			constraints.weightx = 1.0;
 			constraints.weighty = 1.0;
 			final JPanel blank = new JPanel();
-			blank.setBackground(BACKGROUND_COLOR);
+			blank.setBackground(HEADER_BACKGROUND_COLOR);
 			blank.setPreferredSize(new Dimension(0, 0));
 			this.add(blank, constraints);
 		}
@@ -283,6 +281,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 			}
 			
 			this.answerQueue = newAnswerQueue;
+			int shownRows = 0;			
 			
 			for (int a = 0; a < queueSize; a++) {
 				
@@ -296,9 +295,12 @@ public class WorkflowQueuePanel extends TriviaPanel {
 				final String newCaller = answerQueue[a].getCaller();
 				final String newStatus = answerQueue[a].getStatusString();
 
-				this.lastStatus[a] = newStatus;
-								
+				this.lastStatus[a] = newStatus;				
 				boolean closed = !trivia.isOpen(newQNumber);
+				
+				if(!(hideClosed && closed)) {
+					shownRows++;
+				}
 				
 				if (qUpdated[a] || force) {
 					// If the status has changed, update the labels and color
@@ -325,29 +327,44 @@ public class WorkflowQueuePanel extends TriviaPanel {
 							break;
 					}
 					
+					Color bColor;
+					if(shownRows%2 == 1) {
+						bColor = ODD_BACKGROUND_COLOR;
+					} else {
+						bColor = EVEN_BACKGROUND_COLOR;
+					}
+					
 					this.queuenumberLabels[a].setText("#" + newQueueNumber);
+					this.queuenumberLabels[a].getParent().setBackground(bColor);
 
 					this.timestampLabels[a].setText(newTimestamp);
 					this.timestampLabels[a].setForeground(color);
+					this.timestampLabels[a].getParent().setBackground(bColor);
 
 					this.qNumberLabels[a].setText(newQNumber + "");
 					this.qNumberLabels[a].setForeground(color);
+					this.qNumberLabels[a].getParent().setBackground(bColor);
 
 					this.answerTextAreas[a].setText(newAnswer);
 					this.answerTextAreas[a].setForeground(color);
+					this.answerTextAreas[a].setBackground(bColor);
 					this.answerTextAreas[a].setCaretPosition(0);
 
 					this.confidenceLabels[a].setText(newConfidence + "");
 					this.confidenceLabels[a].setForeground(color);
-
+					this.confidenceLabels[a].getParent().setBackground(bColor);
+					
 					this.submitterLabels[a].setText(newSubmitter);
 					this.submitterLabels[a].setForeground(color);
+					this.submitterLabels[a].getParent().setBackground(bColor);
 
 					this.operatorLabels[a].setText(newOperator);
 					this.operatorLabels[a].setForeground(color);
+					this.operatorLabels[a].getParent().setBackground(bColor);
 
 					this.callerLabels[a].setText(newCaller);
 					this.callerLabels[a].setForeground(color);
+					this.callerLabels[a].getParent().setBackground(bColor);
 
 					// Temporarily remove the status box listener to prevent trigger when we change it to match server
 					// status
@@ -356,6 +373,8 @@ public class WorkflowQueuePanel extends TriviaPanel {
 						this.statusComboBoxes[a].removeItemListener(listener);
 					}
 					this.statusComboBoxes[a].setForeground(color);
+					this.statusComboBoxes[a].setBackground(bColor);
+					this.statusComboBoxes[a].getParent().setBackground(bColor);
 					this.statusComboBoxes[a].setName((newQueueNumber-1) + "");					
 					this.statusComboBoxes[a].setSelectedIndex(statusIndex);
 					// Add the status box listener back to monitor user changes
@@ -452,16 +471,17 @@ public class WorkflowQueuePanel extends TriviaPanel {
 	/**
 	 * Colors
 	 */
-	private static final Color			HEADER_BACKGROUND_COLOR	= Color.darkGray;
-
-	private static final Color			HEADER_TEXT_COLOR		= Color.white;
-	private static final Color			BACKGROUND_COLOR		= Color.BLACK;
+	private static final Color			HEADER_BACKGROUND_COLOR	= Color.BLACK;
+	private static final Color			HEADER_TEXT_COLOR		= Color.WHITE;
+	
+	private static final Color			ODD_BACKGROUND_COLOR	= new Color(30,30,30);
+	private static final Color			EVEN_BACKGROUND_COLOR	= Color.BLACK;
 	private static final Color			NOT_CALLED_IN_COLOR		= Color.WHITE;
 	private static final Color			CALLING_COLOR			= Color.CYAN;
 	private static final Color			INCORRECT_COLOR			= Color.RED;
 	private static final Color			PARTIAL_COLOR			= Color.ORANGE;
-
 	private static final Color			CORRECT_COLOR			= Color.GREEN;
+	
 	/**
 	 * Sizes
 	 */
@@ -480,7 +500,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 	 * Font sizes
 	 */
 	private static final float			HEADER_FONT_SIZE		= (float) 12.0;
-	private static final float			LARGE_FONT_SIZE			= (float) 24.0;
+	private static final float			LARGE_FONT_SIZE			= (float) 36.0;
 
 	private static final float			SMALL_FONT_SIZE			= (float) 12.0;
 

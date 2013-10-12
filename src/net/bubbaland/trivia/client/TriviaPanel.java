@@ -95,10 +95,6 @@ public abstract class TriviaPanel extends JPanel {
 	 *            the GridBag constraints
 	 * @param fontSize
 	 *            the font size
-	 * @param labelHAlignment
-	 *            the horizontal alignment (JTextArea constants)
-	 * @param labelVAlignment
-	 *            the vertical alignment (JTextArea constants)
 	 * @param horizontalScroll
 	 *            the horizontal scroll bar policy (JScrollPane constants)
 	 * @param verticalScroll
@@ -106,18 +102,14 @@ public abstract class TriviaPanel extends JPanel {
 	 * @return the text area inside the scroll pane
 	 */
 	public JTextArea scrollableTextArea(String string, int width, int height, Color foreground, Color background,
-			GridBagConstraints constraints, float fontSize, float labelHAlignment, float labelVAlignment,
-			int horizontalScroll, int verticalScroll) {
+			GridBagConstraints constraints, float fontSize, int horizontalScroll, int verticalScroll) {
 
 		final JScrollPane pane = new JScrollPane(verticalScroll, horizontalScroll);
-		pane.setBackground(background);
 		pane.setPreferredSize(new Dimension(width, height));
 		pane.setMinimumSize(new Dimension(width, height));
 		pane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(pane, constraints);
 		final JTextArea textArea = new JTextArea(string);
-		textArea.setAlignmentY(labelVAlignment);
-		textArea.setAlignmentX(labelHAlignment);
 		textArea.setFont(textArea.getFont().deriveFont(fontSize));
 		textArea.setBackground(background);
 		textArea.setForeground(foreground);

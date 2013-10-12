@@ -1,7 +1,6 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 
@@ -122,9 +121,7 @@ public class RoundQlistPanel extends TriviaPanel {
 				constraints.gridy = 2 * q;
 				constraints.weightx = 0.6;
 				this.questionTextAreas[q] = this.scrollableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
-						constraints, SMALL_FONT_SIZE, Component.LEFT_ALIGNMENT, Component.TOP_ALIGNMENT,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+						constraints, SMALL_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.questionTextAreas[q].setEditable(false);
 
 				constraints.weightx = 0.0;
@@ -134,9 +131,7 @@ public class RoundQlistPanel extends TriviaPanel {
 				constraints.gridy = 2 * q;
 				constraints.weightx = 0.4;
 				this.answerTextAreas[q] = this.scrollableTextArea("", ANSWER_WIDTH, QUESTION_HEIGHT, color, bColor,
-						constraints, SMALL_FONT_SIZE, Component.LEFT_ALIGNMENT, Component.TOP_ALIGNMENT,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+						constraints, SMALL_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.answerTextAreas[q].setEditable(false);
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
