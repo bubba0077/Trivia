@@ -203,34 +203,6 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			new AnswerEntryPanel(this.server, this.client, qNumber, this.client.getUser());
 		}
 
-//		/**
-//		 * Close the designated question.
-//		 * 
-//		 * @param qNumber
-//		 *            the question number
-//		 */
-//		private void close(int qNumber) {
-//			int tryNumber = 0;
-//			boolean success = false;
-//			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
-//				tryNumber++;
-//				try {
-//					this.server.close(client.getUser(), qNumber, answer1);
-//					success = true;
-//				} catch (final RemoteException e) {
-//					this.client.log("Couldn't retrive question data from server (try #" + tryNumber + ").");
-//				}
-//			}
-//
-//			if (!success) {
-//				this.client.disconnected();
-//				return;
-//			}
-//
-//			this.client.log("Closed Question #" + qNumber);
-//
-//		}
-
 		/**
 		 * Open a new question. Creates a prompt to enter the question.
 		 */
@@ -267,8 +239,8 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			final boolean[] qUpdated = new boolean[nOpen];
 			boolean anyUpdate = false;
 			for (int q = 0; q < nOpen; q++) {
-				qUpdated[q] = !( this.qNumberLabels[q].getText().equals(openQuestionNumbers[q])
-						&& this.qValueLabels[q].getText().equals(openQuestionValues[q]) && this.qTextAreas[q].getText()
+				qUpdated[q] = !( this.qNumberLabels[q].getText().equals(openQuestionNumbers[q]+"")
+						&& this.qValueLabels[q].getText().equals(openQuestionValues[q]+"") && this.qTextAreas[q].getText()
 						.equals(openQuestionText[q]) );
 				anyUpdate = anyUpdate || qUpdated[q];
 			}

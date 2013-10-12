@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.rmi.RemoteException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -118,7 +119,7 @@ public class QuestionEntryWindow extends TriviaDialog {
 		constraints.gridwidth = 2;
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
-		final JTextArea qTextArea = new JTextArea("", 4, 50);
+		final JTextArea qTextArea = new JTextArea(qTextStart, 4, 50);
 		qTextArea.setLineWrap(true);
 		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
@@ -156,7 +157,7 @@ public class QuestionEntryWindow extends TriviaDialog {
 				// Get the existing question data
 				final int existingQValue = trivia.getValue(currentRound, qNumber);
 				final String existingQText = trivia.getQuestionText(currentRound, qNumber);
-
+				
 				final JPanel panel = new JPanel(new GridBagLayout());
 
 				constraints = new GridBagConstraints();
@@ -187,6 +188,8 @@ public class QuestionEntryWindow extends TriviaDialog {
 				scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 				scrollPane.setPreferredSize(new Dimension(100, 100));
+				scrollPane.setViewportView(textArea);
+				scrollPane.setBorder(BorderFactory.createEmptyBorder());
 				panel.add(scrollPane, constraints);
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
@@ -208,13 +211,15 @@ public class QuestionEntryWindow extends TriviaDialog {
 				constraints.gridy = 5;
 				constraints.weightx = 0.5;
 				constraints.weighty = 0.5;
-				textArea = new JTextArea(existingQText);
+				textArea = new JTextArea(qText);
 				textArea.setLineWrap(true);
 				textArea.setWrapStyleWord(true);
 				textArea.setEditable(false);
 				scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 				scrollPane.setPreferredSize(new Dimension(100, 100));
+				scrollPane.setViewportView(textArea);
+				scrollPane.setBorder(BorderFactory.createEmptyBorder());
 				panel.add(scrollPane, constraints);
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
@@ -237,7 +242,8 @@ public class QuestionEntryWindow extends TriviaDialog {
 				final int confirm = ( (Integer) pane.getValue() ).intValue();
 				if (confirm != JOptionPane.OK_OPTION) {
 					new QuestionEntryWindow(server, client, nQuestions, qNumber, qValue, qText);
-				}
+					return;
+				}		
 			}
 
 			// Open the question on the server
