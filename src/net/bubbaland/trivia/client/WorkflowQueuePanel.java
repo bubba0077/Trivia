@@ -356,6 +356,7 @@ public class WorkflowQueuePanel extends TriviaPanel {
 						this.statusComboBoxes[a].removeItemListener(listener);
 					}
 					this.statusComboBoxes[a].setForeground(color);
+					this.statusComboBoxes[a].setName((newQueueNumber-1) + "");					
 					this.statusComboBoxes[a].setSelectedIndex(statusIndex);
 					// Add the status box listener back to monitor user changes
 					for (final ItemListener listener : listeners) {
