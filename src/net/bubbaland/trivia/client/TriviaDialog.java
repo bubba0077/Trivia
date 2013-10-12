@@ -2,7 +2,6 @@ package net.bubbaland.trivia.client;
 
 
 import java.awt.LayoutManager;
-
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -40,6 +39,10 @@ public class TriviaDialog extends JPanel implements AncestorListener {
 	public void ancestorAdded(final AncestorEvent event) {
 		// Change the focus to the text area when created
 		final AncestorListener al= this;
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {			
+		}
         SwingUtilities.invokeLater(new Runnable(){
 
             @Override
