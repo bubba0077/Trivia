@@ -4,11 +4,9 @@ package net.bubbaland.trivia.client;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
 import java.net.MalformedURLException;
 // imports for RMI
 import java.rmi.Naming;
@@ -143,7 +141,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		try {
 			frame.add(new TriviaClient(frame, triviaServer), BorderLayout.CENTER);
 		} catch (final Exception e) {
-			e.printStackTrace();
 			System.exit(0);
 		}
 
@@ -344,7 +341,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 				success = true;
 			} catch (final RemoteException e) {
 				this.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
-				e.printStackTrace();
 			}
 		}
 
@@ -488,7 +484,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 				success = true;
 			} catch (final RemoteException e) {
 				this.log("Couldn't change role server (try #" + tryNumber + ").");
-				e.printStackTrace();
 			}
 		}
 
@@ -509,10 +504,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		final Object[] options = { "Retry", "Exit" };
 		final int option = JOptionPane.showOptionDialog(null, message, "Disconnected", JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.ERROR_MESSAGE, null, options, options[1]);
-		if (option == JOptionPane.CANCEL_OPTION) {
+		if (option == 1) {
 			// Exit the client
-			final WindowEvent wev = new WindowEvent((JFrame) this.getBook().getParent(), WindowEvent.WINDOW_CLOSING);
-			Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 			System.exit(0);
 		}
 
@@ -592,7 +585,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 				this.userHash = this.server.getUserList(USER_LIST_WINDOW);
 				success = true;
 			} catch (final RemoteException e) {
-				e.printStackTrace();
 				this.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
 			}
 		}
