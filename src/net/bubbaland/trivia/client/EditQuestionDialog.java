@@ -199,7 +199,7 @@ public class EditQuestionDialog extends TriviaDialog implements ActionListener {
 			final String submitter = submitterTextField.getText();
 			final String operator = operatorTextField.getText();
 			
-			// Open the question on the server
+			// Edit the question on the server
 			int tryNumber = 0;
 			boolean success = false;
 			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {

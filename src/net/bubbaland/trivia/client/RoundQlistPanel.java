@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.rmi.RemoteException;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -42,7 +43,7 @@ public class RoundQlistPanel extends TriviaPanel {
 		 */
 		private final JLabel[]		qNumberLabels, earnedLabels, valueLabels, submitterLabels, operatorLabels;
 		private final JTextArea[]	questionTextAreas, answerTextAreas;
-		private final JMenuItem		editItem;
+		private final JMenuItem		editItem, reopenItem;
 
 		/** Status variables */
 		private boolean				speed;
@@ -192,6 +193,15 @@ public class RoundQlistPanel extends TriviaPanel {
 			editItem.addMouseListener(this);
 			contextMenu.add(editItem);
 			this.add(contextMenu);			
+			
+			if(live) {
+				reopenItem = new JMenuItem("Reopen");
+				reopenItem.addMouseListener(this);
+				contextMenu.add(reopenItem);
+				this.add(contextMenu);
+			} else {
+				reopenItem = null;
+			}
 		}
 
 		/**
@@ -234,7 +244,7 @@ public class RoundQlistPanel extends TriviaPanel {
 				if (beenOpens[q]) {
 					if (opens[q]) {
 						qUpdated[q] = !( this.speed == newSpeed && this.valueLabels[q].getText().equals(values[q] + "") && this.questionTextAreas[q]
-								.getText().equals(questions[q]) );
+								.getText().equals(questions[q]) && this.earnedLabels[q].getText().equals("") );
 
 					} else {
 						qUpdated[q] = !( this.speed == newSpeed && this.valueLabels[q].getText().equals(values[q] + "")
@@ -308,15 +318,39 @@ public class RoundQlistPanel extends TriviaPanel {
 		public void mouseClicked(MouseEvent event) {
 			final JComponent source = (JComponent) event.getSource();
 			final Trivia trivia = client.getTrivia();
+			final int qNumber = Integer.parseInt(source.getName());
 			if (this.live) {	this.rNumber = trivia.getCurrentRoundNumber();	}			
 			if(source.equals(editItem)) {
 				editItem.getParent().setVisible(false);
-				new EditQuestionDialog(this.server, this.client, this.rNumber, Integer.parseInt(source.getName()));				
+				new EditQuestionDialog(this.server, this.client, this.rNumber, qNumber);				
+			} else if (source.equals(reopenItem)) {
+				editItem.getParent().setVisible(false);
+				
+				// Repen the question on the server
+				int tryNumber = 0;
+				boolean success = false;
+				while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+					tryNumber++;
+					try {
+						server.open(client.getUser(), qNumber, trivia.getValue(rNumber, qNumber), trivia.getQuestionText(rNumber, qNumber));
+						success = true;
+					} catch (final RemoteException e) {
+						client.log("Couldn't reopen question on server (try #" + tryNumber + ").");
+					}
+				}
+
+				if (!success) {
+					client.disconnected();
+					return;
+				}
+
+				client.log("Question #" + qNumber + " reopened.");								
+				
 			} else {
-				final int qNumber = Integer.parseInt(source.getName());
 				if(event.getButton() == 3 && trivia.beenOpen( this.rNumber, qNumber )) {
 					editItem.getParent().setLocation(event.getXOnScreen(), event.getYOnScreen());
 					editItem.setName(source.getName());
+					if(live) {	reopenItem.setName(source.getName()); }
 					editItem.getParent().setVisible(true);
 				} else {
 					editItem.getParent().setVisible(false);
