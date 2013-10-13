@@ -2,6 +2,9 @@ package net.bubbaland.trivia;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Hashtable;
+
+import net.bubbaland.trivia.UserList.Role;
 
 /**
  * The interface for the trivia server.
@@ -215,7 +218,9 @@ public interface TriviaInterface extends Remote {
 	
 	public int getCurrentRound() throws RemoteException;
 	
-	public String[] getUserList(int window) throws RemoteException;
+	public Hashtable<String, Role> getUserList(int window) throws RemoteException;
+	
+	public void setRole(String user, Role role) throws RemoteException;
 	
 	public void handshake(String user) throws RemoteException;
 	

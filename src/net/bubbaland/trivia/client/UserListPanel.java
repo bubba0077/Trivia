@@ -1,15 +1,20 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.Arrays;
+import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+
+import net.bubbaland.trivia.UserList.Role;
 
 public class UserListPanel extends TriviaPanel {
 	
@@ -20,14 +25,17 @@ public class UserListPanel extends TriviaPanel {
 	private static final Color HEADER_BACKGROUND_COLOR = Color.DARK_GRAY;
 	private static final Color HEADER_TEXT_COLOR = Color.WHITE;
 	private static final Color BACKGROUND_COLOR = Color.LIGHT_GRAY;
-	private static final Color TEXT_COLOR = Color.BLACK;
+	protected static final Color RESEARCHER_COLOR = Color.BLACK;
+	protected static final Color CALLER_COLOR = Color.BLUE;
+	protected static final Color TYPER_COLOR = Color.RED;
+	
 	
 	private static final float FONT_SIZE = 10f;
 	
-	private String[] users;
 	private final JLabel header;
 	private final JList<String> userList;
-
+	private Hashtable<String, Role> userHash;
+	
 	/**
 	 * Data sources
 	 */
@@ -37,7 +45,6 @@ public class UserListPanel extends TriviaPanel {
 		
 		super();
 		this.client = client;
-		this.users = client.getUserList();
 				
 		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
@@ -58,9 +65,10 @@ public class UserListPanel extends TriviaPanel {
 		this.userList = new JList<String>();
 		this.userList.setLayoutOrientation(JList.VERTICAL);
 		this.userList.setVisibleRowCount(-1);
-		this.userList.setForeground(TEXT_COLOR);
+		this.userList.setForeground(RESEARCHER_COLOR);
 		this.userList.setBackground(BACKGROUND_COLOR);
 		this.userList.setFont(this.userList.getFont().deriveFont(FONT_SIZE));
+		this.userList.setCellRenderer(new MyCellRenderer());
 		
 		final JScrollPane pane = new JScrollPane(this.userList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		pane.setBorder(BorderFactory.createEmptyBorder());
@@ -73,10 +81,38 @@ public class UserListPanel extends TriviaPanel {
 	
 	@Override
 	public void update(boolean force) {
-		this.users = client.getUserList();
-		Arrays.sort(this.users);
+		this.userHash = client.getUserHash();
+		String[] users = new String[this.userHash.size()];
+		userHash.keySet().toArray(users);
+		Arrays.sort(users);
 		this.header.setText("Active (" + users.length + ")");
-		this.userList.setListData(users);		
+		this.userList.setListData(users);
 	}
+	
+	private class MyCellRenderer extends DefaultListCellRenderer	{
+		private static final long	serialVersionUID	= -801444128612741125L;
+
+		@SuppressWarnings("rawtypes")
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+		  {
+		    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		    Color color = null;
+		    switch( userHash.get(value) ) {
+		    	case CALLER:
+		    		color = CALLER_COLOR;
+		    		break;
+		    	case TYPER:
+		    		color = TYPER_COLOR;
+		    		break;
+		    	case RESEARCHER:
+		    	default:
+		    		color = RESEARCHER_COLOR;
+		    		break;
+		    }
+		    setForeground(color);
+		    setOpaque(true); // otherwise, it's transparent
+		    return this;  // DefaultListCellRenderer derived from JLabel, DefaultListCellRenderer.getListCellRendererComponent returns this as well.
+		  }
+		}
 
 }

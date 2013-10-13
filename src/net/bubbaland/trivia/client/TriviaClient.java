@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Hashtable;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -35,6 +36,7 @@ import javax.swing.Timer;
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
+import net.bubbaland.trivia.UserList.Role;
 
 /**
  * Provides the root functionality for connecting to the trivia server and creating the associated GUI.
@@ -73,7 +75,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	private TriviaInterface		server;
 	
 	//
-	private volatile String[] userList;
+	private volatile Hashtable<String, Role>	userHash;
 
 	/**
 	 * GUI Components
@@ -91,7 +93,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	// Queue sort option
 	public static enum QueueSort {TIMESTAMP, QNUMBER, STATUS}; 
 	private QueueSort queueSort;
-	
 
 	/**
 	 * Create and show the GUI.
@@ -264,6 +265,37 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		// Make User Menu
 		menu = new JMenu("User");
 		menuBar.add(menu);
+		
+		JMenu roleMenu = new JMenu("Change role...");
+		roleMenu.setMnemonic(KeyEvent.VK_R);
+		
+		ButtonGroup roleOptions = new ButtonGroup();
+		JRadioButtonMenuItem roleOption = new JRadioButtonMenuItem("Researcher");
+		roleOption.setActionCommand("Researcher");
+		roleOption.addActionListener(this);
+		roleOption.setSelected(true);
+		roleOption.setForeground(UserListPanel.RESEARCHER_COLOR);
+		roleOptions.add(roleOption);
+		roleMenu.add(roleOption);
+		setRole(Role.RESEARCHER);
+		
+		roleOption = new JRadioButtonMenuItem("Caller");
+		roleOption.setActionCommand("Caller");
+		roleOption.addActionListener(this);
+		roleOption.setSelected(false);
+		roleOption.setForeground(UserListPanel.CALLER_COLOR);
+		roleOptions.add(roleOption);
+		roleMenu.add(roleOption);
+		
+		roleOption = new JRadioButtonMenuItem("Typer");
+		roleOption.setActionCommand("Typer");
+		roleOption.addActionListener(this);
+		roleOption.setSelected(false);
+		roleOption.setForeground(UserListPanel.TYPER_COLOR);
+		roleOptions.add(roleOption);
+		roleMenu.add(roleOption);
+				
+		menu.add(roleMenu);		
 
 		JMenuItem menuItem = new JMenuItem("Change name", KeyEvent.VK_N);
 		menuItem.setActionCommand("Change name");
@@ -432,6 +464,38 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 				this.queueSort = QueueSort.STATUS;
 				this.update(true);
 				break;
+			case "Caller":
+				setRole(Role.CALLER);
+				break;
+			case "Typer":
+				setRole(Role.TYPER);
+				break;
+			case "Researcher":
+				setRole(Role.RESEARCHER);
+				break;
+				
+		}
+	}
+	
+	private void setRole(Role role) {
+		int tryNumber = 0;
+		boolean success = false;
+		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			tryNumber++;
+			try {
+				this.trivia = server.getTrivia();
+				this.server.setRole(this.user, role);
+				success = true;
+			} catch (final RemoteException e) {
+				this.log("Couldn't change role server (try #" + tryNumber + ").");
+				e.printStackTrace();
+			}
+		}
+
+		// Show disconnected dialog if we could not retrieve the Trivia data
+		if (!success || this.trivia == null) {
+			this.disconnected();
+			return;
 		}
 	}
 
@@ -525,7 +589,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 			try {
 				newRounds = this.server.getChangedRounds(oldVersions);
 				currentRound = this.server.getCurrentRound();
-				this.userList = this.server.getUserList(USER_LIST_WINDOW);
+				this.userHash = this.server.getUserList(USER_LIST_WINDOW);
 				success = true;
 			} catch (final RemoteException e) {
 				e.printStackTrace();
@@ -547,8 +611,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		}
 	}
 	
-	public String[] getUserList() {
-		return this.userList;
+	public Hashtable<String, Role> getUserHash() {
+		return this.userHash;
 	}
 
 	public JTabbedPane getBook() {

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Hashtable;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -31,6 +32,8 @@ import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.ScoreEntry;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
+import net.bubbaland.trivia.UserList;
+import net.bubbaland.trivia.UserList.Role;
 
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -803,8 +806,12 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		return trivia.getCurrentRoundNumber();
 	}
 	
-	public String[] getUserList(int window) throws RemoteException {
+	public Hashtable<String, Role> getUserList(int window) throws RemoteException {
 		return this.userList.getRecent(window);
+	}
+	
+	public void setRole(String user, Role role) throws RemoteException {
+		userList.updateRole(user, role);
 	}
 	
 	public void handshake(String user) throws RemoteException {
