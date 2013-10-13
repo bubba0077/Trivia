@@ -17,6 +17,8 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
@@ -34,7 +36,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	/**
 	 * A panel that displays the question data for a round.
 	 */
-	private class RoundQListSubPanel extends TriviaPanel implements MouseListener {
+	private class RoundQListSubPanel extends TriviaPanel implements MouseListener, ChangeListener {
 
 		private static final long	serialVersionUID	= 3825357215129662133L;
 
@@ -202,6 +204,9 @@ public class RoundQlistPanel extends TriviaPanel {
 			} else {
 				reopenItem = null;
 			}
+			
+			this.client.getBook().addChangeListener(this);
+			
 		}
 
 		/**
@@ -379,6 +384,12 @@ public class RoundQlistPanel extends TriviaPanel {
 		@Override
 		public void mouseExited(MouseEvent event) {
 			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			editItem.getParent().setVisible(false);
 			
 		}
 

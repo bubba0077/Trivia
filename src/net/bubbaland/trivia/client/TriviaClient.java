@@ -259,15 +259,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		sortOptions.add(sortOption);
 		sortMenu.add(sortOption);
 		
-		menu.add(sortMenu);	
-		
-//		sortOption = new JRadioButtonMenuItem("Status");
-//		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
-//		sortOption.setActionCommand("Status");
-//		sortOption.setSelected(false);
-//		this.queueSort = "Status";
-//		sortOptions.add(sortOption);
-//		sortMenu.add(sortOption);
+		menu.add(sortMenu);
 
 		// Make User Menu
 		menu = new JMenu("User");
@@ -455,7 +447,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 				JOptionPane.ERROR_MESSAGE, null, options, options[1]);
 		if (option == JOptionPane.CANCEL_OPTION) {
 			// Exit the client
-			final WindowEvent wev = new WindowEvent((JFrame) this.book.getParent(), WindowEvent.WINDOW_CLOSING);
+			final WindowEvent wev = new WindowEvent((JFrame) this.getBook().getParent(), WindowEvent.WINDOW_CLOSING);
 			Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 			System.exit(0);
 		}
@@ -557,6 +549,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	
 	public String[] getUserList() {
 		return this.userList;
+	}
+
+	public JTabbedPane getBook() {
+		return book;
 	}
 
 }
