@@ -26,6 +26,13 @@ public class UserList {
 		this.userList.put(user, new Date());
 		this.roleList.put(user, role);
 	}
+	
+	public void changeUser(String oldUser, String newUser) {
+		Role role = this.roleList.get(oldUser);
+		this.userList.remove(oldUser);
+		this.roleList.remove(oldUser);
+		this.updateRole(newUser, role);
+	}
 		
 	public Hashtable<String, Role> getRecent(int windowInSec) {
 		Date currentDate = new Date();

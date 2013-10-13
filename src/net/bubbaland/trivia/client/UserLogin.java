@@ -84,7 +84,7 @@ public class UserLogin extends TriviaDialog {
 	//				return;
 	//			}			
 			} else {
-				new UserLogin(server, client);				
+				new UserLogin(server, client);			
 			}
 		} else {
 			if( client.getUser() == null ) {

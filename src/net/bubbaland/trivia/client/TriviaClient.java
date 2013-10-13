@@ -200,11 +200,11 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 
 		// Call parent constructor and use a GridBagLayout
 		super();
-
+		
+		this.server = server;
+		
 		// Create a prompt requesting the user name
 		new UserLogin(server, this);
-
-		this.server = server;
 
 		/**
 		 * Setup the menu
@@ -558,6 +558,26 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	 *            The new user name
 	 */
 	public void setUser(String user) {
+		int tryNumber = 0;
+		boolean success = false;
+		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			tryNumber++;
+			try {
+				if(this.user == null) {
+					this.server.handshake(user);
+				} else {
+					this.server.changeUser(this.user, user);
+				}
+				success = true;
+			} catch (final RemoteException e) {
+				this.log("Couldn't change user name on server (try #" + tryNumber + ").");
+			}
+		}
+
+		if (!success) {
+			this.disconnected();
+			return;
+		}		
 		this.user = user;
 	}
 

@@ -821,5 +821,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect, String submitter, String operator) throws RemoteException {
 		trivia.editQuestion(rNumber, qNumber, value, qText, aText, isCorrect, submitter, operator);		
 	}
+	
+	public void changeUser(String oldUser, String newUser)  throws RemoteException {
+		userList.changeUser(oldUser, newUser);
+	}
 
 }

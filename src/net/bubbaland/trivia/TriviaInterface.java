@@ -225,5 +225,7 @@ public interface TriviaInterface extends Remote {
 	public void handshake(String user) throws RemoteException;
 	
 	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect, String submitter, String operator) throws RemoteException;
+	
+	public void changeUser(String oldUser, String newUser)  throws RemoteException;
 
 }
