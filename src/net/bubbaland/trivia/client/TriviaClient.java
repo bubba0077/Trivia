@@ -29,6 +29,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
 import net.bubbaland.trivia.Round;
@@ -203,6 +204,9 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		
 		this.server = server;
 		
+		TriviaFetcher fetcher = new TriviaFetcher(server, this);
+		fetcher.execute();
+		
 		// Create a prompt requesting the user name
 		new UserLogin(server, this);
 
@@ -307,7 +311,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		menuItem.addActionListener(this);
 		menu.add(menuItem);
 
-
 		/**
 		 * Setup status bar at bottom
 		 */
@@ -324,29 +327,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		// Create status bar
 		this.statusBar = this.enclosedLabel("", 0, STATUS_HEIGHT, this.getForeground(), this.getBackground(),
 				constraints, STATUS_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
-
-
-		/**
-		 * Create a local copy of the Trivia object
-		 */
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
-			tryNumber++;
-			try {
-				this.trivia = server.getTrivia();			
-				success = true;
-			} catch (final RemoteException e) {
-				this.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
-			}
-		}
-
-		// Show disconnected dialog if we could not retrieve the Trivia data
-		if (!success || this.trivia == null) {
-			this.disconnected();
-			return;
-		}
-
 
 		/**
 		 * Create main content area
@@ -427,7 +407,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		final String command = e.getActionCommand();
 		switch (command) {
-
 			case "Timer":
 				// Triggered by update timer
 				this.update();
@@ -626,6 +605,45 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 
 	public JTabbedPane getBook() {
 		return book;
+	}
+	
+	private class TriviaFetcher extends SwingWorker<Void, Void> {
+		
+		final TriviaInterface server;
+		final TriviaClient client;
+		
+		public TriviaFetcher(TriviaInterface server, TriviaClient client) {
+			super();
+			this.server = server;
+			this.client = client;
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			/**
+			 * Create a local copy of the Trivia object
+			 */
+			int tryNumber = 0;
+			boolean success = false;
+			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+				tryNumber++;
+				try {
+					this.client.trivia = server.getTrivia();			
+					success = true;
+				} catch (final RemoteException e) {
+					this.client.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
+				}
+			}
+
+			// Show disconnected dialog if we could not retrieve the Trivia data
+			if (!success || this.client.trivia == null) {
+				this.client.disconnected();
+				return null;
+			}
+			return null;
+
+		}		
+		
 	}
 
 }
