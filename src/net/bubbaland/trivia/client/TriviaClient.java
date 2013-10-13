@@ -96,7 +96,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	/**
 	 * Create and show the GUI.
 	 */
-	private static void createAndShowGUI() {
+	private static void createAndShowGUI(boolean useFX) {
 		// Create the application window
 		final JFrame frame = new JFrame("Trivia");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -140,7 +140,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 
 		// Initialize GUI and place in window
 		try {
-			frame.add(new TriviaClient(frame, triviaServer), BorderLayout.CENTER);
+			frame.add(new TriviaClient(frame, triviaServer, useFX), BorderLayout.CENTER);
 		} catch (final Exception e) {
 			System.exit(0);
 		}
@@ -157,13 +157,12 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	 *            Not used
 	 */
 	public static void main(String[] args) {
+		boolean useFX = false;
 		// Schedule a job to create and show the GUI
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				createAndShowGUI();
-			}
-		});
+		if(args.length > 0 && args[0].equals("useFX")) {
+			useFX = true;
+		}		
+		SwingUtilities.invokeLater(new TriviaRunnable(useFX));
 	}
 
 	/**
@@ -197,7 +196,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	 * @param server
 	 *            The RMI Server
 	 */
-	private TriviaClient(JFrame parent, TriviaInterface server) {
+	private TriviaClient(JFrame parent, TriviaInterface server, boolean useFX) {
 
 		// Call parent constructor and use a GridBagLayout
 		super();
@@ -369,27 +368,32 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		this.pages[7] = new TeamComparisonPanel(this);
 		this.book.addTab("Team Comparison", this.pages[7]);
 		
-		/**
-		 * Create browser pane for IRC web client
-		 */
-		// Create panel that contains web browser for IRC
-		final String url = IRC_CLIENT_URL + "?nick=" + this.user + "&channels=" + IRC_CHANNEL;
-		final BrowserPanel browser = new BrowserPanel(url);
-		browser.setPreferredSize(new Dimension(0, 204));
-
-		/**
-		 * Create the split pane separating the tabbed pane and the broswer pane
-		 */
-		// Put the tabbed pane and browser panel in an adjustable vertical split pane
-		final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.book, browser);
 		// Put the split pane at the top of the window
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		// When the window resizes, adjust the split pane size
 		constraints.weightx = 1.0;
-		constraints.weighty = 1.0;
-		splitPane.setResizeWeight(1.0);
-		this.add(splitPane, constraints);
+		constraints.weighty = 1.0;		
+		
+		if(useFX) {
+			/**
+			 * Create browser pane for IRC web client
+			 */
+			// Create panel that contains web browser for IRC
+			final String url = IRC_CLIENT_URL + "?nick=" + this.user + "&channels=" + IRC_CHANNEL;
+			final BrowserPanel browser = new BrowserPanel(url);
+			browser.setPreferredSize(new Dimension(0, 204));
+	
+			/**
+			 * Create the split pane separating the tabbed pane and the broswer pane
+			 */
+			// Put the tabbed pane and browser panel in an adjustable vertical split pane
+			final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.book, browser);
+			splitPane.setResizeWeight(1.0);
+			this.add(splitPane, constraints);
+		} else {
+			this.add(book, constraints);
+		}
 		
 		// Create timer that will poll server for changes
 		final Timer refreshTimer = new Timer(REFRESH_RATE, this);
@@ -644,6 +648,18 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 
 		}		
 		
+	}
+	
+	private static class TriviaRunnable implements Runnable {
+		private boolean useFX;
+		
+		public TriviaRunnable(boolean useFX) {
+			this.useFX = useFX;
+		}
+		@Override
+		public void run() {
+			createAndShowGUI(useFX);
+		}
 	}
 
 }
