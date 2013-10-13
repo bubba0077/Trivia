@@ -434,7 +434,7 @@ public class Trivia implements Serializable {
 	 *            The round number
 	 * @return The discrepancy text
 	 */
-	public String getDiscrepencyText(int rNumber) {
+	public String getDiscrepancyText(int rNumber) {
 		return this.rounds[rNumber - 1].getDiscrepancyText();
 	}
 

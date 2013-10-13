@@ -39,10 +39,12 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		 */
 		final private JLabel[]			earnedLabels, valueLabels, percentLabels, cumulativeEarnedLabels,
 				cumulativeValueLabels, percentTotalLabels, announcedScoreLabels, placeLabels;
-		final private JTextField[]		discrepencyTextField;
-
+		final private JTextField[]		discrepancyTextField;
+		
 		/** The nunber of rounds */
 		final private int				nRounds;
+		
+		private String[]				discrepancies;
 
 		/** Data sources */
 		final private TriviaInterface	server;
@@ -78,7 +80,8 @@ public class ScoreByRoundPanel extends TriviaPanel {
 			this.percentTotalLabels = new JLabel[this.nRounds];
 			this.announcedScoreLabels = new JLabel[this.nRounds];
 			this.placeLabels = new JLabel[this.nRounds];
-			this.discrepencyTextField = new JTextField[this.nRounds];
+			this.discrepancyTextField = new JTextField[this.nRounds];
+			this.discrepancies = new String[nRounds];
 
 			// Create the labels for each round
 			for (int r = 0; r < this.nRounds; r++) {
@@ -142,13 +145,15 @@ public class ScoreByRoundPanel extends TriviaPanel {
 				constraints.weightx = 1.0;
 				constraints.gridx = 9;
 				constraints.gridy = r;
-				this.discrepencyTextField[r] = new JTextField("", 10);
-				this.discrepencyTextField[r].setBackground(bColor.brighter());
-				this.discrepencyTextField[r].setForeground(DISCREPENCY_COLOR);
-				this.discrepencyTextField[r].setBorder(BorderFactory.createEmptyBorder());
-				this.discrepencyTextField[r].setFont(this.discrepencyTextField[r].getFont().deriveFont(DATA_FONT_SIZE));
-				this.discrepencyTextField[r].addActionListener(this);
-				this.add(this.discrepencyTextField[r], constraints);
+				this.discrepancyTextField[r] = new JTextField("", 10);
+				this.discrepancyTextField[r].setBackground(bColor.brighter());
+				this.discrepancyTextField[r].setForeground(DISCREPENCY_COLOR);
+				this.discrepancyTextField[r].setBorder(BorderFactory.createEmptyBorder());
+				this.discrepancyTextField[r].setFont(this.discrepancyTextField[r].getFont().deriveFont(DATA_FONT_SIZE));
+				this.discrepancyTextField[r].addActionListener(this);
+				this.add(this.discrepancyTextField[r], constraints);
+				
+				discrepancies[r] = "";
 
 			}
 
@@ -177,7 +182,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 			 */
 			final JTextField source = (JTextField) e.getSource();
 			for (int r = 0; r < this.nRounds; r++) {
-				if (source.equals(this.discrepencyTextField[r])) {
+				if (source.equals(this.discrepancyTextField[r])) {
 					int tryNumber = 0;
 					boolean success = false;
 					while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
@@ -186,7 +191,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 							this.server.setDiscrepancyText(client.getUser(), r + 1, source.getText());
 							success = true;
 						} catch (final Exception exception) {
-							this.client.log("Couldn't set discrepency text on server (try #" + tryNumber + ").");
+							this.client.log("Couldn't set discrepancy text on server (try #" + tryNumber + ").");
 						}
 					}
 
@@ -219,27 +224,39 @@ public class ScoreByRoundPanel extends TriviaPanel {
 				final int value = trivia.getValue(r + 1);
 				final int announced = trivia.getAnnouncedPoints(r + 1);
 				final int place = trivia.getAnnouncedPlace(r + 1);
-				final String discrepency = trivia.getDiscrepencyText(r + 1);
+				final String discrepancy = trivia.getDiscrepancyText(r + 1);
 				final boolean isAnnounced = trivia.isAnnounced(r + 1);
 				cumulativeEarned += earned;
 				cumulativeValue += value;
-
+				
 				if (value != 0) {
-					// If the round has started, update all of the labels for the round
-					final String percent = String.format("%04.1f", ( earned * 100.0 / value )) + "%";
-					final String percentTotal = String.format("%04.1f", ( cumulativeEarned * 100.0 / cumulativeValue ))
-							+ "%";
-					this.earnedLabels[r].setText(earned + "");
-					this.valueLabels[r].setText(value + "");
-					this.percentLabels[r].setText(percent);
-					this.cumulativeEarnedLabels[r].setText(cumulativeEarned + "");
-					this.cumulativeValueLabels[r].setText(cumulativeValue + "");
-					this.percentTotalLabels[r].setText(percentTotal);
-					if (isAnnounced) {
-						this.announcedScoreLabels[r].setText(announced + "");
-						this.placeLabels[r].setText(TriviaClient.ordinalize(place));
+					final boolean updated = !(this.earnedLabels[r].getText().equals(earned+"")
+						&& this.valueLabels[r].getText().equals(value+"")
+						&& this.cumulativeEarnedLabels[r].getText().equals(cumulativeEarned+"")
+						&& this.cumulativeValueLabels[r].getText().equals(cumulativeValue+"")
+						&& ( this.announcedScoreLabels[r].getText().equals(announced+"") || !isAnnounced )
+						&& ( this.placeLabels[r].getText().equals(TriviaClient.ordinalize(place)) || !isAnnounced )
+						&& this.discrepancies[r].equals(discrepancy) )
+						|| force;
+				
+					if(updated) {
+						// If the round has started, update all of the labels for the round
+						final String percent = String.format("%04.1f", ( earned * 100.0 / value )) + "%";
+						final String percentTotal = String.format("%04.1f", ( cumulativeEarned * 100.0 / cumulativeValue ))
+								+ "%";
+						this.earnedLabels[r].setText(earned + "");
+						this.valueLabels[r].setText(value + "");
+						this.percentLabels[r].setText(percent);
+						this.cumulativeEarnedLabels[r].setText(cumulativeEarned + "");
+						this.cumulativeValueLabels[r].setText(cumulativeValue + "");
+						this.percentTotalLabels[r].setText(percentTotal);
+						if (isAnnounced) {
+							this.announcedScoreLabels[r].setText(announced + "");
+							this.placeLabels[r].setText(TriviaClient.ordinalize(place));
+						}
+						this.discrepancyTextField[r].setText(discrepancy);
+						this.discrepancies[r] = discrepancy;
 					}
-					this.discrepencyTextField[r].setText(discrepency);
 				}
 
 			}

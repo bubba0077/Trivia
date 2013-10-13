@@ -592,7 +592,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 				// The discrepancy text for this round
 				element = doc.createElement("Discrepancy_Text");
-				element.appendChild(doc.createTextNode(this.trivia.getDiscrepencyText(r + 1) + ""));
+				element.appendChild(doc.createTextNode(this.trivia.getDiscrepancyText(r + 1) + ""));
 				roundElement.appendChild(element);
 
 				for (int q = 0; q < this.trivia.getNQuestions(r + 1); q++) {

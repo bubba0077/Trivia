@@ -52,7 +52,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	// The maximum number of retries the client will make when failing in communication with the server
 	protected static final int	MAX_RETRIES			= 10;
 	// The amount of time (in seconds) a user is considered "active"
-	final static private int	USER_LIST_WINDOW	= 5 * 60;
+	final static private int	USER_LIST_WINDOW	= 10 * 60;
 
 	// Height of the status bar at the bottom of the GUI
 	final static private int	STATUS_HEIGHT		= 14;
