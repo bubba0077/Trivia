@@ -147,8 +147,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		// Display the window.
 		frame.pack();
 		frame.setVisible(true);
-
-
 	}
 
 	/**
@@ -204,7 +202,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		super();
 
 		// Create a prompt requesting the user name
-		new UserLogin(this);
+		new UserLogin(server, this);
 
 		this.server = server;
 
@@ -336,8 +334,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 			tryNumber++;
 			try {
-				this.trivia = server.getTrivia();
-				server.handshake(this.user);				
+				this.trivia = server.getTrivia();			
 				success = true;
 			} catch (final RemoteException e) {
 				this.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
@@ -437,7 +434,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 				break;
 			case "Change name":
 				// Triggered by change name, prompt for new name
-				new UserLogin(this);
+				new UserLogin(this.server, this);
 				break;
 			case "Load state":
 				// Triggered by change state, prompt for save file

@@ -2,12 +2,13 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+
+import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates prompt for user name.
@@ -29,7 +30,7 @@ public class UserLogin extends TriviaDialog {
 	 * @param client
 	 *            the client
 	 */
-	public UserLogin(TriviaClient client) {
+	public UserLogin(TriviaInterface server, TriviaClient client) {
 		super(new GridBagLayout());
 
 		// Set up layout constraints
@@ -62,12 +63,34 @@ public class UserLogin extends TriviaDialog {
 
 		// Set the user name to input value
 		final String user = userTextField.getText();
-		// if( user.toCharArray().length != 0 ) {
-		client.setUser(user);
-		// } else {
-		// client.exit();
-		// new UserLogin(client);
-		// }
+		if(pane.getValue() != null ) {
+			if( user.toCharArray().length != 0 ) {
+				client.setUser(user);
+	//			int tryNumber = 0;
+	//			boolean success = false;
+	//			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+	//				tryNumber++;
+	//				try {
+	//					server.handshake(user);				
+	//					success = true;
+	//				} catch (final RemoteException e) {
+	//					client.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
+	//				}
+	//			}
+	//
+	//			// Show disconnected dialog if we could not retrieve the Trivia data
+	//			if (!success) {
+	//				client.disconnected();
+	//				return;
+	//			}			
+			} else {
+				new UserLogin(server, client);				
+			}
+		} else {
+			if( client.getUser() == null ) {
+				System.exit(0);
+			}
+		}
 
 	}
 
