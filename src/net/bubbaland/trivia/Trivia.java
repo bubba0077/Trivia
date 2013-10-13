@@ -1069,4 +1069,17 @@ public class Trivia implements Serializable {
 		return this.currentRound.getRoundNumber();
 	}
 
+	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect, String submitter,
+			String operator) {
+		this.rounds[rNumber-1].setValue(qNumber, value);
+		this.rounds[rNumber-1].setQuestionText(qNumber, qText);
+		if(isCorrect) {
+			this.rounds[rNumber-1].markCorrect(qNumber, aText, submitter, operator);
+		} else {
+			this.rounds[rNumber-1].markIncorrect(qNumber);
+			this.rounds[rNumber-1].close(qNumber, aText);
+			
+		}
+	}
+
 }

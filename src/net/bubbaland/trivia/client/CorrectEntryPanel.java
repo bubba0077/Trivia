@@ -71,7 +71,12 @@ public class CorrectEntryPanel extends TriviaDialog {
 		dialog.setVisible(true);
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		final int option = ( (Integer) pane.getValue() ).intValue();
+		final int option;
+		if(pane.getValue() != null) {
+			option = ( (Integer) pane.getValue() ).intValue();
+		} else {
+			option = JOptionPane.CLOSED_OPTION;
+		}
 		if (option == JOptionPane.OK_OPTION) {
 			// If the OK button was pressed, mark the question as correct
 			int tryNumber = 0;

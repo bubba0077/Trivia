@@ -149,7 +149,12 @@ public class AnswerEntryPanel extends TriviaDialog {
 		dialog.setVisible(true);
 
 		// If the OK button was pressed, add the proposed answer to the queue
-		final int option = ( (Integer) pane.getValue() ).intValue();
+		final int option;
+		if(pane.getValue() != null) {
+			option = ( (Integer) pane.getValue() ).intValue();
+		} else {
+			option = JOptionPane.CLOSED_OPTION;
+		}
 		if (option == JOptionPane.OK_OPTION) {
 			final String answer = answerTextArea.getText();
 			final int confidence = confidenceSlider.getValue();

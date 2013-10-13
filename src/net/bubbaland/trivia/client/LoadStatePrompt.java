@@ -88,7 +88,12 @@ public class LoadStatePrompt extends TriviaDialog {
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		// Retrieve the button pressed
-		final int option = ( (Integer) pane.getValue() ).intValue();
+		final int option;
+		if(pane.getValue() != null) {
+			option = ( (Integer) pane.getValue() ).intValue();
+		} else {
+			option = JOptionPane.CLOSED_OPTION;
+		}
 
 		if (option == JOptionPane.OK_OPTION) {
 			String saveFile = (String) chooser.getSelectedItem();

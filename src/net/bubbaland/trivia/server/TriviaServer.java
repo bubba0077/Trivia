@@ -810,5 +810,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	public void handshake(String user) throws RemoteException {
 		userList.updateUser(user);
 	}
+	
+	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect, String submitter, String operator) throws RemoteException {
+		trivia.editQuestion(rNumber, qNumber, value, qText, aText, isCorrect, submitter, operator);		
+	}
 
 }

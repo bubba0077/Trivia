@@ -3,9 +3,14 @@ package net.bubbaland.trivia.client;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
@@ -28,7 +33,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	/**
 	 * A panel that displays the question data for a round.
 	 */
-	private class RoundQListSubPanel extends TriviaPanel {
+	private class RoundQListSubPanel extends TriviaPanel implements MouseListener {
 
 		private static final long	serialVersionUID	= 3825357215129662133L;
 
@@ -37,6 +42,7 @@ public class RoundQlistPanel extends TriviaPanel {
 		 */
 		private final JLabel[]		qNumberLabels, earnedLabels, valueLabels, submitterLabels, operatorLabels;
 		private final JTextArea[]	questionTextAreas, answerTextAreas;
+		private final JMenuItem		editItem;
 
 		/** Status variables */
 		private boolean				speed;
@@ -47,6 +53,7 @@ public class RoundQlistPanel extends TriviaPanel {
 		private int					rNumber;
 
 		/** Data source */
+		private final TriviaInterface server;
 		private final TriviaClient	client;
 
 		/**
@@ -61,9 +68,10 @@ public class RoundQlistPanel extends TriviaPanel {
 		 * @param rNumber
 		 *            the round number
 		 */
-		public RoundQListSubPanel(TriviaClient client, boolean live, int rNumber) {
+		public RoundQListSubPanel(TriviaInterface server, TriviaClient client, boolean live, int rNumber) {
 			super();
 
+			this.server = server;
 			this.client = client;
 			this.speed = false;
 			this.live = live;
@@ -106,16 +114,22 @@ public class RoundQlistPanel extends TriviaPanel {
 				constraints.gridy = 2 * q;
 				this.qNumberLabels[q] = this.enclosedLabel(( q + 1 ) + "", QNUM_WIDTH, QUESTION_HEIGHT, color, bColor,
 						constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.qNumberLabels[q].setName((q+1)+"");
+				this.qNumberLabels[q].addMouseListener(this);
 
 				constraints.gridx = 1;
 				constraints.gridy = 2 * q;
 				this.earnedLabels[q] = this.enclosedLabel("", EARNED_WIDTH, QUESTION_HEIGHT, color, bColor,
 						constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.earnedLabels[q].setName((q+1)+"");
+				this.earnedLabels[q].addMouseListener(this);
 
 				constraints.gridx = 2;
 				constraints.gridy = 2 * q;
 				this.valueLabels[q] = this.enclosedLabel("", VALUE_WIDTH, QUESTION_HEIGHT, color, bColor, constraints,
 						LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.valueLabels[q].setName((q+1)+"");
+				this.valueLabels[q].addMouseListener(this);
 
 				constraints.gridx = 3;
 				constraints.gridy = 2 * q;
@@ -123,6 +137,8 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.questionTextAreas[q] = this.scrollableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
 						constraints, SMALL_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.questionTextAreas[q].setEditable(false);
+				this.questionTextAreas[q].setName((q+1)+"");
+				this.questionTextAreas[q].addMouseListener(this);
 
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
@@ -133,20 +149,26 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.answerTextAreas[q] = this.scrollableTextArea("", ANSWER_WIDTH, QUESTION_HEIGHT, color, bColor,
 						constraints, SMALL_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.answerTextAreas[q].setEditable(false);
+				this.answerTextAreas[q].setName((q+1)+"");
+				this.answerTextAreas[q].addMouseListener(this);
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
-
+				
 				constraints.gridheight = 1;
 
 				constraints.gridx = 5;
 				constraints.gridy = 2 * q;
 				this.submitterLabels[q] = this.enclosedLabel("", SUBOP_WIDTH, QUESTION_HEIGHT / 2, color, bColor,
 						constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.submitterLabels[q].setName((q+1)+"");
+				this.submitterLabels[q].addMouseListener(this);
 
 				constraints.gridx = 5;
 				constraints.gridy = 2 * q + 1;
 				this.operatorLabels[q] = this.enclosedLabel("", SUBOP_WIDTH, QUESTION_HEIGHT / 2, color, bColor,
 						constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.operatorLabels[q].setName((q+1)+"");
+				this.operatorLabels[q].addMouseListener(this);
 
 			}
 
@@ -161,6 +183,15 @@ public class RoundQlistPanel extends TriviaPanel {
 			blank.setBackground(HeaderPanel.BACKGROUND_COLOR);
 			blank.setPreferredSize(new Dimension(0, 0));
 			this.add(blank, constraints);
+			
+			/**
+			 * Build context menu
+			 */
+			JPopupMenu contextMenu = new JPopupMenu();
+			editItem = new JMenuItem("Edit");
+			editItem.addMouseListener(this);
+			contextMenu.add(editItem);
+			this.add(contextMenu);			
 		}
 
 		/**
@@ -182,24 +213,20 @@ public class RoundQlistPanel extends TriviaPanel {
 		public synchronized void update(boolean force) {
 
 			final Trivia trivia = this.client.getTrivia();
-			int currentRound = 0;
-
 			if (this.live) {
-				currentRound = trivia.getCurrentRoundNumber();
-			} else {
-				currentRound = this.rNumber;
+				this.rNumber = trivia.getCurrentRoundNumber();
 			}
 			final int nQuestions = trivia.getNQuestions();
-			final boolean newSpeed = trivia.isSpeed(currentRound);
-			final boolean[] beenOpens = trivia.eachBeenOpen(currentRound);
-			final boolean[] opens = trivia.eachOpen(currentRound);
-			final boolean[] corrects = trivia.eachCorrect(currentRound);
-			final int[] earneds = trivia.getEachEarned(currentRound);
-			final int[] values = trivia.getEachValue(currentRound);
-			final String[] questions = trivia.getEachQuestionText(currentRound);
-			final String[] answers = trivia.getEachAnswerText(currentRound);
-			final String[] submitters = trivia.getEachSubmitter(currentRound);
-			final String[] operators = trivia.getEachOperator(currentRound);
+			final boolean newSpeed = trivia.isSpeed(this.rNumber);
+			final boolean[] beenOpens = trivia.eachBeenOpen(this.rNumber);
+			final boolean[] opens = trivia.eachOpen(this.rNumber);
+			final boolean[] corrects = trivia.eachCorrect(this.rNumber);
+			final int[] earneds = trivia.getEachEarned(this.rNumber);
+			final int[] values = trivia.getEachValue(this.rNumber);
+			final String[] questions = trivia.getEachQuestionText(this.rNumber);
+			final String[] answers = trivia.getEachAnswerText(this.rNumber);
+			final String[] submitters = trivia.getEachSubmitter(this.rNumber);
+			final String[] operators = trivia.getEachOperator(this.rNumber);
 
 			// Determine which questions have been updated
 			final boolean[] qUpdated = new boolean[nQuestions];
@@ -277,6 +304,50 @@ public class RoundQlistPanel extends TriviaPanel {
 
 		}
 
+		@Override
+		public void mouseClicked(MouseEvent event) {
+			final JComponent source = (JComponent) event.getSource();
+			final Trivia trivia = client.getTrivia();
+			if (this.live) {	this.rNumber = trivia.getCurrentRoundNumber();	}			
+			if(source.equals(editItem)) {
+				editItem.getParent().setVisible(false);
+				new EditQuestionDialog(this.server, this.client, this.rNumber, Integer.parseInt(source.getName()));				
+			} else {
+				final int qNumber = Integer.parseInt(source.getName());
+				if(event.getButton() == 3 && trivia.beenOpen( this.rNumber, qNumber )) {
+					editItem.getParent().setLocation(event.getXOnScreen(), event.getYOnScreen());
+					editItem.setName(source.getName());
+					editItem.getParent().setVisible(true);
+				} else {
+					editItem.getParent().setVisible(false);
+				}
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent event) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent event) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent event) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent event) {
+			// TODO Auto-generated method stub
+			
+		}
+
 	}
 
 	/** The Constant serialVersionUID. */
@@ -286,11 +357,12 @@ public class RoundQlistPanel extends TriviaPanel {
 	 */
 	private static final Color			HEADER_TEXT_COLOR				= Color.white;
 	private static final Color			HEADER_BACKGROUND_COLOR			= Color.darkGray;
+	
 	private static final Color			ODD_QUESTION_TEXT_COLOR			= Color.black;
 	private static final Color			EVEN_QUESTION_TEXT_COLOR		= Color.black;
 	private static final Color			ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
-
 	private static final Color			EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
+	
 	/**
 	 * Sizes
 	 */
@@ -304,6 +376,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	private static final int			ANSWER_WIDTH					= 150;
 
 	private static final int			SUBOP_WIDTH						= 100;
+	
 	/**
 	 * Font sizes
 	 */
@@ -403,9 +476,9 @@ public class RoundQlistPanel extends TriviaPanel {
 		constraints.gridy = 1;
 		constraints.gridwidth = 7;
 		constraints.weighty = 1.0;
-		this.roundQlistSubPanel = new RoundQListSubPanel(client, live, rNumber);
+		this.roundQlistSubPanel = new RoundQListSubPanel(server, client, live, rNumber);
 		final JScrollPane roundQlistPane = new JScrollPane(this.roundQlistSubPanel,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		roundQlistPane.setPreferredSize(new Dimension(0, 200));
 		this.add(roundQlistPane, constraints);
 		constraints.weighty = 0.0;

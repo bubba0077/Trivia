@@ -140,7 +140,12 @@ public class QuestionEntryWindow extends TriviaDialog {
 		dialog.setVisible(true);
 
 		// If the OK button was pressed, open the question
-		final int option = ( (Integer) pane.getValue() ).intValue();
+		final int option;
+		if(pane.getValue() != null) {
+			option = ( (Integer) pane.getValue() ).intValue();
+		} else {
+			option = JOptionPane.CLOSED_OPTION;
+		}
 		if (option == JOptionPane.OK_OPTION) {
 			// Get the input data
 			final int qNumber = (int) qNumberSpinner.getValue();
@@ -239,7 +244,12 @@ public class QuestionEntryWindow extends TriviaDialog {
 
 				// If overwrite is not confirmed, recreate the question entry dialog using entered values as starting
 				// point
-				final int confirm = ( (Integer) pane.getValue() ).intValue();
+				final int confirm;
+				if(pane.getValue() != null) {
+					confirm = ( (Integer) pane.getValue() ).intValue();
+				} else {
+					confirm = JOptionPane.CLOSED_OPTION;
+				}
 				if (confirm != JOptionPane.OK_OPTION) {
 					new QuestionEntryWindow(server, client, nQuestions, qNumber, qValue, qText);
 					return;

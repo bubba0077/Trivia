@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.rmi.RemoteException;
+
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -99,7 +100,12 @@ public class CloseQuestionDialog extends TriviaDialog {
 		dialog.setVisible(true);
 
 		// If the OK button was pressed, add the proposed answer to the queue
-		final int option = ( (Integer) pane.getValue() ).intValue();
+		final int option;
+		if(pane.getValue() != null) {
+			option = ( (Integer) pane.getValue() ).intValue();
+		} else {
+			option = JOptionPane.CLOSED_OPTION;
+		}
 		if (option == JOptionPane.OK_OPTION) {
 			final String answer = answerTextArea.getText();
 
