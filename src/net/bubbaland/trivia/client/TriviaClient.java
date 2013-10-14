@@ -75,6 +75,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	
 	//
 	private volatile Hashtable<String, Role>	userHash;
+	
+	final private JFrame frame;
 
 	/**
 	 * GUI Components
@@ -202,12 +204,13 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		super();
 		
 		this.server = server;
+		this.frame = parent;
 		
 		TriviaFetcher fetcher = new TriviaFetcher(server, this);
 		fetcher.execute();
 		
 		// Create a prompt requesting the user name
-		new UserLogin(server, this);
+		new UserLogin(this);
 
 		/**
 		 * Setup the menu
@@ -417,7 +420,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 				break;
 			case "Change name":
 				// Triggered by change name, prompt for new name
-				new UserLogin(this.server, this);
+				new UserLogin(this);
 				break;
 			case "Load state":
 				// Triggered by change state, prompt for save file
@@ -660,6 +663,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		public void run() {
 			createAndShowGUI(useFX);
 		}
+	}
+	
+	public JFrame getFrame() {
+		return this.frame;
 	}
 
 }

@@ -6,11 +6,8 @@ import java.awt.GridBagLayout;
 import java.rmi.RemoteException;
 
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
-
 import net.bubbaland.trivia.TriviaInterface;
 
 /**
@@ -19,7 +16,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-public class LoadStatePrompt extends TriviaDialog {
+public class LoadStatePrompt extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= -3297076605620744620L;
 	private static final float	FONT_SIZE			= 20f;
@@ -81,20 +78,12 @@ public class LoadStatePrompt extends TriviaDialog {
 		chooser.addAncestorListener(this);
 		this.add(chooser, constraints);
 
-		// Create dialog box with OK and CANCEL buttons
-		final JOptionPane pane = new JOptionPane(this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-		final JDialog dialog = pane.createDialog(this.getParent(), "Load saved state");
-		dialog.setVisible(true);
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		// Display the dialog box
+		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Load saved state", this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
-		// Retrieve the button pressed
-		final int option;
-		if(pane.getValue() != null) {
-			option = ( (Integer) pane.getValue() ).intValue();
-		} else {
-			option = JOptionPane.CLOSED_OPTION;
-		}
-
+		// If the OK button was pressed, add the proposed answer to the queue
+		final int option = ( (Integer) dialog.getValue() ).intValue();
+				
 		if (option == JOptionPane.OK_OPTION) {
 			String saveFile = (String) chooser.getSelectedItem();
 

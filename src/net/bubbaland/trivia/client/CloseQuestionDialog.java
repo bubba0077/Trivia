@@ -5,14 +5,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.rmi.RemoteException;
 
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.WindowConstants;
-
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
@@ -21,7 +18,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * 
  * @author Walter Kolczynski
  */
-public class CloseQuestionDialog extends TriviaDialog {
+public class CloseQuestionDialog extends TriviaDialogPanel {
 	private static final long	serialVersionUID	= 8533094210282632603L;
 	
 	/**
@@ -93,19 +90,10 @@ public class CloseQuestionDialog extends TriviaDialog {
 		this.add(scrollPane, c);
 		
 		// Display the dialog box
-		final JOptionPane pane = new JOptionPane(this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-		final JDialog dialog = pane.createDialog(this.getParent(), "Close question " + qNumber);
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		dialog.setResizable(true);
-		dialog.setVisible(true);
+		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Close question " + qNumber, this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
 		// If the OK button was pressed, add the proposed answer to the queue
-		final int option;
-		if(pane.getValue() != null) {
-			option = ( (Integer) pane.getValue() ).intValue();
-		} else {
-			option = JOptionPane.CLOSED_OPTION;
-		}
+		final int option = ( (Integer) dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			final String answer = answerTextArea.getText();
 

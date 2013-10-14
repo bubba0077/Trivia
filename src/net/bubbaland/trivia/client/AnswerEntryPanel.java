@@ -7,7 +7,6 @@ import java.awt.Insets;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -15,8 +14,6 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
@@ -25,7 +22,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * 
  * @author Walter Kolczynski
  */
-public class AnswerEntryPanel extends TriviaDialog {
+public class AnswerEntryPanel extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= -5797789908178154492L;
 	
@@ -142,19 +139,10 @@ public class AnswerEntryPanel extends TriviaDialog {
 		this.add(confidenceSlider, c);
 
 		// Display the dialog box
-		final JOptionPane pane = new JOptionPane(this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-		final JDialog dialog = pane.createDialog(this.getParent(), "Submit Answer for Question " + qNumber);
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		dialog.setResizable(true);
-		dialog.setVisible(true);
-
+		TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Submit Answer for Question " + qNumber, this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		
 		// If the OK button was pressed, add the proposed answer to the queue
-		final int option;
-		if(pane.getValue() != null) {
-			option = ( (Integer) pane.getValue() ).intValue();
-		} else {
-			option = JOptionPane.CLOSED_OPTION;
-		}
+		final int option = ( (Integer) dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			final String answer = answerTextArea.getText();
 			final int confidence = confidenceSlider.getValue();

@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -19,12 +18,10 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.WindowConstants;
-
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
-public class EditQuestionDialog extends TriviaDialog implements ActionListener {
+public class EditQuestionDialog extends TriviaDialogPanel implements ActionListener {
 	
 	private static final long	serialVersionUID	= 8157338357601793846L;
 	
@@ -177,19 +174,10 @@ public class EditQuestionDialog extends TriviaDialog implements ActionListener {
 		}		
 		
 		// Display the dialog box
-		final JOptionPane pane = new JOptionPane(this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-		JDialog dialog = pane.createDialog(this.getParent(), "Edit Question");
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		dialog.setResizable(true);
-		dialog.setVisible(true);
+		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Edit Question", this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
-		// If the OK button was pressed, open the question
-		final int option;
-		if(pane.getValue() != null) {
-			option = ( (Integer) pane.getValue() ).intValue();
-		} else {
-			option = JOptionPane.CLOSED_OPTION;
-		}
+		// If the OK button was pressed, add the proposed answer to the queue
+		final int option = ( (Integer) dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			// Get the input data
 			final boolean isCorrect = this.correctButton.isSelected();

@@ -6,7 +6,6 @@ import java.awt.GridBagLayout;
 import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -15,8 +14,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.WindowConstants;
-
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
@@ -26,7 +23,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-public class QuestionEntryWindow extends TriviaDialog {
+public class QuestionEntryWindow extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 8250659442772286086L;
@@ -124,6 +121,7 @@ public class QuestionEntryWindow extends TriviaDialog {
 		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
 		qTextArea.addAncestorListener(this);
+		
 		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
@@ -133,19 +131,10 @@ public class QuestionEntryWindow extends TriviaDialog {
 		constraints.gridwidth = 1;
 
 		// Display the dialog box
-		JOptionPane pane = new JOptionPane(this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-		JDialog dialog = pane.createDialog(this.getParent(), "Enter New Question");
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		dialog.setResizable(true);
-		dialog.setVisible(true);
-
+		TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Open New Question" , this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+				
 		// If the OK button was pressed, open the question
-		final int option;
-		if(pane.getValue() != null) {
-			option = ( (Integer) pane.getValue() ).intValue();
-		} else {
-			option = JOptionPane.CLOSED_OPTION;
-		}
+		final int option = ( (Integer) dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			// Get the input data
 			final int qNumber = (int) qNumberSpinner.getValue();
@@ -234,26 +223,14 @@ public class QuestionEntryWindow extends TriviaDialog {
 				label = new JLabel("Value: " + qValue);
 				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
 				panel.add(label, constraints);
+				
+				dialog = new TriviaDialog(client.getFrame(), "Confirm Question Overwrite " + qNumber, panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
-				// Display the dialog window
-				pane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-				dialog = pane.createDialog(this.getParent(), "Confirm Question Overwrite " + qNumber);
-				dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				dialog.setResizable(true);
-				dialog.setVisible(true);
-
-				// If overwrite is not confirmed, recreate the question entry dialog using entered values as starting
-				// point
-				final int confirm;
-				if(pane.getValue() != null) {
-					confirm = ( (Integer) pane.getValue() ).intValue();
-				} else {
-					confirm = JOptionPane.CLOSED_OPTION;
-				}
+				final int confirm = ( (Integer) dialog.getValue() ).intValue();
 				if (confirm != JOptionPane.OK_OPTION) {
 					new QuestionEntryWindow(server, client, nQuestions, qNumber, qValue, qText);
 					return;
-				}		
+				}
 			}
 
 			// Open the question on the server

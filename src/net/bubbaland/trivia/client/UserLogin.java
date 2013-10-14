@@ -2,13 +2,10 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import javax.swing.JDialog;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-
-import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates prompt for user name.
@@ -16,7 +13,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-public class UserLogin extends TriviaDialog {
+public class UserLogin extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 7708693892976942384L;
@@ -30,7 +27,7 @@ public class UserLogin extends TriviaDialog {
 	 * @param client
 	 *            the client
 	 */
-	public UserLogin(TriviaInterface server, TriviaClient client) {
+	public UserLogin(TriviaClient client) {
 		super(new GridBagLayout());
 
 		// Set up layout constraints
@@ -55,36 +52,20 @@ public class UserLogin extends TriviaDialog {
 		this.add(userTextField, c);
 		userTextField.addAncestorListener(this);
 
-		// Display dialog box
-		final JOptionPane pane = new JOptionPane(this, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION);
-		final JDialog dialog = pane.createDialog(this.getParent(), "User Login");
-		dialog.setVisible(true);
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
+		// Display the dialog box
+		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "User Login", this, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION);
+		
 		// Set the user name to input value
-		final String user = userTextField.getText();
-		if(pane.getValue() != null ) {
+		final String user = userTextField.getText();				
+				
+		// If the OK button was pressed, add the proposed answer to the queue
+		final int option = ( (Integer) dialog.getValue() ).intValue();
+		
+		if(option != JOptionPane.CLOSED_OPTION ) {
 			if( user.toCharArray().length != 0 ) {
 				client.setUser(user);
-	//			int tryNumber = 0;
-	//			boolean success = false;
-	//			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
-	//				tryNumber++;
-	//				try {
-	//					server.handshake(user);				
-	//					success = true;
-	//				} catch (final RemoteException e) {
-	//					client.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
-	//				}
-	//			}
-	//
-	//			// Show disconnected dialog if we could not retrieve the Trivia data
-	//			if (!success) {
-	//				client.disconnected();
-	//				return;
-	//			}			
 			} else {
-				new UserLogin(server, client);			
+				new UserLogin(client);
 			}
 		} else {
 			if( client.getUser() == null ) {
