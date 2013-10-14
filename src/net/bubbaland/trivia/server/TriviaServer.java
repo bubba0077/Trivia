@@ -84,97 +84,12 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	// Base URL for hourly standings
 	final public static String				baseURL				= "http://www.kvsc.org/trivia/points/hour";
-	
+
 	// A user list to track last contact
 	final private UserList					userList;
 
 	// The Trivia object that holds all of the contest data
 	final private Trivia					trivia;
-
-	/**
-	 * Fetches the standings for a round from KVSC.
-	 * 
-	 * @param rNumber
-	 *            The round number
-	 * @return Array of ScoreEntry that have the standing data
-	 */
-	public static ScoreEntry[] getStandings(int rNumber) {
-
-		final ArrayList<ScoreEntry> standingsList = new ArrayList<ScoreEntry>(0);
-
-		// The URL where the file is hosted
-		final String urlString = baseURL + String.format("%02d", rNumber) + ".htm";
-		try {
-			// Try to read the URL
-			final org.jsoup.nodes.Document htmlDoc = Jsoup.connect(urlString).get();
-			// Parse the table with the standings from the HTML file
-			final Elements table = htmlDoc.select("table");
-			// Get all rows after the first one (which is the header row)
-			for (final org.jsoup.nodes.Element row : table.select("tr:gt(0)")) {
-				// Get all of the columns in the row
-				final Elements rowData = row.select("td");
-				// Parse the zeroth element as the place
-				int place = Integer.parseInt(rowData.get(0).text());
-				// Parse the first element as the team name
-				final String team = rowData.get(1).text();
-				// Parse the second element as the score
-				final int score = Integer.parseInt(rowData.get(2).text().replaceAll(",", ""));
-
-				// If the score for this line is the same as the previous (a tie), overwrite place to be the same
-				final int entryNumber = standingsList.size();
-				if (entryNumber > 0) {
-					final int lastPlace = standingsList.get(entryNumber - 1).getPlace();
-					final int lastScore = standingsList.get(entryNumber - 1).getScore();
-					if (score == lastScore) {
-						place = lastPlace;
-					}
-				}
-
-				// Create a new ScoreEntry to hold the standing and add it to the list
-				standingsList.add(new ScoreEntry(team, score, place));
-			}
-
-		} catch (final HttpStatusException e) {
-			// The file doesn't exist yet
-			System.out.println("Standings for round " + rNumber + " not available yet.");
-			return null;
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-
-		System.out.println("Standings for round " + rNumber + " parsed.");
-		return standingsList.toArray(new ScoreEntry[standingsList.size()]);
-	}
-
-	/**
-	 * Entry point for the server application.
-	 * 
-	 * @param args
-	 *            Unused
-	 * @throws RemoteException
-	 *             A remote exception
-	 */
-	public static void main(String args[]) throws RemoteException {
-		// Replace the local IP with the real hostname
-		System.setProperty("java.rmi.server.hostname", "www.bubbaland.net");
-
-		// Create a registry on port 1099
-		final Registry registry = LocateRegistry.createRegistry(1099);
-
-		// Create a new server
-		final TriviaServer server = new TriviaServer();
-
-		// Attach the server to port 1100
-		try {
-			registry.bind("TriviaInterface", UnicastRemoteObject.exportObject(server, 1100));
-			System.out.println("Trivia Server is Ready");
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-
-		// server.test();
-
-	}
 
 	/**
 	 * Creates a new trivia server.
@@ -214,9 +129,14 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void callIn(int queueIndex, String caller) throws RemoteException {
-		userList.updateUser(caller);
+		this.userList.updateUser(caller);
 		this.trivia.callIn(queueIndex, caller);
 		this.log(caller + " is calling in item " + queueIndex + " in the answer queue.");
+	}
+
+	@Override
+	public void changeUser(String oldUser, String newUser) throws RemoteException {
+		this.userList.changeUser(oldUser, newUser);
 	}
 
 	/*
@@ -226,10 +146,26 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void close(String user, int qNumber, String answer) throws RemoteException {
-		userList.updateUser(user);
+		this.userList.updateUser(user);
 		this.trivia.close(qNumber, answer);
 		this.log("Question " + qNumber + " closed, "
 				+ this.trivia.getValue(this.trivia.getCurrentRoundNumber(), qNumber) + " points earned.");
+	}
+
+	@Override
+	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect,
+			String submitter, String operator) throws RemoteException {
+		this.trivia.editQuestion(rNumber, qNumber, value, qText, aText, isCorrect, submitter, operator);
+	}
+
+	@Override
+	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException {
+		return this.trivia.getChangedRounds(oldVersions);
+	}
+
+	@Override
+	public int getCurrentRound() throws RemoteException {
+		return this.trivia.getCurrentRoundNumber();
 	}
 
 	/*
@@ -240,6 +176,16 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	@Override
 	public Trivia getTrivia() throws RemoteException {
 		return this.trivia;
+	}
+
+	@Override
+	public Hashtable<String, Role> getUserList(int window) throws RemoteException {
+		return this.userList.getRecent(window);
+	}
+
+	@Override
+	public void handshake(String user) throws RemoteException {
+		this.userList.updateUser(user);
 	}
 
 	/**
@@ -262,12 +208,13 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/**
 	 * Loads a trivia state from file.
+	 * 
 	 * @param stateFile
 	 *            The name of the file to load
 	 */
 	@Override
 	public void loadState(String user, String stateFile) throws RemoteException {
-		userList.updateUser(user);
+		this.userList.updateUser(user);
 		// The full qualified file name
 		stateFile = SAVE_DIR + "/" + stateFile;
 		// Clear all data from the trivia contest
@@ -409,8 +356,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		}
 
 		this.log("Loaded state from " + stateFile);
-		
-		for (int r = 1; r < trivia.getCurrentRoundNumber(); r++) {
+
+		for (int r = 1; r < this.trivia.getCurrentRoundNumber(); r++) {
 			// For each past round, try to get announced standings if we don't have them
 			if (!this.trivia.isAnnounced(r)) {
 				final ScoreEntry[] standings = getStandings(r);
@@ -438,7 +385,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markCorrect(int queueIndex, String caller, String operator) throws RemoteException {
-		userList.updateUser(caller);
+		this.userList.updateUser(caller);
 		this.trivia.markCorrect(queueIndex, caller, operator);
 		this.log("Item "
 				+ queueIndex
@@ -454,7 +401,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markIncorrect(int queueIndex, String caller) throws RemoteException {
-		userList.updateUser(caller);
+		this.userList.updateUser(caller);
 		this.trivia.markIncorrect(queueIndex, caller);
 		this.log("Item " + queueIndex + " in the queue is incorrect.");
 	}
@@ -466,7 +413,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markPartial(int queueIndex, String caller) throws RemoteException {
-		userList.updateUser(caller);
+		this.userList.updateUser(caller);
 		this.trivia.markPartial(queueIndex, caller);
 		this.log("Item " + queueIndex + " in the queue is partially correct.");
 	}
@@ -478,10 +425,37 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markUncalled(String user, int queueIndex) throws RemoteException {
-		userList.updateUser(user);
+		this.userList.updateUser(user);
 		this.trivia.markUncalled(queueIndex);
 		this.log("Item " + queueIndex + " status reset to uncalled.");
 	}
+
+	// /**
+	// * Test.
+	// */
+	// public void test() {
+	// try {
+	// String[] timestamps = getAnswerQueueTimestamps();
+	// for ( int i = 0; i < timestamps.length; i++ ) {
+	// System.out.println( timestamps[i] );
+	// }
+	// } catch ( Exception e ) {
+	// e.getStackTrace();
+	// }
+	//
+	// }
+
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * @see net.bubbaland.trivia.server.TriviaInterface#setAnnounced(int, int, int)
+	// */
+	// @Override
+	// public void setAnnounced(int rNumber, int score, int place) throws RemoteException {
+	// this.trivia.setAnnounced(rNumber, score, place);
+	// this.log("Announced for round " + rNumber + ":");
+	// this.log("Score: " + score + "  Place: " + place);
+	// }
 
 	/*
 	 * (non-Javadoc)
@@ -491,10 +465,20 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	@Override
 	@WebMethod
 	public void newRound(String user) throws RemoteException {
-		userList.updateUser(user);
+		this.userList.updateUser(user);
 		this.log("New round starting...");
 		this.trivia.newRound();
 	}
+
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * @see net.bubbaland.trivia.server.TriviaInterface#setNTeams(int)
+	// */
+	// @Override
+	// public void setNTeams(int nTeams) throws RemoteException {
+	// this.trivia.setNTeams(nTeams);
+	// }
 
 	/*
 	 * (non-Javadoc)
@@ -503,7 +487,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void open(String user, int qNumber, int qValue, String question) throws RemoteException {
-		userList.updateUser(user);
+		this.userList.updateUser(user);
 		this.trivia.open(qNumber, qValue, question);
 		this.log("Question " + qNumber + " opened for " + qValue + " Points:\n" + question);
 	}
@@ -515,7 +499,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) throws RemoteException {
-		userList.updateUser(submitter);
+		this.userList.updateUser(submitter);
 		this.trivia.proposeAnswer(qNumber, answer, submitter, confidence);
 		this.log(submitter + " submitted an answer for Q" + qNumber + " with a confidence of " + confidence + ":\n"
 				+ answer);
@@ -725,33 +709,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	}
 
-	// /**
-	// * Test.
-	// */
-	// public void test() {
-	// try {
-	// String[] timestamps = getAnswerQueueTimestamps();
-	// for ( int i = 0; i < timestamps.length; i++ ) {
-	// System.out.println( timestamps[i] );
-	// }
-	// } catch ( Exception e ) {
-	// e.getStackTrace();
-	// }
-	//
-	// }
-
-//	/*
-//	 * (non-Javadoc)
-//	 * 
-//	 * @see net.bubbaland.trivia.server.TriviaInterface#setAnnounced(int, int, int)
-//	 */
-//	@Override
-//	public void setAnnounced(int rNumber, int score, int place) throws RemoteException {
-//		this.trivia.setAnnounced(rNumber, score, place);
-//		this.log("Announced for round " + rNumber + ":");
-//		this.log("Score: " + score + "  Place: " + place);
-//	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -759,19 +716,14 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void setDiscrepancyText(String user, int rNumber, String discrepancyText) throws RemoteException {
-		userList.updateUser(user);
+		this.userList.updateUser(user);
 		this.trivia.setDiscrepencyText(rNumber, discrepancyText);
 	}
 
-//	/*
-//	 * (non-Javadoc)
-//	 * 
-//	 * @see net.bubbaland.trivia.server.TriviaInterface#setNTeams(int)
-//	 */
-//	@Override
-//	public void setNTeams(int nTeams) throws RemoteException {
-//		this.trivia.setNTeams(nTeams);
-//	}
+	@Override
+	public void setRole(String user, Role role) throws RemoteException {
+		this.userList.updateRole(user, role);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -781,7 +733,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	@Override
 	@WebMethod
 	public void setSpeed(String user) throws RemoteException {
-		userList.updateUser(user);
+		this.userList.updateUser(user);
 		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a speed round");
 		this.trivia.setSpeed();
 	}
@@ -793,37 +745,94 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void unsetSpeed(String user) throws RemoteException {
-		userList.updateUser(user);
+		this.userList.updateUser(user);
 		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a normal round");
 		this.trivia.unsetSpeed();
 	}
-	
-	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException {
-		return this.trivia.getChangedRounds(oldVersions);
+
+	/**
+	 * Fetches the standings for a round from KVSC.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @return Array of ScoreEntry that have the standing data
+	 */
+	public static ScoreEntry[] getStandings(int rNumber) {
+
+		final ArrayList<ScoreEntry> standingsList = new ArrayList<ScoreEntry>(0);
+
+		// The URL where the file is hosted
+		final String urlString = baseURL + String.format("%02d", rNumber) + ".htm";
+		try {
+			// Try to read the URL
+			final org.jsoup.nodes.Document htmlDoc = Jsoup.connect(urlString).get();
+			// Parse the table with the standings from the HTML file
+			final Elements table = htmlDoc.select("table");
+			// Get all rows after the first one (which is the header row)
+			for (final org.jsoup.nodes.Element row : table.select("tr:gt(0)")) {
+				// Get all of the columns in the row
+				final Elements rowData = row.select("td");
+				// Parse the zeroth element as the place
+				int place = Integer.parseInt(rowData.get(0).text());
+				// Parse the first element as the team name
+				final String team = rowData.get(1).text();
+				// Parse the second element as the score
+				final int score = Integer.parseInt(rowData.get(2).text().replaceAll(",", ""));
+
+				// If the score for this line is the same as the previous (a tie), overwrite place to be the same
+				final int entryNumber = standingsList.size();
+				if (entryNumber > 0) {
+					final int lastPlace = standingsList.get(entryNumber - 1).getPlace();
+					final int lastScore = standingsList.get(entryNumber - 1).getScore();
+					if (score == lastScore) {
+						place = lastPlace;
+					}
+				}
+
+				// Create a new ScoreEntry to hold the standing and add it to the list
+				standingsList.add(new ScoreEntry(team, score, place));
+			}
+
+		} catch (final HttpStatusException e) {
+			// The file doesn't exist yet
+			System.out.println("Standings for round " + rNumber + " not available yet.");
+			return null;
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Standings for round " + rNumber + " parsed.");
+		return standingsList.toArray(new ScoreEntry[standingsList.size()]);
 	}
-	
-	public int getCurrentRound() throws RemoteException {
-		return trivia.getCurrentRoundNumber();
-	}
-	
-	public Hashtable<String, Role> getUserList(int window) throws RemoteException {
-		return this.userList.getRecent(window);
-	}
-	
-	public void setRole(String user, Role role) throws RemoteException {
-		userList.updateRole(user, role);
-	}
-	
-	public void handshake(String user) throws RemoteException {
-		userList.updateUser(user);
-	}
-	
-	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect, String submitter, String operator) throws RemoteException {
-		trivia.editQuestion(rNumber, qNumber, value, qText, aText, isCorrect, submitter, operator);		
-	}
-	
-	public void changeUser(String oldUser, String newUser)  throws RemoteException {
-		userList.changeUser(oldUser, newUser);
+
+	/**
+	 * Entry point for the server application.
+	 * 
+	 * @param args
+	 *            Unused
+	 * @throws RemoteException
+	 *             A remote exception
+	 */
+	public static void main(String args[]) throws RemoteException {
+		// Replace the local IP with the real hostname
+		System.setProperty("java.rmi.server.hostname", "www.bubbaland.net");
+
+		// Create a registry on port 1099
+		final Registry registry = LocateRegistry.createRegistry(1099);
+
+		// Create a new server
+		final TriviaServer server = new TriviaServer();
+
+		// Attach the server to port 1100
+		try {
+			registry.bind("TriviaInterface", UnicastRemoteObject.exportObject(server, 1100));
+			System.out.println("Trivia Server is Ready");
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
+		// server.test();
+
 	}
 
 }

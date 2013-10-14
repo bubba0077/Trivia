@@ -52,17 +52,6 @@ public class PlaceChartPanel extends TriviaPanel {
 	final private TriviaClient	client;
 
 	/**
-	 * Make circle.
-	 * 
-	 * @param radius
-	 *            the radius
-	 * @return the shape
-	 */
-	public static Shape makeCircle(double radius) {
-		return new Ellipse2D.Double(-radius, -radius, 2 * radius, 2 * radius);
-	}
-
-	/**
 	 * Instantiates a new place chart
 	 * 
 	 * @param client
@@ -173,6 +162,17 @@ public class PlaceChartPanel extends TriviaPanel {
 
 		}
 
+	}
+
+	/**
+	 * Make circle.
+	 * 
+	 * @param radius
+	 *            the radius
+	 * @return the shape
+	 */
+	public static Shape makeCircle(double radius) {
+		return new Ellipse2D.Double(-radius, -radius, 2 * radius, 2 * radius);
 	}
 
 

@@ -30,16 +30,28 @@ public interface TriviaInterface extends Remote {
 	 */
 	public void callIn(int queueIndex, String caller) throws RemoteException;
 
+	public void changeUser(String oldUser, String newUser) throws RemoteException;
+
 	/**
 	 * Close a question.
-	 * @param user TODO
+	 * 
+	 * @param user
+	 *            The user's name
 	 * @param qNumber
 	 *            The question number
-	 * @param answer TODO
+	 * @param answer
+	 *            The correct answer
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
 	public void close(String user, int qNumber, String answer) throws RemoteException;
+
+	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect,
+			String submitter, String operator) throws RemoteException;
+
+	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException;
+
+	public int getCurrentRound() throws RemoteException;
 
 	/**
 	 * Get the trivia data structure.
@@ -49,6 +61,10 @@ public interface TriviaInterface extends Remote {
 	 *             A remote exception
 	 */
 	public Trivia getTrivia() throws RemoteException;
+
+	public Hashtable<String, Role> getUserList(int window) throws RemoteException;
+
+	public void handshake(String user) throws RemoteException;
 
 	/**
 	 * Gets a list of available saves.
@@ -61,7 +77,9 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Load a save state from file.
-	 * @param user TODO
+	 * 
+	 * @param user
+	 *            The user's name
 	 * @param stateFile
 	 *            The name of the save state file to load.
 	 * 
@@ -85,6 +103,20 @@ public interface TriviaInterface extends Remote {
 	public void markCorrect(int queueIndex, String caller, String operator) throws RemoteException;
 
 	/**
+	 * Sets the announced scores for a round
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param score
+	 *            The announced score
+	 * @param place
+	 *            The announced place
+	 * @throws RemoteException
+	 *             A remote exception
+	 */
+	// public void setAnnounced(int rNumber, int score, int place) throws RemoteException;
+
+	/**
 	 * Mark a question incorrect.
 	 * 
 	 * @param queueIndex
@@ -95,6 +127,15 @@ public interface TriviaInterface extends Remote {
 	 *             A remote exception
 	 */
 	public void markIncorrect(int queueIndex, String caller) throws RemoteException;
+
+	/**
+	 * Sets the number of teams.
+	 * 
+	 * @param nTeams
+	 *            The number of teams
+	 * @throws RemoteException
+	 *             A remote exception
+	 */
 
 	/**
 	 * Mark a question partially correct.
@@ -110,7 +151,9 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Mark uncalled.
-	 * @param user TODO
+	 * 
+	 * @param user
+	 *            The user's name
 	 * @param queueIndex
 	 *            The location of the answer in the queue
 	 * 
@@ -121,7 +164,9 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Starts a new round.
-	 * @param user TODO
+	 * 
+	 * @param user
+	 *            The user's name
 	 * 
 	 * @throws RemoteException
 	 *             A remote exception
@@ -130,7 +175,9 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Open a question
-	 * @param user TODO
+	 * 
+	 * @param user
+	 *            The user's name
 	 * @param qNumber
 	 *            The question number
 	 * @param qValue
@@ -160,46 +207,32 @@ public interface TriviaInterface extends Remote {
 	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) throws RemoteException;
 
 	/**
-	 * Sets the announced scores for a round
-	 * 
-	 * @param rNumber
-	 *            The round number
-	 * @param score
-	 *            The announced score
-	 * @param place
-	 *            The announced place
-	 * @throws RemoteException
-	 *             A remote exception
-	 */
-//	public void setAnnounced(int rNumber, int score, int place) throws RemoteException;
-
-	/**
 	 * Sets the discrepancy text.
-	 * @param user TODO
+	 * 
+	 * @param user
+	 * 			  The user's name
 	 * @param rNumber
 	 *            The round number
 	 * @param discrepancyText
-	 *            The discrepancy text
-	 * 
+	 *            The discrepancy text 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
 	public void setDiscrepancyText(String user, int rNumber, String discrepancyText) throws RemoteException;
 
 	/**
-	 * Sets the number of teams.
+	 * Change the user's role.
 	 * 
-	 * @param nTeams
-	 *            The number of teams
+	 * @param user The user name
+	 * @param role The new role
 	 * @throws RemoteException
-	 *             A remote exception
 	 */
-//	public void setNTeams(int nTeams) throws RemoteException;
+	public void setRole(String user, Role role) throws RemoteException;
 
 	/**
 	 * Makes the current round a speed round.
-	 * @param user TODO
 	 * 
+	 * @param user The user making the change
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
@@ -207,25 +240,11 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Makes the current round a normal round.
-	 * @param user TODO
 	 * 
+	 * @param user The user making the change 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
 	public void unsetSpeed(String user) throws RemoteException;
-	
-	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException;
-	
-	public int getCurrentRound() throws RemoteException;
-	
-	public Hashtable<String, Role> getUserList(int window) throws RemoteException;
-	
-	public void setRole(String user, Role role) throws RemoteException;
-	
-	public void handshake(String user) throws RemoteException;
-	
-	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect, String submitter, String operator) throws RemoteException;
-	
-	public void changeUser(String oldUser, String newUser)  throws RemoteException;
 
 }

@@ -14,6 +14,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
+
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
@@ -69,7 +70,7 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 	public QuestionEntryWindow(TriviaInterface server, TriviaClient client, int nQuestions, int qNumberStart,
 			int qValueStart, String qTextStart) {
 
-		super(new GridBagLayout());
+		super( );
 
 		// Set up layout constraints
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -121,7 +122,7 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
 		qTextArea.addAncestorListener(this);
-		
+
 		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
@@ -131,8 +132,9 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 		constraints.gridwidth = 1;
 
 		// Display the dialog box
-		TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Open New Question" , this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-				
+		TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Open New Question", this, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.OK_CANCEL_OPTION);
+
 		// If the OK button was pressed, open the question
 		final int option = ( (Integer) dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
@@ -151,7 +153,7 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 				// Get the existing question data
 				final int existingQValue = trivia.getValue(currentRound, qNumber);
 				final String existingQText = trivia.getQuestionText(currentRound, qNumber);
-				
+
 				final JPanel panel = new JPanel(new GridBagLayout());
 
 				constraints = new GridBagConstraints();
@@ -223,8 +225,9 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 				label = new JLabel("Value: " + qValue);
 				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
 				panel.add(label, constraints);
-				
-				dialog = new TriviaDialog(client.getFrame(), "Confirm Question Overwrite " + qNumber, panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+
+				dialog = new TriviaDialog(client.getFrame(), "Confirm Question Overwrite " + qNumber, panel,
+						JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
 				final int confirm = ( (Integer) dialog.getValue() ).intValue();
 				if (confirm != JOptionPane.OK_OPTION) {

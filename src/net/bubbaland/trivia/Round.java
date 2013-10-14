@@ -16,7 +16,7 @@ import java.util.Arrays;
 public class Round implements Serializable {
 
 	private static final long			serialVersionUID	= 1601712912797562923L;
-	
+
 	// Data version number
 	private volatile int				version;
 
@@ -119,7 +119,8 @@ public class Round implements Serializable {
 	 * 
 	 * @param qNumber
 	 *            The question number
-	 * @param answer TODO
+	 * @param answer
+	 *            TODO
 	 */
 	public void close(int qNumber, String answer) {
 		this.questions[qNumber - 1].close(answer);
@@ -173,9 +174,9 @@ public class Round implements Serializable {
 	public int getAnnounced() {
 		return this.announcedPoints;
 	}
-	
+
 	public Answer[] getAnswerQueue() {
-		Answer[] queue = new Answer[getAnswerQueueSize()]; 
+		final Answer[] queue = new Answer[this.getAnswerQueueSize()];
 		this.answerQueue.toArray(queue);
 		return queue;
 	}
@@ -686,6 +687,10 @@ public class Round implements Serializable {
 	}
 
 
+	public int getVersion() {
+		return this.version;
+	}
+
 	/**
 	 * Checks if this round's score has been announced.
 	 * 
@@ -912,7 +917,7 @@ public class Round implements Serializable {
 	 *            The confidence in the answer
 	 */
 	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) {
-		this.answerQueue.add(new Answer(this.answerQueue.size()+1, qNumber, answer, submitter, confidence));
+		this.answerQueue.add(new Answer(this.answerQueue.size() + 1, qNumber, answer, submitter, confidence));
 		this.version++;
 	}
 
@@ -1052,10 +1057,6 @@ public class Round implements Serializable {
 	public void unsetSpeed() {
 		this.speed = false;
 		this.version++;
-	}
-	
-	public int getVersion() {
-		return this.version;
 	}
 
 }

@@ -2,12 +2,12 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.rmi.RemoteException;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
 import net.bubbaland.trivia.TriviaInterface;
 
 /**
@@ -19,11 +19,13 @@ import net.bubbaland.trivia.TriviaInterface;
 public class LoadStatePrompt extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= -3297076605620744620L;
+	
+	/** Font size */
 	private static final float	FONT_SIZE			= 20f;
 
 	public LoadStatePrompt(TriviaInterface server, TriviaClient client) {
 
-		super(new GridBagLayout());
+		super( );
 
 		// Try to communicate with server
 		String[] saveList = null;
@@ -74,18 +76,19 @@ public class LoadStatePrompt extends TriviaDialogPanel {
 
 		constraints.gridx = 1;
 		constraints.gridy = 1;
-		JComboBox<String> chooser = new JComboBox<String>(saveList);
+		final JComboBox<String> chooser = new JComboBox<String>(saveList);
 		chooser.addAncestorListener(this);
 		this.add(chooser, constraints);
 
 		// Display the dialog box
-		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Load saved state", this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Load saved state", this,
+				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) dialog.getValue() ).intValue();
-				
+
 		if (option == JOptionPane.OK_OPTION) {
-			String saveFile = (String) chooser.getSelectedItem();
+			final String saveFile = (String) chooser.getSelectedItem();
 
 			// Try to communicate with server
 			tryNumber = 0;

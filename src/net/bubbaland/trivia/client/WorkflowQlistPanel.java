@@ -27,6 +27,129 @@ import net.bubbaland.trivia.TriviaInterface;
  */
 public class WorkflowQlistPanel extends TriviaPanel {
 
+	/** The Constant serialVersionUID. */
+	private static final long			serialVersionUID				= 6049067322505905668L;
+
+	/**
+	 * Colors
+	 */
+	private static final Color			HEADER_TEXT_COLOR				= Color.white;
+	private static final Color			HEADER_BACKGROUND_COLOR			= Color.darkGray;
+	private static final Color			ODD_QUESTION_TEXT_COLOR			= Color.black;
+	private static final Color			EVEN_QUESTION_TEXT_COLOR		= Color.black;
+	private static final Color			ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
+	private static final Color			EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
+
+	/**
+	 * Sizes
+	 */
+	private static final int			HEADER_HEIGHT					= 16;
+	private static final int			QUESTION_HEIGHT					= 46;
+
+	private static final int			QNUM_WIDTH						= 48;
+	private static final int			QUESTION_WIDTH					= 50;
+	private static final int			VALUE_WIDTH						= 75;
+	private static final int			ANSWER_WIDTH					= 72;
+	private static final int			CLOSE_WIDTH						= 72;
+
+	/**
+	 * Button sizes
+	 */
+	private static final int			ANSWER_BUTTON_HEIGHT			= 32;
+	private static final int			ANSWER_BUTTON_WIDTH				= 64;
+	private static final int			CLOSE_BUTTON_HEIGHT				= 32;
+	private static final int			CLOSE_BUTTON_WIDTH				= 64;
+
+	/**
+	 * Font sizes
+	 */
+	private static final float			HEADER_FONT_SIZE				= (float) 12.0;
+	private static final float			QNUM_FONT_SIZE					= (float) 32.0;
+	private static final float			VALUE_FONT_SIZE					= (float) 32.0;
+	private static final float			QUESTION_FONT_SIZE				= (float) 12.0;
+
+	/** The number of open questions to show at one time */
+	private static final int			MIN_QUESTIONS_SHOW				= 4;
+
+	/** Sub-panel that will hold the open questions */
+	private final WorkflowQListSubPanel	workflowQListSubPanel;
+
+	/**
+	 * Instantiates a new workflow question list panel.
+	 * 
+	 * @param server
+	 *            The remote trivia server
+	 * @param client
+	 *            The local trivia client
+	 */
+	public WorkflowQlistPanel(TriviaInterface server, TriviaClient client) {
+
+		super();
+
+		// Set up layout constraints
+		final GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.anchor = GridBagConstraints.NORTH;
+		constraints.weightx = 0.0;
+		constraints.weighty = 0.0;
+
+		/**
+		 * Create the header row
+		 */
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		this.enclosedLabel("Q#", QNUM_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
+				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+
+		constraints.gridx = 1;
+		constraints.gridy = 0;
+		this.enclosedLabel("Value", VALUE_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
+				constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+
+		constraints.gridx = 2;
+		constraints.gridy = 0;
+		constraints.weightx = 1.0;
+		this.enclosedLabel("Question", QUESTION_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
+				constraints, HEADER_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
+		constraints.weightx = 0.0;
+
+		constraints.gridx = 3;
+		constraints.gridy = 0;
+		this.enclosedLabel("", ANSWER_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
+				HEADER_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
+
+		constraints.gridx = 4;
+		constraints.gridy = 0;
+		;
+		this.enclosedLabel("", CLOSE_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
+				HEADER_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
+
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		constraints.gridwidth = 5;
+		constraints.weighty = 1.0;
+
+		/**
+		 * Create the subpanel that will hold the actual questions and put it in a scroll pane
+		 */
+		this.workflowQListSubPanel = new WorkflowQListSubPanel(server, client);
+		final JScrollPane scrollPane = new JScrollPane(this.workflowQListSubPanel,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setPreferredSize(new Dimension(0, MIN_QUESTIONS_SHOW * QUESTION_HEIGHT + 3));
+		scrollPane.setMinimumSize(new Dimension(0, MIN_QUESTIONS_SHOW * QUESTION_HEIGHT + 3));
+		this.add(scrollPane, constraints);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.bubbaland.trivia.TriviaPanel#update()
+	 */
+	@Override
+	public synchronized void update(boolean force) {
+		this.workflowQListSubPanel.update(force);
+	}
+
 	/**
 	 * Panel which displays a list of the current open questions.
 	 */
@@ -115,7 +238,8 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				constraints.gridy = q;
 				constraints.weightx = 1.0;
 				this.qTextAreas[q] = this.scrollableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
-						constraints, QUESTION_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+						constraints, QUESTION_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.qTextAreas[q].setEditable(false);
 				constraints.weightx = 0.0;
 
@@ -179,8 +303,8 @@ public class WorkflowQlistPanel extends TriviaPanel {
 					if (source.getText() == "Close") {
 						// Close button q was pressed
 						final int qNumber = Integer.parseInt(this.qNumberLabels[q].getText());
-						new CloseQuestionDialog(server, client, qNumber);
-//						this.close(qNumber);
+						new CloseQuestionDialog(this.server, this.client, qNumber);
+						// this.close(qNumber);
 					} else {
 						// Open button was pressed
 						this.open();
@@ -232,21 +356,21 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			final String[] openQuestionValues = trivia.getOpenQuestionValues();
 
 			final int nOpen = openQuestionNumbers.length;
-			
+
 			// Check if there were any changes to the list of open questions
 			final boolean[] qUpdated = new boolean[nOpen];
 			boolean anyUpdate = false;
 			for (int q = 0; q < nOpen; q++) {
-				qUpdated[q] = !( this.qNumberLabels[q].getText().equals(openQuestionNumbers[q]+"")
-						&& this.qValueLabels[q].getText().equals(openQuestionValues[q]+"") && this.qTextAreas[q].getText()
-						.equals(openQuestionText[q]) );
+				qUpdated[q] = !( this.qNumberLabels[q].getText().equals(openQuestionNumbers[q] + "")
+						&& this.qValueLabels[q].getText().equals(openQuestionValues[q] + "") && this.qTextAreas[q]
+						.getText().equals(openQuestionText[q]) );
 				anyUpdate = anyUpdate || qUpdated[q];
 			}
 
 			// Show data for open questions
 			for (int q = 0; q < nOpen; q++) {
 				if (qUpdated[q] || force) {
-					this.qNumberLabels[q].setText(openQuestionNumbers[q]+"");
+					this.qNumberLabels[q].setText(openQuestionNumbers[q] + "");
 					this.qValueLabels[q].setText(openQuestionValues[q]);
 					this.qTextAreas[q].setText(openQuestionText[q]);
 					this.qTextAreas[q].setCaretPosition(0);
@@ -302,129 +426,6 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 		}
 
-	}
-
-	/** The Constant serialVersionUID. */
-	private static final long			serialVersionUID				= 6049067322505905668L;
-	/**
-	 * Colors
-	 */
-	private static final Color			HEADER_TEXT_COLOR				= Color.white;
-	private static final Color			HEADER_BACKGROUND_COLOR			= Color.darkGray;
-	private static final Color			ODD_QUESTION_TEXT_COLOR			= Color.black;
-	private static final Color			EVEN_QUESTION_TEXT_COLOR		= Color.black;
-	private static final Color			ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
-
-	private static final Color			EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
-	/**
-	 * Sizes
-	 */
-	private static final int			HEADER_HEIGHT					= 16;
-
-	private static final int			QUESTION_HEIGHT					= 46;
-	private static final int			QNUM_WIDTH						= 48;
-	private static final int			QUESTION_WIDTH					= 50;
-	private static final int			VALUE_WIDTH						= 75;
-	private static final int			ANSWER_WIDTH					= 72;
-
-	private static final int			CLOSE_WIDTH						= 72;
-	/**
-	 * Button sizes
-	 */
-	private static final int			ANSWER_BUTTON_HEIGHT			= 32;
-	private static final int			ANSWER_BUTTON_WIDTH				= 64;
-	private static final int			CLOSE_BUTTON_HEIGHT				= 32;
-
-	private static final int			CLOSE_BUTTON_WIDTH				= 64;
-	/**
-	 * Font sizes
-	 */
-	private static final float			HEADER_FONT_SIZE				= (float) 12.0;
-	private static final float			QNUM_FONT_SIZE					= (float) 32.0;
-	private static final float			VALUE_FONT_SIZE					= (float) 32.0;
-
-	private static final float			QUESTION_FONT_SIZE				= (float) 12.0;
-
-	/** The number of open questions to show at one time */
-	private static final int			MIN_QUESTIONS_SHOW				= 4;
-
-	/** Sub-panel that will hold the open questions */
-	private final WorkflowQListSubPanel	workflowQListSubPanel;
-
-	/**
-	 * Instantiates a new workflow question list panel.
-	 * 
-	 * @param server
-	 *            The remote trivia server
-	 * @param client
-	 *            The local trivia client
-	 */
-	public WorkflowQlistPanel(TriviaInterface server, TriviaClient client) {
-
-		super();
-
-		// Set up layout constraints
-		final GridBagConstraints constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.anchor = GridBagConstraints.NORTH;
-		constraints.weightx = 0.0;
-		constraints.weighty = 0.0;
-
-		/**
-		 * Create the header row
-		 */
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		this.enclosedLabel("Q#", QNUM_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-
-		constraints.gridx = 1;
-		constraints.gridy = 0;
-		this.enclosedLabel("Value", VALUE_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-
-		constraints.gridx = 2;
-		constraints.gridy = 0;
-		constraints.weightx = 1.0;
-		this.enclosedLabel("Question", QUESTION_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, HEADER_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
-		constraints.weightx = 0.0;
-
-		constraints.gridx = 3;
-		constraints.gridy = 0;
-		this.enclosedLabel("", ANSWER_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
-
-		constraints.gridx = 4;
-		constraints.gridy = 0;
-		;
-		this.enclosedLabel("", CLOSE_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
-
-		constraints.gridx = 0;
-		constraints.gridy = 1;
-		constraints.gridwidth = 5;
-		constraints.weighty = 1.0;
-
-		/**
-		 * Create the subpanel that will hold the actual questions and put it in a scroll pane
-		 */
-		this.workflowQListSubPanel = new WorkflowQListSubPanel(server, client);
-		final JScrollPane scrollPane = new JScrollPane(this.workflowQListSubPanel,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setPreferredSize(new Dimension(0, MIN_QUESTIONS_SHOW * QUESTION_HEIGHT + 3));
-		scrollPane.setMinimumSize(new Dimension(0, MIN_QUESTIONS_SHOW * QUESTION_HEIGHT + 3));
-		this.add(scrollPane, constraints);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.bubbaland.trivia.TriviaPanel#update()
-	 */
-	@Override
-	public synchronized void update(boolean force) {
-		this.workflowQListSubPanel.update(force);
 	}
 
 }

@@ -124,9 +124,9 @@ public abstract class TriviaPanel extends JPanel {
 	 * Requires all sub-classes to have a method that updates their contents.
 	 */
 	public void update() {
-		update(false);
+		this.update(false);
 	}
-	
+
 	public abstract void update(boolean forceUpdate);
 
 }

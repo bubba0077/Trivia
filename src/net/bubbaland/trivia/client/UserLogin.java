@@ -1,8 +1,6 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -28,7 +26,7 @@ public class UserLogin extends TriviaDialogPanel {
 	 *            the client
 	 */
 	public UserLogin(TriviaClient client) {
-		super(new GridBagLayout());
+		super( );
 
 		// Set up layout constraints
 		final GridBagConstraints c = new GridBagConstraints();
@@ -53,22 +51,23 @@ public class UserLogin extends TriviaDialogPanel {
 		userTextField.addAncestorListener(this);
 
 		// Display the dialog box
-		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "User Login", this, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION);
-		
+		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "User Login", this, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.DEFAULT_OPTION);
+
 		// Set the user name to input value
-		final String user = userTextField.getText();				
-				
+		final String user = userTextField.getText();
+
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) dialog.getValue() ).intValue();
-		
-		if(option != JOptionPane.CLOSED_OPTION ) {
-			if( user.toCharArray().length != 0 ) {
+
+		if (option != JOptionPane.CLOSED_OPTION) {
+			if (user.toCharArray().length != 0) {
 				client.setUser(user);
 			} else {
 				new UserLogin(client);
 			}
 		} else {
-			if( client.getUser() == null ) {
+			if (client.getUser() == null) {
 				System.exit(0);
 			}
 		}

@@ -35,7 +35,7 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 	final private static Color	VALUE_COLOR			= new Color(30, 144, 255);
 	final private static Color	EARNED_COLOR		= Color.GREEN;
 
-	/** Font Size */
+	/** Font size */
 	final private static float	AXIS_FONT_SIZE		= 16.0f;
 
 	/** The chart panel */

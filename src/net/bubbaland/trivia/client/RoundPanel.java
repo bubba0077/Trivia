@@ -7,7 +7,9 @@ import net.bubbaland.trivia.TriviaInterface;
 /**
  * A panel for the current round data.
  * 
- * <code>RoundPanel</code> is a panel that displays a summary and question data for the current round. There are two parts: a <code>HeaderPanel</code> to display summary information, and a <RoundQlistPanel> to display the question data. 
+ * <code>RoundPanel</code> is a panel that displays a summary and question data for the current round. There are two
+ * parts: a <code>HeaderPanel</code> to display summary information, and a <RoundQlistPanel> to display the question
+ * data.
  * 
  * @author Walter Kolczynski
  * 

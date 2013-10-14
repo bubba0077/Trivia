@@ -2,7 +2,6 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
@@ -14,6 +13,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
@@ -24,8 +24,8 @@ import net.bubbaland.trivia.TriviaInterface;
  */
 public class AnswerEntryPanel extends TriviaDialogPanel {
 
-	private static final long	serialVersionUID	= -5797789908178154492L;
-	
+	private static final long	serialVersionUID		= -5797789908178154492L;
+
 	/**
 	 * Font sizes
 	 */
@@ -39,7 +39,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 	private static final int	SLIDER_PADDING_LEFT		= 10;
 	private static final int	SLIDER_PADDING_RIGHT	= 10;
 	private static final int	SLIDER_PADDING_TOP		= 10;
-	
+
 	/**
 	 * Creates a dialog box and prompt for response
 	 * 
@@ -54,7 +54,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 	 */
 	public AnswerEntryPanel(TriviaInterface server, TriviaClient client, int qNumber, String user) {
 
-		super(new GridBagLayout());
+		super( );
 
 		// Retrieve current trivia data object
 		final Trivia trivia = client.getTrivia();
@@ -139,8 +139,9 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		this.add(confidenceSlider, c);
 
 		// Display the dialog box
-		TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Submit Answer for Question " + qNumber, this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-		
+		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Submit Answer for Question " + qNumber, this,
+				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {

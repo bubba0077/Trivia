@@ -85,27 +85,29 @@ public class Trivia implements Serializable {
 	}
 
 	/**
-	 * Close a question in the current round.
-	 * 
-	 * @param qNumber
-	 *            The question number
-	 * @param answer TODO
-	 */
-	public void close(int qNumber, String answer) {
-		this.currentRound.close(qNumber, answer);
-	}
-
-	/**
 	 * Close a question.
 	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
 	 *            The question number
-	 * @param answer TODO
+	 * @param answer
+	 *            TODO
 	 */
 	public void close(int rNumber, int qNumber, String answer) {
 		this.rounds[rNumber - 1].close(qNumber, answer);
+	}
+
+	/**
+	 * Close a question in the current round.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param answer
+	 *            TODO
+	 */
+	public void close(int qNumber, String answer) {
+		this.currentRound.close(qNumber, answer);
 	}
 
 	/**
@@ -141,6 +143,19 @@ public class Trivia implements Serializable {
 		return this.rounds[rNumber - 1].eachOpen();
 	}
 
+	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect,
+			String submitter, String operator) {
+		this.rounds[rNumber - 1].setValue(qNumber, value);
+		this.rounds[rNumber - 1].setQuestionText(qNumber, qText);
+		if (isCorrect) {
+			this.rounds[rNumber - 1].markCorrect(qNumber, aText, submitter, operator);
+		} else {
+			this.rounds[rNumber - 1].markIncorrect(qNumber);
+			this.rounds[rNumber - 1].close(qNumber, aText);
+
+		}
+	}
+
 	/**
 	 * Gets the announced place.
 	 * 
@@ -164,30 +179,26 @@ public class Trivia implements Serializable {
 		if (rNumber > 0) return this.rounds[rNumber - 1].getAnnounced();
 		return 0;
 	}
-	
+
 	/**
 	 * Gets the Answers in the queue for the current round.
 	 * 
-	 * @param queueIndex
-	 *            The location in the queue
 	 * @return The Answers
 	 */
 	public Answer[] getAnswerQueue() {
 		return this.currentRound.getAnswerQueue();
 	}
-	
+
+
 	/**
 	 * Gets the Answers in the queue for the current round.
 	 * 
-	 * @param queueIndex
-	 *            The location in the queue
 	 * @return The Answers
 	 */
 	public Answer[] getAnswerQueue(int rNumber) {
-		return rounds[rNumber-1].getAnswerQueue();
+		return this.rounds[rNumber - 1].getAnswerQueue();
 	}
-	
-	
+
 	/**
 	 * Gets the proposed answer in the queue for the current round.
 	 * 
@@ -370,6 +381,19 @@ public class Trivia implements Serializable {
 		return this.rounds[rNumber - 1].getAnswerText(qNumber);
 	}
 
+	public Round[] getChangedRounds(int[] oldVersions) {
+		final ArrayList<Round> changedRoundList = new ArrayList<Round>(0);
+		for (int r = 0; r < this.nRounds; r++) {
+			final Round round = this.rounds[r];
+			if (oldVersions[r] != round.getVersion()) {
+				changedRoundList.add(round);
+			}
+		}
+		final Round[] changedRounds = new Round[changedRoundList.size()];
+		changedRoundList.toArray(changedRounds);
+		return changedRounds;
+	}
+
 	/**
 	 * Gets the cumulative points earned through a round
 	 * 
@@ -407,6 +431,10 @@ public class Trivia implements Serializable {
 	 */
 	public int getCurrentRoundEarned() {
 		return this.currentRound.getEarned();
+	}
+
+	public int getCurrentRoundnumber() {
+		return this.currentRound.getRoundNumber();
 	}
 
 	/**
@@ -504,6 +532,7 @@ public class Trivia implements Serializable {
 		return this.rounds[rNumber - 1].getEachValue();
 	}
 
+
 	/**
 	 * Gets the total points earned for the contest.
 	 * 
@@ -540,7 +569,6 @@ public class Trivia implements Serializable {
 	public int getEarned(int rNumber, int qNumber) {
 		return this.rounds[rNumber - 1].getEarned(qNumber);
 	}
-
 
 	/**
 	 * Gets the number of questions in a speed round.
@@ -721,6 +749,14 @@ public class Trivia implements Serializable {
 	 */
 	public int getValue(int rNumber, int qNumber) {
 		return this.rounds[rNumber - 1].getValue(qNumber);
+	}
+
+	public int[] getVersions() {
+		final int[] versions = new int[this.nRounds];
+		for (int r = 0; r < this.nRounds; r++) {
+			versions[r] = this.rounds[r].getVersion();
+		}
+		return versions;
 	}
 
 	/**
@@ -957,7 +993,8 @@ public class Trivia implements Serializable {
 	/**
 	 * Change the current round.
 	 * 
-	 * @param rNumber The new current round number
+	 * @param rNumber
+	 *            The new current round number
 	 */
 	public void setCurrentRound(int rNumber) {
 		this.currentRound = this.rounds[rNumber - 1];
@@ -1031,54 +1068,16 @@ public class Trivia implements Serializable {
 	public void unsetSpeed(int rNumber) {
 		this.rounds[rNumber - 1].unsetSpeed();
 	}
-	
-	public int[] getVersions() {
-		int[] versions = new int[nRounds];
-		for(int r=0; r<nRounds; r++) {
-			versions[r] = rounds[r].getVersion();
-		}
-		return versions;
-	}
-	
-	public Round[] getChangedRounds(int[] oldVersions) {
-		ArrayList<Round> changedRoundList = new ArrayList<Round>(0);
-		for(int r=0; r<nRounds; r++) {
-			Round round = rounds[r];
-			if(oldVersions[r] != round.getVersion()) {
-				changedRoundList.add(round);
-			}
-		}
-		Round[] changedRounds= new Round[changedRoundList.size()];
-		changedRoundList.toArray(changedRounds);
-		return changedRounds;
-	}
-	
-	public void updateRounds(Round[] newRounds) {
-		int nNew = newRounds.length;
-		for(int r=0; r<nNew; r++) {
-			Round newRound = newRounds[r];
-			int rNumber = newRound.getRoundNumber();
-			this.rounds[rNumber-1] = newRound;
-			if(newRound.isAnnounced()) {
-				this.nTeams = newRound.getStandings().length;
-			}			
-		}
-	}
-	
-	public int getCurrentRoundnumber() {
-		return this.currentRound.getRoundNumber();
-	}
 
-	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect, String submitter,
-			String operator) {
-		this.rounds[rNumber-1].setValue(qNumber, value);
-		this.rounds[rNumber-1].setQuestionText(qNumber, qText);
-		if(isCorrect) {
-			this.rounds[rNumber-1].markCorrect(qNumber, aText, submitter, operator);
-		} else {
-			this.rounds[rNumber-1].markIncorrect(qNumber);
-			this.rounds[rNumber-1].close(qNumber, aText);
-			
+	public void updateRounds(Round[] newRounds) {
+		final int nNew = newRounds.length;
+		for (int r = 0; r < nNew; r++) {
+			final Round newRound = newRounds[r];
+			final int rNumber = newRound.getRoundNumber();
+			this.rounds[rNumber - 1] = newRound;
+			if (newRound.isAnnounced()) {
+				this.nTeams = newRound.getStandings().length;
+			}
 		}
 	}
 

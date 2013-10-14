@@ -76,7 +76,9 @@ public class Question implements Serializable {
 
 	/**
 	 * Close this question
-	 * @param answer TODO
+	 * 
+	 * @param answer
+	 *            TODO
 	 */
 	public void close(String answer) {
 		this.answer = answer;

@@ -26,60 +26,8 @@ import javax.swing.JPanel;
  */
 public class BrowserPanel extends JPanel {
 
-	/**
-	 * A Web Browser
-	 */
-	private static class Browser extends Region {
-
-		/** The browser. */
-		final private WebView	browser		= new WebView();
-
-		/** The web engine. */
-		final private WebEngine	webEngine	= this.browser.getEngine();
-
-		/**
-		 * Instantiates a new browser
-		 * 
-		 * @param url
-		 *            the URL to load
-		 */
-		public Browser(String url) {
-			this.getStyleClass().add("browser");
-			this.webEngine.load(url);
-			this.getChildren().add(this.browser);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see javafx.scene.Parent#layoutChildren()
-		 */
-		@Override
-		protected void layoutChildren() {
-			// make the browser fill the entire area
-			final double w = this.getWidth();
-			final double h = this.getHeight();
-			this.layoutInArea(this.browser, 0, 0, w, h, 0, HPos.CENTER, VPos.CENTER);
-		}
-
-	}
-
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 7479243065048312762L;
-
-	/**
-	 * Initializes the JavaFX panel and load the given URL.
-	 * 
-	 * @param fxPanel
-	 *            The JavaFX Panel that will hold the browser
-	 * @param url
-	 *            The URL to load
-	 */
-	public static void initFX(JFXPanel fxPanel, String url) {
-		final Browser pane = new Browser(url);
-		final Scene scene = new Scene(pane);
-		fxPanel.setScene(scene);
-	}
 
 	/**
 	 * Creates a new panel with a browser inside
@@ -162,5 +110,56 @@ public class BrowserPanel extends JPanel {
 
 	}
 
+	/**
+	 * Initializes the JavaFX panel and load the given URL.
+	 * 
+	 * @param fxPanel
+	 *            The JavaFX Panel that will hold the browser
+	 * @param url
+	 *            The URL to load
+	 */
+	public static void initFX(JFXPanel fxPanel, String url) {
+		final Browser pane = new Browser(url);
+		final Scene scene = new Scene(pane);
+		fxPanel.setScene(scene);
+	}
+
+	/**
+	 * A Web Browser
+	 */
+	private static class Browser extends Region {
+
+		/** The browser. */
+		final private WebView	browser		= new WebView();
+
+		/** The web engine. */
+		final private WebEngine	webEngine	= this.browser.getEngine();
+
+		/**
+		 * Instantiates a new browser
+		 * 
+		 * @param url
+		 *            the URL to load
+		 */
+		public Browser(String url) {
+			this.getStyleClass().add("browser");
+			this.webEngine.load(url);
+			this.getChildren().add(this.browser);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see javafx.scene.Parent#layoutChildren()
+		 */
+		@Override
+		protected void layoutChildren() {
+			// make the browser fill the entire area
+			final double w = this.getWidth();
+			final double h = this.getHeight();
+			this.layoutInArea(this.browser, 0, 0, w, h, 0, HPos.CENTER, VPos.CENTER);
+		}
+
+	}
 
 }

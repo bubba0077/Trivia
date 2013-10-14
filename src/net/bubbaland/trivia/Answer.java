@@ -8,19 +8,16 @@ import java.util.Date;
 /**
  * A data structure for proposed answers.
  * 
- * The <code>Answer</code> class contains the data and status for a proposed answer. Answers are originally created with the status of NOT_CALLED_IN, and this status is then updated as someone calls the answer in and then receives a response on the correctness of the answer.
+ * The <code>Answer</code> class contains the data and status for a proposed answer. Answers are originally created with
+ * the status of NOT_CALLED_IN, and this status is then updated as someone calls the answer in and then receives a
+ * response on the correctness of the answer.
  * 
  * @author Walter Kolczynski
  */
 public class Answer implements Serializable {
 
-	// Valid statuses
-	protected static enum Status {
-		NOT_CALLED_IN, CALLING, INCORRECT, PARTIAL, CORRECT
-	}
-
 	private static final long	serialVersionUID	= -2367986992067473980L;
-	
+
 	// Place in the queue
 	final private int			queueLocation;
 
@@ -46,7 +43,7 @@ public class Answer implements Serializable {
 	private volatile String		operator;
 
 	// The current status of the question
-	private volatile Status		status;											;
+	private volatile Status		status;
 
 	/**
 	 * Create a new answer
@@ -60,7 +57,7 @@ public class Answer implements Serializable {
 	 */
 	public Answer(int queueLocation, int qNumber, String answer, String submitter) {
 		this(queueLocation, qNumber, answer, submitter, -1);
-	}
+	};
 
 	/**
 	 * Instantiates a new answer.
@@ -143,6 +140,10 @@ public class Answer implements Serializable {
 	 */
 	public int getQNumber() {
 		return this.qNumber;
+	}
+
+	public int getQueueLocation() {
+		return this.queueLocation;
 	}
 
 	/**
@@ -231,36 +232,33 @@ public class Answer implements Serializable {
 		this.operator = "";
 		this.status = Status.NOT_CALLED_IN;
 	}
-	
-	public int getQueueLocation() {
-		return queueLocation;
-	}
 
-	public static class TimestampCompare implements Comparator<Answer> {
-
-		@Override
-		public int compare(Answer o1, Answer o2) {
-			return o1.getTimestamp().compareTo(o2.getTimestamp());
-		}	
-		
-	}
-	
 	public static class QNumberCompare implements Comparator<Answer> {
 
 		@Override
 		public int compare(Answer o1, Answer o2) {
-			return ((Integer)o1.getQNumber()).compareTo((Integer)o2.getQNumber());
+			return ( (Integer) o1.getQNumber() ).compareTo(o2.getQNumber());
 		}
-		
-	}
-	
-	public static class StatusCompare implements Comparator<Answer> {
 
+	}
+
+	// Valid statuses
+	protected static enum Status {
+		NOT_CALLED_IN, CALLING, INCORRECT, PARTIAL, CORRECT
+	}
+
+	public static class StatusCompare implements Comparator<Answer> {
 		@Override
 		public int compare(Answer o1, Answer o2) {
 			return o1.status.compareTo(o2.status);
 		}
-		
+	}
+
+	public static class TimestampCompare implements Comparator<Answer> {
+		@Override
+		public int compare(Answer o1, Answer o2) {
+			return o1.getTimestamp().compareTo(o2.getTimestamp());
+		}
 	}
 
 }

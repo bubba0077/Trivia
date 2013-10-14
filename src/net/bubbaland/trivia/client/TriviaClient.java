@@ -57,155 +57,60 @@ import net.bubbaland.trivia.UserList.Role;
 public class TriviaClient extends TriviaPanel implements ActionListener, WindowListener {
 
 	// The Constant serialVersionUID.
-	private static final long	serialVersionUID	= 5464403297756091690L;
+	private static final long					serialVersionUID	= 5464403297756091690L;
 
-	private static final String fileName = ".trivia-settings";
-	
 	// The refresh rate of the GUI elements (in milliseconds)
-	final private static int	REFRESH_RATE		= 500;
+	final private static int					REFRESH_RATE		= 500;
 	// The maximum number of retries the client will make when failing in communication with the server
-	protected static final int	MAX_RETRIES			= 10;
+	protected static final int					MAX_RETRIES			= 10;
 	// The amount of time (in seconds) a user is considered "active"
-	final static private int	USER_LIST_WINDOW	= 10 * 60;
+	final static private int					USER_LIST_WINDOW	= 10 * 60;
 
 	// Height of the status bar at the bottom of the GUI
-	final static private int	STATUS_HEIGHT		= 14;
+	final static private int					STATUS_HEIGHT		= 14;
 	// Font size of the status text
-	final static private float	STATUS_FONT_SIZE	= 12.0f;
-
+	final static private float					STATUS_FONT_SIZE	= 12.0f;
 
 	// URL for RMI server
-	final static private String	TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
+	final static private String					TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
 	// URL for the IRC client
-	final static private String	IRC_CLIENT_URL		= "http://webchat.freenode.net/";
+	final static private String					IRC_CLIENT_URL		= "http://webchat.freenode.net/";
 	// IRC channel to join on connection to IRC server
-	final static private String	IRC_CHANNEL			= "%23kneedeeptrivia";
-
-	// The local trivia object holding all contest data
-	private volatile Trivia		trivia;
-	// The remote server
-	private TriviaInterface		server;
+	final static private String					IRC_CHANNEL			= "%23kneedeeptrivia";
+	// File name to store window positions
+	final static private String					fileName			= ".trivia-settings";
 	
-	//
-	private volatile Hashtable<String, Role>	userHash;
-	
-	final private JFrame frame;
+	// Queue sort option
+	public static enum QueueSort { TIMESTAMP, QNUMBER, STATUS }
 
 	/**
 	 * GUI Components
 	 */
+	// Root frame for the application
+	final private JFrame						frame;
 	// The tabbed pane
-	private JTabbedPane			book;
+	final private JTabbedPane					book;
 	// Individual pages in the tabbed pane
-	private TriviaPanel[]		pages;
+	final private TriviaPanel[]					pages;
 	// The status bar at the bottom
-	private JLabel				statusBar;
+	final private JLabel						statusBar;
+
 	// The user's name
-	private String				user;
+	private volatile String						user;
 	// The Hide Closed menu item
-	private boolean hideClosed;
-	// Queue sort option
-	public static enum QueueSort {TIMESTAMP, QNUMBER, STATUS}; 
-	private QueueSort queueSort;
+	private volatile boolean					hideClosed;
+	// Hashtable of active users and roles
+	private volatile Hashtable<String, Role>	userHash;
+	// Sort method for the queue
+	private volatile QueueSort					queueSort;															;
 
-	/**
-	 * Create and show the GUI.
-	 */
-	private static void createAndShowGUI(boolean useFX) {
-		// Create the application window
-		final JFrame frame = new JFrame("Trivia");
-		frame.setName("Main_Window");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	// The local trivia object holding all contest data
+	private volatile Trivia						trivia;
+	// The remote server
+	private final TriviaInterface				server;
 
-		// Initialize server variable
-		TriviaInterface triviaServer = null;
-
-		// Initiate connection to RMI server
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < MAX_RETRIES && success == false) {
-			tryNumber++;
-			try {
-				// Connect to RMI server
-				triviaServer = (TriviaInterface) Naming.lookup(TRIVIA_SERVER_URL);
-				success = true;
-			} catch (MalformedURLException | NotBoundException | RemoteException e) {
-				// Connection failed
-				System.out.println("Initial connection to server failed (try #" + tryNumber + ")");
-
-				if (tryNumber == MAX_RETRIES) {
-					// Maximum retries reached, pop up disconnected dialog
-					final String message = "Could not connect to server.";
-
-					final Object[] options = { "Retry", "Exit" };
-					final int option = JOptionPane.showOptionDialog(null, message, "Disconnected",
-							JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[1]);
-
-					if (option == JOptionPane.OK_OPTION) {
-						// Retry connection
-						tryNumber = 0;
-					} else {
-						// Exit
-						System.exit(0);
-					}
-				}
-			}
-		}
-		
-		System.out.println("Connected to trivia server (" + TRIVIA_SERVER_URL + ").");
-
-		// Initialize GUI and place in window
-		try {
-			frame.add(new TriviaClient(frame, triviaServer, useFX), BorderLayout.CENTER);
-		} catch (final Exception e) {
-			System.exit(0);
-		}
-
-		// Display the window.
-		loadPosition(frame);
-		frame.setVisible(true);
-	}
-
-	/**
-	 * Entry point for the client application
-	 * 
-	 * @param args
-	 *            Not used
-	 */
-	public static void main(String[] args) {
-		boolean useFX = false;
-		// Schedule a job to create and show the GUI
-		if(args.length > 0 && args[0].equals("useFX")) {
-			useFX = true;
-		}		
-		SwingUtilities.invokeLater(new TriviaRunnable(useFX));
-	}
-
-	/**
-	 * Convert a cardinal number into its ordinal counterpart
-	 * 
-	 * @param cardinal
-	 *            The number to convert to ordinal form
-	 * @return String with the ordinal representation of the number (e.g., 1st, 2nd, 3rd, etc.)
-	 */
-	public static String ordinalize(int cardinal) {
-		// Short-circuit for teen numbers that don't follow normal rules
-		if (10 < cardinal % 100 && cardinal % 100 < 14) return cardinal + "th";
-		// Ordinal suffix depends on the ones digit
-		final int modulus = cardinal % 10;
-		switch (modulus) {
-			case 1:
-				return cardinal + "st";
-			case 2:
-				return cardinal + "nd";
-			case 3:
-				return cardinal + "rd";
-			default:
-				return cardinal + "th";
-
-		}
-	}
-
+	
+	
 	/**
 	 * Creates a new trivia client GUI
 	 * 
@@ -214,17 +119,19 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 */
 	private TriviaClient(JFrame parent, TriviaInterface server, boolean useFX) {
 
-		// Call parent constructor and use a GridBagLayout
+		// Call parent constructor
 		super();
-		
+
 		this.server = server;
 		this.frame = parent;
-		
-		frame.addWindowListener(this);
-		
-		TriviaFetcher fetcher = new TriviaFetcher(server, this);
+
+		// Listen for the window close so we can save the size & position
+		this.frame.addWindowListener(this);
+
+		// Grab a copy of the current Trivia data structure from the server in the background
+		final TriviaFetcher fetcher = new TriviaFetcher(server, this);
 		fetcher.execute();
-		
+
 		// Create a prompt requesting the user name
 		new UserLogin(this);
 
@@ -238,8 +145,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		// Make Queue Menu
 		JMenu menu = new JMenu("Queue");
 		menuBar.add(menu);
-		
-		JCheckBoxMenuItem hideClosedMenuItem = new JCheckBoxMenuItem("Hide closed questions");
+
+		final JCheckBoxMenuItem hideClosedMenuItem = new JCheckBoxMenuItem("Hide closed questions");
 		hideClosedMenuItem.setMnemonic(KeyEvent.VK_C);
 		hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
 		hideClosedMenuItem.setActionCommand("Hide Closed");
@@ -247,11 +154,11 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		hideClosedMenuItem.setSelected(true);
 		this.hideClosed = true;
 		menu.add(hideClosedMenuItem);
-		
-		JMenu sortMenu = new JMenu("Sort by...");
+
+		final JMenu sortMenu = new JMenu("Sort by...");
 		sortMenu.setMnemonic(KeyEvent.VK_S);
-		
-		ButtonGroup sortOptions = new ButtonGroup();
+
+		final ButtonGroup sortOptions = new ButtonGroup();
 		JRadioButtonMenuItem sortOption = new JRadioButtonMenuItem("Timestamp");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
 		sortOption.setActionCommand("Sort Timestamp");
@@ -260,7 +167,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		this.queueSort = QueueSort.TIMESTAMP;
 		sortOptions.add(sortOption);
 		sortMenu.add(sortOption);
-		
+
 		sortOption = new JRadioButtonMenuItem("Question Number");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
 		sortOption.setActionCommand("Sort Question Number");
@@ -268,7 +175,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		sortOption.setSelected(false);
 		sortOptions.add(sortOption);
 		sortMenu.add(sortOption);
-		
+
 		sortOption = new JRadioButtonMenuItem("Status");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		sortOption.setActionCommand("Sort Status");
@@ -276,17 +183,17 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		sortOption.setSelected(false);
 		sortOptions.add(sortOption);
 		sortMenu.add(sortOption);
-		
+
 		menu.add(sortMenu);
 
 		// Make User Menu
 		menu = new JMenu("User");
 		menuBar.add(menu);
-		
-		JMenu roleMenu = new JMenu("Change role...");
+
+		final JMenu roleMenu = new JMenu("Change role...");
 		roleMenu.setMnemonic(KeyEvent.VK_R);
-		
-		ButtonGroup roleOptions = new ButtonGroup();
+
+		final ButtonGroup roleOptions = new ButtonGroup();
 		JRadioButtonMenuItem roleOption = new JRadioButtonMenuItem("Researcher");
 		roleOption.setActionCommand("Researcher");
 		roleOption.addActionListener(this);
@@ -294,8 +201,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		roleOption.setForeground(UserListPanel.RESEARCHER_COLOR);
 		roleOptions.add(roleOption);
 		roleMenu.add(roleOption);
-		setRole(Role.RESEARCHER);
-		
+		this.setRole(Role.RESEARCHER);
+
 		roleOption = new JRadioButtonMenuItem("Caller");
 		roleOption.setActionCommand("Caller");
 		roleOption.addActionListener(this);
@@ -303,7 +210,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		roleOption.setForeground(UserListPanel.CALLER_COLOR);
 		roleOptions.add(roleOption);
 		roleMenu.add(roleOption);
-		
+
 		roleOption = new JRadioButtonMenuItem("Typer");
 		roleOption.setActionCommand("Typer");
 		roleOption.addActionListener(this);
@@ -311,14 +218,14 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		roleOption.setForeground(UserListPanel.TYPER_COLOR);
 		roleOptions.add(roleOption);
 		roleMenu.add(roleOption);
-				
-		menu.add(roleMenu);		
+
+		menu.add(roleMenu);
 
 		JMenuItem menuItem = new JMenuItem("Change name", KeyEvent.VK_N);
 		menuItem.setActionCommand("Change name");
 		menuItem.addActionListener(this);
 		menu.add(menuItem);
-		
+
 		// Make Admin Menu pinned to the right
 		menuBar.add(Box.createHorizontalGlue());
 		menu = new JMenu("Admin");
@@ -386,15 +293,15 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		// Create team copmarison chart
 		this.pages[7] = new TeamComparisonPanel(this);
 		this.book.addTab("Team Comparison", this.pages[7]);
-		
+
 		// Put the split pane at the top of the window
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		// When the window resizes, adjust the split pane size
 		constraints.weightx = 1.0;
-		constraints.weighty = 1.0;		
-		
-		if(useFX) {
+		constraints.weighty = 1.0;
+
+		if (useFX) {
 			/**
 			 * Create browser pane for IRC web client
 			 */
@@ -402,7 +309,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			final String url = IRC_CLIENT_URL + "?nick=" + this.user + "&channels=" + IRC_CHANNEL;
 			final BrowserPanel browser = new BrowserPanel(url);
 			browser.setPreferredSize(new Dimension(0, 204));
-	
+
 			/**
 			 * Create the split pane separating the tabbed pane and the broswer pane
 			 */
@@ -411,14 +318,14 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			splitPane.setResizeWeight(1.0);
 			this.add(splitPane, constraints);
 		} else {
-			this.add(book, constraints);
+			this.add(this.book, constraints);
 		}
-		
+
 		// Create timer that will poll server for changes
 		final Timer refreshTimer = new Timer(REFRESH_RATE, this);
 		refreshTimer.setActionCommand("Timer");
 		refreshTimer.start();
-		
+
 		// Post welcome to status bar
 		this.log("Welcome " + this.user);
 	}
@@ -444,52 +351,36 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 				break;
 			case "Hide Closed":
 				// Triggered by change to Hide Closed menu item
-				this.hideClosed = ((JCheckBoxMenuItem)e.getSource()).isSelected();
+				this.hideClosed = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
 				this.update(true);
 				break;
 			case "Sort Timestamp":
+				// Triggered by Timestamp Sort menu item
 				this.queueSort = QueueSort.TIMESTAMP;
 				this.update(true);
 				break;
 			case "Sort Question Number":
+				// Triggered by Question Number Sort menu item
 				this.queueSort = QueueSort.QNUMBER;
 				this.update(true);
 				break;
 			case "Sort Status":
+				// Triggered by Status Sort menu item
 				this.queueSort = QueueSort.STATUS;
 				this.update(true);
 				break;
 			case "Caller":
-				setRole(Role.CALLER);
+				// Triggered by Caller Role menu item
+				this.setRole(Role.CALLER);
 				break;
 			case "Typer":
-				setRole(Role.TYPER);
+				// Triggered by Typer Role menu item
+				this.setRole(Role.TYPER);
 				break;
 			case "Researcher":
-				setRole(Role.RESEARCHER);
+				// Triggered by Researcher Role menu item
+				this.setRole(Role.RESEARCHER);
 				break;
-				
-		}
-	}
-	
-	private void setRole(Role role) {
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
-			tryNumber++;
-			try {
-				this.trivia = server.getTrivia();
-				this.server.setRole(this.user, role);
-				success = true;
-			} catch (final RemoteException e) {
-				this.log("Couldn't change role server (try #" + tryNumber + ").");
-			}
-		}
-
-		// Show disconnected dialog if we could not retrieve the Trivia data
-		if (!success || this.trivia == null) {
-			this.disconnected();
-			return;
 		}
 	}
 
@@ -511,6 +402,34 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 
 	/**
+	 * Get the tabbed content pane.
+	 * 
+	 * @return The tabbed content pane
+	 */
+	public JTabbedPane getBook() {
+		return this.book;
+	}
+
+	/**
+	 * Get the root frame for this application.
+	 * 
+	 * @return The root frame for the application
+	 */
+	public JFrame getFrame() {
+		return this.frame;
+	}
+
+	/**
+	 * Get the queue sort method.
+	 * 
+	 * @return The sort method
+	 */
+
+	public QueueSort getQueueSort() {
+		return this.queueSort;
+	}
+
+	/**
 	 * Return the local Trivia object. When updating the GUI, always get the current Trivia object first to ensure the
 	 * most recent data is used. Components should always use this local version to read data to limit server traffic.
 	 * 
@@ -521,23 +440,28 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 
 	/**
-	 * Gets the user name
+	 * Gets the user name.
 	 * 
 	 * @return The user name
 	 */
 	public String getUser() {
 		return this.user;
 	}
-	
+
 	/**
+	 * Get the hash of active users and roles.
 	 * 
+	 * @return The hashtable of users and roles
+	 */
+	public Hashtable<String, Role> getUserHash() {
+		return this.userHash;
+	}
+
+	/**
+	 * Determine whether closed questions should be hidden in the answer queue.
 	 */
 	public boolean hideClosed() {
 		return this.hideClosed;
-	}
-	
-	public QueueSort getQueueSort() {
-		return this.queueSort;
 	}
 
 	/**
@@ -554,6 +478,32 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 
 	/**
+	 * Change the user's role.
+	 * 
+	 * @param role
+	 */
+	private void setRole(Role role) {
+		int tryNumber = 0;
+		boolean success = false;
+		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			tryNumber++;
+			try {
+				this.trivia = this.server.getTrivia();
+				this.server.setRole(this.user, role);
+				success = true;
+			} catch (final RemoteException e) {
+				this.log("Couldn't change role server (try #" + tryNumber + ").");
+			}
+		}
+
+		// Show disconnected dialog if we could not retrieve the Trivia data
+		if (!success || this.trivia == null) {
+			this.disconnected();
+			return;
+		}
+	}
+
+	/**
 	 * Sets the user name
 	 * 
 	 * @param user
@@ -565,7 +515,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 			tryNumber++;
 			try {
-				if(this.user == null) {
+				if (this.user == null) {
 					this.server.handshake(user);
 				} else {
 					this.server.changeUser(this.user, user);
@@ -579,7 +529,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		if (!success) {
 			this.disconnected();
 			return;
-		}		
+		}
 		this.user = user;
 	}
 
@@ -588,11 +538,11 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 */
 	@Override
 	public synchronized void update(boolean force) {
-		
+
 		Round[] newRounds = null;
-		int[] oldVersions = this.trivia.getVersions();
+		final int[] oldVersions = this.trivia.getVersions();
 		int currentRound = 0;
-		
+
 		// Synchronize the local Trivia data to match the server
 		int tryNumber = 0;
 		boolean success = false;
@@ -612,7 +562,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			this.disconnected();
 			return;
 		}
-		
+
 		this.trivia.updateRounds(newRounds);
 		this.trivia.setCurrentRound(currentRound);
 
@@ -621,20 +571,215 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			page.update(force);
 		}
 	}
-	
-	public Hashtable<String, Role> getUserHash() {
-		return this.userHash;
+
+	@Override
+	public void windowActivated(WindowEvent e) {
 	}
 
-	public JTabbedPane getBook() {
-		return book;
+	@Override
+	public void windowClosed(WindowEvent e) {
 	}
-	
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		savePosition(e.getWindow());
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+	}
+
+	/**
+	 * Create and show the GUI.
+	 */
+	private static void createAndShowGUI(boolean useFX) {
+		// Create the application window
+		final JFrame frame = new JFrame("Trivia");
+		frame.setName("Main_Window");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		// Initialize server variable
+		TriviaInterface triviaServer = null;
+
+		// Initiate connection to RMI server
+		int tryNumber = 0;
+		boolean success = false;
+		while (tryNumber < MAX_RETRIES && success == false) {
+			tryNumber++;
+			try {
+				// Connect to RMI server
+				triviaServer = (TriviaInterface) Naming.lookup(TRIVIA_SERVER_URL);
+				success = true;
+			} catch (MalformedURLException | NotBoundException | RemoteException e) {
+				// Connection failed
+				System.out.println("Initial connection to server failed (try #" + tryNumber + ")");
+
+				if (tryNumber == MAX_RETRIES) {
+					// Maximum retries reached, pop up disconnected dialog
+					final String message = "Could not connect to server.";
+
+					final Object[] options = { "Retry", "Exit" };
+					final int option = JOptionPane.showOptionDialog(null, message, "Disconnected",
+							JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[1]);
+
+					if (option == JOptionPane.OK_OPTION) {
+						// Retry connection
+						tryNumber = 0;
+					} else {
+						// Exit
+						System.exit(0);
+					}
+				}
+			}
+		}
+
+		System.out.println("Connected to trivia server (" + TRIVIA_SERVER_URL + ").");
+
+		// Initialize GUI and place in window
+		try {
+			frame.add(new TriviaClient(frame, triviaServer, useFX), BorderLayout.CENTER);
+		} catch (final Exception e) {
+			System.exit(0);
+		}
+
+		// Display the window.
+		loadPosition(frame);
+		frame.setVisible(true);
+	}
+
+	/**
+	 * Load the saved position and size of the window from file. If none found, use preferred size of components.
+	 * 
+	 * @param window
+	 *            The window whose position and size is to be loaded
+	 */
+	public static void loadPosition(Window window) {
+		final File file = new File(fileName);
+		final Properties props = new Properties();
+		try {
+			final BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
+			props.load(fileBuffer);
+
+			final String frameID = window.getName().replaceAll(" ", "_");
+
+			final int x = Integer.parseInt(props.getProperty(frameID + "_x"));
+			final int y = Integer.parseInt(props.getProperty(frameID + "_y"));
+			final int width = Integer.parseInt(props.getProperty(frameID + "_width"));
+			final int height = Integer.parseInt(props.getProperty(frameID + "_height"));
+
+			window.setBounds(x, y, width, height);
+
+		} catch (IOException | NumberFormatException e) {
+			System.out.println("Couldn't load window position, may not exist yet.");
+			window.pack();
+			window.setLocationRelativeTo(null);
+		}
+	}
+
+	/**
+	 * Entry point for the client application. Only the first argument is used. If the first argument is "useFX", the
+	 * client will include an IRC client panel.
+	 * 
+	 * @param args
+	 *            useFX
+	 * 
+	 */
+	public static void main(String[] args) {
+		boolean useFX = false;
+		// Schedule a job to create and show the GUI
+		if (args.length > 0 && args[0].equals("useFX")) {
+			useFX = true;
+		}
+		SwingUtilities.invokeLater(new TriviaRunnable(useFX));
+	}
+
+	/**
+	 * Convert a cardinal number into its ordinal counterpart.
+	 * 
+	 * @param cardinal
+	 *            The number to convert to ordinal form
+	 * @return String with the ordinal representation of the number (e.g., 1st, 2nd, 3rd, etc.)
+	 * 
+	 */
+	public static String ordinalize(int cardinal) {
+		// Short-circuit for teen numbers that don't follow normal rules
+		if (10 < cardinal % 100 && cardinal % 100 < 14) return cardinal + "th";
+		// Ordinal suffix depends on the ones digit
+		final int modulus = cardinal % 10;
+		switch (modulus) {
+			case 1:
+				return cardinal + "st";
+			case 2:
+				return cardinal + "nd";
+			case 3:
+				return cardinal + "rd";
+			default:
+				return cardinal + "th";
+
+		}
+	}
+
+	/**
+	 * Save the position and size of the window to file.
+	 * 
+	 * @param window
+	 *            The window whose size and position is to be saved
+	 * 
+	 */
+	public static void savePosition(Window window) {
+		final File file = new File(fileName);
+		final Properties props = new Properties();
+		BufferedReader infileBuffer;
+		try {
+			infileBuffer = new BufferedReader(new FileReader(file));
+			props.load(infileBuffer);
+		} catch (final IOException e) {
+		}
+
+		final Rectangle r = window.getBounds();
+		final int x = (int) r.getX();
+		final int y = (int) r.getY();
+		final int width = (int) r.getWidth();
+		final int height = (int) r.getHeight();
+
+		final String frameID = window.getName().replaceAll(" ", "_");
+		System.out.println(frameID);
+
+		props.setProperty(frameID + "_x", x + "");
+		props.setProperty(frameID + "_y", y + "");
+		props.setProperty(frameID + "_width", width + "");
+		props.setProperty(frameID + "_height", height + "");
+
+		try {
+			final BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
+			props.store(outfileBuffer, "Trivia");
+			outfileBuffer.close();
+		} catch (final IOException e) {
+			System.out.println("Error saving window position.");
+		}
+	}
+
+	/**
+	 * Private class to handle background downloading of Trivia object from server.
+	 * 
+	 */
 	private class TriviaFetcher extends SwingWorker<Void, Void> {
-		
-		final TriviaInterface server;
-		final TriviaClient client;
-		
+
+		final TriviaInterface	server;
+		final TriviaClient		client;
+
 		public TriviaFetcher(TriviaInterface server, TriviaClient client) {
 			super();
 			this.server = server;
@@ -651,7 +796,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 				tryNumber++;
 				try {
-					this.client.trivia = server.getTrivia();			
+					this.client.trivia = this.server.getTrivia();
 					success = true;
 				} catch (final RemoteException e) {
 					this.client.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
@@ -665,102 +810,25 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			}
 			return null;
 
-		}		
-		
+		}
+
 	}
-	
+
+	/**
+	 * Custom Runnable class to allow passing of command line argument into invokeLater.
+	 * 
+	 */
 	private static class TriviaRunnable implements Runnable {
-		private boolean useFX;
-		
+		private final boolean	useFX;
+
 		public TriviaRunnable(boolean useFX) {
 			this.useFX = useFX;
 		}
+
 		@Override
 		public void run() {
-			createAndShowGUI(useFX);
+			createAndShowGUI(this.useFX);
 		}
 	}
-	
-	public JFrame getFrame() {
-		return this.frame;
-	}
-	
-	public static void savePosition(Window frame) {
-		File file = new File(fileName);
-		Properties props = new Properties();
-		BufferedReader infileBuffer;
-		try {
-			infileBuffer = new BufferedReader(new FileReader(file));
-			props.load(infileBuffer);
-		} catch (IOException e) {}
-			
-		Rectangle r = frame.getBounds();
-		int x = (int)r.getX();
-		int y = (int)r.getY();
-		int width = (int)r.getWidth();
-		int height = (int)r.getHeight();
-		
-		String frameID = frame.getName().replaceAll(" " , "_");
-		System.out.println(frameID);
-		
-		props.setProperty(frameID + "_x", x + "");
-		props.setProperty(frameID+ "_y", y + "");
-		props.setProperty(frameID + "_width", width + "");
-		props.setProperty(frameID + "_height", height + "");
-				
-		try {
-			BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
-			props.store(outfileBuffer, "Trivia");
-			outfileBuffer.close();
-		} catch (IOException e) {
-			System.out.println("Error saving window position.");
-		}
-	}
-	
-	public static void loadPosition(Window frame) {
-		File file = new File(fileName);
-		Properties props = new Properties();
-		try {
-			BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
-			props.load(fileBuffer);
-			
-			String frameID = frame.getName().replaceAll(" " , "_");
-			
-			int x = Integer.parseInt(props.getProperty(frameID + "_x"));
-			int y = Integer.parseInt(props.getProperty(frameID + "_y"));
-			int width = Integer.parseInt(props.getProperty(frameID + "_width"));
-			int height = Integer.parseInt(props.getProperty(frameID + "_height"));
-			
-			frame.setBounds(x, y, width, height);
-			
-		} catch (IOException | NumberFormatException e ) {
-			System.out.println("Couldn't load window position, may not exist yet.");
-			frame.pack();
-			frame.setLocationRelativeTo(null);
-		}
-	}
-	
-	@Override
-	public void windowClosing(WindowEvent e) {
-		savePosition(e.getWindow());
-	}
-
-	@Override
-	public void windowOpened(WindowEvent e) {}
-
-	@Override
-	public void windowClosed(WindowEvent e) {}
-
-	@Override
-	public void windowIconified(WindowEvent e) {}
-
-	@Override
-	public void windowDeiconified(WindowEvent e) {}
-
-	@Override
-	public void windowActivated(WindowEvent e) {}
-
-	@Override
-	public void windowDeactivated(WindowEvent e) {}
 
 }

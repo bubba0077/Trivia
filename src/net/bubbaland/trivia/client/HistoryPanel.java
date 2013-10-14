@@ -17,7 +17,9 @@ import net.bubbaland.trivia.TriviaInterface;
 /**
  * A panel to select and display any round.
  * 
- * The <code>History</code> class is a panel that allows you to display the question data for any round. There are two parts: a top area that has a selector to choose the desired round, and a <code>RoundQlistPanel</code> that displays the question data for the chosen round. 
+ * The <code>History</code> class is a panel that allows you to display the question data for any round. There are two
+ * parts: a top area that has a selector to choose the desired round, and a <code>RoundQlistPanel</code> that displays
+ * the question data for the chosen round.
  * 
  * @author Walter Kolczynski
  * 

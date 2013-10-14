@@ -2,7 +2,6 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.rmi.RemoteException;
 
 import javax.swing.JLabel;
@@ -10,6 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
@@ -20,16 +20,17 @@ import net.bubbaland.trivia.TriviaInterface;
  */
 public class CloseQuestionDialog extends TriviaDialogPanel {
 	private static final long	serialVersionUID	= 8533094210282632603L;
-	
+
 	/**
 	 * Font sizes
 	 */
-	private static final float	LABEL_FONT_SIZE			= 20.0f;
-	private static final float	TEXTBOX_FONT_SIZE		= 16.0f;
+	private static final float	LABEL_FONT_SIZE		= 20.0f;
+	private static final float	TEXTBOX_FONT_SIZE	= 16.0f;
 
+	
 	public CloseQuestionDialog(TriviaInterface server, TriviaClient client, int qNumber) {
-		
-		super(new GridBagLayout());		
+
+		super( );
 
 		// Retrieve current trivia data object
 		final Trivia trivia = client.getTrivia();
@@ -88,9 +89,10 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
 		this.add(scrollPane, c);
-		
+
 		// Display the dialog box
-		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Close question " + qNumber, this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Close question " + qNumber, this,
+				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) dialog.getValue() ).intValue();
@@ -119,6 +121,6 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		}
 
 	}
-			
+
 
 }

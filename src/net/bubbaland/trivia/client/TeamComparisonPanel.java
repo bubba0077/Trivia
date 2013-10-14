@@ -43,10 +43,6 @@ public class TeamComparisonPanel extends TriviaPanel {
 	private ChartPanel				chartPanel;
 	private ArrayList<ScoreEntry[]>	scores;
 
-	public static Shape makeCircle(double radius) {
-		return new Ellipse2D.Double(-radius, -radius, 2 * radius, 2 * radius);
-	}
-
 	public TeamComparisonPanel(TriviaClient client) {
 		super();
 		this.client = client;
@@ -138,6 +134,10 @@ public class TeamComparisonPanel extends TriviaPanel {
 			solo.gridy = 0;
 			this.add(this.chartPanel, solo);
 		}
+	}
+
+	public static Shape makeCircle(double radius) {
+		return new Ellipse2D.Double(-radius, -radius, 2 * radius, 2 * radius);
 	}
 
 }
