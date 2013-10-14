@@ -4,15 +4,26 @@ package net.bubbaland.trivia.client;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 // imports for RMI
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
+import java.util.Properties;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -43,11 +54,13 @@ import net.bubbaland.trivia.UserList.Role;
  * @author Walter Kolczynski
  * 
  */
-public class TriviaClient extends TriviaPanel implements ActionListener {
+public class TriviaClient extends TriviaPanel implements ActionListener, WindowListener {
 
 	// The Constant serialVersionUID.
 	private static final long	serialVersionUID	= 5464403297756091690L;
 
+	private static final String fileName = ".trivia-settings";
+	
 	// The refresh rate of the GUI elements (in milliseconds)
 	final private static int	REFRESH_RATE		= 500;
 	// The maximum number of retries the client will make when failing in communication with the server
@@ -101,6 +114,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	private static void createAndShowGUI(boolean useFX) {
 		// Create the application window
 		final JFrame frame = new JFrame("Trivia");
+		frame.setName("Main_Window");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// Initialize server variable
@@ -148,7 +162,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		}
 
 		// Display the window.
-		frame.pack();
+		loadPosition(frame);
 		frame.setVisible(true);
 	}
 
@@ -205,6 +219,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 		
 		this.server = server;
 		this.frame = parent;
+		
+		frame.addWindowListener(this);
 		
 		TriviaFetcher fetcher = new TriviaFetcher(server, this);
 		fetcher.execute();
@@ -668,5 +684,83 @@ public class TriviaClient extends TriviaPanel implements ActionListener {
 	public JFrame getFrame() {
 		return this.frame;
 	}
+	
+	public static void savePosition(Window frame) {
+		File file = new File(fileName);
+		Properties props = new Properties();
+		BufferedReader infileBuffer;
+		try {
+			infileBuffer = new BufferedReader(new FileReader(file));
+			props.load(infileBuffer);
+		} catch (IOException e) {}
+			
+		Rectangle r = frame.getBounds();
+		int x = (int)r.getX();
+		int y = (int)r.getY();
+		int width = (int)r.getWidth();
+		int height = (int)r.getHeight();
+		
+		String frameID = frame.getName().replaceAll(" " , "_");
+		System.out.println(frameID);
+		
+		props.setProperty(frameID + "_x", x + "");
+		props.setProperty(frameID+ "_y", y + "");
+		props.setProperty(frameID + "_width", width + "");
+		props.setProperty(frameID + "_height", height + "");
+				
+		try {
+			BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
+			props.store(outfileBuffer, "Trivia");
+			outfileBuffer.close();
+		} catch (IOException e) {
+			System.out.println("Error saving window position.");
+		}
+	}
+	
+	public static void loadPosition(Window frame) {
+		File file = new File(fileName);
+		Properties props = new Properties();
+		try {
+			BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
+			props.load(fileBuffer);
+			
+			String frameID = frame.getName().replaceAll(" " , "_");
+			
+			int x = Integer.parseInt(props.getProperty(frameID + "_x"));
+			int y = Integer.parseInt(props.getProperty(frameID + "_y"));
+			int width = Integer.parseInt(props.getProperty(frameID + "_width"));
+			int height = Integer.parseInt(props.getProperty(frameID + "_height"));
+			
+			frame.setBounds(x, y, width, height);
+			
+		} catch (IOException | NumberFormatException e ) {
+			System.out.println("Couldn't load window position, may not exist yet.");
+			frame.pack();
+			frame.setLocationRelativeTo(null);
+		}
+	}
+	
+	@Override
+	public void windowClosing(WindowEvent e) {
+		savePosition(e.getWindow());
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {}
+
+	@Override
+	public void windowClosed(WindowEvent e) {}
+
+	@Override
+	public void windowIconified(WindowEvent e) {}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {}
+
+	@Override
+	public void windowActivated(WindowEvent e) {}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {}
 
 }

@@ -22,8 +22,6 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	
 	private static final long	serialVersionUID	= 5954954270512670220L;
 	
-	private static final String fileName = ".trivia-settings";
-	
 	private final JOptionPane optionPane;
 	
 	public TriviaDialog(Frame frame, String title) {
@@ -60,7 +58,8 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	public TriviaDialog(Frame frame, String title, final JOptionPane optionPane) {
 		super(frame, title, true);
 		this.optionPane = optionPane;
-		this.addWindowListener(this);
+		this.setName(title);
+		this.addWindowListener(this);		
 
 		 // Register an event handler that reacts to option pane state changes.
 	    this.optionPane.addPropertyChangeListener(this);
@@ -68,13 +67,13 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 		this.setContentPane(this.optionPane);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		this.setResizable(true);
-		loadPosition();
+		TriviaClient.loadPosition(this);
 		this.setVisible(true);
 	}
 	
 	@Override
 	public void dispose() {
-		savePosition();
+		TriviaClient.savePosition(this);
 		super.dispose();
 	}
 
@@ -103,62 +102,6 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	
 	public Object getValue() {
 		return this.optionPane.getValue();
-	}
-	
-	public void savePosition() {
-		File file = new File(fileName);
-		Properties props = new Properties();
-		BufferedReader infileBuffer;
-		try {
-			infileBuffer = new BufferedReader(new FileReader(file));
-			props.load(infileBuffer);
-		} catch (IOException e) {}
-			
-		Rectangle r = this.getBounds();
-		int x = (int)r.getX();
-		int y = (int)r.getY();
-		int width = (int)r.getWidth();
-		int height = (int)r.getHeight();
-		
-		String dialogID = this.getTitle().replaceAll(" " , "_");
-		System.out.println(dialogID);
-		
-		props.setProperty(dialogID + "_x", x + "");
-		props.setProperty(dialogID+ "_y", y + "");
-		props.setProperty(dialogID + "_width", width + "");
-		props.setProperty(dialogID + "_height", height + "");
-				
-		try {
-			BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
-			props.store(outfileBuffer, "Trivia");
-			outfileBuffer.close();
-		} catch (IOException e) {
-			System.out.println("Error saving window position.");
-		}
-	}
-	
-	public void loadPosition() {
-		File file = new File(fileName);
-		Properties props = new Properties();
-		try {
-			BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
-			props.load(fileBuffer);
-			
-			String dialogID = this.getTitle().replaceAll(" " , "_");
-			System.out.println(dialogID);
-			
-			int x = Integer.parseInt(props.getProperty(dialogID + "_x"));
-			int y = Integer.parseInt(props.getProperty(dialogID + "_y"));
-			int width = Integer.parseInt(props.getProperty(dialogID + "_width"));
-			int height = Integer.parseInt(props.getProperty(dialogID + "_height"));
-			
-			this.setBounds(x, y, width, height);
-			
-		} catch (IOException | NumberFormatException e ) {
-			System.out.println("Couldn't load window position, may not exist yet.");
-			this.pack();
-			this.setLocationRelativeTo(null);
-		}
 	}
 	
 	/** This method reacts to state changes in the option pane. */
