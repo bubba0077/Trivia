@@ -81,11 +81,12 @@ public class LoadStatePrompt extends TriviaDialogPanel {
 		this.add(chooser, constraints);
 
 		// Display the dialog box
-		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Load saved state", this,
+		this.dialog = new TriviaDialog(client.getFrame(), "Load saved state", this,
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-
+		this.dialog.setVisible(true);
+		
 		// If the OK button was pressed, add the proposed answer to the queue
-		final int option = ( (Integer) dialog.getValue() ).intValue();
+		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 
 		if (option == JOptionPane.OK_OPTION) {
 			final String saveFile = (String) chooser.getSelectedItem();

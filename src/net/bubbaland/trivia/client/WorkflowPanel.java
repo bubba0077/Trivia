@@ -2,7 +2,15 @@ package net.bubbaland.trivia.client;
 
 // imports for GUI
 import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+
+import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
 /**
@@ -11,6 +19,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
+@SuppressWarnings("unused")
 public class WorkflowPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
@@ -29,7 +38,7 @@ public class WorkflowPanel extends TriviaPanel {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public WorkflowPanel(TriviaInterface server, TriviaClient client) {
+	public WorkflowPanel(final TriviaInterface server, final TriviaClient client) {
 
 		super();
 
@@ -58,6 +67,19 @@ public class WorkflowPanel extends TriviaPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		this.add(this.workflowQueuePanel, constraints);
+		
+		this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK), "openQuestion");
+		this.getActionMap().put("openQuestion", new AbstractAction() {
+			private static final long	serialVersionUID	= 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				final Trivia trivia = client.getTrivia();
+				final int nQuestions = trivia.getNQuestions();
+				final int nextToOpen = trivia.nextToOpen();
+				new OpenQuestionDialog(server, client, nQuestions, nextToOpen);				
+			}		
+		} );
 	}
 
 	/*

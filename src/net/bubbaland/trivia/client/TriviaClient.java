@@ -755,8 +755,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		final int height = (int) r.getHeight();
 
 		final String frameID = window.getName().replaceAll(" ", "_");
-		System.out.println(frameID);
-
+		
 		props.setProperty(frameID + "_x", x + "");
 		props.setProperty(frameID + "_y", y + "");
 		props.setProperty(frameID + "_width", width + "");

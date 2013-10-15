@@ -1,8 +1,12 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
@@ -17,12 +21,31 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -4127179718225373888L;
+	
+	protected TriviaDialog dialog;
 
 	/**
 	 * 
 	 */
 	public TriviaDialogPanel() {
 		super( new GridBagLayout() );
+	}
+	
+	/**
+	 * Override the default behavior of the text area to click the OK button of the option pane on enter and insert a line break on shift-enter
+	 * 
+	 * @param textArea The text are whose behavior we want to change
+	 */
+	public void addEnterOverride(JTextArea textArea) {
+		textArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "Text Submit");
+		textArea.getInputMap().put(KeyStroke.getKeyStroke("shift ENTER"), "insert-break");
+		textArea.getActionMap().put("Text Submit", new AbstractAction() {
+			private static final long	serialVersionUID	= 1L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				submitText();
+			}
+		} );
 	}
 
 	/**
@@ -53,5 +76,12 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener {
 
 	@Override
 	public void ancestorRemoved(AncestorEvent event) {	}
+	
+	/**
+	 * Tell the dialog to click the OK button on the option pane.
+	 */
+	public void submitText() {
+		this.dialog.clickOK();
+	}
 
 }

@@ -2,13 +2,11 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
@@ -24,7 +22,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-public class QuestionEntryWindow extends TriviaDialogPanel {
+public class OpenQuestionDialog extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 8250659442772286086L;
@@ -33,8 +31,8 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 	 * Font sizes
 	 */
 	private static final float	LABEL_FONT_SIZE		= 20.0f;
-	private static final float	TEXTAREA_FONT_SIZE	= 16.0f;
-
+	private static final float	TEXTAREA_FONT_SIZE	= 16.0f;	
+	
 	/**
 	 * Instantiates a new question entry window.
 	 * 
@@ -47,7 +45,7 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 	 * @param qNumberStart
 	 *            the default question number
 	 */
-	public QuestionEntryWindow(TriviaInterface server, TriviaClient client, int nQuestions, int qNumberStart) {
+	public OpenQuestionDialog(TriviaInterface server, TriviaClient client, int nQuestions, int qNumberStart) {
 		this(server, client, nQuestions, qNumberStart, 10, "");
 	}
 
@@ -67,7 +65,7 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 	 * @param qTextStart
 	 *            the initial question text
 	 */
-	public QuestionEntryWindow(TriviaInterface server, TriviaClient client, int nQuestions, int qNumberStart,
+	public OpenQuestionDialog(final TriviaInterface server, final TriviaClient client, int nQuestions, int qNumberStart,
 			int qValueStart, String qTextStart) {
 
 		super( );
@@ -122,7 +120,8 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
 		qTextArea.addAncestorListener(this);
-
+		this.addEnterOverride(qTextArea);
+		
 		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
@@ -130,10 +129,11 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
 		constraints.gridwidth = 1;
-
+		
 		// Display the dialog box
-		TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Open New Question", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(client.getFrame(), "Open New Question", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
+		this.dialog.setVisible(true);
 
 		// If the OK button was pressed, open the question
 		final int option = ( (Integer) dialog.getValue() ).intValue();
@@ -141,7 +141,7 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 			// Get the input data
 			final int qNumber = (int) qNumberSpinner.getValue();
 			final int qValue = (int) qValueSpinner.getValue();
-			final String qText = qTextArea.getText();
+			String qText = qTextArea.getText();
 
 			// Get the current Trivia data object
 			final Trivia trivia = client.getTrivia();
@@ -154,7 +154,7 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 				final int existingQValue = trivia.getValue(currentRound, qNumber);
 				final String existingQText = trivia.getQuestionText(currentRound, qNumber);
 
-				final JPanel panel = new JPanel(new GridBagLayout());
+				this.removeAll();
 
 				constraints = new GridBagConstraints();
 				constraints.fill = GridBagConstraints.BOTH;
@@ -164,14 +164,14 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 				constraints.gridy = 0;
 				label = new JLabel("Question alread open, overwrite?");
 				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
-				panel.add(label, constraints);
+				this.add(label, constraints);
 
 				// Show existing question data
 				constraints.gridx = 0;
 				constraints.gridy = 1;
 				label = new JLabel("Existing question:");
 				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
-				panel.add(label, constraints);
+				this.add(label, constraints);
 
 				constraints.gridx = 0;
 				constraints.gridy = 2;
@@ -186,7 +186,7 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 				scrollPane.setPreferredSize(new Dimension(100, 100));
 				scrollPane.setViewportView(textArea);
 				scrollPane.setBorder(BorderFactory.createEmptyBorder());
-				panel.add(scrollPane, constraints);
+				this.add(scrollPane, constraints);
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
 
@@ -194,14 +194,14 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 				constraints.gridy = 3;
 				label = new JLabel("Value: " + existingQValue);
 				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
-				panel.add(label, constraints);
+				this.add(label, constraints);
 
 				// Show new question data
 				constraints.gridx = 0;
 				constraints.gridy = 4;
 				label = new JLabel("Entered question:");
 				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
-				panel.add(label, constraints);
+				this.add(label, constraints);
 
 				constraints.gridx = 0;
 				constraints.gridy = 5;
@@ -210,13 +210,15 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 				textArea = new JTextArea(qText);
 				textArea.setLineWrap(true);
 				textArea.setWrapStyleWord(true);
-				textArea.setEditable(false);
+				textArea.setEditable(true);
+				textArea.addAncestorListener(this);
+				this.addEnterOverride(textArea);
 				scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 				scrollPane.setPreferredSize(new Dimension(100, 100));
 				scrollPane.setViewportView(textArea);
 				scrollPane.setBorder(BorderFactory.createEmptyBorder());
-				panel.add(scrollPane, constraints);
+				this.add(scrollPane, constraints);
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
 
@@ -224,16 +226,19 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 				constraints.gridy = 6;
 				label = new JLabel("Value: " + qValue);
 				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
-				panel.add(label, constraints);
+				this.add(label, constraints);
 
-				dialog = new TriviaDialog(client.getFrame(), "Confirm Question Overwrite " + qNumber, panel,
+				this.dialog = new TriviaDialog(client.getFrame(), "Confirm Question Overwrite " + qNumber, this,
 						JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+				this.dialog.setVisible(true);
 
 				final int confirm = ( (Integer) dialog.getValue() ).intValue();
 				if (confirm != JOptionPane.OK_OPTION) {
-					new QuestionEntryWindow(server, client, nQuestions, qNumber, qValue, qText);
+					new OpenQuestionDialog(server, client, nQuestions, qNumber, qValue, qText);
 					return;
 				}
+								
+				qText = textArea.getText();
 			}
 
 			// Open the question on the server
@@ -259,5 +264,4 @@ public class QuestionEntryWindow extends TriviaDialogPanel {
 		}
 
 	}
-
 }

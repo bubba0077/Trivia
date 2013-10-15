@@ -51,14 +51,15 @@ public class UserLogin extends TriviaDialogPanel {
 		userTextField.addAncestorListener(this);
 
 		// Display the dialog box
-		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "User Login", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(client.getFrame(), "User Login", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.DEFAULT_OPTION);
-
+		this.dialog.setVisible(true);
+		
 		// Set the user name to input value
 		final String user = userTextField.getText();
 
 		// If the OK button was pressed, add the proposed answer to the queue
-		final int option = ( (Integer) dialog.getValue() ).intValue();
+		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 
 		if (option != JOptionPane.CLOSED_OPTION) {
 			if (user.toCharArray().length != 0) {

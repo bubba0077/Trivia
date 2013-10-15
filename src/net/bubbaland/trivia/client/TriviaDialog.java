@@ -58,7 +58,6 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setResizable(true);
 		TriviaClient.loadPosition(this);
-		this.setVisible(true);
 	}
 
 	/**
@@ -160,6 +159,13 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 */
 	public Object getValue() {
 		return this.optionPane.getValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void clickOK() {
+		this.optionPane.setValue(JOptionPane.OK_OPTION);
 	}
 
 	/**

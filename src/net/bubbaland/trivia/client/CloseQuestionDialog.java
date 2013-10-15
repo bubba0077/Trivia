@@ -85,15 +85,18 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		answerTextArea.setWrapStyleWord(true);
 		answerTextArea.setFont(answerTextArea.getFont().deriveFont(TEXTBOX_FONT_SIZE));
 		answerTextArea.addAncestorListener(this);
+		this.addEnterOverride(answerTextArea);
+//		answerTextArea.addKeyListener(this);
 		scrollPane = new JScrollPane(answerTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
 		this.add(scrollPane, c);
 
 		// Display the dialog box
-		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Close question " + qNumber, this,
+		this.dialog = new TriviaDialog(client.getFrame(), "Close question " + qNumber, this,
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-
+		this.dialog.setVisible(true);
+		
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {

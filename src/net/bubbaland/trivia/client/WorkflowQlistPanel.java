@@ -335,7 +335,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			final int nQuestions = trivia.getNQuestions();
 			final int nextToOpen = trivia.nextToOpen();
 
-			new QuestionEntryWindow(this.server, this.client, nQuestions, nextToOpen);
+			new OpenQuestionDialog(this.server, this.client, nQuestions, nextToOpen);
 
 		}
 

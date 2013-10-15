@@ -117,6 +117,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
 		qTextArea.addAncestorListener(this);
+		this.addEnterOverride(qTextArea);
 		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
@@ -141,6 +142,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		aTextArea.setWrapStyleWord(true);
 		aTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
 		aTextArea.addAncestorListener(this);
+		this.addEnterOverride(aTextArea);
 		scrollPane = new JScrollPane(aTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
@@ -193,11 +195,12 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		}
 
 		// Display the dialog box
-		final TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Edit Question", this,
+		this.dialog = new TriviaDialog(client.getFrame(), "Edit Question", this,
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-
+		this.dialog.setVisible(true);
+		
 		// If the OK button was pressed, add the proposed answer to the queue
-		final int option = ( (Integer) dialog.getValue() ).intValue();
+		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			// Get the input data
 			final boolean isCorrect = this.correctButton.isSelected();
