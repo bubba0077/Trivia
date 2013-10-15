@@ -421,16 +421,16 @@ public class ScoreByRoundPanel extends TriviaPanel {
 				cumulativeEarned += earned;
 				cumulativeValue += value;
 
-				if (value != 0) {
-					final boolean updated = !( this.earnedLabels[r].getText().equals(earned + "")
-							&& this.valueLabels[r].getText().equals(value + "")
-							&& this.cumulativeEarnedLabels[r].getText().equals(cumulativeEarned + "")
-							&& this.cumulativeValueLabels[r].getText().equals(cumulativeValue + "")
-							&& ( this.announcedScoreLabels[r].getText().equals(announced + "") || !isAnnounced )
-							&& ( this.placeLabels[r].getText().equals(TriviaClient.ordinalize(place)) || !isAnnounced ) && this.discrepancies[r]
-								.equals(discrepancy) ) || force;
-
-					if (updated) {
+				final boolean updated = !( this.earnedLabels[r].getText().equals(earned + "")
+						&& this.valueLabels[r].getText().equals(value + "")
+						&& this.cumulativeEarnedLabels[r].getText().equals(cumulativeEarned + "")
+						&& this.cumulativeValueLabels[r].getText().equals(cumulativeValue + "")
+						&& ( this.announcedScoreLabels[r].getText().equals(announced + "") || !isAnnounced )
+						&& ( this.placeLabels[r].getText().equals(TriviaClient.ordinalize(place)) || !isAnnounced ) && this.discrepancies[r]
+							.equals(discrepancy) ) || force;
+				
+				if (updated) {					
+					if (value != 0) {					
 						// If the round has started, update all of the labels for the round
 						final String percent = String.format("%04.1f", ( earned * 100.0 / value )) + "%";
 						final String percentTotal = String.format("%04.1f",
@@ -447,6 +447,16 @@ public class ScoreByRoundPanel extends TriviaPanel {
 						}
 						this.discrepancyTextField[r].setText(discrepancy);
 						this.discrepancies[r] = discrepancy;
+					} else {
+						this.earnedLabels[r].setText("");
+						this.valueLabels[r].setText("");
+						this.percentLabels[r].setText("");
+						this.cumulativeEarnedLabels[r].setText("");
+						this.cumulativeValueLabels[r].setText("");
+						this.percentTotalLabels[r].setText("");
+						this.announcedScoreLabels[r].setText("");
+						this.placeLabels[r].setText("");
+						this.discrepancyTextField[r].setText("");
 					}
 				}
 
