@@ -88,6 +88,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 		constraints.gridy = 0;
 		final JSpinner qNumberSpinner = new JSpinner(new SpinnerNumberModel(qNumberStart, 1, nQuestions, 1));
 		qNumberSpinner.setFont(qNumberSpinner.getFont().deriveFont(LABEL_FONT_SIZE));
+		this.addEnterOverride(qNumberSpinner);
 		this.add(qNumberSpinner, constraints);
 
 		// Create the question value spinner
@@ -101,6 +102,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 		constraints.gridy = 1;
 		final JSpinner qValueSpinner = new JSpinner(new SpinnerNumberModel(qValueStart, 10, 1000, 5));
 		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(LABEL_FONT_SIZE));
+		this.addEnterOverride(qValueSpinner);
 		this.add(qValueSpinner, constraints);
 
 		// Create input area for the question text

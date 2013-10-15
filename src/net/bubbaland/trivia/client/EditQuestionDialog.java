@@ -87,6 +87,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.weightx = 0.5;
 		final JSpinner qValueSpinner = new JSpinner(new SpinnerNumberModel(existingValue, 10, 1000, 5));
 		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(LABEL_FONT_SIZE));
+		this.addEnterOverride(qValueSpinner);
 		this.add(qValueSpinner, constraints);
 		constraints.weightx = 0.0;
 

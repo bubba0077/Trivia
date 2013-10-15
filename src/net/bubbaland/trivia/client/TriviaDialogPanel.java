@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
@@ -34,12 +33,12 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener {
 	/**
 	 * Override the default behavior of the text area to click the OK button of the option pane on enter and insert a line break on shift-enter
 	 * 
-	 * @param textArea The text are whose behavior we want to change
+	 * @param component The text are whose behavior we want to change
 	 */
-	public void addEnterOverride(JTextArea textArea) {
-		textArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "Text Submit");
-		textArea.getInputMap().put(KeyStroke.getKeyStroke("shift ENTER"), "insert-break");
-		textArea.getActionMap().put("Text Submit", new AbstractAction() {
+	public void addEnterOverride(JComponent component) {
+		component.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "Text Submit");
+		component.getInputMap().put(KeyStroke.getKeyStroke("shift ENTER"), "insert-break");
+		component.getActionMap().put("Text Submit", new AbstractAction() {
 			private static final long	serialVersionUID	= 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
