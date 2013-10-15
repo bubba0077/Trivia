@@ -480,7 +480,7 @@ public class RoundQlistPanel extends TriviaPanel {
 			// If this is a live panel, update the round number
 			if (this.live) {	this.rNumber = trivia.getCurrentRoundNumber();	}
 			// Get all of the question data for the current round
-			final int nQuestions = trivia.getNQuestions();
+			final int nQuestions = trivia.getNQuestions(rNumber);
 			final boolean newSpeed = trivia.isSpeed(this.rNumber);
 			final boolean[] beenOpens = trivia.eachBeenOpen(this.rNumber);
 			final boolean[] opens = trivia.eachOpen(this.rNumber);
