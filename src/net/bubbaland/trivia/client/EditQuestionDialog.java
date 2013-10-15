@@ -142,7 +142,6 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		aTextArea.setLineWrap(true);
 		aTextArea.setWrapStyleWord(true);
 		aTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
-		aTextArea.addAncestorListener(this);
 		this.addEnterOverride(aTextArea);
 		scrollPane = new JScrollPane(aTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
