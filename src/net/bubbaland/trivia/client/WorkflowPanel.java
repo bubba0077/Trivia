@@ -39,25 +39,25 @@ public class WorkflowPanel extends TriviaPanel {
 		this.workflowQueuePanel = new WorkflowQueuePanel(server, client);
 
 		// Set up layout constraints
-		final GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.weighty = 0.0;
+		final GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.weightx = 1.0;
+		constraints.weighty = 0.0;
 
 		// Place the sub-panels
-		c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = 0;
-		this.add(this.workflowHeaderPanel, c);
+		constraints.weighty = 0.0;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		this.add(this.workflowHeaderPanel, constraints);
 
-		c.gridx = 0;
-		c.gridy = 1;
-		this.add(this.workflowQlistPanel, c);
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		this.add(this.workflowQlistPanel, constraints);
 
-		c.weighty = 1.0;
-		c.gridx = 0;
-		c.gridy = 2;
-		this.add(this.workflowQueuePanel, c);
+		constraints.weighty = 1.0;
+		constraints.gridx = 0;
+		constraints.gridy = 2;
+		this.add(this.workflowQueuePanel, constraints);
 	}
 
 	/*

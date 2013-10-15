@@ -204,7 +204,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			constraints.fill = GridBagConstraints.BOTH;
 			constraints.anchor = GridBagConstraints.NORTH;
 			constraints.weightx = 0.0;
-			constraints.weighty = 0.0;
+			constraints.weighty = 1.0;
 
 			/**
 			 * Create the GUI elements

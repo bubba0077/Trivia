@@ -13,6 +13,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -55,7 +56,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	 */
 	private static final int			HEADER_HEIGHT					= 20;
 
-	private static final int			QUESTION_HEIGHT					= 50;
+	private static final int			QUESTION_HEIGHT					= 66;
 
 	private static final int			QNUM_WIDTH						= 48;
 	private static final int			EARNED_WIDTH					= 75;
@@ -205,6 +206,7 @@ public class RoundQlistPanel extends TriviaPanel {
 		 */
 		private final JLabel[]			qNumberLabels, earnedLabels, valueLabels, submitterLabels, operatorLabels;
 		private final JTextArea[]		questionTextAreas, answerTextAreas;
+		private final JSeparator[]		separators;
 		private final JMenuItem			editItem, reopenItem;
 
 		/** Status variables */
@@ -249,6 +251,7 @@ public class RoundQlistPanel extends TriviaPanel {
 			this.operatorLabels = new JLabel[this.maxQuestions];
 			this.questionTextAreas = new JTextArea[this.maxQuestions];
 			this.answerTextAreas = new JTextArea[this.maxQuestions];
+			this.separators = new JSeparator[this.maxQuestions];
 
 			// Set up layout constraints
 			final GridBagConstraints constraints = new GridBagConstraints();
@@ -256,7 +259,7 @@ public class RoundQlistPanel extends TriviaPanel {
 			constraints.anchor = GridBagConstraints.NORTH;
 			constraints.weightx = 0.0;
 			constraints.weighty = 0.0;
-
+			
 			for (int q = 0; q < this.maxQuestions; q++) {
 				// Set the color for this row
 				Color color, bColor;
@@ -293,7 +296,7 @@ public class RoundQlistPanel extends TriviaPanel {
 						LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.valueLabels[q].setName(( q + 1 ) + "");
 				this.valueLabels[q].addMouseListener(this);
-
+				
 				constraints.gridx = 3;
 				constraints.gridy = 2 * q;
 				constraints.weightx = 0.6;
@@ -306,8 +309,13 @@ public class RoundQlistPanel extends TriviaPanel {
 
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
-
 				constraints.gridx = 4;
+				constraints.gridy = 2 * q;
+				constraints.weightx = 0.0;
+				this.separators[q] = new JSeparator(SwingConstants.VERTICAL);
+				this.add(this.separators[q], constraints);
+				
+				constraints.gridx = 5;
 				constraints.gridy = 2 * q;
 				constraints.weightx = 0.4;
 				this.answerTextAreas[q] = this.scrollableTextArea("", ANSWER_WIDTH, QUESTION_HEIGHT, color, bColor,
@@ -321,14 +329,14 @@ public class RoundQlistPanel extends TriviaPanel {
 
 				constraints.gridheight = 1;
 
-				constraints.gridx = 5;
+				constraints.gridx = 6;
 				constraints.gridy = 2 * q;
 				this.submitterLabels[q] = this.enclosedLabel("", SUBOP_WIDTH, QUESTION_HEIGHT / 2, color, bColor,
 						constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.submitterLabels[q].setName(( q + 1 ) + "");
 				this.submitterLabels[q].addMouseListener(this);
 
-				constraints.gridx = 5;
+				constraints.gridx = 6;
 				constraints.gridy = 2 * q + 1;
 				this.operatorLabels[q] = this.enclosedLabel("", SUBOP_WIDTH, QUESTION_HEIGHT / 2, color, bColor,
 						constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
@@ -342,7 +350,7 @@ public class RoundQlistPanel extends TriviaPanel {
 			 */
 			constraints.gridx = 0;
 			constraints.gridy = this.maxQuestions;
-			constraints.gridwidth = 6;
+			constraints.gridwidth = 7;
 			constraints.weighty = 1.0;
 			final JPanel blank = new JPanel();
 			blank.setBackground(HeaderPanel.BACKGROUND_COLOR);
@@ -539,6 +547,7 @@ public class RoundQlistPanel extends TriviaPanel {
 					this.earnedLabels[q].getParent().setVisible(true);
 					this.valueLabels[q].getParent().setVisible(true);
 					this.questionTextAreas[q].setVisible(true);
+					this.separators[q].setVisible(true);
 					this.answerTextAreas[q].setVisible(true);
 					this.questionTextAreas[q].getParent().getParent().setVisible(true);
 					this.answerTextAreas[q].getParent().getParent().setVisible(true);
@@ -553,6 +562,7 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.earnedLabels[q].getParent().setVisible(false);
 				this.valueLabels[q].getParent().setVisible(false);
 				this.questionTextAreas[q].setVisible(false);
+				this.separators[q].setVisible(false);
 				this.answerTextAreas[q].setVisible(false);
 				this.questionTextAreas[q].getParent().getParent().setVisible(false);
 				this.answerTextAreas[q].getParent().getParent().setVisible(false);

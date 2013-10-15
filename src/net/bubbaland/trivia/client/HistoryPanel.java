@@ -42,7 +42,7 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 	/**
 	 * Sizes
 	 */
-	final private static int		SELECTOR_ROW_HEIGHT			= 24;
+	final private static int		SELECTOR_ROW_HEIGHT			= 30;
 	final private static int		SELECTOR_HEIGHT				= 20;
 	final private static int		SELECTOR_WIDTH				= 40;
 

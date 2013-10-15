@@ -56,8 +56,8 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 	private static final int		COL0_WIDTH				= 85;
 	private static final int		COL1_WIDTH				= 90;
 	private static final int		COL2_WIDTH				= 100;
-	private static final int		COL3_WIDTH				= 250;
-	private static final int		COL4_WIDTH				= 120;
+	private static final int		COL3_WIDTH				= 120;
+	private static final int		COL4_WIDTH				= 60;
 	private static final int		COL5_WIDTH				= 75;
 
 	/**
@@ -69,7 +69,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 	/**
 	 * Button sizes
 	 */
-	private static final int		CENTER_BUTTON_WIDTH		= 100;
+	private static final int		CENTER_BUTTON_WIDTH		= 110;
 	private static final int		CENTER_BUTTON_HEIGHT	= BOTTOM_ROW_HEIGHT - 4;
 
 	/**
