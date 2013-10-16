@@ -22,7 +22,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -31,10 +30,12 @@ import javax.xml.transform.stream.StreamResult;
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.ScoreEntry;
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.TriviaCharts;
 import net.bubbaland.trivia.TriviaInterface;
 import net.bubbaland.trivia.UserList;
 import net.bubbaland.trivia.UserList.Role;
 
+import org.jfree.chart.ChartUtilities;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -75,6 +76,13 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	// Directory to hold backups
 	private static final String				SAVE_DIR			= "saves";
+	
+	// Directory to hold charts for publishing
+	private static final String				CHART_DIR			= "charts";
+	
+	// Size of chart for web
+	private static final int				CHART_WIDTH			= 800;
+	private static final int				CHART_HEIGHT		= 600;
 
 	// Date format to use for backup file names
 	private static final SimpleDateFormat	fileDateFormat		= new SimpleDateFormat("yyyy_MMM_dd_HHmm");
@@ -512,13 +520,15 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 		// The current date/time
 		final Date time = new Date();
+		
+		//
+		final String roundString = "Rd" + String.format("%02d", this.trivia.getCurrentRoundNumber());
 
 		// Timestamp used as part of the filename (no spaces, descending precision)
-		final String filename = SAVE_DIR + "/Rd" + String.format("%02d", this.trivia.getCurrentRoundNumber()) + "_"
-				+ fileDateFormat.format(time) + ".xml";
+		String filename = SAVE_DIR + "/" + roundString + "_" + fileDateFormat.format(time) + ".xml";
 		// Timestamp used in the save file
 		final String createTime = stringDateFormat.format(time);
-
+		
 		try {
 			// Create a document
 			final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -697,15 +707,48 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			final StreamResult result = new StreamResult(new File(filename));
 			transformer.transform(source, result);
 
-			this.log("Saved state to " + filename);
+			this.log("Saved state to " + filename);			
 
-		} catch (final ParserConfigurationException e) {
+		} catch (final ParserConfigurationException | TransformerException e) {
 			System.out.println("Couldn't save data to file " + filename);
-		} catch (final TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (final TransformerException e) {
-			e.printStackTrace();
+		}			
+			
+		filename = CHART_DIR + "/" + roundString + "_placeChart.png";
+		try {
+			File file = new File(filename);		
+			ChartUtilities.saveChartAsPNG(file, TriviaCharts.PlaceChartFactory(trivia), CHART_WIDTH, CHART_HEIGHT);			
+			this.log("Saved place chart to " + filename);
+		} catch (IOException exception) {
+			System.out.println("Couldn't save place chart to file " + filename);
 		}
+		
+		filename = CHART_DIR + "/" + roundString + "_scoreByRoundChart.png";
+		try {
+			File file = new File(filename);
+			ChartUtilities.saveChartAsPNG(file, TriviaCharts.ScoreByRoundChartFactory(trivia), CHART_WIDTH, CHART_HEIGHT);			
+			this.log("Saved score by round chart to " + filename);
+		} catch (IOException exception) {
+			System.out.println("Couldn't save score by round chart to file " + filename);
+		}
+				
+				
+		filename = CHART_DIR + "/" + roundString + "_cumulativeScoreChart.png";
+		try {
+			File file = new File(filename);
+			ChartUtilities.saveChartAsPNG(file, TriviaCharts.CumulativePointsChartFactory(trivia), CHART_WIDTH, CHART_HEIGHT);
+			this.log("Saved cumulative score chart to " + filename);
+		} catch (IOException exception) {
+			System.out.println("Couldn't save cumulative score chart to file " + filename);
+		}
+		
+		filename = CHART_DIR + "/" + roundString + "_teamComparisonChart.png";
+		try {
+			File file = new File(filename);
+			ChartUtilities.saveChartAsPNG(file, TriviaCharts.TeamComparisonChartFactory(trivia), CHART_WIDTH, CHART_HEIGHT);
+			this.log("Saved team comparison chart to " + filename);
+		} catch (IOException exception) {
+			System.out.println("Couldn't save team comparison chart to file " + filename);
+		}		
 
 	}
 
