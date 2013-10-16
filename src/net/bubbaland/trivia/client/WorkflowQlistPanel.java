@@ -7,14 +7,20 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
@@ -153,7 +159,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 	/**
 	 * Panel which displays a list of the current open questions.
 	 */
-	private class WorkflowQListSubPanel extends TriviaPanel implements ActionListener {
+	private class WorkflowQListSubPanel extends TriviaPanel implements ActionListener, MouseListener, ChangeListener {
 
 		/** The Constant serialVersionUID. */
 		private static final long		serialVersionUID	= 6049067322505905668L;
@@ -167,6 +173,8 @@ public class WorkflowQlistPanel extends TriviaPanel {
 		private final JLabel[]			qNumberLabels, qValueLabels;
 		private final JTextArea[]		qTextAreas;
 		private final JButton[]			answerButtons, closeButtons;
+		
+		private final JMenuItem			editItem;
 
 		/**
 		 * Data sources
@@ -228,12 +236,14 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				constraints.gridy = q;
 				this.qNumberLabels[q] = this.enclosedLabel("", QNUM_WIDTH, QUESTION_HEIGHT, color, bColor, constraints,
 						QNUM_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-
+				this.qNumberLabels[q].addMouseListener(this);
+				
 				constraints.gridx = 1;
 				constraints.gridy = q;
 				this.qValueLabels[q] = this.enclosedLabel("", VALUE_WIDTH, QUESTION_HEIGHT, color, bColor, constraints,
 						VALUE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-
+				this.qValueLabels[q].addMouseListener(this);
+				
 				constraints.gridx = 2;
 				constraints.gridy = q;
 				constraints.weightx = 1.0;
@@ -241,6 +251,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 						constraints, QUESTION_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.qTextAreas[q].setEditable(false);
+				this.qTextAreas[q].addMouseListener(this);
 				constraints.weightx = 0.0;
 
 				constraints.gridx = 3;
@@ -280,6 +291,17 @@ public class WorkflowQlistPanel extends TriviaPanel {
 					this.closeButtons[q].getParent().setVisible(false);
 				}
 			}
+			
+			/**
+			 * Build context menu
+			 */
+			final JPopupMenu contextMenu = new JPopupMenu();
+			this.editItem = new JMenuItem("Edit");
+			this.editItem.addMouseListener(this);
+			contextMenu.add(this.editItem);
+			this.add(contextMenu);
+
+			this.client.getBook().addChangeListener(this);
 
 		}
 
@@ -313,6 +335,51 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				}
 			}
 
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent event) {
+			final JComponent source = (JComponent) event.getSource();
+			final String sourceName = source.getName();
+			if (source.equals(this.editItem)) {
+				// Edit chosen from context menu
+				this.editItem.getParent().setVisible(false);
+				final Trivia trivia = this.client.getTrivia();
+				final int rNumber = trivia.getCurrentRoundNumber();
+				final int qNumber = Integer.parseInt(sourceName);
+				final int nQuestions = trivia.getNQuestions();
+				final int qValue = trivia.getValue(rNumber, qNumber);
+				final String qText = trivia.getQuestionText(rNumber, qNumber);
+				new OpenQuestionDialog(this.server, this.client, nQuestions, qNumber, qValue, qText);
+			} else {
+				// Right-click pressed, show context menu
+				if (event.getButton() == 3 && !sourceName.equals("")) {
+					this.editItem.getParent().setLocation(event.getXOnScreen(), event.getYOnScreen());
+					this.editItem.setName(source.getName());
+					this.editItem.getParent().setVisible(true);
+				} else {
+					this.editItem.getParent().setVisible(false);
+				}
+			}
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) { }
+
+		@Override
+		public void mouseReleased(MouseEvent e) { }
+
+		@Override
+		public void mouseEntered(MouseEvent e) { }
+
+		@Override
+		public void mouseExited(MouseEvent e) { }
+		
+		@Override
+		public void stateChanged(ChangeEvent event) {
+			// Make sure the menu is hidden when changing tabs
+			this.editItem.getParent().setVisible(false);	
 		}
 
 		/**
@@ -378,6 +445,12 @@ public class WorkflowQlistPanel extends TriviaPanel {
 					this.answerButtons[q].setVisible(true);
 					this.closeButtons[q].setText("Close");
 					this.closeButtons[q].setVisible(true);
+					
+					this.qNumberLabels[q].setName(openQuestionNumbers[q] + "");
+					this.qValueLabels[q].setName(openQuestionNumbers[q] + "");
+					this.qTextAreas[q].setName(openQuestionNumbers[q] + "");
+
+					
 				}
 			}
 
@@ -394,6 +467,9 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				} else {
 					this.closeButtons[q].setVisible(false);
 				}
+				this.qNumberLabels[q].setName( "" );
+				this.qValueLabels[q].setName( "" );
+				this.qTextAreas[q].setName( "" );
 			}
 
 			// Show rows equal to the greater of the number of questions to show and the number of open questions
