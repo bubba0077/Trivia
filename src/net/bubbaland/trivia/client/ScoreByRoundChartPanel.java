@@ -10,6 +10,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
@@ -119,6 +120,8 @@ public class ScoreByRoundChartPanel extends TriviaPanel {
 			renderer.setShadowVisible(false);
 			renderer.setSeriesPaint(0, EARNED_COLOR);
 			renderer.setSeriesPaint(1, VALUE_COLOR);
+			renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}", NumberFormat
+					.getIntegerInstance(), NumberFormat.getIntegerInstance()));
 
 			// Create the new bar plot
 			final XYPlot plot = new XYPlot(dataset, new NumberAxis("Round"), new NumberAxis("Points"), renderer);
