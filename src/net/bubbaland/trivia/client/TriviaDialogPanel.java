@@ -2,9 +2,13 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
@@ -16,7 +20,7 @@ import javax.swing.event.AncestorListener;
  * Creates a new panel using the GridBagLayout manager. Also implements an AncestorListener to allow focus on an element after the dialog is created.
  * 
  */
-public class TriviaDialogPanel extends JPanel implements AncestorListener {
+public class TriviaDialogPanel extends JPanel implements AncestorListener, FocusListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -4127179718225373888L;
@@ -55,7 +59,7 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener {
 		// Change the focus to the text area when created
 		final AncestorListener al = this;
 		try {
-			Thread.sleep(100);
+			Thread.sleep(10);
 		} catch (final InterruptedException e) {
 		}
 		SwingUtilities.invokeLater(new Runnable() {
@@ -81,6 +85,27 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener {
 	 */
 	public void submitText() {
 		this.dialog.clickOK();
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) { }
+
+	@Override
+	public void focusGained(FocusEvent event) {
+		final JComponent source = (JComponent)event.getSource();
+		if(source instanceof JTextField) {
+//			try {
+//				Thread.sleep(10);
+//			} catch (InterruptedException e) {	}
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					((JTextField) source).selectAll();
+				}				
+			});
+			
+		}
+		
+		
 	}
 
 }

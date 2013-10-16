@@ -104,7 +104,9 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(LABEL_FONT_SIZE));
 		this.addEnterOverride(qValueSpinner);
 		this.add(qValueSpinner, constraints);
-
+		((JSpinner.NumberEditor) qValueSpinner.getEditor()).getTextField().addAncestorListener(this);
+		((JSpinner.NumberEditor) qValueSpinner.getEditor()).getTextField().addFocusListener(this);
+		
 		// Create input area for the question text
 		constraints.gridx = 0;
 		constraints.gridy = 2;
@@ -121,7 +123,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 		qTextArea.setLineWrap(true);
 		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
-		qTextArea.addAncestorListener(this);
+//		qTextArea.addAncestorListener(this);
 		this.addEnterOverride(qTextArea);
 		
 		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -266,4 +268,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 		}
 
 	}
+	
+	
+	
 }
