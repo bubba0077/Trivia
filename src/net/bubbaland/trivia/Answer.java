@@ -18,6 +18,11 @@ public class Answer implements Serializable {
 
 	private static final long	serialVersionUID	= -2367986992067473980L;
 
+	// Valid statuses
+	protected static enum Status {
+		NOT_CALLED_IN, CALLING, INCORRECT, PARTIAL, CORRECT
+	}
+	
 	// Place in the queue
 	final private int			queueLocation;
 
@@ -242,11 +247,6 @@ public class Answer implements Serializable {
 
 	}
 
-	// Valid statuses
-	protected static enum Status {
-		NOT_CALLED_IN, CALLING, INCORRECT, PARTIAL, CORRECT
-	}
-
 	public static class StatusCompare implements Comparator<Answer> {
 		@Override
 		public int compare(Answer o1, Answer o2) {
@@ -258,6 +258,29 @@ public class Answer implements Serializable {
 		@Override
 		public int compare(Answer o1, Answer o2) {
 			return o1.getTimestamp().compareTo(o2.getTimestamp());
+		}
+	}
+	
+	public static class QNumberCompareReverse implements Comparator<Answer> {
+
+		@Override
+		public int compare(Answer o1, Answer o2) {
+			return ( (Integer) o2.getQNumber() ).compareTo(o1.getQNumber());
+		}
+
+	}
+
+	public static class StatusCompareReverse implements Comparator<Answer> {
+		@Override
+		public int compare(Answer o1, Answer o2) {
+			return o2.status.compareTo(o1.status);
+		}
+	}
+
+	public static class TimestampCompareReverse implements Comparator<Answer> {
+		@Override
+		public int compare(Answer o1, Answer o2) {
+			return o2.getTimestamp().compareTo(o1.getTimestamp());
 		}
 	}
 

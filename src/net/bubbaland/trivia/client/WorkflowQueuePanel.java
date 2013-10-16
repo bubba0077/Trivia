@@ -7,9 +7,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -31,7 +34,7 @@ import net.bubbaland.trivia.client.TriviaClient.QueueSort;
  * @author Walter Kolczynski
  * 
  */
-public class WorkflowQueuePanel extends TriviaPanel {
+public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long			serialVersionUID		= 784049314825719490L;
@@ -81,11 +84,15 @@ public class WorkflowQueuePanel extends TriviaPanel {
 	/** Valid statuses for queue items */
 	private static final String[]		STATUSES				= { "Not Called In", "Calling", "Incorrect", "Partial",
 			"Correct"											};
+	
+	/** Sort icons */
+	private final ImageIcon upArrow;
+	private final ImageIcon downArrow;
 
 	/**
 	 * GUI elements that will be updated
 	 */
-	final private JLabel				queueSizeLabel;
+	final private JLabel				timestampLabel, qNumberLabel, statusLabel, queueSizeLabel;
 
 	/** The workflow queue sub panel */
 	final private WorkflowQueueSubPanel	workflowQueueSubPanel;
@@ -106,6 +113,9 @@ public class WorkflowQueuePanel extends TriviaPanel {
 		super();
 
 		this.client = client;
+		
+		this.upArrow = new ImageIcon(getClass().getResource("images/upArrow.png"));
+		this.downArrow = new ImageIcon(getClass().getResource("images/downArrow.png"));
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -113,19 +123,24 @@ public class WorkflowQueuePanel extends TriviaPanel {
 		constraints.anchor = GridBagConstraints.NORTH;
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
-
+		
+		
 		/**
 		 * Create the header row
 		 */
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		this.enclosedLabel("Time", TIME_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
+		this.timestampLabel = this.enclosedLabel("Time", TIME_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
 				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.timestampLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+		this.timestampLabel.addMouseListener(this);
 
 		constraints.gridx = 1;
 		constraints.gridy = 0;
-		this.enclosedLabel("Q#", QNUM_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
+		this.qNumberLabel = this.enclosedLabel("Q#", QNUM_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
 				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.qNumberLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+		this.qNumberLabel.addMouseListener(this);
 
 		constraints.gridx = 2;
 		constraints.gridy = 0;
@@ -156,15 +171,17 @@ public class WorkflowQueuePanel extends TriviaPanel {
 
 		constraints.gridx = 7;
 		constraints.gridy = 0;
-		this.enclosedLabel("Status", STATUS_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
+		this.statusLabel = this.enclosedLabel("Status", STATUS_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
 				constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-
+		this.statusLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+		this.statusLabel.addMouseListener(this);
+		
 		constraints.gridx = 8;
 		constraints.gridy = 0;
 		final int scrollBarWidth = ( (Integer) UIManager.get("ScrollBar.width") ).intValue();
 		this.queueSizeLabel = this.enclosedLabel("0", scrollBarWidth, HEADER_HEIGHT, HEADER_TEXT_COLOR,
 				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-
+		
 		/**
 		 * Create the sub-panel that will show the queue data and put it in a scroll pane
 		 */
@@ -194,7 +211,79 @@ public class WorkflowQueuePanel extends TriviaPanel {
 		final int queueSize = this.client.getTrivia().getAnswerQueueSize();
 		this.queueSizeLabel.setText(queueSize + "");
 		this.workflowQueueSubPanel.update(force);
+		final QueueSort sortMethod = this.client.getQueueSort();
+
+		switch (sortMethod) {
+			case TIMESTAMP_ASCENDING:
+				this.timestampLabel.setIcon(downArrow);
+				this.qNumberLabel.setIcon(null);
+				this.statusLabel.setIcon(null);
+				break;
+			case QNUMBER_ASCENDING:
+				this.timestampLabel.setIcon(null);
+				this.qNumberLabel.setIcon(downArrow);
+				this.statusLabel.setIcon(null);
+				break;
+			case STATUS_ASCENDING:
+				this.timestampLabel.setIcon(null);
+				this.qNumberLabel.setIcon(null);
+				this.statusLabel.setIcon(downArrow);
+				break;
+			case TIMESTAMP_DESCENDING:
+				this.timestampLabel.setIcon(upArrow);
+				this.qNumberLabel.setIcon(null);
+				this.statusLabel.setIcon(null);
+				break;
+			case QNUMBER_DESCENDING:
+				this.timestampLabel.setIcon(null);
+				this.qNumberLabel.setIcon(upArrow);
+				this.statusLabel.setIcon(null);
+				break;
+			case STATUS_DESCENDING:
+				this.timestampLabel.setIcon(null);
+				this.qNumberLabel.setIcon(null);
+				this.statusLabel.setIcon(upArrow);
+				break;
+		}
 	}
+	
+
+	@Override
+	public void mouseClicked(MouseEvent event) {
+		final JComponent source = (JComponent) event.getSource();
+		final QueueSort sortMethod = this.client.getQueueSort();
+		if(source.equals(this.timestampLabel)) {
+			if(sortMethod.equals(QueueSort.TIMESTAMP_ASCENDING)) {
+				this.client.setSort(QueueSort.TIMESTAMP_DESCENDING);
+			} else {
+				this.client.setSort(QueueSort.TIMESTAMP_ASCENDING);
+			}
+		} else if (source.equals(this.qNumberLabel)) {
+			if(sortMethod.equals(QueueSort.QNUMBER_ASCENDING)) {
+				this.client.setSort(QueueSort.QNUMBER_DESCENDING);
+			} else {
+				this.client.setSort(QueueSort.QNUMBER_ASCENDING);
+			}
+		} else if (source.equals(this.statusLabel)) {
+			if(sortMethod.equals(QueueSort.STATUS_ASCENDING)) {
+				this.client.setSort(QueueSort.STATUS_DESCENDING);
+			} else {
+				this.client.setSort(QueueSort.STATUS_ASCENDING);
+			}
+		}		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent event) { }
+
+	@Override
+	public void mouseReleased(MouseEvent event) { }
+
+	@Override
+	public void mouseEntered(MouseEvent event) { }
+
+	@Override
+	public void mouseExited(MouseEvent event) { }
 
 	/**
 	 * A panel that will show the current answer queue
@@ -426,14 +515,23 @@ public class WorkflowQueuePanel extends TriviaPanel {
 			final Answer[] newAnswerQueue = trivia.getAnswerQueue();
 
 			switch (sortMethod) {
-				case TIMESTAMP:
+				case TIMESTAMP_ASCENDING:
 					Arrays.sort(newAnswerQueue, new Answer.TimestampCompare());
 					break;
-				case QNUMBER:
+				case QNUMBER_ASCENDING:
 					Arrays.sort(newAnswerQueue, new Answer.QNumberCompare());
 					break;
-				case STATUS:
+				case STATUS_ASCENDING:
 					Arrays.sort(newAnswerQueue, new Answer.StatusCompare());
+					break;
+				case TIMESTAMP_DESCENDING:
+					Arrays.sort(newAnswerQueue, new Answer.TimestampCompareReverse());
+					break;
+				case QNUMBER_DESCENDING:
+					Arrays.sort(newAnswerQueue, new Answer.QNumberCompareReverse());
+					break;
+				case STATUS_DESCENDING:
+					Arrays.sort(newAnswerQueue, new Answer.StatusCompareReverse());
 					break;
 			}
 
@@ -636,5 +734,6 @@ public class WorkflowQueuePanel extends TriviaPanel {
 
 
 	}
+
 
 }

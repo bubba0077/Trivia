@@ -81,7 +81,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	final static private String					fileName			= ".trivia-settings";
 	
 	// Queue sort option
-	public static enum QueueSort { TIMESTAMP, QNUMBER, STATUS }
+	public static enum QueueSort { TIMESTAMP_ASCENDING, QNUMBER_ASCENDING, STATUS_ASCENDING, TIMESTAMP_DESCENDING, QNUMBER_DESCENDING, STATUS_DESCENDING }
 
 	/**
 	 * GUI Components
@@ -157,33 +157,71 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		final JMenu sortMenu = new JMenu("Sort by...");
 		sortMenu.setMnemonic(KeyEvent.VK_S);
+		
+		final JMenu timestampSort = new JMenu("Timestamp");
+		timestampSort.setMnemonic(KeyEvent.VK_T);
+		sortMenu.add(timestampSort);
 
 		final ButtonGroup sortOptions = new ButtonGroup();
-		JRadioButtonMenuItem sortOption = new JRadioButtonMenuItem("Timestamp");
+		JRadioButtonMenuItem sortOption = new JRadioButtonMenuItem("Ascending");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
-		sortOption.setActionCommand("Sort Timestamp");
+		sortOption.setActionCommand("Sort Timestamp Ascending");
 		sortOption.addActionListener(this);
 		sortOption.setSelected(true);
-		this.queueSort = QueueSort.TIMESTAMP;
+		this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
 		sortOptions.add(sortOption);
-		sortMenu.add(sortOption);
+		timestampSort.add(sortOption);
+		
+		sortOption = new JRadioButtonMenuItem("Descending");
+		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
+		sortOption.setActionCommand("Sort Timestamp Descending");
+		sortOption.addActionListener(this);
+		sortOption.setSelected(true);
+		this.queueSort = QueueSort.TIMESTAMP_DESCENDING;
+		sortOptions.add(sortOption);
+		timestampSort.add(sortOption);
+		
+		final JMenu qNumberSort = new JMenu("Question Number");
+		qNumberSort.setMnemonic(KeyEvent.VK_Q);
+		sortMenu.add(qNumberSort);
 
-		sortOption = new JRadioButtonMenuItem("Question Number");
+		sortOption = new JRadioButtonMenuItem("Ascending");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
-		sortOption.setActionCommand("Sort Question Number");
+		sortOption.setActionCommand("Sort Question Number Ascending");
 		sortOption.addActionListener(this);
 		sortOption.setSelected(false);
 		sortOptions.add(sortOption);
-		sortMenu.add(sortOption);
+		qNumberSort.add(sortOption);
 
-		sortOption = new JRadioButtonMenuItem("Status");
+		sortOption = new JRadioButtonMenuItem("Descending");
+		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
+		sortOption.setActionCommand("Sort Question Number Descending");
+		sortOption.addActionListener(this);
+		sortOption.setSelected(false);
+		sortOptions.add(sortOption);
+		qNumberSort.add(sortOption);
+		
+		final JMenu statusSort = new JMenu("Status");
+		statusSort.setMnemonic(KeyEvent.VK_S);
+		sortMenu.add(statusSort);
+
+		sortOption = new JRadioButtonMenuItem("Ascending");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-		sortOption.setActionCommand("Sort Status");
+		sortOption.setActionCommand("Sort Status Ascending");
 		sortOption.addActionListener(this);
 		sortOption.setSelected(false);
 		sortOptions.add(sortOption);
-		sortMenu.add(sortOption);
+		statusSort.add(sortOption);
 
+		sortOption = new JRadioButtonMenuItem("Descending");
+		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
+		sortOption.setActionCommand("Sort Status Descending");
+		sortOption.addActionListener(this);
+		sortOption.setSelected(false);
+		sortOptions.add(sortOption);
+		statusSort.add(sortOption);
+
+		
 		menu.add(sortMenu);
 
 		// Make User Menu
@@ -354,19 +392,34 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 				this.hideClosed = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
 				this.update(true);
 				break;
-			case "Sort Timestamp":
+			case "Sort Timestamp Ascending":
 				// Triggered by Timestamp Sort menu item
-				this.queueSort = QueueSort.TIMESTAMP;
+				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
 				this.update(true);
 				break;
-			case "Sort Question Number":
+			case "Sort Question Number Ascending":
 				// Triggered by Question Number Sort menu item
-				this.queueSort = QueueSort.QNUMBER;
+				this.queueSort = QueueSort.QNUMBER_ASCENDING;
 				this.update(true);
 				break;
-			case "Sort Status":
+			case "Sort Status Ascending":
 				// Triggered by Status Sort menu item
-				this.queueSort = QueueSort.STATUS;
+				this.queueSort = QueueSort.STATUS_ASCENDING;
+				this.update(true);
+				break;
+			case "Sort Timestamp Descending":
+				// Triggered by Timestamp Sort menu item
+				this.queueSort = QueueSort.TIMESTAMP_DESCENDING;
+				this.update(true);
+				break;
+			case "Sort Question Number Descending":
+				// Triggered by Question Number Sort menu item
+				this.queueSort = QueueSort.QNUMBER_DESCENDING;
+				this.update(true);
+				break;
+			case "Sort Status Descending":
+				// Triggered by Status Sort menu item
+				this.queueSort = QueueSort.STATUS_DESCENDING;
 				this.update(true);
 				break;
 			case "Caller":
@@ -531,6 +584,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			return;
 		}
 		this.user = user;
+	}
+	
+	public void setSort(QueueSort newSort) {
+		this.queueSort = newSort;
 	}
 
 	/**
