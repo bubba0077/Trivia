@@ -71,15 +71,18 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 	 */
 	private static final int		CENTER_BUTTON_WIDTH		= 110;
 	private static final int		CENTER_BUTTON_HEIGHT	= BOTTOM_ROW_HEIGHT - 4;
+	private static final int		CONFLICT_BUTTON_WIDTH	= 110;
+	private static final int		CONFLICT_BUTTON_HEIGHT	= TOP_ROW_HEIGHT - 4;
 
 	/**
 	 * GUI Elements that will need to be updated
 	 */
 	private final JLabel			roundEarnedLabel, roundValueLabel, totalEarnedLabel;
 	private final JLabel			totalValueLabel, announcedLabel, placeLabel;
+	private final JLabel			announcedBannerLabel, scoreTextLabel, placeTextLabel;
 	private final JLabel			currentHourLabel;
 	private final JToggleButton		speedButton;
-	private final JButton			newRoundButton;
+	private final JButton			newRoundButton, conflictButton;
 	private final UserListPanel		userListPanel;
 
 	/**
@@ -148,10 +151,21 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 		constraints.gridx = 4;
 		constraints.gridy = 0;
 		constraints.gridwidth = 2;
-		this.enclosedLabel("Last Round ", COL4_WIDTH, TOP_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR, constraints,
+		this.announcedBannerLabel = this.enclosedLabel("Last Round ", COL4_WIDTH, TOP_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR, constraints,
 				LABEL_FONT_SIZE, SwingConstants.RIGHT, SwingConstants.CENTER);
-		constraints.gridwidth = 1;
+		
+		this.conflictButton = new JButton("Conflict!");
+		this.conflictButton.setMargin(new Insets(0, 0, 0, 0));
+		this.conflictButton.setPreferredSize(new Dimension(CONFLICT_BUTTON_WIDTH, CONFLICT_BUTTON_HEIGHT));
+		this.conflictButton.setMinimumSize(new Dimension(CONFLICT_BUTTON_WIDTH, CONFLICT_BUTTON_HEIGHT));
+		this.conflictButton.setVisible(false);
+//		this.conflictButton.setBackground(NEW_ROUND_COLOR);
+		this.conflictButton.setFont(this.conflictButton.getFont().deriveFont(LABEL_FONT_SIZE));
+		this.announcedBannerLabel.getParent().add(this.conflictButton, buttonConstraints);
+		this.conflictButton.addActionListener(this);
 
+		constraints.gridwidth = 1;
+		
 
 		/**
 		 * Middle row
@@ -178,7 +192,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 
 		constraints.gridx = 4;
 		constraints.gridy = 1;
-		this.enclosedLabel("Points ", COL4_WIDTH, MIDDLE_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR, constraints,
+		this.scoreTextLabel = this.enclosedLabel("Points ", COL4_WIDTH, MIDDLE_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR, constraints,
 				LABEL_FONT_SIZE, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		constraints.gridx = 5;
@@ -235,7 +249,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 
 		constraints.gridx = 4;
 		constraints.gridy = 2;
-		this.enclosedLabel("Place ", COL4_WIDTH, BOTTOM_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR, constraints,
+		this.placeTextLabel = this.enclosedLabel("Place ", COL4_WIDTH, BOTTOM_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR, constraints,
 				LABEL_FONT_SIZE, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		constraints.gridx = 5;
@@ -328,6 +342,8 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 
 			this.client.log("Started new round");
 
+		} else if (source.equals(this.conflictButton)) {
+			new ConflictDialog(this.client);
 		}
 
 	}
@@ -358,11 +374,23 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 			this.announcedLabel.setText("" + announcedPoints);
 			this.placeLabel.setText("" + trivia.getAnnouncedPlace(currentRound - 1));
 			if (announcedPoints != trivia.getCumulativeEarned(currentRound - 1)) {
+				this.announcedBannerLabel.getParent().setBackground(CONFLICT_COLOR);
+				this.scoreTextLabel.getParent().setBackground(CONFLICT_COLOR);
+				this.placeTextLabel.getParent().setBackground(CONFLICT_COLOR);
 				this.announcedLabel.getParent().setBackground(CONFLICT_COLOR);
 				this.placeLabel.getParent().setBackground(CONFLICT_COLOR);
+				
+				this.announcedBannerLabel.setVisible(false);
+				this.conflictButton.setVisible(true);				
 			} else {
+				this.announcedBannerLabel.getParent().setBackground(BACKGROUND_COLOR);
+				this.scoreTextLabel.getParent().setBackground(BACKGROUND_COLOR);
+				this.placeTextLabel.getParent().setBackground(BACKGROUND_COLOR);
 				this.announcedLabel.getParent().setBackground(BACKGROUND_COLOR);
 				this.placeLabel.getParent().setBackground(BACKGROUND_COLOR);
+				
+				this.announcedBannerLabel.setVisible(true);
+				this.conflictButton.setVisible(false);
 			}
 
 		} else {
