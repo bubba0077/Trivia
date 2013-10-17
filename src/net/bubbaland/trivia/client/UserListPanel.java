@@ -22,9 +22,9 @@ import net.bubbaland.trivia.UserList.Role;
 
 /**
  * Creates a panel that displays active and idle user names.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class UserListPanel extends TriviaPanel {
 
@@ -138,7 +138,7 @@ public class UserListPanel extends TriviaPanel {
 
 	/**
 	 * Custom renderer to color user names based on role.
-	 * 
+	 *
 	 */
 	private class MyCellRenderer extends DefaultListCellRenderer {
 
@@ -184,7 +184,7 @@ public class UserListPanel extends TriviaPanel {
 
 	/**
 	 * Sort user names based on role.
-	 * 
+	 *
 	 */
 	public class CompareRoles implements Comparator<String> {
 		@Override

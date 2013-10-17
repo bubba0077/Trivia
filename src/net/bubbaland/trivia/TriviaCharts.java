@@ -43,7 +43,7 @@ public class TriviaCharts {
 
 	/**
 	 * Create an XY line chart of the team's place after each round.
-	 * 
+	 *
 	 * @param trivia
 	 *            The trivia data to use
 	 * @return An XY line chart of the team's place after each round
@@ -113,7 +113,7 @@ public class TriviaCharts {
 
 	/**
 	 * Create a stacked bar plot of the team's score in each round.
-	 * 
+	 *
 	 * @param trivia
 	 *            The trivia data
 	 * @return A stacked bar plot of the team's score in each round
@@ -187,7 +187,7 @@ public class TriviaCharts {
 
 	/**
 	 * Creates a stacked XY plot of the cumulative score after each round.
-	 * 
+	 *
 	 * @param trivia
 	 *            The trivia data
 	 * @return A stacked XY plot of the cumulative score after each round
@@ -261,7 +261,7 @@ public class TriviaCharts {
 
 	/**
 	 * Create an XY plot comparing each team's score in each round relative to ours.
-	 * 
+	 *
 	 * @param trivia
 	 *            The trivia data
 	 * @return An XY plot comparing team scores
@@ -343,7 +343,7 @@ public class TriviaCharts {
 
 	/**
 	 * Make a circle.
-	 * 
+	 *
 	 * @param radius
 	 *            the radius
 	 * @return the shape

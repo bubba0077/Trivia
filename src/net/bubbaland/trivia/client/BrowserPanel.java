@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 
 /**
  * Creates a browser inside a Swing Panel using JavaFX.
- * 
+ *
  * @author Walter Kolczynski
  */
 public class BrowserPanel extends JPanel {
@@ -31,7 +31,7 @@ public class BrowserPanel extends JPanel {
 
 	/**
 	 * Creates a new panel with a browser inside
-	 * 
+	 *
 	 * @param url
 	 *            The URL to load
 	 */
@@ -112,7 +112,7 @@ public class BrowserPanel extends JPanel {
 
 	/**
 	 * Initializes the JavaFX panel and load the given URL.
-	 * 
+	 *
 	 * @param fxPanel
 	 *            The JavaFX Panel that will hold the browser
 	 * @param url
@@ -137,7 +137,7 @@ public class BrowserPanel extends JPanel {
 
 		/**
 		 * Instantiates a new browser
-		 * 
+		 *
 		 * @param url
 		 *            the URL to load
 		 */
@@ -149,7 +149,7 @@ public class BrowserPanel extends JPanel {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see javafx.scene.Parent#layoutChildren()
 		 */
 		@Override

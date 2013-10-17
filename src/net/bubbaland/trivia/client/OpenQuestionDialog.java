@@ -18,9 +18,9 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates a prompt to enter new question data.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class OpenQuestionDialog extends TriviaDialogPanel {
 
@@ -35,7 +35,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new question entry window.
-	 * 
+	 *
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -51,7 +51,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new question entry window.
-	 * 
+	 *
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -70,7 +70,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new question entry window.
-	 * 
+	 *
 	 * @param server
 	 *            The remote trivia server
 	 * @param client

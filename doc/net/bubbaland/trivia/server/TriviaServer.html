@@ -104,11 +104,11 @@
 extends java.lang.Object
 implements <a href="../../../../net/bubbaland/trivia/TriviaInterface.html" title="interface in net.bubbaland.trivia">TriviaInterface</a>, java.awt.event.ActionListener</pre>
 <div class="block">The main server that coordinates the trivia contest.
- 
+
  The <code>TriviaServer</code> class contains the <code>main</code> method to start the trivia server and handles all
  interaction between the centralized <code>Trivia</code> data structure and remote clients. It also downloads the
  hourly standings from KVSC, parses them and adds them into the <code>Trivia</code> data structure.
- 
+
  The class is also responsible for periodically saving the current <code>Trivia</code> state to an XML file and
  loading a previous state. The save files are stored in <code>SAVE_DIR</code>, which much exist on the server.</div>
 </li>

@@ -27,9 +27,9 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel which displays a list of the current open questions.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class WorkflowQlistPanel extends TriviaPanel {
 
@@ -82,7 +82,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new workflow question list panel.
-	 * 
+	 *
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -148,7 +148,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -184,7 +184,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 		/**
 		 * Instantiates a new workflow q list sub panel.
-		 * 
+		 *
 		 * @param server
 		 *            the server
 		 * @param client
@@ -320,7 +320,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		@Override
@@ -401,7 +401,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 		/**
 		 * Propose an answer for the designated question. Creates a prompt to submit the answer.
-		 * 
+		 *
 		 * @param qNumber
 		 *            the question number
 		 */
@@ -431,7 +431,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override

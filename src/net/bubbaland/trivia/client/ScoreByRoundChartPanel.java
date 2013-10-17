@@ -9,9 +9,9 @@ import org.jfree.chart.JFreeChart;
 
 /**
  * A panel that displays a stacked bar chart showing the score in each round.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class ScoreByRoundChartPanel extends TriviaPanel {
 
@@ -31,7 +31,7 @@ public class ScoreByRoundChartPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new score by round chart panel.
-	 * 
+	 *
 	 * @param client
 	 *            the client application
 	 */
@@ -50,7 +50,7 @@ public class ScoreByRoundChartPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override

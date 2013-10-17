@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 /**
  * A data structure for questions.
- * 
+ *
  * The <code>Question</code> class contains all of the data for a particular question.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class Question implements Serializable {
 
@@ -46,7 +46,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Creates a new question.
-	 * 
+	 *
 	 * @param round
 	 *            The round to which this question belongs
 	 * @param qNumber
@@ -67,7 +67,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Checks if the question has ever been open
-	 * 
+	 *
 	 * @return True if the question has been open
 	 */
 	public boolean beenOpen() {
@@ -76,7 +76,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Close this question
-	 * 
+	 *
 	 * @param answer
 	 *            TODO
 	 */
@@ -87,7 +87,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Gets the text of the answer for this question
-	 * 
+	 *
 	 * @return The answer to this question
 	 */
 	public String getAnswerText() {
@@ -96,7 +96,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Gets the number of points earned on this question
-	 * 
+	 *
 	 * @return The number of points earned for this question
 	 */
 	public int getEarned() {
@@ -108,7 +108,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Gets the question number
-	 * 
+	 *
 	 * @return The question number
 	 */
 	public int getNumber() {
@@ -117,7 +117,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Gets the operator who took the correct answer for this question (if any)
-	 * 
+	 *
 	 * @return The operator name
 	 */
 	public String getOperator() {
@@ -126,7 +126,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Gets the text of this question
-	 * 
+	 *
 	 * @return The question's text
 	 */
 	public String getQuestionText() {
@@ -135,7 +135,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Gets the round number of this question
-	 * 
+	 *
 	 * @return The round number
 	 */
 	public int getRoundNumber() {
@@ -144,7 +144,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Gets the user who submitted the correct answer for this questino (if any)
-	 * 
+	 *
 	 * @return The submitter's name
 	 */
 	public String getSubmitter() {
@@ -153,7 +153,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Gets the value of this question
-	 * 
+	 *
 	 * @return The question's value
 	 */
 	public int getValue() {
@@ -162,7 +162,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Checks if the question is correct
-	 * 
+	 *
 	 * @return True if the question was answered correct
 	 */
 	public boolean isCorrect() {
@@ -171,7 +171,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Checks if the question is open
-	 * 
+	 *
 	 * @return True if the question is currently open
 	 */
 	public boolean isOpen() {
@@ -180,7 +180,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Mark this question as correct
-	 * 
+	 *
 	 * @param answer
 	 *            The correct answer
 	 * @param submitter
@@ -230,7 +230,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Sets the correct answer for this question
-	 * 
+	 *
 	 * @param answer
 	 *            The new answer text
 	 */
@@ -240,7 +240,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Sets the operator for this question
-	 * 
+	 *
 	 * @param operator
 	 *            The new operator
 	 */
@@ -250,7 +250,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Sets the text of this question
-	 * 
+	 *
 	 * @param question
 	 *            The new question text
 	 */
@@ -260,7 +260,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Sets the submitter for this question
-	 * 
+	 *
 	 * @param submitter
 	 *            The new submitter
 	 */
@@ -270,7 +270,7 @@ public class Question implements Serializable {
 
 	/**
 	 * Sets the value of this question
-	 * 
+	 *
 	 * @param value
 	 *            The new value for this question
 	 */

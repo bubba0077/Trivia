@@ -12,9 +12,9 @@ import javax.swing.JTextArea;
 
 /**
  * Super-class for most of the panels in the trivia GUI.
- * 
+ *
  * Provides methods for automatically making labels and text areas that fill their space by enclosing them in panels
- * 
+ *
  */
 public abstract class TriviaPanel extends JPanel {
 
@@ -31,7 +31,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a space-filling panel with a label to the panel. A reference to the label is returned so the text can be
 	 * changed later.
-	 * 
+	 *
 	 * @param string
 	 *            The string for the label
 	 * @param width
@@ -79,7 +79,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
 	 * so the text can be read/changed later.
-	 * 
+	 *
 	 * @param string
 	 *            The initial string for the text area
 	 * @param width

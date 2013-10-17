@@ -21,13 +21,13 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel which displays summary information of the trivia contest.
- * 
+ *
  * The <code>HeaderPanel</code> class is a panel that contains summary information about the current state of the trivia
  * contest and of the current round. It also provides buttons to make the current round a speed round (or not) and
  * advance to a new round.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class HeaderPanel extends TriviaPanel implements ActionListener {
 
@@ -93,7 +93,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 
 	/**
 	 * Instantiates a new header panel.
-	 * 
+	 *
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -268,7 +268,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
@@ -350,7 +350,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override

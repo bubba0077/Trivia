@@ -6,13 +6,13 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel for the current round data.
- * 
+ *
  * <code>RoundPanel</code> is a panel that displays a summary and question data for the current round. There are two
  * parts: a <code>HeaderPanel</code> to display summary information, and a <RoundQlistPanel> to display the question
  * data.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class RoundPanel extends TriviaPanel {
 
@@ -25,7 +25,7 @@ public class RoundPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new round panel.
-	 * 
+	 *
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -59,7 +59,7 @@ public class RoundPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override

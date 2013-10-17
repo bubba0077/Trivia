@@ -20,9 +20,9 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel that displays the scores from each round.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class ScoreByRoundPanel extends TriviaPanel {
 
@@ -78,12 +78,12 @@ public class ScoreByRoundPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new score by round panel.
-	 * 
+	 *
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
-	 * 
+	 *
 	 */
 	public ScoreByRoundPanel(TriviaInterface server, TriviaClient client) {
 
@@ -211,7 +211,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -245,7 +245,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 
 		/**
 		 * Instantiates a new internal scroll panel.
-		 * 
+		 *
 		 * @param server
 		 *            the server
 		 * @param client
@@ -366,7 +366,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		@Override
@@ -402,7 +402,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override

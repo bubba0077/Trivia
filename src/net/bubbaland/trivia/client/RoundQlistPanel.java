@@ -32,14 +32,14 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel that shows all of the questions for a round.
- * 
+ *
  * <code>RoundQlistPanel</code> is a panel that contains a list of all the question data for a round. The panel consists
  * of a header row and then a sub-panel placed inside a scroll pane. The sub-panel is created via an inner class. Each
  * row of the sub-panel contains GUI elements displaying data for one question. Unused rows (for a speed round) are
  * created but hidden until necessary.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class RoundQlistPanel extends TriviaPanel {
 
@@ -83,7 +83,7 @@ public class RoundQlistPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new question list panel that will show data for the current round.
-	 * 
+	 *
 	 * @param server
 	 *            the server
 	 * @param client
@@ -95,7 +95,7 @@ public class RoundQlistPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new question list panel.
-	 * 
+	 *
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -180,7 +180,7 @@ public class RoundQlistPanel extends TriviaPanel {
 
 	/**
 	 * Sets the round to display. This will be overridden with the current round number if this is a "live" panel.
-	 * 
+	 *
 	 * @param rNumber
 	 *            the new round number
 	 */
@@ -190,7 +190,7 @@ public class RoundQlistPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -229,7 +229,7 @@ public class RoundQlistPanel extends TriviaPanel {
 
 		/**
 		 * Instantiates a new question list sub-panel.
-		 * 
+		 *
 		 * @param server
 		 *            the server
 		 * @param client
@@ -476,7 +476,7 @@ public class RoundQlistPanel extends TriviaPanel {
 
 		/**
 		 * Sets the round to display. This will be overridden with the current round number if this is a "live" panel.
-		 * 
+		 *
 		 * @param rNumber
 		 *            the new round
 		 */
@@ -495,7 +495,7 @@ public class RoundQlistPanel extends TriviaPanel {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override

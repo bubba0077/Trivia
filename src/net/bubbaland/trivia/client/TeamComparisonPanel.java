@@ -9,9 +9,9 @@ import org.jfree.chart.JFreeChart;
 
 /**
  * A panel with a chart comparing all of the teams' scores.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 
 public class TeamComparisonPanel extends TriviaPanel {

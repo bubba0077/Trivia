@@ -12,9 +12,9 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates a dialog that lists the saves and prompts for one to load.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class LoadStatePrompt extends TriviaDialogPanel {
 

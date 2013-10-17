@@ -15,7 +15,7 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates a dialog box that prompts user for the correct answer when closing a question.
- * 
+ *
  * @author Walter Kolczynski
  */
 public class CloseQuestionDialog extends TriviaDialogPanel {

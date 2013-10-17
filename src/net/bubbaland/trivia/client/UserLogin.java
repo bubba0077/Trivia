@@ -7,9 +7,9 @@ import javax.swing.JTextField;
 
 /**
  * Creates prompt for user name.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class UserLogin extends TriviaDialogPanel {
 
@@ -21,7 +21,7 @@ public class UserLogin extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new user login.
-	 * 
+	 *
 	 * @param client
 	 *            the client
 	 */

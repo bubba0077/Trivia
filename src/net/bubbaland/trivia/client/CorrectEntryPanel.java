@@ -12,7 +12,7 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates a dialog that asks for the operator to confirm a correct answer.
- * 
+ *
  * @author Walter Kolczynski
  */
 public class CorrectEntryPanel extends TriviaDialogPanel {
@@ -25,7 +25,7 @@ public class CorrectEntryPanel extends TriviaDialogPanel {
 
 	/**
 	 * Creates a new dialog box and prompts for response
-	 * 
+	 *
 	 * @param server
 	 *            The remote trivia server
 	 * @param client

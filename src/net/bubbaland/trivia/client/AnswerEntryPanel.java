@@ -19,7 +19,7 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates a dialog box that prompts user to propose an answer.
- * 
+ *
  * @author Walter Kolczynski
  */
 public class AnswerEntryPanel extends TriviaDialogPanel {
@@ -42,7 +42,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 
 	/**
 	 * Creates a dialog box and prompt for response
-	 * 
+	 *
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
