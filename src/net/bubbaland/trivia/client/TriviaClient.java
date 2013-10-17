@@ -144,10 +144,11 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		// Make Queue Menu
 		JMenu menu = new JMenu("Queue");
+		menu.setMnemonic(KeyEvent.VK_Q);
 		menuBar.add(menu);
 
 		final JCheckBoxMenuItem hideClosedMenuItem = new JCheckBoxMenuItem("Hide closed questions");
-		hideClosedMenuItem.setMnemonic(KeyEvent.VK_C);
+		hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
 		hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
 		hideClosedMenuItem.setActionCommand("Hide Closed");
 		hideClosedMenuItem.addActionListener(this);
@@ -165,6 +166,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		final ButtonGroup sortOptions = new ButtonGroup();
 		JRadioButtonMenuItem sortOption = new JRadioButtonMenuItem("Ascending");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
+		sortOption.setMnemonic(KeyEvent.VK_A);		
 		sortOption.setActionCommand("Sort Timestamp Ascending");
 		sortOption.addActionListener(this);
 		sortOption.setSelected(true);
@@ -174,6 +176,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		
 		sortOption = new JRadioButtonMenuItem("Descending");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
+		sortOption.setMnemonic(KeyEvent.VK_D);		
 		sortOption.setActionCommand("Sort Timestamp Descending");
 		sortOption.addActionListener(this);
 		sortOptions.add(sortOption);
@@ -185,6 +188,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		sortOption = new JRadioButtonMenuItem("Ascending");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+		sortOption.setMnemonic(KeyEvent.VK_A);		
 		sortOption.setActionCommand("Sort Question Number Ascending");
 		sortOption.addActionListener(this);
 		sortOption.setSelected(false);
@@ -193,6 +197,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		sortOption = new JRadioButtonMenuItem("Descending");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
+		sortOption.setMnemonic(KeyEvent.VK_D);		
 		sortOption.setActionCommand("Sort Question Number Descending");
 		sortOption.addActionListener(this);
 		sortOption.setSelected(false);
@@ -205,6 +210,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		sortOption = new JRadioButtonMenuItem("Ascending");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		sortOption.setMnemonic(KeyEvent.VK_A);		
 		sortOption.setActionCommand("Sort Status Ascending");
 		sortOption.addActionListener(this);
 		sortOption.setSelected(false);
@@ -213,6 +219,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		sortOption = new JRadioButtonMenuItem("Descending");
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
+		sortOption.setMnemonic(KeyEvent.VK_D);		
 		sortOption.setActionCommand("Sort Status Descending");
 		sortOption.addActionListener(this);
 		sortOption.setSelected(false);
@@ -224,14 +231,16 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		// Make User Menu
 		menu = new JMenu("User");
+		menu.setMnemonic(KeyEvent.VK_U);
 		menuBar.add(menu);
 
-		final JMenu roleMenu = new JMenu("Change role...");
+		final JMenu roleMenu = new JMenu("Change Role...");
 		roleMenu.setMnemonic(KeyEvent.VK_R);
 
 		final ButtonGroup roleOptions = new ButtonGroup();
 		JRadioButtonMenuItem roleOption = new JRadioButtonMenuItem("Researcher");
 		roleOption.setActionCommand("Researcher");
+		roleOption.setMnemonic(KeyEvent.VK_R);		
 		roleOption.addActionListener(this);
 		roleOption.setSelected(true);
 		roleOption.setForeground(UserListPanel.RESEARCHER_COLOR);
@@ -241,6 +250,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		roleOption = new JRadioButtonMenuItem("Caller");
 		roleOption.setActionCommand("Caller");
+		roleOption.setMnemonic(KeyEvent.VK_C);		
 		roleOption.addActionListener(this);
 		roleOption.setSelected(false);
 		roleOption.setForeground(UserListPanel.CALLER_COLOR);
@@ -249,6 +259,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		roleOption = new JRadioButtonMenuItem("Typer");
 		roleOption.setActionCommand("Typer");
+		roleOption.setMnemonic(KeyEvent.VK_T);		
 		roleOption.addActionListener(this);
 		roleOption.setSelected(false);
 		roleOption.setForeground(UserListPanel.TYPER_COLOR);
@@ -257,13 +268,15 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		menu.add(roleMenu);
 
-		JMenuItem menuItem = new JMenuItem("Change name", KeyEvent.VK_N);
+		JMenuItem menuItem = new JMenuItem("Change Name", KeyEvent.VK_N);
+		menuItem.setDisplayedMnemonicIndex(7);
 		menuItem.setActionCommand("Change name");
 		menuItem.addActionListener(this);
 		menu.add(menuItem);
 		
-		menuItem = new JMenuItem("Reset window positions");
+		menuItem = new JMenuItem("Reset Window Positions");
 		menuItem.setActionCommand("Reset window positions");
+		menuItem.setMnemonic(KeyEvent.VK_W);
 		menuItem.addActionListener(this);
 		menu.add(menuItem);
 
@@ -271,9 +284,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		// Make Admin Menu pinned to the right
 		menuBar.add(Box.createHorizontalGlue());
 		menu = new JMenu("Admin");
+		menu.setMnemonic(KeyEvent.VK_A);
 		menuBar.add(menu);
 
-		menuItem = new JMenuItem("Load state", KeyEvent.VK_L);
+		menuItem = new JMenuItem("Load State", KeyEvent.VK_L);
 		menuItem.setActionCommand("Load state");
 		menuItem.addActionListener(this);
 		menu.add(menuItem);

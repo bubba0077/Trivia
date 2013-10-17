@@ -79,9 +79,6 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 	/** The number of questions to show at startup */
 	private static final int			DEFAULT_N_ANSWERS_SHOW	= 4;
 
-	/** Maximum number of answers in the queue */
-//	private static final int			MAX_QUEUE_LENGTH		= 500;
-
 	/** Valid statuses for queue items */
 	private static final String[]		STATUSES				= { "Not Called In", "Calling", "Incorrect", "Partial",
 			"Correct"											};
@@ -344,7 +341,6 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		 * @param client
 		 *            the client
 		 */
-		@SuppressWarnings("unchecked")
 		public WorkflowQueueSubPanel(TriviaInterface server, TriviaClient client) {
 
 			super();
