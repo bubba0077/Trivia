@@ -176,8 +176,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
 		sortOption.setActionCommand("Sort Timestamp Descending");
 		sortOption.addActionListener(this);
-		sortOption.setSelected(true);
-		this.queueSort = QueueSort.TIMESTAMP_DESCENDING;
 		sortOptions.add(sortOption);
 		timestampSort.add(sortOption);
 		

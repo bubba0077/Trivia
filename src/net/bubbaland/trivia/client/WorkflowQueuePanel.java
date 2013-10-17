@@ -10,6 +10,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.ImageIcon;
@@ -79,7 +80,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 	private static final int			DEFAULT_N_ANSWERS_SHOW	= 4;
 
 	/** Maximum number of answers in the queue */
-	private static final int			MAX_QUEUE_LENGTH		= 500;
+//	private static final int			MAX_QUEUE_LENGTH		= 500;
 
 	/** Valid statuses for queue items */
 	private static final String[]		STATUSES				= { "Not Called In", "Calling", "Incorrect", "Partial",
@@ -122,8 +123,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.NORTH;
 		constraints.weightx = 0.0;
-		constraints.weighty = 0.0;
-		
+		constraints.weighty = 0.0;		
 		
 		/**
 		 * Create the header row
@@ -189,14 +189,37 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		constraints.gridy = 1;
 		constraints.gridwidth = 9;
 		constraints.weightx = 1.0;
-		constraints.weighty = 1.0;
-		this.workflowQueueSubPanel = new WorkflowQueueSubPanel(server, client);
-		final JScrollPane workflowQueuePane = new JScrollPane(this.workflowQueueSubPanel,
+		constraints.weighty = 1.0;		
+		final JPanel scrollPanel = new JPanel(new GridBagLayout());
+		final JScrollPane workflowQueuePane = new JScrollPane(scrollPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		workflowQueuePane.setPreferredSize(new Dimension(0, DEFAULT_N_ANSWERS_SHOW * ANSWER_HEIGHT));
 		workflowQueuePane.setMinimumSize(new Dimension(0, ANSWER_HEIGHT));
-		this.add(workflowQueuePane, constraints);
+		this.add(workflowQueuePane, constraints);	
+		
+		
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.gridwidth = 1;
+		constraints.weightx = 1.0;
 		constraints.weighty = 0.0;
+	
+		this.workflowQueueSubPanel = new WorkflowQueueSubPanel(server, client);
+		scrollPanel.add(this.workflowQueueSubPanel, constraints);
+
+		/**
+		 * Create a blank spacer row at the bottom
+		 */
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		constraints.gridwidth = 1;
+		constraints.weightx = 1.0;
+		constraints.weighty = 1.0;
+		final JPanel blank = new JPanel();
+		blank.setBackground(HEADER_BACKGROUND_COLOR);
+		blank.setPreferredSize(new Dimension(0, 0));
+		scrollPanel.add(blank, constraints);
+		
 
 	}
 
@@ -294,15 +317,15 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		private static final long			serialVersionUID	= -5462544756397828556L;
 
 		/** The last status (used for determining if the status has changed) */
-		private volatile String[]			lastStatus;
+		private volatile ArrayList<String>			lastStatus;
 
 		/**
 		 * GUI elements that will be updated
 		 */
-		final private JLabel[]				queuenumberLabels, timestampLabels, qNumberLabels, confidenceLabels,
+		final private ArrayList<JLabel>				queuenumberLabels, timestampLabels, qNumberLabels, confidenceLabels,
 				submitterLabels, operatorLabels, callerLabels;
-		final private JComboBox<String>[]	statusComboBoxes;
-		final private JTextArea[]			answerTextAreas;
+		final private ArrayList<JComboBox<String>>	statusComboBoxes;
+		final private ArrayList<JTextArea>			answerTextAreas;
 
 		private Answer[]					answerQueue;
 
@@ -337,107 +360,17 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 			constraints.weightx = 0.0;
 			constraints.weighty = 0.0;
 
-			this.queuenumberLabels = new JLabel[MAX_QUEUE_LENGTH];
-			this.timestampLabels = new JLabel[MAX_QUEUE_LENGTH];
-			this.qNumberLabels = new JLabel[MAX_QUEUE_LENGTH];
-			this.confidenceLabels = new JLabel[MAX_QUEUE_LENGTH];
-			this.submitterLabels = new JLabel[MAX_QUEUE_LENGTH];
-			this.operatorLabels = new JLabel[MAX_QUEUE_LENGTH];
-			this.callerLabels = new JLabel[MAX_QUEUE_LENGTH];
-			this.statusComboBoxes = new JComboBox[MAX_QUEUE_LENGTH];
-			this.answerTextAreas = new JTextArea[MAX_QUEUE_LENGTH];
-			this.lastStatus = new String[MAX_QUEUE_LENGTH];
+			this.queuenumberLabels = new ArrayList<JLabel>(0);
+			this.timestampLabels = new ArrayList<JLabel>(0);
+			this.qNumberLabels = new ArrayList<JLabel>(0);
+			this.confidenceLabels = new ArrayList<JLabel>(0);
+			this.submitterLabels = new ArrayList<JLabel>(0);
+			this.operatorLabels = new ArrayList<JLabel>(0);
+			this.callerLabels = new ArrayList<JLabel>(0);
+			this.statusComboBoxes = new ArrayList<JComboBox<String>>(0);
+			this.answerTextAreas = new ArrayList<JTextArea>(0);
+			this.lastStatus = new ArrayList<String>(0);
 
-			/**
-			 * Create the GUI elements for each row
-			 */
-			for (int a = 0; a < MAX_QUEUE_LENGTH; a++) {
-
-				constraints.gridheight = 1;
-				constraints.gridx = 0;
-				constraints.gridy = 2 * a;
-				this.queuenumberLabels[a] = this.enclosedLabel("#" + ( a + 1 ), TIME_WIDTH, ANSWER_HEIGHT / 2,
-						NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
-						SwingConstants.CENTER, SwingConstants.CENTER);
-
-				constraints.gridx = 0;
-				constraints.gridy = 2 * a + 1;
-				this.timestampLabels[a] = this.enclosedLabel("", TIME_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
-						HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
-						SwingConstants.CENTER);
-
-				constraints.gridheight = 2;
-				constraints.gridx = 1;
-				constraints.gridy = 2 * a;
-				this.qNumberLabels[a] = this.enclosedLabel("", QNUM_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-						HEADER_BACKGROUND_COLOR, constraints, LARGE_FONT_SIZE, SwingConstants.CENTER,
-						SwingConstants.CENTER);
-
-				constraints.gridx = 2;
-				constraints.gridy = 2 * a;
-				constraints.weightx = 1.0;
-				this.answerTextAreas[a] = this.scrollableTextArea("", ANSWER_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-						HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-				this.answerTextAreas[a].setEditable(false);
-				constraints.weightx = 0.0;
-
-				constraints.gridx = 3;
-				constraints.gridy = 2 * a;
-				this.confidenceLabels[a] = this.enclosedLabel("", CONFIDENCE_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-						HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
-						SwingConstants.CENTER);
-
-				constraints.gridheight = 1;
-				constraints.gridx = 4;
-				constraints.gridy = 2 * a;
-				this.submitterLabels[a] = this.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2,
-						NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
-						SwingConstants.CENTER, SwingConstants.CENTER);
-
-				constraints.gridx = 4;
-				constraints.gridy = 2 * a + 1;
-				this.callerLabels[a] = this.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
-						HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
-						SwingConstants.CENTER);
-				constraints.gridheight = 2;
-
-				constraints.gridx = 5;
-				constraints.gridy = 2 * a;
-				this.operatorLabels[a] = this.enclosedLabel("", OPERATOR_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-						HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
-						SwingConstants.CENTER);
-
-				constraints.gridx = 6;
-				constraints.gridy = 2 * a;
-				final JPanel panel = new JPanel(new GridBagLayout());
-				panel.setBackground(HEADER_BACKGROUND_COLOR);
-				panel.setPreferredSize(new Dimension(STATUS_WIDTH, ANSWER_HEIGHT));
-				panel.setMinimumSize(new Dimension(STATUS_WIDTH, ANSWER_HEIGHT));
-				this.add(panel, constraints);
-				this.statusComboBoxes[a] = new JComboBox<String>(STATUSES);
-				this.statusComboBoxes[a].setName(a + "");
-				this.statusComboBoxes[a].addItemListener(this);
-				this.statusComboBoxes[a].setBackground(HEADER_BACKGROUND_COLOR);
-				panel.add(this.statusComboBoxes[a]);
-
-				this.lastStatus[a] = "new";
-
-			}
-
-			/**
-			 * Create a blank spacer row at the bottom
-			 */
-			constraints.gridx = 0;
-			constraints.gridy = MAX_QUEUE_LENGTH;
-			constraints.gridwidth = 8;
-			constraints.weightx = 1.0;
-			constraints.weighty = 1.0;
-			final JPanel blank = new JPanel();
-			blank.setBackground(HEADER_BACKGROUND_COLOR);
-			blank.setPreferredSize(new Dimension(0, 0));
-			this.add(blank, constraints);
 		}
 
 		/*
@@ -551,6 +484,10 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 			
 			// We need to track how many rows have been shown to do alternating background colors correctly
 			int shownRows = 0;
+			
+			while(this.queuenumberLabels.size() < this.answerQueue.length) {
+				this.makeNewRow();
+			}
 
 			for (int a = 0; a < queueSize; a++) {
 
@@ -565,7 +502,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 				final String newCaller = this.answerQueue[a].getCaller();
 				final String newStatus = this.answerQueue[a].getStatusString();
 
-				this.lastStatus[a] = newStatus;
+				this.lastStatus.set(a, newStatus);
 				final boolean closed = !trivia.isOpen(newQNumber);
 
 				if (!( hideClosed && closed )) {	shownRows++;	}
@@ -603,102 +540,102 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 						bColor = EVEN_BACKGROUND_COLOR;
 					}
 
-					this.queuenumberLabels[a].setText("#" + newQueueNumber);
-					this.queuenumberLabels[a].getParent().setBackground(bColor);
+					this.queuenumberLabels.get(a).setText("#" + newQueueNumber);
+					this.queuenumberLabels.get(a).getParent().setBackground(bColor);
 
-					this.timestampLabels[a].setText(newTimestamp);
-					this.timestampLabels[a].setForeground(color);
-					this.timestampLabels[a].getParent().setBackground(bColor);
+					this.timestampLabels.get(a).setText(newTimestamp);
+					this.timestampLabels.get(a).setForeground(color);
+					this.timestampLabels.get(a).getParent().setBackground(bColor);
 
-					this.qNumberLabels[a].setText(newQNumber + "");
-					this.qNumberLabels[a].setForeground(color);
-					this.qNumberLabels[a].getParent().setBackground(bColor);
+					this.qNumberLabels.get(a).setText(newQNumber + "");
+					this.qNumberLabels.get(a).setForeground(color);
+					this.qNumberLabels.get(a).getParent().setBackground(bColor);
 
-					this.answerTextAreas[a].setText(newAnswer);
-					this.answerTextAreas[a].setForeground(color);
-					this.answerTextAreas[a].setBackground(bColor);
-					this.answerTextAreas[a].setCaretPosition(0);
+					this.answerTextAreas.get(a).setText(newAnswer);
+					this.answerTextAreas.get(a).setForeground(color);
+					this.answerTextAreas.get(a).setBackground(bColor);
+					this.answerTextAreas.get(a).setCaretPosition(0);
 
-					this.confidenceLabels[a].setText(newConfidence + "");
-					this.confidenceLabels[a].setForeground(color);
-					this.confidenceLabels[a].getParent().setBackground(bColor);
+					this.confidenceLabels.get(a).setText(newConfidence + "");
+					this.confidenceLabels.get(a).setForeground(color);
+					this.confidenceLabels.get(a).getParent().setBackground(bColor);
 
-					this.submitterLabels[a].setText(newSubmitter);
-					this.submitterLabels[a].setForeground(color);
-					this.submitterLabels[a].getParent().setBackground(bColor);
+					this.submitterLabels.get(a).setText(newSubmitter);
+					this.submitterLabels.get(a).setForeground(color);
+					this.submitterLabels.get(a).getParent().setBackground(bColor);
 
-					this.operatorLabels[a].setText(newOperator);
-					this.operatorLabels[a].setForeground(color);
-					this.operatorLabels[a].getParent().setBackground(bColor);
+					this.operatorLabels.get(a).setText(newOperator);
+					this.operatorLabels.get(a).setForeground(color);
+					this.operatorLabels.get(a).getParent().setBackground(bColor);
 
-					this.callerLabels[a].setText(newCaller);
-					this.callerLabels[a].setForeground(color);
-					this.callerLabels[a].getParent().setBackground(bColor);
+					this.callerLabels.get(a).setText(newCaller);
+					this.callerLabels.get(a).setForeground(color);
+					this.callerLabels.get(a).getParent().setBackground(bColor);
 
 					// Temporarily remove the status box listener to prevent trigger when we change it to match server
 					// status
-					final ItemListener[] listeners = this.statusComboBoxes[a].getItemListeners();
+					final ItemListener[] listeners = this.statusComboBoxes.get(a).getItemListeners();
 					for (final ItemListener listener : listeners) {
-						this.statusComboBoxes[a].removeItemListener(listener);
+						this.statusComboBoxes.get(a).removeItemListener(listener);
 					}
-					this.statusComboBoxes[a].setForeground(color);
-					this.statusComboBoxes[a].setBackground(bColor);
-					this.statusComboBoxes[a].getParent().setBackground(bColor);
-					this.statusComboBoxes[a].setName(( newQueueNumber - 1 ) + "");
-					this.statusComboBoxes[a].setSelectedIndex(statusIndex);
+					this.statusComboBoxes.get(a).setForeground(color);
+					this.statusComboBoxes.get(a).setBackground(bColor);
+					this.statusComboBoxes.get(a).getParent().setBackground(bColor);
+					this.statusComboBoxes.get(a).setName(( newQueueNumber - 1 ) + "");
+					this.statusComboBoxes.get(a).setSelectedIndex(statusIndex);
 					// Add the status box listener back to monitor user changes
 					for (final ItemListener listener : listeners) {
-						this.statusComboBoxes[a].addItemListener(listener);
+						this.statusComboBoxes.get(a).addItemListener(listener);
 					}
 
 					if (hideClosed && closed) {
 						// Hide this row
-						this.queuenumberLabels[a].setVisible(false);
-						this.timestampLabels[a].setVisible(false);
-						this.qNumberLabels[a].setVisible(false);
-						this.answerTextAreas[a].setVisible(false);
-						this.answerTextAreas[a].getParent().setVisible(false);
-						this.answerTextAreas[a].getParent().getParent().setVisible(false);
-						this.confidenceLabels[a].setVisible(false);
-						this.submitterLabels[a].setVisible(false);
-						this.operatorLabels[a].setVisible(false);
-						this.callerLabels[a].setVisible(false);
-						this.statusComboBoxes[a].setVisible(false);
+						this.queuenumberLabels.get(a).setVisible(false);
+						this.timestampLabels.get(a).setVisible(false);
+						this.qNumberLabels.get(a).setVisible(false);
+						this.answerTextAreas.get(a).setVisible(false);
+						this.answerTextAreas.get(a).getParent().setVisible(false);
+						this.answerTextAreas.get(a).getParent().getParent().setVisible(false);
+						this.confidenceLabels.get(a).setVisible(false);
+						this.submitterLabels.get(a).setVisible(false);
+						this.operatorLabels.get(a).setVisible(false);
+						this.callerLabels.get(a).setVisible(false);
+						this.statusComboBoxes.get(a).setVisible(false);
 
-						this.queuenumberLabels[a].getParent().setVisible(false);
-						this.timestampLabels[a].getParent().setVisible(false);
-						this.qNumberLabels[a].getParent().setVisible(false);
-						this.answerTextAreas[a].getParent().setVisible(false);
-						this.answerTextAreas[a].getParent().getParent().setVisible(false);
-						this.confidenceLabels[a].getParent().setVisible(false);
-						this.submitterLabels[a].getParent().setVisible(false);
-						this.operatorLabels[a].getParent().setVisible(false);
-						this.callerLabels[a].getParent().setVisible(false);
-						this.statusComboBoxes[a].getParent().setVisible(false);
+						this.queuenumberLabels.get(a).getParent().setVisible(false);
+						this.timestampLabels.get(a).getParent().setVisible(false);
+						this.qNumberLabels.get(a).getParent().setVisible(false);
+						this.answerTextAreas.get(a).getParent().setVisible(false);
+						this.answerTextAreas.get(a).getParent().getParent().setVisible(false);
+						this.confidenceLabels.get(a).getParent().setVisible(false);
+						this.submitterLabels.get(a).getParent().setVisible(false);
+						this.operatorLabels.get(a).getParent().setVisible(false);
+						this.callerLabels.get(a).getParent().setVisible(false);
+						this.statusComboBoxes.get(a).getParent().setVisible(false);
 					} else {
 						// Make this row visible
-						this.queuenumberLabels[a].setVisible(true);
-						this.timestampLabels[a].setVisible(true);
-						this.qNumberLabels[a].setVisible(true);
-						this.answerTextAreas[a].setVisible(true);
-						this.answerTextAreas[a].getParent().setVisible(true);
-						this.answerTextAreas[a].getParent().getParent().setVisible(true);
-						this.confidenceLabels[a].setVisible(true);
-						this.submitterLabels[a].setVisible(true);
-						this.operatorLabels[a].setVisible(true);
-						this.callerLabels[a].setVisible(true);
-						this.statusComboBoxes[a].setVisible(true);
+						this.queuenumberLabels.get(a).setVisible(true);
+						this.timestampLabels.get(a).setVisible(true);
+						this.qNumberLabels.get(a).setVisible(true);
+						this.answerTextAreas.get(a).setVisible(true);
+						this.answerTextAreas.get(a).getParent().setVisible(true);
+						this.answerTextAreas.get(a).getParent().getParent().setVisible(true);
+						this.confidenceLabels.get(a).setVisible(true);
+						this.submitterLabels.get(a).setVisible(true);
+						this.operatorLabels.get(a).setVisible(true);
+						this.callerLabels.get(a).setVisible(true);
+						this.statusComboBoxes.get(a).setVisible(true);
 
-						this.queuenumberLabels[a].getParent().setVisible(true);
-						this.timestampLabels[a].getParent().setVisible(true);
-						this.qNumberLabels[a].getParent().setVisible(true);
-						this.answerTextAreas[a].getParent().setVisible(true);
-						this.answerTextAreas[a].getParent().getParent().setVisible(true);
-						this.confidenceLabels[a].getParent().setVisible(true);
-						this.submitterLabels[a].getParent().setVisible(true);
-						this.operatorLabels[a].getParent().setVisible(true);
-						this.callerLabels[a].getParent().setVisible(true);
-						this.statusComboBoxes[a].getParent().setVisible(true);
+						this.queuenumberLabels.get(a).getParent().setVisible(true);
+						this.timestampLabels.get(a).getParent().setVisible(true);
+						this.qNumberLabels.get(a).getParent().setVisible(true);
+						this.answerTextAreas.get(a).getParent().setVisible(true);
+						this.answerTextAreas.get(a).getParent().getParent().setVisible(true);
+						this.confidenceLabels.get(a).getParent().setVisible(true);
+						this.submitterLabels.get(a).getParent().setVisible(true);
+						this.operatorLabels.get(a).getParent().setVisible(true);
+						this.callerLabels.get(a).getParent().setVisible(true);
+						this.statusComboBoxes.get(a).getParent().setVisible(true);
 					}
 
 				}
@@ -706,30 +643,112 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 			}
 
 			// Hide unused rows
-			for (int a = queueSize; a < MAX_QUEUE_LENGTH; a++) {
-				this.queuenumberLabels[a].setVisible(false);
-				this.timestampLabels[a].setVisible(false);
-				this.qNumberLabels[a].setVisible(false);
-				this.answerTextAreas[a].setVisible(false);
-				this.confidenceLabels[a].setVisible(false);
-				this.submitterLabels[a].setVisible(false);
-				this.operatorLabels[a].setVisible(false);
-				this.callerLabels[a].setVisible(false);
-				this.statusComboBoxes[a].setVisible(false);
+			for (int a = queueSize; a < this.queuenumberLabels.size(); a++) {
+				this.queuenumberLabels.get(a).setVisible(false);
+				this.timestampLabels.get(a).setVisible(false);
+				this.qNumberLabels.get(a).setVisible(false);
+				this.answerTextAreas.get(a).setVisible(false);
+				this.confidenceLabels.get(a).setVisible(false);
+				this.submitterLabels.get(a).setVisible(false);
+				this.operatorLabels.get(a).setVisible(false);
+				this.callerLabels.get(a).setVisible(false);
+				this.statusComboBoxes.get(a).setVisible(false);
 
-				this.queuenumberLabels[a].getParent().setVisible(false);
-				this.timestampLabels[a].getParent().setVisible(false);
-				this.qNumberLabels[a].getParent().setVisible(false);
-				this.answerTextAreas[a].getParent().setVisible(false);
-				this.answerTextAreas[a].getParent().getParent().setVisible(false);
-				this.confidenceLabels[a].getParent().setVisible(false);
-				this.submitterLabels[a].getParent().setVisible(false);
-				this.operatorLabels[a].getParent().setVisible(false);
-				this.callerLabels[a].getParent().setVisible(false);
-				this.statusComboBoxes[a].getParent().setVisible(false);
+				this.queuenumberLabels.get(a).getParent().setVisible(false);
+				this.timestampLabels.get(a).getParent().setVisible(false);
+				this.qNumberLabels.get(a).getParent().setVisible(false);
+				this.answerTextAreas.get(a).getParent().setVisible(false);
+				this.answerTextAreas.get(a).getParent().getParent().setVisible(false);
+				this.confidenceLabels.get(a).getParent().setVisible(false);
+				this.submitterLabels.get(a).getParent().setVisible(false);
+				this.operatorLabels.get(a).getParent().setVisible(false);
+				this.callerLabels.get(a).getParent().setVisible(false);
+				this.statusComboBoxes.get(a).getParent().setVisible(false);
 
 			}
 
+		}
+		
+		private void makeNewRow() {
+			final int a = this.queuenumberLabels.size(); 
+			
+			// Set up layout constraints
+			final GridBagConstraints constraints = new GridBagConstraints();
+			constraints.fill = GridBagConstraints.BOTH;
+			constraints.anchor = GridBagConstraints.NORTH;
+			constraints.weightx = 0.0;
+			constraints.weighty = 0.0;
+
+			constraints.gridheight = 1;
+			constraints.gridx = 0;
+			constraints.gridy = 2 * a;
+			this.queuenumberLabels.add(this.enclosedLabel("#" + ( a + 1 ), TIME_WIDTH, ANSWER_HEIGHT / 2,
+					NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
+					SwingConstants.CENTER, SwingConstants.CENTER));
+
+			constraints.gridx = 0;
+			constraints.gridy = 2 * a + 1;
+			this.timestampLabels.add(this.enclosedLabel("", TIME_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
+					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
+					SwingConstants.CENTER));
+
+			constraints.gridheight = 2;
+			constraints.gridx = 1;
+			constraints.gridy = 2 * a;
+			this.qNumberLabels.add(this.enclosedLabel("", QNUM_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
+					HEADER_BACKGROUND_COLOR, constraints, LARGE_FONT_SIZE, SwingConstants.CENTER,
+					SwingConstants.CENTER));
+
+			constraints.gridx = 2;
+			constraints.gridy = 2 * a;
+			constraints.weightx = 1.0;
+			this.answerTextAreas.add(this.scrollableTextArea("", ANSWER_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
+					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED));
+			this.answerTextAreas.get(a).setEditable(false);
+			constraints.weightx = 0.0;
+
+			constraints.gridx = 3;
+			constraints.gridy = 2 * a;
+			this.confidenceLabels.add(this.enclosedLabel("", CONFIDENCE_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
+					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
+					SwingConstants.CENTER));
+
+			constraints.gridheight = 1;
+			constraints.gridx = 4;
+			constraints.gridy = 2 * a;
+			this.submitterLabels.add(this.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2,
+					NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
+					SwingConstants.CENTER, SwingConstants.CENTER));
+
+			constraints.gridx = 4;
+			constraints.gridy = 2 * a + 1;
+			this.callerLabels.add(this.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
+					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
+					SwingConstants.CENTER));
+			constraints.gridheight = 2;
+
+			constraints.gridx = 5;
+			constraints.gridy = 2 * a;
+			this.operatorLabels.add(this.enclosedLabel("", OPERATOR_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
+					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
+					SwingConstants.CENTER));
+
+			constraints.gridx = 6;
+			constraints.gridy = 2 * a;
+			final JPanel panel = new JPanel(new GridBagLayout());
+			panel.setBackground(HEADER_BACKGROUND_COLOR);
+			panel.setPreferredSize(new Dimension(STATUS_WIDTH, ANSWER_HEIGHT));
+			panel.setMinimumSize(new Dimension(STATUS_WIDTH, ANSWER_HEIGHT));
+			this.add(panel, constraints);
+			this.statusComboBoxes.add(new JComboBox<String>(STATUSES));
+			this.statusComboBoxes.get(a).setName(a + "");
+			this.statusComboBoxes.get(a).addItemListener(this);
+			this.statusComboBoxes.get(a).setBackground(HEADER_BACKGROUND_COLOR);
+			panel.add(this.statusComboBoxes.get(a));
+
+			this.lastStatus.add("new");
 		}
 
 
