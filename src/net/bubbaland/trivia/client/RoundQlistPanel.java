@@ -15,11 +15,17 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
@@ -203,8 +209,9 @@ public class RoundQlistPanel extends TriviaPanel {
 		/**
 		 * GUI Elements that will need to be updated
 		 */
-		private final JLabel[]			qNumberLabels, earnedLabels, valueLabels, submitterLabels, operatorLabels;
+		private final JLabel[]			qNumberLabels, earnedLabels, valueLabels;
 		private final JTextArea[]		questionTextAreas, answerTextAreas;
+		private final JTextPane[]		submitterTextAreas, operatorTextAreas;
 		private final JSeparator[]		separators;
 		private final JMenuItem			editItem, reopenItem;
 
@@ -246,8 +253,8 @@ public class RoundQlistPanel extends TriviaPanel {
 			this.qNumberLabels = new JLabel[this.maxQuestions];
 			this.earnedLabels = new JLabel[this.maxQuestions];
 			this.valueLabels = new JLabel[this.maxQuestions];
-			this.submitterLabels = new JLabel[this.maxQuestions];
-			this.operatorLabels = new JLabel[this.maxQuestions];
+			this.submitterTextAreas = new JTextPane[this.maxQuestions];
+			this.operatorTextAreas = new JTextPane[this.maxQuestions];
 			this.questionTextAreas = new JTextArea[this.maxQuestions];
 			this.answerTextAreas = new JTextArea[this.maxQuestions];
 			this.separators = new JSeparator[this.maxQuestions];
@@ -327,22 +334,35 @@ public class RoundQlistPanel extends TriviaPanel {
 				constraints.weighty = 0.0;
 
 				constraints.gridheight = 1;
-
 				constraints.gridx = 6;
 				constraints.gridy = 2 * q;
+				StyledDocument document = new DefaultStyledDocument();
+				Style defaultStyle = document.getStyle(StyleContext.DEFAULT_STYLE);
+				StyleConstants.setAlignment(defaultStyle, StyleConstants.ALIGN_CENTER);
+				this.submitterTextAreas[q] = new JTextPane(document);
+				this.submitterTextAreas[q].setFont(this.submitterTextAreas[q].getFont().deriveFont(SMALL_FONT_SIZE));
+				this.submitterTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT/3));
+				this.submitterTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT/3));				
+				this.submitterTextAreas[q].setBackground(bColor);
+				this.submitterTextAreas[q].setForeground(color);
+				this.submitterTextAreas[q].setName(( q + 1 ) + "");
+				this.submitterTextAreas[q].addMouseListener(this);
+				this.add(this.submitterTextAreas[q], constraints);
 				
-				
-				this.submitterLabels[q] = this.enclosedLabel("", SUBOP_WIDTH, QUESTION_HEIGHT / 2, color, bColor,
-						constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-				this.submitterLabels[q].setName(( q + 1 ) + "");
-				this.submitterLabels[q].addMouseListener(this);
-
 				constraints.gridx = 6;
 				constraints.gridy = 2 * q + 1;
-				this.operatorLabels[q] = this.enclosedLabel("", SUBOP_WIDTH, QUESTION_HEIGHT / 2, color, bColor,
-						constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-				this.operatorLabels[q].setName(( q + 1 ) + "");
-				this.operatorLabels[q].addMouseListener(this);
+				document = new DefaultStyledDocument();
+				defaultStyle = document.getStyle(StyleContext.DEFAULT_STYLE);
+				StyleConstants.setAlignment(defaultStyle, StyleConstants.ALIGN_CENTER);
+				this.operatorTextAreas[q] = new JTextPane(document);
+				this.operatorTextAreas[q].setFont(this.operatorTextAreas[q].getFont().deriveFont(SMALL_FONT_SIZE));
+				this.operatorTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, 2*QUESTION_HEIGHT/3));
+				this.operatorTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, 2*QUESTION_HEIGHT/3));				
+				this.operatorTextAreas[q].setBackground(bColor);
+				this.operatorTextAreas[q].setForeground(color);
+				this.operatorTextAreas[q].setName(( q + 1 ) + "");
+				this.operatorTextAreas[q].addMouseListener(this);
+				this.add(this.operatorTextAreas[q], constraints);
 
 			}
 
@@ -507,7 +527,7 @@ public class RoundQlistPanel extends TriviaPanel {
 								&& this.earnedLabels[q].getText().equals(earneds[q] + "")
 								&& this.questionTextAreas[q].getText().equals(questions[q])
 								&& this.answerTextAreas[q].getText().equals(answers[q])
-								&& this.submitterLabels[q].getText().equals(submitters[q]) && this.operatorLabels[q]
+								&& this.submitterTextAreas[q].getText().equals(submitters[q]) && this.operatorTextAreas[q]
 								.getText().equals(operators[q]) );
 					}
 				} else {
@@ -533,14 +553,14 @@ public class RoundQlistPanel extends TriviaPanel {
 						this.earnedLabels[q].setText(earneds[q] + "");
 						this.answerTextAreas[q].setText(answers[q]);
 						this.answerTextAreas[q].setCaretPosition(0);
-						this.submitterLabels[q].setText(submitters[q]);
-						this.operatorLabels[q].setText(operators[q]);
+						this.submitterTextAreas[q].setText(submitters[q]);
+						this.operatorTextAreas[q].setText(operators[q]);
 					} else {
 						// Hide answer data for questions that haven't been closed
 						this.earnedLabels[q].setText("");
 						this.answerTextAreas[q].setText("");
-						this.submitterLabels[q].setText("");
-						this.operatorLabels[q].setText("");
+						this.submitterTextAreas[q].setText("");
+						this.operatorTextAreas[q].setText("");
 					}
 
 					// Make sure questions are shown
@@ -552,8 +572,8 @@ public class RoundQlistPanel extends TriviaPanel {
 					this.answerTextAreas[q].setVisible(true);
 					this.questionTextAreas[q].getParent().getParent().setVisible(true);
 					this.answerTextAreas[q].getParent().getParent().setVisible(true);
-					this.submitterLabels[q].getParent().setVisible(true);
-					this.operatorLabels[q].getParent().setVisible(true);
+					this.submitterTextAreas[q].setVisible(true);
+					this.operatorTextAreas[q].setVisible(true);
 				}
 			}
 
@@ -567,8 +587,8 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.answerTextAreas[q].setVisible(false);
 				this.questionTextAreas[q].getParent().getParent().setVisible(false);
 				this.answerTextAreas[q].getParent().getParent().setVisible(false);
-				this.submitterLabels[q].getParent().setVisible(false);
-				this.operatorLabels[q].getParent().setVisible(false);
+				this.submitterTextAreas[q].setVisible(false);
+				this.operatorTextAreas[q].setVisible(false);
 			}
 
 		}
