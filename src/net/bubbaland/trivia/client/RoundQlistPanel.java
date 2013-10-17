@@ -447,9 +447,10 @@ public class RoundQlistPanel extends TriviaPanel {
 				if (event.getButton() == 3 && trivia.beenOpen(this.rNumber, qNumber)) {
 					this.editItem.getParent().setLocation(event.getXOnScreen(), event.getYOnScreen());
 					this.editItem.setName(source.getName());
+					this.reopenItem.setVisible(!trivia.isOpen(qNumber));
 					if (this.live) {
 						this.reopenItem.setName(source.getName());
-					}
+					}					
 					this.editItem.getParent().setVisible(true);
 				} else {
 					this.editItem.getParent().setVisible(false);
