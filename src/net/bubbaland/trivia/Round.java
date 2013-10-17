@@ -852,6 +852,16 @@ public class Round implements Serializable {
 		}
 		return nCorrect;
 	}
+	
+	public int nUnopened() {
+		int nUnopened = 0;
+		for(int q=0; q<this.getNQuestions(); q++) {
+			if(!this.questions[q].beenOpen()) {
+				nUnopened++;
+			}
+		}
+		return nUnopened;
+	}
 
 	/**
 	 * Get the lowest unopened question number. If all questions have been opened, returns the last question number.
