@@ -372,7 +372,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 		if (trivia.isAnnounced(currentRound - 1)) {
 			final int announcedPoints = trivia.getAnnouncedPoints(currentRound - 1);
 			this.announcedLabel.setText("" + announcedPoints);
-			this.placeLabel.setText("" + trivia.getAnnouncedPlace(currentRound - 1));
+			this.placeLabel.setText("" + TriviaClient.ordinalize(trivia.getAnnouncedPlace(currentRound - 1)));
 			if (announcedPoints != trivia.getCumulativeEarned(currentRound - 1)) {
 				this.announcedBannerLabel.getParent().setBackground(CONFLICT_COLOR);
 				this.scoreTextLabel.getParent().setBackground(CONFLICT_COLOR);
