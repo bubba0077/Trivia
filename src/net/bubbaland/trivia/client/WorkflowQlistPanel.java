@@ -401,8 +401,13 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 			final int nQuestions = trivia.getNQuestions();
 			final int nextToOpen = trivia.nextToOpen();
-
-			new OpenQuestionDialog(this.server, this.client, nQuestions, nextToOpen);
+			final int rNumber = trivia.getCurrentRoundNumber(); 
+			
+			if(trivia.isSpeed(rNumber) && nextToOpen > 1) {
+				new OpenQuestionDialog(this.server, this.client, nQuestions, nextToOpen, trivia.getValue(rNumber, nextToOpen-1));
+			} else {
+				new OpenQuestionDialog(this.server, this.client, nQuestions, nextToOpen);
+			}
 
 		}
 

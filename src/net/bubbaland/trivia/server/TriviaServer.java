@@ -70,6 +70,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	// The team name
 	private static final String				TEAM_NAME			= "Knee Deep in Theses";
+	
+	// The server URL
+	private static final String				SERVER_URL			= "www.bubbaland.net";
 
 	// Frequency of backups (milliseconds)
 	private static final int				SAVE_FREQUENCY		= 5 * 60000;
@@ -713,6 +716,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			System.out.println("Couldn't save data to file " + filename);
 		}			
 			
+		// Save place chart
 		filename = CHART_DIR + "/" + roundString + "_placeChart.png";
 		try {
 			File file = new File(filename);		
@@ -722,6 +726,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			System.out.println("Couldn't save place chart to file " + filename);
 		}
 		
+		// Save score by round chart
 		filename = CHART_DIR + "/" + roundString + "_scoreByRoundChart.png";
 		try {
 			File file = new File(filename);
@@ -731,7 +736,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			System.out.println("Couldn't save score by round chart to file " + filename);
 		}
 				
-				
+		// Save cumulative score chart
 		filename = CHART_DIR + "/" + roundString + "_cumulativeScoreChart.png";
 		try {
 			File file = new File(filename);
@@ -741,6 +746,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			System.out.println("Couldn't save cumulative score chart to file " + filename);
 		}
 		
+		// Save team comparison chart		
 		filename = CHART_DIR + "/" + roundString + "_teamComparisonChart.png";
 		try {
 			File file = new File(filename);
@@ -748,7 +754,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			this.log("Saved team comparison chart to " + filename);
 		} catch (IOException exception) {
 			System.out.println("Couldn't save team comparison chart to file " + filename);
-		}		
+		}
 
 	}
 
@@ -858,7 +864,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	public static void main(String args[]) throws RemoteException {
 		// Replace the local IP with the real hostname
-		System.setProperty("java.rmi.server.hostname", "www.bubbaland.net");
+		System.setProperty("java.rmi.server.hostname", SERVER_URL);
 
 		// Create a registry on port 1099
 		final Registry registry = LocateRegistry.createRegistry(1099);

@@ -48,6 +48,27 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 	public OpenQuestionDialog(TriviaInterface server, TriviaClient client, int nQuestions, int qNumberStart) {
 		this(server, client, nQuestions, qNumberStart, 10, "");
 	}
+	
+	/**
+	 * Instantiates a new question entry window.
+	 * 
+	 * @param server
+	 *            The remote trivia server
+	 * @param client
+	 *            The local trivia client
+	 * @param nQuestions
+	 *            the number of questions
+	 * @param qNumberStart
+	 *            the default question number
+	 * @param qValueStart
+	 *            the default question value
+	 * @param qTextStart
+	 *            the initial question text
+	 */
+	public OpenQuestionDialog(final TriviaInterface server, final TriviaClient client, int nQuestions, int qNumberStart,
+			int qValueStart) {
+		this(server, client, nQuestions, qNumberStart, qValueStart, "");
+	}
 
 	/**
 	 * Instantiates a new question entry window.
