@@ -95,6 +95,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		// Display the dialog box
 		this.dialog = new TriviaDialog(client.getFrame(), "Close question " + qNumber, this,
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		this.dialog.setName("Close Question");
 		this.dialog.setVisible(true);
 		
 		// If the OK button was pressed, add the proposed answer to the queue

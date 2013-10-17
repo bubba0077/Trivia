@@ -142,6 +142,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		// Display the dialog box
 		this.dialog = new TriviaDialog(client.getFrame(), "Submit Answer for Question " + qNumber, this,
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		this.dialog.setName("Answer Question");
 		this.dialog.setVisible(true);
 		
 		// If the OK button was pressed, add the proposed answer to the queue

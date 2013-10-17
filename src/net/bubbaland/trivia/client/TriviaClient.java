@@ -78,7 +78,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	// IRC channel to join on connection to IRC server
 	final static private String					IRC_CHANNEL			= "%23kneedeeptrivia";
 	// File name to store window positions
-	final static private String					fileName			= ".trivia-settings";
+	final static private String					SETTINGS_FILENAME	= ".trivia-settings";
 	
 	// Queue sort option
 	public static enum QueueSort { TIMESTAMP_ASCENDING, QNUMBER_ASCENDING, STATUS_ASCENDING, TIMESTAMP_DESCENDING, QNUMBER_DESCENDING, STATUS_DESCENDING }
@@ -102,14 +102,19 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	// Hashtable of active users and roles
 	private volatile Hashtable<String, Role>	userHash;
 	// Sort method for the queue
-	private volatile QueueSort					queueSort;															;
+	private volatile QueueSort					queueSort;
+	// Sort menu items
+	final private JMenuItem						sortTimestampAscendingMenuItem;
+	final private JMenuItem						sortTimestampDescendingMenuItem;
+	final private JMenuItem						sortQNumberAscendingMenuItem;
+	final private JMenuItem						sortQNumberDescendingMenuItem;
+	final private JMenuItem						sortStatusAscendingMenuItem;
+	final private JMenuItem						sortStatusDescendingMenuItem;
 
 	// The local trivia object holding all contest data
 	private volatile Trivia						trivia;
 	// The remote server
 	private final TriviaInterface				server;
-
-	
 	
 	/**
 	 * Creates a new trivia client GUI
@@ -131,6 +136,33 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		// Grab a copy of the current Trivia data structure from the server in the background
 		final TriviaFetcher fetcher = new TriviaFetcher(server, this);
 		fetcher.execute();
+		
+		String loadedSort = loadProperty("queueSort");
+		if(loadedSort == null) { loadedSort = ""; }
+		System.out.println(loadedSort);
+		switch(loadedSort) {
+			case "Sort Timestamp Ascending":
+				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
+				break;
+			case "Sort Question Number Ascending":
+				this.queueSort = QueueSort.QNUMBER_ASCENDING;
+				break;
+			case "Sort Status Ascending":
+				this.queueSort = QueueSort.STATUS_ASCENDING;
+				break;
+			case "Sort Timestamp Descending":
+				this.queueSort = QueueSort.TIMESTAMP_DESCENDING;
+				break;
+			case "Sort Question Number Descending":
+				this.queueSort = QueueSort.QNUMBER_DESCENDING;
+				break;
+			case "Sort Status Descending":
+				this.queueSort = QueueSort.STATUS_DESCENDING;
+				break;
+			default:
+				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
+				break;
+		}
 
 		// Create a prompt requesting the user name
 		new UserLogin(this);
@@ -152,8 +184,13 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
 		hideClosedMenuItem.setActionCommand("Hide Closed");
 		hideClosedMenuItem.addActionListener(this);
-		hideClosedMenuItem.setSelected(true);
-		this.hideClosed = true;
+		if(loadProperty("hideClosed") == "false") {
+			hideClosedMenuItem.setSelected(false);
+			this.hideClosed = false;
+		} else {
+			hideClosedMenuItem.setSelected(true);
+			this.hideClosed = true;
+		}
 		menu.add(hideClosedMenuItem);
 
 		final JMenu sortMenu = new JMenu("Sort by...");
@@ -164,68 +201,79 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		sortMenu.add(timestampSort);
 
 		final ButtonGroup sortOptions = new ButtonGroup();
-		JRadioButtonMenuItem sortOption = new JRadioButtonMenuItem("Ascending");
-		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
-		sortOption.setMnemonic(KeyEvent.VK_A);		
-		sortOption.setActionCommand("Sort Timestamp Ascending");
-		sortOption.addActionListener(this);
-		sortOption.setSelected(true);
-		this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
-		sortOptions.add(sortOption);
-		timestampSort.add(sortOption);
+		sortTimestampAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
+		sortTimestampAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
+		sortTimestampAscendingMenuItem.setMnemonic(KeyEvent.VK_A);		
+		sortTimestampAscendingMenuItem.setActionCommand("Sort Timestamp Ascending");
+		sortTimestampAscendingMenuItem.addActionListener(this);
+		if (this.queueSort == QueueSort.TIMESTAMP_ASCENDING ) {
+			sortTimestampAscendingMenuItem.setSelected(true);
+		}
+		sortOptions.add(sortTimestampAscendingMenuItem);
+		timestampSort.add(sortTimestampAscendingMenuItem);
 		
-		sortOption = new JRadioButtonMenuItem("Descending");
-		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
-		sortOption.setMnemonic(KeyEvent.VK_D);		
-		sortOption.setActionCommand("Sort Timestamp Descending");
-		sortOption.addActionListener(this);
-		sortOptions.add(sortOption);
-		timestampSort.add(sortOption);
+		sortTimestampDescendingMenuItem = new JRadioButtonMenuItem("Descending");
+		sortTimestampDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
+		sortTimestampDescendingMenuItem.setMnemonic(KeyEvent.VK_D);		
+		sortTimestampDescendingMenuItem.setActionCommand("Sort Timestamp Descending");
+		sortTimestampDescendingMenuItem.addActionListener(this);
+		if (this.queueSort == QueueSort.TIMESTAMP_DESCENDING ) {
+			sortTimestampDescendingMenuItem.setSelected(true);
+		}
+		sortOptions.add(sortTimestampDescendingMenuItem);
+		timestampSort.add(sortTimestampDescendingMenuItem);
 		
 		final JMenu qNumberSort = new JMenu("Question Number");
 		qNumberSort.setMnemonic(KeyEvent.VK_Q);
 		sortMenu.add(qNumberSort);
 
-		sortOption = new JRadioButtonMenuItem("Ascending");
-		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
-		sortOption.setMnemonic(KeyEvent.VK_A);		
-		sortOption.setActionCommand("Sort Question Number Ascending");
-		sortOption.addActionListener(this);
-		sortOption.setSelected(false);
-		sortOptions.add(sortOption);
-		qNumberSort.add(sortOption);
+		sortQNumberAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
+		sortQNumberAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+		sortQNumberAscendingMenuItem.setMnemonic(KeyEvent.VK_A);		
+		sortQNumberAscendingMenuItem.setActionCommand("Sort Question Number Ascending");
+		sortQNumberAscendingMenuItem.addActionListener(this);
+		if (this.queueSort == QueueSort.QNUMBER_ASCENDING ) {
+			sortQNumberAscendingMenuItem.setSelected(true);
+		}		
+		sortOptions.add(sortQNumberAscendingMenuItem);
+		qNumberSort.add(sortQNumberAscendingMenuItem);
 
-		sortOption = new JRadioButtonMenuItem("Descending");
-		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
-		sortOption.setMnemonic(KeyEvent.VK_D);		
-		sortOption.setActionCommand("Sort Question Number Descending");
-		sortOption.addActionListener(this);
-		sortOption.setSelected(false);
-		sortOptions.add(sortOption);
-		qNumberSort.add(sortOption);
+		sortQNumberDescendingMenuItem = new JRadioButtonMenuItem("Descending");
+		sortQNumberDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
+		sortQNumberDescendingMenuItem.setMnemonic(KeyEvent.VK_D);		
+		sortQNumberDescendingMenuItem.setActionCommand("Sort Question Number Descending");
+		sortQNumberDescendingMenuItem.addActionListener(this);
+		if (this.queueSort == QueueSort.QNUMBER_DESCENDING) {
+			sortQNumberDescendingMenuItem.setSelected(true);
+		}
+		sortOptions.add(sortQNumberDescendingMenuItem);
+		qNumberSort.add(sortQNumberDescendingMenuItem);
 		
 		final JMenu statusSort = new JMenu("Status");
 		statusSort.setMnemonic(KeyEvent.VK_S);
 		sortMenu.add(statusSort);
 
-		sortOption = new JRadioButtonMenuItem("Ascending");
-		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-		sortOption.setMnemonic(KeyEvent.VK_A);		
-		sortOption.setActionCommand("Sort Status Ascending");
-		sortOption.addActionListener(this);
-		sortOption.setSelected(false);
-		sortOptions.add(sortOption);
-		statusSort.add(sortOption);
+		sortStatusAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
+		sortStatusAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		sortStatusAscendingMenuItem.setMnemonic(KeyEvent.VK_A);		
+		sortStatusAscendingMenuItem.setActionCommand("Sort Status Ascending");
+		sortStatusAscendingMenuItem.addActionListener(this);
+		if (this.queueSort == QueueSort.STATUS_ASCENDING ) {
+			sortStatusAscendingMenuItem.setSelected(true);
+		}
+		sortOptions.add(sortStatusAscendingMenuItem);
+		statusSort.add(sortStatusAscendingMenuItem);
 
-		sortOption = new JRadioButtonMenuItem("Descending");
-		sortOption.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
-		sortOption.setMnemonic(KeyEvent.VK_D);		
-		sortOption.setActionCommand("Sort Status Descending");
-		sortOption.addActionListener(this);
-		sortOption.setSelected(false);
-		sortOptions.add(sortOption);
-		statusSort.add(sortOption);
-
+		sortStatusDescendingMenuItem = new JRadioButtonMenuItem("Descending");
+		sortStatusDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK ));
+		sortStatusDescendingMenuItem.setMnemonic(KeyEvent.VK_D);		
+		sortStatusDescendingMenuItem.setActionCommand("Sort Status Descending");
+		sortStatusDescendingMenuItem.addActionListener(this);
+		if (this.queueSort == QueueSort.STATUS_DESCENDING ) {
+			sortStatusDescendingMenuItem.setSelected(true);
+		}
+		sortOptions.add(sortStatusDescendingMenuItem);
+		statusSort.add(sortStatusDescendingMenuItem);
 		
 		menu.add(sortMenu);
 
@@ -408,36 +456,37 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			case "Hide Closed":
 				// Triggered by change to Hide Closed menu item
 				this.hideClosed = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
+				saveProperty("hideClosed", this.hideClosed+"");
 				this.update(true);
 				break;
 			case "Sort Timestamp Ascending":
 				// Triggered by Timestamp Sort menu item
-				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
+				setSort(QueueSort.TIMESTAMP_ASCENDING);
 				this.update(true);
 				break;
 			case "Sort Question Number Ascending":
 				// Triggered by Question Number Sort menu item
-				this.queueSort = QueueSort.QNUMBER_ASCENDING;
+				setSort(QueueSort.QNUMBER_ASCENDING);
 				this.update(true);
 				break;
 			case "Sort Status Ascending":
 				// Triggered by Status Sort menu item
-				this.queueSort = QueueSort.STATUS_ASCENDING;
+				setSort(QueueSort.STATUS_ASCENDING);
 				this.update(true);
 				break;
 			case "Sort Timestamp Descending":
 				// Triggered by Timestamp Sort menu item
-				this.queueSort = QueueSort.TIMESTAMP_DESCENDING;
+				setSort(QueueSort.TIMESTAMP_DESCENDING);
 				this.update(true);
 				break;
 			case "Sort Question Number Descending":
 				// Triggered by Question Number Sort menu item
-				this.queueSort = QueueSort.QNUMBER_DESCENDING;
+				setSort(QueueSort.QNUMBER_DESCENDING);
 				this.update(true);
 				break;
 			case "Sort Status Descending":
 				// Triggered by Status Sort menu item
-				this.queueSort = QueueSort.STATUS_DESCENDING;
+				setSort(QueueSort.STATUS_DESCENDING);
 				this.update(true);
 				break;
 			case "Caller":
@@ -610,6 +659,33 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	
 	public void setSort(QueueSort newSort) {
 		this.queueSort = newSort;
+		switch(newSort) {
+			case TIMESTAMP_ASCENDING:
+				saveProperty("queueSort", "Sort Timestamp Ascending");
+				this.sortTimestampAscendingMenuItem.setSelected(true);
+				break;
+			case TIMESTAMP_DESCENDING:
+				saveProperty("queueSort", "Sort Timestamp Descending");
+				this.sortTimestampDescendingMenuItem.setSelected(true);
+				break;
+			case QNUMBER_ASCENDING:
+				saveProperty("queueSort", "Sort Question Number Ascending");
+				this.sortQNumberAscendingMenuItem.setSelected(true);
+				break;
+			case QNUMBER_DESCENDING:
+				saveProperty("queueSort", "Sort Question Number Descending");
+				this.sortQNumberDescendingMenuItem.setSelected(true);
+				break;
+			case STATUS_ASCENDING:
+				saveProperty("queueSort", "Sort Status Ascending");
+				this.sortStatusAscendingMenuItem.setSelected(true);
+				break;
+			case STATUS_DESCENDING:
+				saveProperty("queueSort", "Sort Status Descending");
+				this.sortStatusDescendingMenuItem.setSelected(true);
+				break;
+		}
+			
 	}
 
 	/**
@@ -652,12 +728,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 
 	@Override
-	public void windowActivated(WindowEvent e) {
-	}
+	public void windowActivated(WindowEvent e) {	}
 
 	@Override
-	public void windowClosed(WindowEvent e) {
-	}
+	public void windowClosed(WindowEvent e) {	}
 
 	@Override
 	public void windowClosing(WindowEvent e) {
@@ -665,20 +739,16 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 
 	@Override
-	public void windowDeactivated(WindowEvent e) {
-	}
+	public void windowDeactivated(WindowEvent e) {	}
 
 	@Override
-	public void windowDeiconified(WindowEvent e) {
-	}
+	public void windowDeiconified(WindowEvent e) {	}
 
 	@Override
-	public void windowIconified(WindowEvent e) {
-	}
+	public void windowIconified(WindowEvent e) {	}
 
 	@Override
-	public void windowOpened(WindowEvent e) {
-	}
+	public void windowOpened(WindowEvent e) {	}
 
 	/**
 	 * Create and show the GUI.
@@ -745,7 +815,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 *            The window whose position and size is to be loaded
 	 */
 	public static void loadPosition(Window window) {
-		final File file = new File(fileName);
+		final File file = new File(SETTINGS_FILENAME);
 		final Properties props = new Properties();
 		try {
 			final BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
@@ -765,6 +835,21 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			window.pack();
 			window.setLocationRelativeTo(null);
 		}
+	}
+	
+	public static String loadProperty(String propName) {
+		final File file = new File(SETTINGS_FILENAME);
+		final Properties props = new Properties();
+		try {
+			final BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
+			props.load(fileBuffer);
+
+			return props.getProperty(propName);
+
+		} catch (IOException | NumberFormatException e) {
+			System.out.println("Couldn't load propety, may not exist yet.");
+		}
+		return "";
 	}
 
 	/**
@@ -817,7 +902,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 * 
 	 */
 	public static void savePosition(Window window) {
-		final File file = new File(fileName);
+		final File file = new File(SETTINGS_FILENAME);
 		final Properties props = new Properties();
 		BufferedReader infileBuffer;
 		try {
@@ -849,11 +934,38 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 	
 	/**
+	 * Saves a property to the settings file.
+	 * 
+	 * @param propName Name of the property to save
+	 * @param value Value associated with the property
+	 */
+	public static void saveProperty(String propName, String value) {
+		final File file = new File(SETTINGS_FILENAME);
+		final Properties props = new Properties();
+		BufferedReader infileBuffer;
+		try {
+			infileBuffer = new BufferedReader(new FileReader(file));
+			props.load(infileBuffer);
+		} catch (final IOException e) {
+		}
+		
+		props.setProperty(propName, value);
+
+		try {
+			final BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
+			props.store(outfileBuffer, "Trivia");
+			outfileBuffer.close();
+		} catch (final IOException e) {
+			System.out.println("Error saving property.");
+		}
+	}
+	
+	/**
 	 * Clear all saved window positions from file.
 	 * 
 	 */
 	public static void resetPositions() {
-		final File file = new File(fileName);
+		final File file = new File(SETTINGS_FILENAME);
 		final Properties props = new Properties();		
 		try {
 			final BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
