@@ -63,7 +63,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	final private static int			CUMULATIVE_VALUE_WIDTH	= 80;
 	final private static int			PERCENT_TOTAL_WIDTH		= 80;
 	final private static int			ANNOUNCED_WIDTH			= 85;
-	final private static int			PLACE_WIDTH				= 40;
+	final private static int			PLACE_WIDTH				= 50;
 	final private static int			DISCREPENCY_WIDTH		= 12;
 
 	/**
@@ -428,9 +428,9 @@ public class ScoreByRoundPanel extends TriviaPanel {
 						&& ( this.announcedScoreLabels[r].getText().equals(announced + "") || !isAnnounced )
 						&& ( this.placeLabels[r].getText().equals(TriviaClient.ordinalize(place)) || !isAnnounced ) && this.discrepancies[r]
 							.equals(discrepancy) ) || force;
-				
-				if (updated) {					
-					if (value != 0) {					
+
+				if (updated) {
+					if (value != 0) {
 						// If the round has started, update all of the labels for the round
 						final String percent = String.format("%04.1f", ( earned * 100.0 / value )) + "%";
 						final String percentTotal = String.format("%04.1f",

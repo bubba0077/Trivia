@@ -57,7 +57,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 	private static final int		COL1_WIDTH				= 90;
 	private static final int		COL2_WIDTH				= 100;
 	private static final int		COL3_WIDTH				= 120;
-	private static final int		COL4_WIDTH				= 60;
+	private static final int		COL4_WIDTH				= 70;
 	private static final int		COL5_WIDTH				= 75;
 
 	/**
@@ -151,21 +151,21 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 		constraints.gridx = 4;
 		constraints.gridy = 0;
 		constraints.gridwidth = 2;
-		this.announcedBannerLabel = this.enclosedLabel("Last Round ", COL4_WIDTH, TOP_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR, constraints,
-				LABEL_FONT_SIZE, SwingConstants.RIGHT, SwingConstants.CENTER);
-		
+		this.announcedBannerLabel = this.enclosedLabel("Last Round ", COL4_WIDTH, TOP_ROW_HEIGHT, ANNOUNCED_COLOR,
+				BACKGROUND_COLOR, constraints, LABEL_FONT_SIZE, SwingConstants.RIGHT, SwingConstants.CENTER);
+
 		this.conflictButton = new JButton("Conflict!");
 		this.conflictButton.setMargin(new Insets(0, 0, 0, 0));
 		this.conflictButton.setPreferredSize(new Dimension(CONFLICT_BUTTON_WIDTH, CONFLICT_BUTTON_HEIGHT));
 		this.conflictButton.setMinimumSize(new Dimension(CONFLICT_BUTTON_WIDTH, CONFLICT_BUTTON_HEIGHT));
 		this.conflictButton.setVisible(false);
-//		this.conflictButton.setBackground(NEW_ROUND_COLOR);
+		// this.conflictButton.setBackground(NEW_ROUND_COLOR);
 		this.conflictButton.setFont(this.conflictButton.getFont().deriveFont(LABEL_FONT_SIZE));
 		this.announcedBannerLabel.getParent().add(this.conflictButton, buttonConstraints);
 		this.conflictButton.addActionListener(this);
 
 		constraints.gridwidth = 1;
-		
+
 
 		/**
 		 * Middle row
@@ -192,8 +192,8 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 
 		constraints.gridx = 4;
 		constraints.gridy = 1;
-		this.scoreTextLabel = this.enclosedLabel("Points ", COL4_WIDTH, MIDDLE_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR, constraints,
-				LABEL_FONT_SIZE, SwingConstants.RIGHT, SwingConstants.CENTER);
+		this.scoreTextLabel = this.enclosedLabel("Points ", COL4_WIDTH, MIDDLE_ROW_HEIGHT, ANNOUNCED_COLOR,
+				BACKGROUND_COLOR, constraints, LABEL_FONT_SIZE, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		constraints.gridx = 5;
 		constraints.gridy = 1;
@@ -249,8 +249,8 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 
 		constraints.gridx = 4;
 		constraints.gridy = 2;
-		this.placeTextLabel = this.enclosedLabel("Place ", COL4_WIDTH, BOTTOM_ROW_HEIGHT, ANNOUNCED_COLOR, BACKGROUND_COLOR, constraints,
-				LABEL_FONT_SIZE, SwingConstants.RIGHT, SwingConstants.CENTER);
+		this.placeTextLabel = this.enclosedLabel("Place ", COL4_WIDTH, BOTTOM_ROW_HEIGHT, ANNOUNCED_COLOR,
+				BACKGROUND_COLOR, constraints, LABEL_FONT_SIZE, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		constraints.gridx = 5;
 		constraints.gridy = 2;
@@ -379,16 +379,16 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 				this.placeTextLabel.getParent().setBackground(CONFLICT_COLOR);
 				this.announcedLabel.getParent().setBackground(CONFLICT_COLOR);
 				this.placeLabel.getParent().setBackground(CONFLICT_COLOR);
-				
+
 				this.announcedBannerLabel.setVisible(false);
-				this.conflictButton.setVisible(true);				
+				this.conflictButton.setVisible(true);
 			} else {
 				this.announcedBannerLabel.getParent().setBackground(BACKGROUND_COLOR);
 				this.scoreTextLabel.getParent().setBackground(BACKGROUND_COLOR);
 				this.placeTextLabel.getParent().setBackground(BACKGROUND_COLOR);
 				this.announcedLabel.getParent().setBackground(BACKGROUND_COLOR);
 				this.placeLabel.getParent().setBackground(BACKGROUND_COLOR);
-				
+
 				this.announcedBannerLabel.setVisible(true);
 				this.conflictButton.setVisible(false);
 			}

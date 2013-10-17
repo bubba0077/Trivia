@@ -38,20 +38,20 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 	final private static Color		SELECTOR_BACKGROUND_COLOR	= Color.WHITE;
 	private static final Color		TOTAL_COLOR					= Color.RED;
 	private static final Color		ANNOUNCED_COLOR				= Color.ORANGE;
-	
+
 	/**
 	 * Sizes
 	 */
 	final private static int		SELECTOR_ROW_HEIGHT			= 30;
-	final private static int		SELECTOR_HEIGHT				= 24;	
-	final private static int		SELECTOR_WIDTH				= 40;
-	
-	private static final int		ROUND_LABEL_WIDTH		= 75;
-	private static final int		ROUND_WIDTH				= 90;
-	private static final int		TOTAL_LABEL_WIDTH		= 65;
-	private static final int		TOTAL_WIDTH				= 120;
-	private static final int		PLACE_LABEL_WIDTH		= 65;
-	private static final int		PLACE_WIDTH				= 100;
+	final private static int		SELECTOR_HEIGHT				= 24;
+	final private static int		SELECTOR_WIDTH				= 45;
+
+	private static final int		ROUND_LABEL_WIDTH			= 90;
+	private static final int		ROUND_WIDTH					= 110;
+	private static final int		TOTAL_LABEL_WIDTH			= 75;
+	private static final int		TOTAL_WIDTH					= 180;
+	private static final int		PLACE_LABEL_WIDTH			= 80;
+	private static final int		PLACE_WIDTH					= 120;
 
 
 	/**
@@ -87,7 +87,7 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 		this.server = server;
 		this.client = client;
 		this.nRounds = client.getTrivia().getNRounds();
-		
+
 		// Set up layout constraints
 		final GridBagConstraints solo = new GridBagConstraints();
 		solo.fill = GridBagConstraints.NONE;
@@ -106,43 +106,51 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 		/**
 		 * Create the top row with the selector combo box
 		 */
-		constraints.weightx = 0.1;
+		constraints.weightx = 0.0;
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		this.enclosedLabel(" Round:", ROUND_LABEL_WIDTH, SELECTOR_ROW_HEIGHT, ROUND_COLOR, TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
+		this.enclosedLabel(" Round:", ROUND_LABEL_WIDTH, SELECTOR_ROW_HEIGHT, ROUND_COLOR, TOPLINE_BACKGROUND_COLOR,
+				constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
 		constraints.weightx = 0.0;
-		
+
 		constraints.gridx = 2;
 		constraints.gridy = 0;
-		this.earnedLabel = this.enclosedLabel("", ROUND_WIDTH, SELECTOR_ROW_HEIGHT, ROUND_COLOR, TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
-		
+		this.earnedLabel = this.enclosedLabel("", ROUND_WIDTH, SELECTOR_ROW_HEIGHT, ROUND_COLOR,
+				TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
+
 		constraints.weightx = 1.0;
 		constraints.gridx = 3;
 		constraints.gridy = 0;
-		this.enclosedLabel("", -1, SELECTOR_ROW_HEIGHT, ROUND_COLOR, TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
+		this.enclosedLabel("", -1, SELECTOR_ROW_HEIGHT, ROUND_COLOR, TOPLINE_BACKGROUND_COLOR, constraints,
+				ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
 		constraints.weightx = 0.0;
-		
+
 		constraints.gridx = 4;
 		constraints.gridy = 0;
-		this.enclosedLabel("Total: ", TOTAL_LABEL_WIDTH, SELECTOR_ROW_HEIGHT, TOTAL_COLOR, TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
-		
+		this.enclosedLabel("Total: ", TOTAL_LABEL_WIDTH, SELECTOR_ROW_HEIGHT, TOTAL_COLOR, TOPLINE_BACKGROUND_COLOR,
+				constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
+
 		constraints.gridx = 5;
 		constraints.gridy = 0;
-		this.valueLabel = this.enclosedLabel("", TOTAL_WIDTH, SELECTOR_ROW_HEIGHT, TOTAL_COLOR, TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
-		
+		this.valueLabel = this.enclosedLabel("", TOTAL_WIDTH, SELECTOR_ROW_HEIGHT, TOTAL_COLOR,
+				TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
+
 		constraints.weightx = 1.0;
 		constraints.gridx = 6;
 		constraints.gridy = 0;
-		this.enclosedLabel("", -1, SELECTOR_ROW_HEIGHT, ROUND_COLOR, TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
+		this.enclosedLabel("", -1, SELECTOR_ROW_HEIGHT, ROUND_COLOR, TOPLINE_BACKGROUND_COLOR, constraints,
+				ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
 		constraints.weightx = 0.0;
-		
+
 		constraints.gridx = 7;
 		constraints.gridy = 0;
-		this.enclosedLabel("Place: ", PLACE_LABEL_WIDTH, SELECTOR_ROW_HEIGHT, ANNOUNCED_COLOR, TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
-		
+		this.enclosedLabel("Place: ", PLACE_LABEL_WIDTH, SELECTOR_ROW_HEIGHT, ANNOUNCED_COLOR,
+				TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
+
 		constraints.gridx = 8;
 		constraints.gridy = 0;
-		this.placeLabel = this.enclosedLabel("", PLACE_WIDTH, SELECTOR_ROW_HEIGHT, ANNOUNCED_COLOR, TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
+		this.placeLabel = this.enclosedLabel("", PLACE_WIDTH, SELECTOR_ROW_HEIGHT, ANNOUNCED_COLOR,
+				TOPLINE_BACKGROUND_COLOR, constraints, ROUND_FONT_SIZE, JLabel.RIGHT, JLabel.CENTER);
 
 		constraints.gridx = 1;
 		constraints.gridy = 0;
@@ -160,7 +168,7 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 		this.roundSelector.setPreferredSize(new Dimension(SELECTOR_WIDTH, SELECTOR_HEIGHT));
 		this.roundSelector.setMinimumSize(new Dimension(SELECTOR_WIDTH, SELECTOR_HEIGHT));
 		panel.add(this.roundSelector, solo);
-		
+
 		/**
 		 * Add a question list panel to show the selected round data
 		 */
@@ -171,7 +179,6 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 		constraints.weighty = 1.0;
 		this.roundQListPanel = new RoundQlistPanel(server, client, false, 1);
 		this.add(this.roundQListPanel, constraints);
-		
 	}
 
 	/*
@@ -196,15 +203,16 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 	public synchronized void update(boolean force) {
 		final Trivia trivia = this.client.getTrivia();
 		final int rNumber = Integer.parseInt((String) this.roundSelector.getSelectedItem());
-		
-		this.earnedLabel.setText(trivia.getEarned(rNumber)+" / "+trivia.getValue(rNumber));
-		this.valueLabel.setText(trivia.getCumulativeEarned(rNumber)+" / "+trivia.getCumulativeValue(rNumber));
-		if(trivia.isAnnounced(rNumber)) {
-			this.placeLabel.setText(TriviaClient.ordinalize(trivia.getAnnouncedPlace(rNumber))+" / "+trivia.getNTeams() + " " );
+
+		this.earnedLabel.setText(trivia.getEarned(rNumber) + " / " + trivia.getValue(rNumber));
+		this.valueLabel.setText(trivia.getCumulativeEarned(rNumber) + " / " + trivia.getCumulativeValue(rNumber));
+		if (trivia.isAnnounced(rNumber)) {
+			this.placeLabel.setText(TriviaClient.ordinalize(trivia.getAnnouncedPlace(rNumber)) + " / "
+					+ trivia.getNTeams() + " ");
 		} else {
-			this.placeLabel.setText("-- / "+trivia.getNTeams() + " " );
+			this.placeLabel.setText("-- / " + trivia.getNTeams() + " ");
 		}
-		
+
 		this.roundQListPanel.update(force);
 	}
 
