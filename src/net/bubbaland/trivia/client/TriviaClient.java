@@ -139,7 +139,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		
 		String loadedSort = loadProperty("queueSort");
 		if(loadedSort == null) { loadedSort = ""; }
-		System.out.println(loadedSort);
 		switch(loadedSort) {
 			case "Sort Timestamp Ascending":
 				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
@@ -815,7 +814,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 *            The window whose position and size is to be loaded
 	 */
 	public static void loadPosition(Window window) {
-		final File file = new File(SETTINGS_FILENAME);
+		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
 		final Properties props = new Properties();
 		try {
 			final BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
@@ -838,7 +837,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 	
 	public static String loadProperty(String propName) {
-		final File file = new File(SETTINGS_FILENAME);
+		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
 		final Properties props = new Properties();
 		try {
 			final BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
@@ -902,7 +901,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 * 
 	 */
 	public static void savePosition(Window window) {
-		final File file = new File(SETTINGS_FILENAME);
+		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
 		final Properties props = new Properties();
 		BufferedReader infileBuffer;
 		try {
@@ -940,7 +939,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 * @param value Value associated with the property
 	 */
 	public static void saveProperty(String propName, String value) {
-		final File file = new File(SETTINGS_FILENAME);
+		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
 		final Properties props = new Properties();
 		BufferedReader infileBuffer;
 		try {
@@ -965,7 +964,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 * 
 	 */
 	public static void resetPositions() {
-		final File file = new File(SETTINGS_FILENAME);
+		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
 		final Properties props = new Properties();		
 		try {
 			final BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
