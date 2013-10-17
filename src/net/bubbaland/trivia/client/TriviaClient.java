@@ -104,6 +104,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	// Sort method for the queue
 	private volatile QueueSort					queueSort;
 	// Sort menu items
+	final private JMenuItem						hideClosedMenuItem;
 	final private JMenuItem						sortTimestampAscendingMenuItem;
 	final private JMenuItem						sortTimestampDescendingMenuItem;
 	final private JMenuItem						sortQNumberAscendingMenuItem;
@@ -165,7 +166,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		// Create a prompt requesting the user name
 		new UserLogin(this);
-
+		
 		/**
 		 * Setup the menu
 		 */
@@ -178,19 +179,23 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		menu.setMnemonic(KeyEvent.VK_Q);
 		menuBar.add(menu);
 
-		final JCheckBoxMenuItem hideClosedMenuItem = new JCheckBoxMenuItem("Hide closed questions");
-		hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
-		hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
-		if(loadProperty("hideClosed").equals("false")) {
-			hideClosedMenuItem.setSelected(false);
-			this.hideClosed = false;
+		this.hideClosedMenuItem = new JCheckBoxMenuItem("Hide closed questions");
+		this.hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
+		this.hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+		String loadedHide = loadProperty("hideClosed");
+		if(loadedHide == null) { loadedHide = "true"; }		
+		if(loadedHide.equals("false")) {
+			this.hideClosedMenuItem.setSelected(false);
+			this.hideClosed = false;			
 		} else {
-			hideClosedMenuItem.setSelected(true);
+			this.hideClosedMenuItem.setSelected(true);
 			this.hideClosed = true;
 		}
-		hideClosedMenuItem.setActionCommand("Hide Closed");
-		hideClosedMenuItem.addActionListener(this);
-		menu.add(hideClosedMenuItem);
+		System.out.println(loadedHide);		
+		this.hideClosedMenuItem.setActionCommand("Hide Closed");
+		this.hideClosedMenuItem.addActionListener(this);
+		menu.add(this.hideClosedMenuItem);
+
 
 		final JMenu sortMenu = new JMenu("Sort by...");
 		sortMenu.setMnemonic(KeyEvent.VK_S);
@@ -355,7 +360,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		// Create status bar
 		this.statusBar = this.enclosedLabel("", 0, STATUS_HEIGHT, this.getForeground(), this.getBackground(),
 				constraints, STATUS_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
-
+		
+		
 		/**
 		 * Create main content area
 		 */
@@ -842,7 +848,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		try {
 			final BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
 			props.load(fileBuffer);
-
 			return props.getProperty(propName);
 
 		} catch (IOException | NumberFormatException e) {
