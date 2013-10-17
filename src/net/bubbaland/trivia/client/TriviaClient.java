@@ -263,6 +263,12 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		menuItem.setActionCommand("Change name");
 		menuItem.addActionListener(this);
 		menu.add(menuItem);
+		
+		menuItem = new JMenuItem("Reset window positions");
+		menuItem.setActionCommand("Reset window positions");
+		menuItem.addActionListener(this);
+		menu.add(menuItem);
+
 
 		// Make Admin Menu pinned to the right
 		menuBar.add(Box.createHorizontalGlue());
@@ -433,6 +439,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			case "Researcher":
 				// Triggered by Researcher Role menu item
 				this.setRole(Role.RESEARCHER);
+				break;
+			case "Reset window positions":
+				// Triggered by Reset window positions menu item
+				TriviaClient.resetPositions();
 				break;
 		}
 	}
@@ -784,7 +794,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 				return cardinal + "rd";
 			default:
 				return cardinal + "th";
-
 		}
 	}
 
@@ -824,6 +833,22 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			outfileBuffer.close();
 		} catch (final IOException e) {
 			System.out.println("Error saving window position.");
+		}
+	}
+	
+	/**
+	 * Clear all saved window positions from file.
+	 * 
+	 */
+	public static void resetPositions() {
+		final File file = new File(fileName);
+		final Properties props = new Properties();		
+		try {
+			final BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
+			props.store(outfileBuffer, "Trivia");
+			outfileBuffer.close();
+		} catch (final IOException e) {
+			System.out.println("Error clearing window positions.");
 		}
 	}
 
