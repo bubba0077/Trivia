@@ -54,7 +54,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 	 */
 	public AnswerEntryPanel(TriviaInterface server, TriviaClient client, int qNumber, String user) {
 
-		super( );
+		super();
 
 		// Retrieve current trivia data object
 		final Trivia trivia = client.getTrivia();
@@ -144,7 +144,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setName("Answer Question");
 		this.dialog.setVisible(true);
-		
+
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {

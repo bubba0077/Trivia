@@ -39,9 +39,9 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 
 	public EditQuestionDialog(TriviaInterface server, TriviaClient client, int rNumber, int qNumber) {
 
-		super( );
+		super();
 
-		// Get all of the current data for the question		
+		// Get all of the current data for the question
 		final Trivia trivia = client.getTrivia();
 
 		final boolean existingCorrect = trivia.isCorrect(rNumber, qNumber);
@@ -195,10 +195,10 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		}
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Edit Question", this,
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		this.dialog = new TriviaDialog(client.getFrame(), "Edit Question", this, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
-		
+
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {

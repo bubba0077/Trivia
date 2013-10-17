@@ -22,12 +22,12 @@ import net.bubbaland.trivia.UserList.Role;
  * Creates a panel that displays active user names.
  * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class UserListPanel extends TriviaPanel {
 
 	private static final long		serialVersionUID		= 4877267114050120590L;
-	
+
 	/**
 	 * Colors
 	 */
@@ -44,7 +44,7 @@ public class UserListPanel extends TriviaPanel {
 	private static final int		WIDTH					= 85;
 	private static final int		HEADER_HEIGHT			= 12;
 	private static final int		HEIGHT					= 0;
-	
+
 	/** Font sizes */
 	private static final float		FONT_SIZE				= 10f;
 
@@ -53,7 +53,7 @@ public class UserListPanel extends TriviaPanel {
 	 */
 	private final JLabel			header;
 	private final JList<String>		userList;
-	
+
 	/** Data */
 	private Hashtable<String, Role>	userHash;
 
@@ -72,7 +72,7 @@ public class UserListPanel extends TriviaPanel {
 		constraints.insets = new Insets(0, 10, 0, 0);
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.0;
-		
+
 		// Create the user list header
 		constraints.gridx = 0;
 		constraints.gridy = 0;
@@ -120,7 +120,7 @@ public class UserListPanel extends TriviaPanel {
 	 * 
 	 */
 	private class MyCellRenderer extends DefaultListCellRenderer {
-		
+
 		private static final long	serialVersionUID	= -801444128612741125L;
 
 		@Override
@@ -129,7 +129,7 @@ public class UserListPanel extends TriviaPanel {
 				boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			Color color = null;
-			
+
 			// Determine color based on the user role
 			switch (UserListPanel.this.userHash.get(value)) {
 				case CALLER:
@@ -143,11 +143,11 @@ public class UserListPanel extends TriviaPanel {
 					color = RESEARCHER_COLOR;
 					break;
 			}
-			
+
 			// Set the color
 			this.setForeground(color);
 			this.setOpaque(true); // otherwise, it's transparent
-			
+
 			return this;
 		}
 	}

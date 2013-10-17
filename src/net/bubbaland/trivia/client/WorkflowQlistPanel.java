@@ -173,7 +173,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 		private final JLabel[]			qNumberLabels, qValueLabels;
 		private final JTextArea[]		qTextAreas;
 		private final JButton[]			answerButtons, closeButtons;
-		
+
 		private final JMenuItem			editItem;
 
 		/**
@@ -237,13 +237,13 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				this.qNumberLabels[q] = this.enclosedLabel("", QNUM_WIDTH, QUESTION_HEIGHT, color, bColor, constraints,
 						QNUM_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.qNumberLabels[q].addMouseListener(this);
-				
+
 				constraints.gridx = 1;
 				constraints.gridy = q;
 				this.qValueLabels[q] = this.enclosedLabel("", VALUE_WIDTH, QUESTION_HEIGHT, color, bColor, constraints,
 						VALUE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.qValueLabels[q].addMouseListener(this);
-				
+
 				constraints.gridx = 2;
 				constraints.gridy = q;
 				constraints.weightx = 1.0;
@@ -291,7 +291,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 					this.closeButtons[q].getParent().setVisible(false);
 				}
 			}
-			
+
 			/**
 			 * Build context menu
 			 */
@@ -336,7 +336,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			}
 
 		}
-		
+
 		@Override
 		public void mouseClicked(MouseEvent event) {
 			final JComponent source = (JComponent) event.getSource();
@@ -361,25 +361,29 @@ public class WorkflowQlistPanel extends TriviaPanel {
 					this.editItem.getParent().setVisible(false);
 				}
 			}
-			
+
 		}
 
 		@Override
-		public void mousePressed(MouseEvent e) { }
+		public void mousePressed(MouseEvent e) {
+		}
 
 		@Override
-		public void mouseReleased(MouseEvent e) { }
+		public void mouseReleased(MouseEvent e) {
+		}
 
 		@Override
-		public void mouseEntered(MouseEvent e) { }
+		public void mouseEntered(MouseEvent e) {
+		}
 
 		@Override
-		public void mouseExited(MouseEvent e) { }
-		
+		public void mouseExited(MouseEvent e) {
+		}
+
 		@Override
 		public void stateChanged(ChangeEvent event) {
 			// Make sure the menu is hidden when changing tabs
-			this.editItem.getParent().setVisible(false);	
+			this.editItem.getParent().setVisible(false);
 		}
 
 		/**
@@ -401,10 +405,11 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 			final int nQuestions = trivia.getNQuestions();
 			final int nextToOpen = trivia.nextToOpen();
-			final int rNumber = trivia.getCurrentRoundNumber(); 
-			
-			if(trivia.isSpeed(rNumber) && nextToOpen > 1) {
-				new OpenQuestionDialog(this.server, this.client, nQuestions, nextToOpen, trivia.getValue(rNumber, nextToOpen-1));
+			final int rNumber = trivia.getCurrentRoundNumber();
+
+			if (trivia.isSpeed(rNumber) && nextToOpen > 1) {
+				new OpenQuestionDialog(this.server, this.client, nQuestions, nextToOpen, trivia.getValue(rNumber,
+						nextToOpen - 1));
 			} else {
 				new OpenQuestionDialog(this.server, this.client, nQuestions, nextToOpen);
 			}
@@ -450,7 +455,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 					this.answerButtons[q].setVisible(true);
 					this.closeButtons[q].setText("Close");
 					this.closeButtons[q].setVisible(true);
-					
+
 					this.qNumberLabels[q].setName(openQuestionNumbers[q] + "");
 					this.qValueLabels[q].setName(openQuestionNumbers[q] + "");
 					this.qTextAreas[q].setName(openQuestionNumbers[q] + "");
@@ -466,18 +471,18 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				this.answerButtons[q].setText("");
 				this.answerButtons[q].setVisible(false);
 				this.closeButtons[q].setText("Open");
-				if (q == nOpen && trivia.nUnopened() > 0 ) {
+				if (q == nOpen && trivia.nUnopened() > 0) {
 					this.closeButtons[q].setVisible(true);
 				} else {
 					this.closeButtons[q].setVisible(false);
 				}
-				this.qNumberLabels[q].setName( "" );
-				this.qValueLabels[q].setName( "" );
-				this.qTextAreas[q].setName( "" );
+				this.qNumberLabels[q].setName("");
+				this.qValueLabels[q].setName("");
+				this.qTextAreas[q].setName("");
 			}
-			
+
 			int nQuestionsShow;
-			if(trivia.nUnopened() > 0) {
+			if (trivia.nUnopened() > 0) {
 				nQuestionsShow = Math.max(nOpen + 1, MIN_QUESTIONS_SHOW);
 			} else {
 				nQuestionsShow = Math.max(nOpen, MIN_QUESTIONS_SHOW);

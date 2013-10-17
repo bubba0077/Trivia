@@ -57,7 +57,7 @@ public class PlaceChartPanel extends TriviaPanel {
 
 		// Get the current Trivia data object
 		final Trivia trivia = this.client.getTrivia();
-		
+
 		final int nRounds = trivia.getNRounds();
 
 		// Load the round data and determine if there are any changes
@@ -69,7 +69,7 @@ public class PlaceChartPanel extends TriviaPanel {
 			announced[r] = trivia.isAnnounced(r + 1);
 			change = change || ( newPlaces[r] != this.places[r] );
 		}
-		
+
 		this.places = newPlaces;
 
 		// If there are changes, remake the plot
@@ -97,8 +97,6 @@ public class PlaceChartPanel extends TriviaPanel {
 		}
 
 	}
-
-
 
 
 }

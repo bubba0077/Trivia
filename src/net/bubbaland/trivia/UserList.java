@@ -7,7 +7,7 @@ import java.util.Hashtable;
  * A data structure to track user names, last activity time and role.
  * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class UserList {
 
@@ -30,8 +30,10 @@ public class UserList {
 	/**
 	 * Change a user name and transfer the role.
 	 * 
-	 * @param oldUser The old user name
-	 * @param newUser The new user name
+	 * @param oldUser
+	 *            The old user name
+	 * @param newUser
+	 *            The new user name
 	 */
 	public void changeUser(String oldUser, String newUser) {
 		final Role role = this.roleList.get(oldUser);
@@ -43,7 +45,8 @@ public class UserList {
 	/**
 	 * Get users who have been active recently.
 	 * 
-	 * @param windowInSec The maximum time before a user is considered idle
+	 * @param windowInSec
+	 *            The maximum time before a user is considered idle
 	 * @return A Hashtable containing the active users and corresponding roles.
 	 */
 	public Hashtable<String, Role> getRecent(int windowInSec) {
@@ -64,8 +67,10 @@ public class UserList {
 	/**
 	 * Update the role of a user.
 	 * 
-	 * @param user The user's name
-	 * @param role The new role
+	 * @param user
+	 *            The user's name
+	 * @param role
+	 *            The new role
 	 */
 	public void updateRole(String user, Role role) {
 		// Update last activity time
@@ -85,5 +90,5 @@ public class UserList {
 			this.roleList.put(user, Role.RESEARCHER);
 		}
 	}
-	
+
 }

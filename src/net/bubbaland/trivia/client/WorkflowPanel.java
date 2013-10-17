@@ -67,8 +67,9 @@ public class WorkflowPanel extends TriviaPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		this.add(this.workflowQueuePanel, constraints);
-		
-		this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK), "openQuestion");
+
+		this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK), "openQuestion");
 		this.getActionMap().put("openQuestion", new AbstractAction() {
 			private static final long	serialVersionUID	= 1L;
 
@@ -77,9 +78,9 @@ public class WorkflowPanel extends TriviaPanel {
 				final Trivia trivia = client.getTrivia();
 				final int nQuestions = trivia.getNQuestions();
 				final int nextToOpen = trivia.nextToOpen();
-				new OpenQuestionDialog(server, client, nQuestions, nextToOpen);				
-			}		
-		} );
+				new OpenQuestionDialog(server, client, nQuestions, nextToOpen);
+			}
+		});
 	}
 
 	/*

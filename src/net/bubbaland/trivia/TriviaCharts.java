@@ -26,7 +26,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 public class TriviaCharts {
-	
+
 	/** Font Size */
 	final private static float	AXIS_FONT_SIZE		= 16.0f;
 
@@ -40,13 +40,13 @@ public class TriviaCharts {
 
 	/** The upper bound of the vertical axis */
 	final private static int	MAX_POINTS			= 750;
-	
+
 
 	public static JFreeChart PlaceChartFactory(Trivia trivia) {
-		
+
 		final int nRounds = trivia.getNRounds();
 		final int nTeams = trivia.getNTeams();
-		
+
 		// Load the round data and determine if there are any changes
 		final int[] places = new int[nRounds];
 		final boolean[] announced = new boolean[nRounds];
@@ -100,14 +100,14 @@ public class TriviaCharts {
 		yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
 		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
 		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
-		
+
 		return chart;
 	}
-	
-	
+
+
 	public static JFreeChart ScoreByRoundChartFactory(Trivia trivia) {
 
-		final int nRounds = trivia.getNRounds();	
+		final int nRounds = trivia.getNRounds();
 
 		// Get the scores for each round and check if they are updated
 		final int[] values = new int[nRounds];
@@ -167,15 +167,15 @@ public class TriviaCharts {
 		// create a new chart with the plot
 		final JFreeChart chart = new JFreeChart(plot);
 		chart.setTitle("Points by Round");
-		
+
 		return chart;
-		
+
 	}
-	
+
 	public static JFreeChart CumulativePointsChartFactory(Trivia trivia) {
-		
+
 		final int nRounds = trivia.getNRounds();
-		
+
 		// Read score data and determine if there have been any changes
 		final int[] values = new int[nRounds];
 		final int[] earneds = new int[nRounds];
@@ -210,8 +210,8 @@ public class TriviaCharts {
 		dataset.addSeries(valueSeries);
 
 		// Create the Stacked XY plot
-		final JFreeChart chart = ChartFactory.createStackedXYAreaChart("Cumulative Score", "Round", "Points",
-				dataset, PlotOrientation.VERTICAL, true, true, false);
+		final JFreeChart chart = ChartFactory.createStackedXYAreaChart("Cumulative Score", "Round", "Points", dataset,
+				PlotOrientation.VERTICAL, true, true, false);
 
 		// Set the colors of the areas
 		final XYItemRenderer renderer = chart.getXYPlot().getRenderer();
@@ -235,24 +235,24 @@ public class TriviaCharts {
 		yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
 		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
 		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
-		
+
 		return chart;
 	}
-	
+
 	public static JFreeChart TeamComparisonChartFactory(Trivia trivia) {
-	
+
 		final int nRounds = trivia.getNRounds();
-		
+
 		int lastAnnounced = 0;
-		ArrayList<ScoreEntry[]> scores = new ArrayList<ScoreEntry[]>(0);		
-		
+		ArrayList<ScoreEntry[]> scores = new ArrayList<ScoreEntry[]>(0);
+
 		while (trivia.isAnnounced(lastAnnounced + 1)) {
 			lastAnnounced++;
 			final ScoreEntry roundStandings[] = trivia.getStandings(lastAnnounced);
 			Arrays.sort(roundStandings);
 			scores.add(roundStandings);
-		}		
-		
+		}
+
 		final int nTeams = scores.get(0).length;
 		final DefaultTableXYDataset dataset = new DefaultTableXYDataset();
 		final JFreeChart chart = ChartFactory.createXYLineChart("Team Comparison", "Round", "Point Differential",
@@ -292,11 +292,11 @@ public class TriviaCharts {
 		yAxis.setNumberFormatOverride(format);
 		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
 		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
-		
+
 		return chart;
-		
+
 	}
-	
+
 
 	/**
 	 * Make circle.

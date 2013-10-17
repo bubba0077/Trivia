@@ -22,33 +22,33 @@ public class Answer implements Serializable {
 	protected static enum Status {
 		NOT_CALLED_IN, CALLING, INCORRECT, PARTIAL, CORRECT
 	}
-	
+
 	// Place in the queue
-	final private int			queueLocation;
+	final private int		queueLocation;
 
 	// The question number
-	final private int			qNumber;
+	final private int		qNumber;
 
 	// The answer text
-	final private String		answer;
+	final private String	answer;
 
 	// The confidence in the answer
-	final private int			confidence;
+	final private int		confidence;
 
 	// The timestamp of when the answer was submitted
-	final private String		timestamp;
+	final private String	timestamp;
 
 	// The user name of the answer submitter
-	final private String		submitter;
+	final private String	submitter;
 
 	// The user name of the person who is calling in the answer
-	private volatile String		caller;
+	private volatile String	caller;
 
 	// The operator who accepted a correct answer
-	private volatile String		operator;
+	private volatile String	operator;
 
 	// The current status of the question
-	private volatile Status		status;
+	private volatile Status	status;
 
 	/**
 	 * Create a new answer
@@ -260,7 +260,7 @@ public class Answer implements Serializable {
 			return o1.getTimestamp().compareTo(o2.getTimestamp());
 		}
 	}
-	
+
 	public static class QNumberCompareReverse implements Comparator<Answer> {
 
 		@Override

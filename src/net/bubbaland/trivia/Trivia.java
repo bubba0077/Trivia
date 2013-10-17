@@ -908,7 +908,7 @@ public class Trivia implements Serializable {
 	public int nextToOpen() {
 		return this.currentRound.nextToOpen();
 	}
-	
+
 	/**
 	 * Gets the number of questions still to open in the current round.
 	 * 

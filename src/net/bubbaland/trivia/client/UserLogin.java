@@ -26,7 +26,7 @@ public class UserLogin extends TriviaDialogPanel {
 	 *            the client
 	 */
 	public UserLogin(TriviaClient client) {
-		super( );
+		super();
 
 		// Set up layout constraints
 		final GridBagConstraints c = new GridBagConstraints();
@@ -54,7 +54,7 @@ public class UserLogin extends TriviaDialogPanel {
 		this.dialog = new TriviaDialog(client.getFrame(), "User Login", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.DEFAULT_OPTION);
 		this.dialog.setVisible(true);
-		
+
 		// Set the user name to input value
 		final String user = userTextField.getText();
 

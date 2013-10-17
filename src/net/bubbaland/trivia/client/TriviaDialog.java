@@ -14,12 +14,14 @@ import javax.swing.WindowConstants;
 /**
  * Custom dialog that handles setting up a lot of the characteristics used by all trivia dialogs.
  * 
- * The TriviaDialog class handles the creation of the option pane for the dialog. It also handles the saving and loading of position and size and makes the dialog resizable.
+ * The TriviaDialog class handles the creation of the option pane for the dialog. It also handles the saving and loading
+ * of position and size and makes the dialog resizable.
  * 
- * The constructor takes in the parent frame and title for the dialog box, followed by the usual arguments for JOptionPane.
+ * The constructor takes in the parent frame and title for the dialog box, followed by the usual arguments for
+ * JOptionPane.
  * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class TriviaDialog extends JDialog implements WindowListener, PropertyChangeListener {
 
@@ -27,23 +29,29 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 
 	// The internal option pane
 	private final JOptionPane	optionPane;
-	
+
 	/**
 	 * Create a TriviaDialog with no arguments for the JOptionPane
 	 * 
-	 * @param frame Parent frame for the dialog
-	 * @param title Title for the dialog
+	 * @param frame
+	 *            Parent frame for the dialog
+	 * @param title
+	 *            Title for the dialog
 	 */
 	public TriviaDialog(Frame frame, String title) {
 		this(frame, title, new JOptionPane());
 	}
 
 	/**
-	 * Create a TriviaDialog using the specified option pane. This is generally used internally after the option pane has been created.
+	 * Create a TriviaDialog using the specified option pane. This is generally used internally after the option pane
+	 * has been created.
 	 * 
-	 * @param frame Parent frame for the dialog
-	 * @param title Title for the dialog
-	 * @param optionPane Option pane to use
+	 * @param frame
+	 *            Parent frame for the dialog
+	 * @param title
+	 *            Title for the dialog
+	 * @param optionPane
+	 *            Option pane to use
 	 */
 	public TriviaDialog(Frame frame, String title, final JOptionPane optionPane) {
 		super(frame, title, true);
@@ -63,9 +71,12 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	/**
 	 * Create a TriviaDialog using the specified option pane arguments.
 	 * 
-	 * @param frame Parent frame for the dialog
-	 * @param title Title for the dialog
-	 * @param message @see JOptionPane
+	 * @param frame
+	 *            Parent frame for the dialog
+	 * @param title
+	 *            Title for the dialog
+	 * @param message
+	 *            @see JOptionPane
 	 */
 	public TriviaDialog(Frame frame, String title, Object message) {
 		this(frame, title, new JOptionPane(message));
@@ -74,10 +85,14 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	/**
 	 * Create a TriviaDialog using the specified option pane arguments.
 	 * 
-	 * @param frame Parent frame for the dialog
-	 * @param title Title for the dialog
-	 * @param message @see JOptionPane
-	 * @param messageType @see JOptionPane
+	 * @param frame
+	 *            Parent frame for the dialog
+	 * @param title
+	 *            Title for the dialog
+	 * @param message
+	 *            @see JOptionPane
+	 * @param messageType
+	 *            @see JOptionPane
 	 */
 	public TriviaDialog(Frame frame, String title, Object message, int messageType) {
 		this(frame, title, new JOptionPane(message, messageType));
@@ -86,40 +101,58 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	/**
 	 * Create a TriviaDialog using the specified option pane arguments.
 	 * 
-	 * @param frame Parent frame for the dialog
-	 * @param title Title for the dialog
-	 * @param message @see JOptionPane
-	 * @param messageType @see JOptionPane
-	 * @param optionType @see JOptionPane
+	 * @param frame
+	 *            Parent frame for the dialog
+	 * @param title
+	 *            Title for the dialog
+	 * @param message
+	 *            @see JOptionPane
+	 * @param messageType
+	 *            @see JOptionPane
+	 * @param optionType
+	 *            @see JOptionPane
 	 */
 	public TriviaDialog(Frame frame, String title, Object message, int messageType, int optionType) {
 		this(frame, title, new JOptionPane(message, messageType, optionType));
 	}
 
 	/**
-	  * Create a TriviaDialog using the specified option pane arguments.
+	 * Create a TriviaDialog using the specified option pane arguments.
 	 * 
-	 * @param frame Parent frame for the dialog
-	 * @param title Title for the dialog
-	 * @param message @see JOptionPane
-	 * @param messageType @see JOptionPane
-	 * @param optionType @see JOptionPane
-	 * @param icon @see JOptionPane
+	 * @param frame
+	 *            Parent frame for the dialog
+	 * @param title
+	 *            Title for the dialog
+	 * @param message
+	 *            @see JOptionPane
+	 * @param messageType
+	 *            @see JOptionPane
+	 * @param optionType
+	 *            @see JOptionPane
+	 * @param icon
+	 *            @see JOptionPane
 	 */
 	public TriviaDialog(Frame frame, String title, Object message, int messageType, int optionType, Icon icon) {
 		this(frame, title, new JOptionPane(message, messageType, optionType, icon));
 	}
 
 	/**
-	  * Create a TriviaDialog using the specified option pane arguments.
+	 * Create a TriviaDialog using the specified option pane arguments.
 	 * 
-	 * @param frame Parent frame for the dialog
-	 * @param title Title for the dialog
-	 * @param message @see JOptionPane
-	 * @param messageType @see JOptionPane
-	 * @param optionType @see JOptionPane
-	 * @param icon @see JOptionPane
-	 * @param options @see JOptionPane
+	 * @param frame
+	 *            Parent frame for the dialog
+	 * @param title
+	 *            Title for the dialog
+	 * @param message
+	 *            @see JOptionPane
+	 * @param messageType
+	 *            @see JOptionPane
+	 * @param optionType
+	 *            @see JOptionPane
+	 * @param icon
+	 *            @see JOptionPane
+	 * @param options
+	 *            @see JOptionPane
 	 */
 	public TriviaDialog(Frame frame, String title, Object message, int messageType, int optionType, Icon icon,
 			Object[] options) {
@@ -129,14 +162,22 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	/**
 	 * Create a TriviaDialog using the specified option pane arguments.
 	 * 
-	 * @param frame Parent frame for the dialog
-	 * @param title Title for the dialog
-	 * @param message @see JOptionPane
-	 * @param messageType @see JOptionPane
-	 * @param optionType @see JOptionPane
-	 * @param icon @see JOptionPane
-	 * @param options @see JOptionPane
-	 * @param initialValue @see JOptionPane
+	 * @param frame
+	 *            Parent frame for the dialog
+	 * @param title
+	 *            Title for the dialog
+	 * @param message
+	 *            @see JOptionPane
+	 * @param messageType
+	 *            @see JOptionPane
+	 * @param optionType
+	 *            @see JOptionPane
+	 * @param icon
+	 *            @see JOptionPane
+	 * @param options
+	 *            @see JOptionPane
+	 * @param initialValue
+	 *            @see JOptionPane
 	 */
 	public TriviaDialog(Frame frame, String title, Object message, int messageType, int optionType, Icon icon,
 			Object[] options, Object initialValue) {
@@ -160,7 +201,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	public Object getValue() {
 		return this.optionPane.getValue();
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -197,15 +238,19 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	}
 
 	@Override
-	public void windowDeactivated(WindowEvent e) {	}
+	public void windowDeactivated(WindowEvent e) {
+	}
 
 	@Override
-	public void windowDeiconified(WindowEvent e) {	}
+	public void windowDeiconified(WindowEvent e) {
+	}
 
 	@Override
-	public void windowIconified(WindowEvent e) {	}
+	public void windowIconified(WindowEvent e) {
+	}
 
 	@Override
-	public void windowOpened(WindowEvent e) {	}
+	public void windowOpened(WindowEvent e) {
+	}
 
 }

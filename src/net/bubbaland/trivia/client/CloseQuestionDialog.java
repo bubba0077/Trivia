@@ -27,10 +27,10 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 	private static final float	LABEL_FONT_SIZE		= 20.0f;
 	private static final float	TEXTBOX_FONT_SIZE	= 16.0f;
 
-	
+
 	public CloseQuestionDialog(TriviaInterface server, TriviaClient client, int qNumber) {
 
-		super( );
+		super();
 
 		// Retrieve current trivia data object
 		final Trivia trivia = client.getTrivia();
@@ -86,18 +86,18 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		answerTextArea.setFont(answerTextArea.getFont().deriveFont(TEXTBOX_FONT_SIZE));
 		answerTextArea.addAncestorListener(this);
 		this.addEnterOverride(answerTextArea);
-//		answerTextArea.addKeyListener(this);
+		// answerTextArea.addKeyListener(this);
 		scrollPane = new JScrollPane(answerTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
 		this.add(scrollPane, c);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Close question " + qNumber, this,
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		this.dialog = new TriviaDialog(client.getFrame(), "Close question " + qNumber, this, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setName("Close Question");
 		this.dialog.setVisible(true);
-		
+
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {

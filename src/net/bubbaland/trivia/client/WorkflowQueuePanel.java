@@ -53,7 +53,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 	private static final Color			INCORRECT_COLOR			= Color.RED;
 	private static final Color			PARTIAL_COLOR			= Color.ORANGE;
 	private static final Color			CORRECT_COLOR			= Color.GREEN;
-	
+
 	/**
 	 * Sizes
 	 */
@@ -82,10 +82,10 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 	/** Valid statuses for queue items */
 	private static final String[]		STATUSES				= { "Not Called In", "Calling", "Incorrect", "Partial",
 			"Correct"											};
-	
+
 	/** Sort icons */
-	private final ImageIcon upArrow;
-	private final ImageIcon downArrow;
+	private final ImageIcon				upArrow;
+	private final ImageIcon				downArrow;
 
 	/**
 	 * GUI elements that will be updated
@@ -111,7 +111,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		super();
 
 		this.client = client;
-		
+
 		this.upArrow = new ImageIcon(getClass().getResource("images/upArrow.png"));
 		this.downArrow = new ImageIcon(getClass().getResource("images/downArrow.png"));
 
@@ -120,22 +120,22 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.NORTH;
 		constraints.weightx = 0.0;
-		constraints.weighty = 0.0;		
-		
+		constraints.weighty = 0.0;
+
 		/**
 		 * Create the header row
 		 */
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		this.timestampLabel = this.enclosedLabel("Time", TIME_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.timestampLabel = this.enclosedLabel("Time", TIME_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR,
+				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 		this.timestampLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 		this.timestampLabel.addMouseListener(this);
 
 		constraints.gridx = 1;
 		constraints.gridy = 0;
-		this.qNumberLabel = this.enclosedLabel("Q#", QNUM_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.qNumberLabel = this.enclosedLabel("Q#", QNUM_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR,
+				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 		this.qNumberLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 		this.qNumberLabel.addMouseListener(this);
 
@@ -168,17 +168,17 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 
 		constraints.gridx = 7;
 		constraints.gridy = 0;
-		this.statusLabel = this.enclosedLabel("Status", STATUS_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.statusLabel = this.enclosedLabel("Status", STATUS_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR,
+				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 		this.statusLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 		this.statusLabel.addMouseListener(this);
-		
+
 		constraints.gridx = 8;
 		constraints.gridy = 0;
 		final int scrollBarWidth = ( (Integer) UIManager.get("ScrollBar.width") ).intValue();
 		this.queueSizeLabel = this.enclosedLabel("0", scrollBarWidth, HEADER_HEIGHT, HEADER_TEXT_COLOR,
 				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-		
+
 		/**
 		 * Create the sub-panel that will show the queue data and put it in a scroll pane
 		 */
@@ -186,21 +186,21 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		constraints.gridy = 1;
 		constraints.gridwidth = 9;
 		constraints.weightx = 1.0;
-		constraints.weighty = 1.0;		
+		constraints.weighty = 1.0;
 		final JPanel scrollPanel = new JPanel(new GridBagLayout());
 		final JScrollPane workflowQueuePane = new JScrollPane(scrollPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		workflowQueuePane.setPreferredSize(new Dimension(0, DEFAULT_N_ANSWERS_SHOW * ANSWER_HEIGHT));
 		workflowQueuePane.setMinimumSize(new Dimension(0, ANSWER_HEIGHT));
-		this.add(workflowQueuePane, constraints);	
-		
-		
+		this.add(workflowQueuePane, constraints);
+
+
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.gridwidth = 1;
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.0;
-	
+
 		this.workflowQueueSubPanel = new WorkflowQueueSubPanel(server, client);
 		scrollPanel.add(this.workflowQueueSubPanel, constraints);
 
@@ -216,7 +216,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		blank.setBackground(HEADER_BACKGROUND_COLOR);
 		blank.setPreferredSize(new Dimension(0, 0));
 		scrollPanel.add(blank, constraints);
-		
+
 
 	}
 
@@ -266,44 +266,48 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 				break;
 		}
 	}
-	
+
 
 	@Override
 	public void mouseClicked(MouseEvent event) {
 		final JComponent source = (JComponent) event.getSource();
 		final QueueSort sortMethod = this.client.getQueueSort();
-		if(source.equals(this.timestampLabel)) {
-			if(sortMethod.equals(QueueSort.TIMESTAMP_ASCENDING)) {
+		if (source.equals(this.timestampLabel)) {
+			if (sortMethod.equals(QueueSort.TIMESTAMP_ASCENDING)) {
 				this.client.setSort(QueueSort.TIMESTAMP_DESCENDING);
 			} else {
 				this.client.setSort(QueueSort.TIMESTAMP_ASCENDING);
 			}
 		} else if (source.equals(this.qNumberLabel)) {
-			if(sortMethod.equals(QueueSort.QNUMBER_ASCENDING)) {
+			if (sortMethod.equals(QueueSort.QNUMBER_ASCENDING)) {
 				this.client.setSort(QueueSort.QNUMBER_DESCENDING);
 			} else {
 				this.client.setSort(QueueSort.QNUMBER_ASCENDING);
 			}
 		} else if (source.equals(this.statusLabel)) {
-			if(sortMethod.equals(QueueSort.STATUS_ASCENDING)) {
+			if (sortMethod.equals(QueueSort.STATUS_ASCENDING)) {
 				this.client.setSort(QueueSort.STATUS_DESCENDING);
 			} else {
 				this.client.setSort(QueueSort.STATUS_ASCENDING);
 			}
-		}		
+		}
 	}
 
 	@Override
-	public void mousePressed(MouseEvent event) { }
+	public void mousePressed(MouseEvent event) {
+	}
 
 	@Override
-	public void mouseReleased(MouseEvent event) { }
+	public void mouseReleased(MouseEvent event) {
+	}
 
 	@Override
-	public void mouseEntered(MouseEvent event) { }
+	public void mouseEntered(MouseEvent event) {
+	}
 
 	@Override
-	public void mouseExited(MouseEvent event) { }
+	public void mouseExited(MouseEvent event) {
+	}
 
 	/**
 	 * A panel that will show the current answer queue
@@ -311,7 +315,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 	private class WorkflowQueueSubPanel extends TriviaPanel implements ItemListener {
 
 		/** The Constant serialVersionUID */
-		private static final long			serialVersionUID	= -5462544756397828556L;
+		private static final long					serialVersionUID	= -5462544756397828556L;
 
 		/** The last status (used for determining if the status has changed) */
 		private volatile ArrayList<String>			lastStatus;
@@ -319,18 +323,18 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		/**
 		 * GUI elements that will be updated
 		 */
-		final private ArrayList<JLabel>				queuenumberLabels, timestampLabels, qNumberLabels, confidenceLabels,
-				submitterLabels, operatorLabels, callerLabels;
+		final private ArrayList<JLabel>				queuenumberLabels, timestampLabels, qNumberLabels,
+				confidenceLabels, submitterLabels, operatorLabels, callerLabels;
 		final private ArrayList<JComboBox<String>>	statusComboBoxes;
 		final private ArrayList<JTextArea>			answerTextAreas;
 
-		private Answer[]					answerQueue;
+		private Answer[]							answerQueue;
 
 		/**
 		 * Data sources
 		 */
-		final private TriviaInterface		server;
-		final private TriviaClient			client;
+		final private TriviaInterface				server;
+		final private TriviaClient					client;
 
 
 		/**
@@ -477,11 +481,11 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 			}
 
 			this.answerQueue = newAnswerQueue;
-			
+
 			// We need to track how many rows have been shown to do alternating background colors correctly
 			int shownRows = 0;
-			
-			while(this.queuenumberLabels.size() < this.answerQueue.length) {
+
+			while (this.queuenumberLabels.size() < this.answerQueue.length) {
 				this.makeNewRow();
 			}
 
@@ -501,7 +505,9 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 				this.lastStatus.set(a, newStatus);
 				final boolean closed = !trivia.isOpen(newQNumber);
 
-				if (!( hideClosed && closed )) {	shownRows++;	}
+				if (!( hideClosed && closed )) {
+					shownRows++;
+				}
 
 				if (qUpdated[a] || force) {
 					// If the status has changed, update the labels and color
@@ -527,7 +533,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 							color = NOT_CALLED_IN_COLOR;
 							break;
 					}
-					
+
 					// Alternate background color based on rows shown
 					Color bColor;
 					if (shownRows % 2 == 1) {
@@ -664,10 +670,10 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 			}
 
 		}
-		
+
 		private void makeNewRow() {
-			final int a = this.queuenumberLabels.size(); 
-			
+			final int a = this.queuenumberLabels.size();
+
 			// Set up layout constraints
 			final GridBagConstraints constraints = new GridBagConstraints();
 			constraints.fill = GridBagConstraints.BOTH;
@@ -679,57 +685,58 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 			constraints.gridx = 0;
 			constraints.gridy = 2 * a;
 			this.queuenumberLabels.add(this.enclosedLabel("#" + ( a + 1 ), TIME_WIDTH, ANSWER_HEIGHT / 2,
-					NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
-					SwingConstants.CENTER, SwingConstants.CENTER));
+					NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
+					SwingConstants.CENTER));
 
 			constraints.gridx = 0;
 			constraints.gridy = 2 * a + 1;
-			this.timestampLabels.add(this.enclosedLabel("", TIME_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
-					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
-					SwingConstants.CENTER));
+			this.timestampLabels.add(this
+					.enclosedLabel("", TIME_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
+							constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
 
 			constraints.gridheight = 2;
 			constraints.gridx = 1;
 			constraints.gridy = 2 * a;
-			this.qNumberLabels.add(this.enclosedLabel("", QNUM_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-					HEADER_BACKGROUND_COLOR, constraints, LARGE_FONT_SIZE, SwingConstants.CENTER,
-					SwingConstants.CENTER));
+			this.qNumberLabels.add(this
+					.enclosedLabel("", QNUM_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
+							constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
 
 			constraints.gridx = 2;
 			constraints.gridy = 2 * a;
 			constraints.weightx = 1.0;
 			this.answerTextAreas.add(this.scrollableTextArea("", ANSWER_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
 					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
-					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
-					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED));
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED));
 			this.answerTextAreas.get(a).setEditable(false);
 			constraints.weightx = 0.0;
 
 			constraints.gridx = 3;
 			constraints.gridy = 2 * a;
-			this.confidenceLabels.add(this.enclosedLabel("", CONFIDENCE_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
-					SwingConstants.CENTER));
+			this.confidenceLabels.add(this
+					.enclosedLabel("", CONFIDENCE_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
+							constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
 
 			constraints.gridheight = 1;
 			constraints.gridx = 4;
 			constraints.gridy = 2 * a;
-			this.submitterLabels.add(this.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2,
-					NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
-					SwingConstants.CENTER, SwingConstants.CENTER));
+			this.submitterLabels.add(this
+					.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
+							HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
+							SwingConstants.CENTER));
 
 			constraints.gridx = 4;
 			constraints.gridy = 2 * a + 1;
-			this.callerLabels.add(this.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
-					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
-					SwingConstants.CENTER));
+			this.callerLabels.add(this
+					.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
+							HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
+							SwingConstants.CENTER));
 			constraints.gridheight = 2;
 
 			constraints.gridx = 5;
 			constraints.gridy = 2 * a;
-			this.operatorLabels.add(this.enclosedLabel("", OPERATOR_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR,
-					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
-					SwingConstants.CENTER));
+			this.operatorLabels.add(this
+					.enclosedLabel("", OPERATOR_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
+							constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
 
 			constraints.gridx = 6;
 			constraints.gridy = 2 * a;

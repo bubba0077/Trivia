@@ -115,7 +115,7 @@ public abstract class TriviaPanel extends JPanel {
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 		pane.setViewportView(textArea);
-				
+
 		return textArea;
 
 	}

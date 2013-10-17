@@ -56,7 +56,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	private static final Color			EVEN_QUESTION_TEXT_COLOR		= Color.black;
 	private static final Color			ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
 	private static final Color			EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
-	
+
 	/**
 	 * Sizes
 	 */
@@ -265,7 +265,7 @@ public class RoundQlistPanel extends TriviaPanel {
 			constraints.anchor = GridBagConstraints.NORTH;
 			constraints.weightx = 0.0;
 			constraints.weighty = 0.0;
-			
+
 			for (int q = 0; q < this.maxQuestions; q++) {
 				// Set the color for this row
 				Color color, bColor;
@@ -302,7 +302,7 @@ public class RoundQlistPanel extends TriviaPanel {
 						LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.valueLabels[q].setName(( q + 1 ) + "");
 				this.valueLabels[q].addMouseListener(this);
-				
+
 				constraints.gridx = 3;
 				constraints.gridy = 2 * q;
 				constraints.weightx = 0.6;
@@ -320,7 +320,7 @@ public class RoundQlistPanel extends TriviaPanel {
 				constraints.weightx = 0.0;
 				this.separators[q] = new JSeparator(SwingConstants.VERTICAL);
 				this.add(this.separators[q], constraints);
-				
+
 				constraints.gridx = 5;
 				constraints.gridy = 2 * q;
 				constraints.weightx = 0.4;
@@ -341,14 +341,14 @@ public class RoundQlistPanel extends TriviaPanel {
 				StyleConstants.setAlignment(defaultStyle, StyleConstants.ALIGN_CENTER);
 				this.submitterTextAreas[q] = new JTextPane(document);
 				this.submitterTextAreas[q].setFont(this.submitterTextAreas[q].getFont().deriveFont(SMALL_FONT_SIZE));
-				this.submitterTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT/3));
-				this.submitterTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT/3));				
+				this.submitterTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT / 3));
+				this.submitterTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT / 3));
 				this.submitterTextAreas[q].setBackground(bColor);
 				this.submitterTextAreas[q].setForeground(color);
 				this.submitterTextAreas[q].setName(( q + 1 ) + "");
 				this.submitterTextAreas[q].addMouseListener(this);
 				this.add(this.submitterTextAreas[q], constraints);
-				
+
 				constraints.gridx = 6;
 				constraints.gridy = 2 * q + 1;
 				document = new DefaultStyledDocument();
@@ -356,8 +356,8 @@ public class RoundQlistPanel extends TriviaPanel {
 				StyleConstants.setAlignment(defaultStyle, StyleConstants.ALIGN_CENTER);
 				this.operatorTextAreas[q] = new JTextPane(document);
 				this.operatorTextAreas[q].setFont(this.operatorTextAreas[q].getFont().deriveFont(SMALL_FONT_SIZE));
-				this.operatorTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, 2*QUESTION_HEIGHT/3));
-				this.operatorTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, 2*QUESTION_HEIGHT/3));				
+				this.operatorTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, 2 * QUESTION_HEIGHT / 3));
+				this.operatorTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, 2 * QUESTION_HEIGHT / 3));
 				this.operatorTextAreas[q].setBackground(bColor);
 				this.operatorTextAreas[q].setForeground(color);
 				this.operatorTextAreas[q].setName(( q + 1 ) + "");
@@ -400,13 +400,13 @@ public class RoundQlistPanel extends TriviaPanel {
 
 		}
 
-		
+
 		/**
 		 * Process mouse clicks
 		 */
 		@Override
 		public void mouseClicked(MouseEvent event) {
-			
+
 			final JComponent source = (JComponent) event.getSource();
 			final Trivia trivia = this.client.getTrivia();
 			final int qNumber = Integer.parseInt(source.getName());
@@ -450,7 +450,7 @@ public class RoundQlistPanel extends TriviaPanel {
 					if (this.live) {
 						this.reopenItem.setVisible(!trivia.isOpen(qNumber));
 						this.reopenItem.setName(source.getName());
-					}					
+					}
 					this.editItem.getParent().setVisible(true);
 				} else {
 					this.editItem.getParent().setVisible(false);
@@ -459,16 +459,20 @@ public class RoundQlistPanel extends TriviaPanel {
 		}
 
 		@Override
-		public void mouseEntered(MouseEvent event) {}
+		public void mouseEntered(MouseEvent event) {
+		}
 
 		@Override
-		public void mouseExited(MouseEvent event) {}
+		public void mouseExited(MouseEvent event) {
+		}
 
 		@Override
-		public void mousePressed(MouseEvent event) {}
+		public void mousePressed(MouseEvent event) {
+		}
 
 		@Override
-		public void mouseReleased(MouseEvent event) {}
+		public void mouseReleased(MouseEvent event) {
+		}
 
 		/**
 		 * Sets the round to display. This will be overridden with the current round number if this is a "live" panel.
@@ -481,7 +485,7 @@ public class RoundQlistPanel extends TriviaPanel {
 		}
 
 		/**
-		 * Process tab changes		
+		 * Process tab changes
 		 */
 		@Override
 		public void stateChanged(ChangeEvent e) {
@@ -500,7 +504,9 @@ public class RoundQlistPanel extends TriviaPanel {
 			// Get the current Trivia data structure
 			final Trivia trivia = this.client.getTrivia();
 			// If this is a live panel, update the round number
-			if (this.live) {	this.rNumber = trivia.getCurrentRoundNumber();	}
+			if (this.live) {
+				this.rNumber = trivia.getCurrentRoundNumber();
+			}
 			// Get all of the question data for the current round
 			final int nQuestions = trivia.getNQuestions(rNumber);
 			final boolean newSpeed = trivia.isSpeed(this.rNumber);

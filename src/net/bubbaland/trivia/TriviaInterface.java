@@ -210,11 +210,11 @@ public interface TriviaInterface extends Remote {
 	 * Sets the discrepancy text.
 	 * 
 	 * @param user
-	 * 			  The user's name
+	 *            The user's name
 	 * @param rNumber
 	 *            The round number
 	 * @param discrepancyText
-	 *            The discrepancy text 
+	 *            The discrepancy text
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
@@ -223,8 +223,10 @@ public interface TriviaInterface extends Remote {
 	/**
 	 * Change the user's role.
 	 * 
-	 * @param user The user name
-	 * @param role The new role
+	 * @param user
+	 *            The user name
+	 * @param role
+	 *            The new role
 	 * @throws RemoteException
 	 */
 	public void setRole(String user, Role role) throws RemoteException;
@@ -232,7 +234,8 @@ public interface TriviaInterface extends Remote {
 	/**
 	 * Makes the current round a speed round.
 	 * 
-	 * @param user The user making the change
+	 * @param user
+	 *            The user making the change
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
@@ -241,7 +244,8 @@ public interface TriviaInterface extends Remote {
 	/**
 	 * Makes the current round a normal round.
 	 * 
-	 * @param user The user making the change 
+	 * @param user
+	 *            The user making the change
 	 * @throws RemoteException
 	 *             A remote exception
 	 */

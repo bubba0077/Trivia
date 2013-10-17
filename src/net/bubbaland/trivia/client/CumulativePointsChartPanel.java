@@ -23,7 +23,7 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 
 	/** Data */
 	final private int			nRounds;
-	private int[]			values, earneds;
+	private int[]				values, earneds;
 
 	/** The client */
 	final private TriviaClient	client;
@@ -67,7 +67,7 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 			newEarneds[r] = trivia.getEarned(r + 1);
 			change = change || ( newValues[r] != this.values[r] ) || ( newEarneds[r] != this.earneds[r] );
 		}
-		
+
 		this.values = newValues;
 		this.earneds = newEarneds;
 

@@ -39,7 +39,7 @@ public class CorrectEntryPanel extends TriviaDialogPanel {
 	 */
 	public CorrectEntryPanel(TriviaInterface server, TriviaClient client, String caller, int queueIndex,
 			JComboBox<String> statusComboBox) {
-		super( );
+		super();
 
 		// Set up layout constraints
 		final GridBagConstraints c = new GridBagConstraints();
@@ -63,10 +63,10 @@ public class CorrectEntryPanel extends TriviaDialogPanel {
 		this.add(operatorTextField, c);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Mark question correct", this,
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		this.dialog = new TriviaDialog(client.getFrame(), "Mark question correct", this, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
-		
+
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			// If the OK button was pressed, mark the question as correct

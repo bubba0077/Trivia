@@ -17,38 +17,42 @@ import javax.swing.event.AncestorListener;
 /**
  * Super-class for most of the dialog box panels in the trivia GUI.
  * 
- * Creates a new panel using the GridBagLayout manager. Also implements an AncestorListener to allow focus on an element after the dialog is created.
+ * Creates a new panel using the GridBagLayout manager. Also implements an AncestorListener to allow focus on an element
+ * after the dialog is created.
  * 
  */
 public class TriviaDialogPanel extends JPanel implements AncestorListener, FocusListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -4127179718225373888L;
-	
-	protected TriviaDialog dialog;
+
+	protected TriviaDialog		dialog;
 
 	/**
 	 * 
 	 */
 	public TriviaDialogPanel() {
-		super( new GridBagLayout() );
+		super(new GridBagLayout());
 	}
-	
+
 	/**
-	 * Override the default behavior of the text area to click the OK button of the option pane on enter and insert a line break on shift-enter
+	 * Override the default behavior of the text area to click the OK button of the option pane on enter and insert a
+	 * line break on shift-enter
 	 * 
-	 * @param component The text are whose behavior we want to change
+	 * @param component
+	 *            The text are whose behavior we want to change
 	 */
 	public void addEnterOverride(JComponent component) {
 		component.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "Text Submit");
 		component.getInputMap().put(KeyStroke.getKeyStroke("shift ENTER"), "insert-break");
 		component.getActionMap().put("Text Submit", new AbstractAction() {
 			private static final long	serialVersionUID	= 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				submitText();
 			}
-		} );
+		});
 	}
 
 	/**
@@ -75,11 +79,13 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener, Focus
 	}
 
 	@Override
-	public void ancestorMoved(AncestorEvent event) {	}
+	public void ancestorMoved(AncestorEvent event) {
+	}
 
 	@Override
-	public void ancestorRemoved(AncestorEvent event) {	}
-	
+	public void ancestorRemoved(AncestorEvent event) {
+	}
+
 	/**
 	 * Tell the dialog to click the OK button on the option pane.
 	 */
@@ -88,24 +94,25 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener, Focus
 	}
 
 	@Override
-	public void focusLost(FocusEvent e) { }
+	public void focusLost(FocusEvent e) {
+	}
 
 	@Override
 	public void focusGained(FocusEvent event) {
-		final JComponent source = (JComponent)event.getSource();
-		if(source instanceof JTextField) {
-//			try {
-//				Thread.sleep(10);
-//			} catch (InterruptedException e) {	}
+		final JComponent source = (JComponent) event.getSource();
+		if (source instanceof JTextField) {
+			// try {
+			// Thread.sleep(10);
+			// } catch (InterruptedException e) { }
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					((JTextField) source).selectAll();
-				}				
+					( (JTextField) source ).selectAll();
+				}
 			});
-			
+
 		}
-		
-		
+
+
 	}
 
 }

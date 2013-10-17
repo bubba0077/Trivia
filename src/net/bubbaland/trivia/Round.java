@@ -852,11 +852,11 @@ public class Round implements Serializable {
 		}
 		return nCorrect;
 	}
-	
+
 	public int nUnopened() {
 		int nUnopened = 0;
-		for(int q=0; q<this.getNQuestions(); q++) {
-			if(!this.questions[q].beenOpen()) {
+		for (int q = 0; q < this.getNQuestions(); q++) {
+			if (!this.questions[q].beenOpen()) {
 				nUnopened++;
 			}
 		}

@@ -19,13 +19,13 @@ import net.bubbaland.trivia.TriviaInterface;
 public class LoadStatePrompt extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= -3297076605620744620L;
-	
+
 	/** Font size */
 	private static final float	FONT_SIZE			= 20f;
 
 	public LoadStatePrompt(TriviaInterface server, TriviaClient client) {
 
-		super( );
+		super();
 
 		// Try to communicate with server
 		String[] saveList = null;
@@ -81,10 +81,10 @@ public class LoadStatePrompt extends TriviaDialogPanel {
 		this.add(chooser, constraints);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Load saved state", this,
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		this.dialog = new TriviaDialog(client.getFrame(), "Load saved state", this, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
-		
+
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 

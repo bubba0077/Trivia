@@ -49,7 +49,7 @@ public class TeamComparisonPanel extends TriviaPanel {
 
 		if (change) {
 			JFreeChart chart = TriviaCharts.TeamComparisonChartFactory(trivia);
-			
+
 			if (this.chartPanel != null) {
 				this.remove(this.chartPanel);
 			}
