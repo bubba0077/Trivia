@@ -55,7 +55,6 @@ public class RoundQlistPanel extends TriviaPanel {
 	 * Sizes
 	 */
 	private static final int			HEADER_HEIGHT					= 20;
-
 	private static final int			QUESTION_HEIGHT					= 66;
 
 	private static final int			QNUM_WIDTH						= 48;
@@ -331,6 +330,8 @@ public class RoundQlistPanel extends TriviaPanel {
 
 				constraints.gridx = 6;
 				constraints.gridy = 2 * q;
+				
+				
 				this.submitterLabels[q] = this.enclosedLabel("", SUBOP_WIDTH, QUESTION_HEIGHT / 2, color, bColor,
 						constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.submitterLabels[q].setName(( q + 1 ) + "");

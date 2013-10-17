@@ -467,7 +467,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				this.answerButtons[q].setText("");
 				this.answerButtons[q].setVisible(false);
 				this.closeButtons[q].setText("Open");
-				if (q == nOpen) {
+				if (q == nOpen && q < trivia.getNQuestions() ) {
 					this.closeButtons[q].setVisible(true);
 				} else {
 					this.closeButtons[q].setVisible(false);
@@ -478,7 +478,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			}
 
 			// Show rows equal to the greater of the number of questions to show and the number of open questions
-			for (int q = 0; q < Math.max(nOpen + 1, MIN_QUESTIONS_SHOW); q++) {
+			for (int q = 0; q < Math.max(Math.max(nOpen + 1, MIN_QUESTIONS_SHOW), trivia.getNQuestions()); q++) {
 				this.qNumberLabels[q].setVisible(true);
 				this.qValueLabels[q].setVisible(true);
 				this.qTextAreas[q].setVisible(true);

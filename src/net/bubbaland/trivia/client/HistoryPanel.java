@@ -199,7 +199,11 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 		
 		this.earnedLabel.setText(trivia.getEarned(rNumber)+" / "+trivia.getValue(rNumber));
 		this.valueLabel.setText(trivia.getCumulativeEarned(rNumber)+" / "+trivia.getCumulativeValue(rNumber));
-		this.placeLabel.setText(TriviaClient.ordinalize(trivia.getAnnouncedPlace(rNumber))+" / "+trivia.getNTeams() + " " );
+		if(trivia.isAnnounced(rNumber)) {
+			this.placeLabel.setText(TriviaClient.ordinalize(trivia.getAnnouncedPlace(rNumber))+" / "+trivia.getNTeams() + " " );
+		} else {
+			this.placeLabel.setText("-- / "+trivia.getNTeams() + " " );
+		}
 		
 		this.roundQListPanel.update(force);
 	}
