@@ -181,15 +181,15 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		final JCheckBoxMenuItem hideClosedMenuItem = new JCheckBoxMenuItem("Hide closed questions");
 		hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
 		hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
-		hideClosedMenuItem.setActionCommand("Hide Closed");
-		hideClosedMenuItem.addActionListener(this);
-		if(loadProperty("hideClosed") == "false") {
+		if(loadProperty("hideClosed").equals("false")) {
 			hideClosedMenuItem.setSelected(false);
 			this.hideClosed = false;
 		} else {
 			hideClosedMenuItem.setSelected(true);
 			this.hideClosed = true;
 		}
+		hideClosedMenuItem.setActionCommand("Hide Closed");
+		hideClosedMenuItem.addActionListener(this);
 		menu.add(hideClosedMenuItem);
 
 		final JMenu sortMenu = new JMenu("Sort by...");
@@ -953,6 +953,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		try {
 			final BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
 			props.store(outfileBuffer, "Trivia");
+			System.out.println(propName + " " + value);
 			outfileBuffer.close();
 		} catch (final IOException e) {
 			System.out.println("Error saving property.");
