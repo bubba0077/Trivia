@@ -68,6 +68,7 @@ public class WorkflowPanel extends TriviaPanel {
 		constraints.gridy = 2;
 		this.add(this.workflowQueuePanel, constraints);
 
+		// Assign CTRL+O to open a new question
 		this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK), "openQuestion");
 		this.getActionMap().put("openQuestion", new AbstractAction() {

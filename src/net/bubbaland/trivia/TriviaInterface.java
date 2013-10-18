@@ -16,8 +16,6 @@ import net.bubbaland.trivia.UserList.Role;
  */
 public interface TriviaInterface extends Remote {
 
-	// need all the methods of TriviaServer here
-
 	/**
 	 * Call an answer in.
 	 * 
@@ -30,6 +28,15 @@ public interface TriviaInterface extends Remote {
 	 */
 	public void callIn(int queueIndex, String caller) throws RemoteException;
 
+	/**
+	 * Change a user's name.
+	 * 
+	 * @param oldUser
+	 *            The old user name
+	 * @param newUser
+	 *            The new user name
+	 * @throws RemoteException
+	 */
 	public void changeUser(String oldUser, String newUser) throws RemoteException;
 
 	/**
@@ -46,15 +53,53 @@ public interface TriviaInterface extends Remote {
 	 */
 	public void close(String user, int qNumber, String answer) throws RemoteException;
 
-	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect,
-			String submitter, String operator) throws RemoteException;
+	/**
+	 * Edit question data.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @param value
+	 *            The new question value
+	 * @param qText
+	 *            The new question text
+	 * @param aText
+	 *            The new correct answer
+	 * @param isCorrect
+	 *            Whether the question was answered correctly
+	 * @param submitter
+	 *            The correct answer submitter
+	 * @param operator
+	 *            The operator who accepted the correct answer
+	 * @throws RemoteException
+	 */
+	public void editQuestion(String user, int rNumber, int qNumber, int value, String qText, String aText,
+			boolean isCorrect, String submitter, String operator) throws RemoteException;
 
+	/**
+	 * Get rounds that have changed. This is the primary method for retrieving updated data from the server.
+	 * 
+	 * @param user
+	 *            The user requesting data
+	 * @param oldVersions
+	 *            The round version numbers the user has.
+	 * @return An array of all the rounds that have newer versions.
+	 * @throws RemoteException
+	 */
 	public Round[] getChangedRounds(String user, int[] oldVersions) throws RemoteException;
 
+	/**
+	 * Get the current round number
+	 * 
+	 * @return The current round number
+	 * @throws RemoteException
+	 */
 	public int getCurrentRound() throws RemoteException;
 
 	/**
-	 * Get the trivia data structure.
+	 * Get the full trivia data structure. This is used primarily when a client starts to initialize their local trivia
+	 * data.
 	 * 
 	 * @return The Trivia object
 	 * @throws RemoteException
@@ -62,10 +107,37 @@ public interface TriviaInterface extends Remote {
 	 */
 	public Trivia getTrivia() throws RemoteException;
 
+	/**
+	 * Get the users and roles that have been active. Active means having changed something on the server.
+	 * 
+	 * @param window
+	 *            Number of seconds without making a change before becoming idle
+	 * @return The user names and roles of users who have been active within the activity window
+	 * @throws RemoteException
+	 */
 	public Hashtable<String, Role> getActiveUsers(int window) throws RemoteException;
 
+	/**
+	 * Get the users and roles that are idle. Idle means they are still contacting the server for updates, but haven't
+	 * made any changes.
+	 * 
+	 * @param window
+	 *            Number of seconds without making a change before becoming idle
+	 * @param timeout
+	 *            Number of second before a disconnected user should be considered timed out
+	 * @return The user names and roles of users who have not been active but have still received an update within the
+	 *         timeout window
+	 * @throws RemoteException
+	 */
 	public Hashtable<String, Role> getPassiveUsers(int window, int timeout) throws RemoteException;
 
+	/**
+	 * Check a user in when they first start their client.
+	 * 
+	 * @param user
+	 *            The user's name
+	 * @throws RemoteException
+	 */
 	public void login(String user) throws RemoteException;
 
 	/**
@@ -116,7 +188,6 @@ public interface TriviaInterface extends Remote {
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	// public void setAnnounced(int rNumber, int score, int place) throws RemoteException;
 
 	/**
 	 * Mark a question incorrect.
@@ -129,15 +200,6 @@ public interface TriviaInterface extends Remote {
 	 *             A remote exception
 	 */
 	public void markIncorrect(int queueIndex, String caller) throws RemoteException;
-
-	/**
-	 * Sets the number of teams.
-	 * 
-	 * @param nTeams
-	 *            The number of teams
-	 * @throws RemoteException
-	 *             A remote exception
-	 */
 
 	/**
 	 * Mark a question partially correct.

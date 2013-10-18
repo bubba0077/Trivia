@@ -21,7 +21,7 @@ import javax.swing.SwingConstants;
 import net.bubbaland.trivia.UserList.Role;
 
 /**
- * Creates a panel that displays active user names.
+ * Creates a panel that displays active and idle user names.
  * 
  * @author Walter Kolczynski
  * 
@@ -39,7 +39,7 @@ public class UserListPanel extends TriviaPanel {
 	protected static final Color	RESEARCHER_COLOR		= Color.BLACK;
 	protected static final Color	CALLER_COLOR			= Color.BLUE;
 	protected static final Color	TYPER_COLOR				= Color.RED;
-	protected static final Color	IDLE_COLOR				= Color.DARK_GRAY;
+	protected static final Color	IDLE_COLOR				= Color.GRAY;
 
 	/**
 	 * Sizes
@@ -56,11 +56,11 @@ public class UserListPanel extends TriviaPanel {
 	 */
 	private final JLabel			header, idleHeader;
 	private final JList<String>		activeUserList;
-	private final JList<String>		passiveUserList;
+	private final JList<String>		idleUserList;
 
 	/** Data */
 	private Hashtable<String, Role>	activeUserHash;
-	private Hashtable<String, Role>	passiveUserHash;
+	private Hashtable<String, Role>	idleUserHash;
 
 	/** Data sources */
 	private final TriviaClient		client;
@@ -70,7 +70,7 @@ public class UserListPanel extends TriviaPanel {
 		super();
 		this.client = client;
 
-		// Set up layout contraints
+		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
@@ -94,6 +94,7 @@ public class UserListPanel extends TriviaPanel {
 		constraints.weighty = 1.0;
 		constraints.gridx = 0;
 		constraints.gridy = 1;
+
 		// Put the list in a scroll pane
 		final JScrollPane pane = new JScrollPane(panel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -117,6 +118,7 @@ public class UserListPanel extends TriviaPanel {
 		this.activeUserList.setCellRenderer(new MyCellRenderer());
 		panel.add(this.activeUserList, constraints);
 
+		// Header for idle user list
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		this.idleHeader = new JLabel("", SwingConstants.CENTER);
@@ -125,16 +127,17 @@ public class UserListPanel extends TriviaPanel {
 		this.idleHeader.setForeground(IDLE_COLOR);
 		panel.add(this.idleHeader, constraints);
 
+		// Create the idle user list
 		constraints.weighty = 1.0;
 		constraints.gridx = 0;
 		constraints.gridy = 2;
-		this.passiveUserList = new JList<String>();
-		this.passiveUserList.setLayoutOrientation(JList.VERTICAL);
-		this.passiveUserList.setVisibleRowCount(-1);
-		this.passiveUserList.setForeground(IDLE_COLOR);
-		this.passiveUserList.setBackground(BACKGROUND_COLOR);
-		this.passiveUserList.setFont(this.passiveUserList.getFont().deriveFont(FONT_SIZE));
-		panel.add(this.passiveUserList, constraints);
+		this.idleUserList = new JList<String>();
+		this.idleUserList.setLayoutOrientation(JList.VERTICAL);
+		this.idleUserList.setVisibleRowCount(-1);
+		this.idleUserList.setForeground(IDLE_COLOR);
+		this.idleUserList.setBackground(BACKGROUND_COLOR);
+		this.idleUserList.setFont(this.idleUserList.getFont().deriveFont(FONT_SIZE));
+		panel.add(this.idleUserList, constraints);
 	}
 
 	/**
@@ -149,12 +152,12 @@ public class UserListPanel extends TriviaPanel {
 		this.header.setText("Active (" + users.length + ")");
 		this.activeUserList.setListData(users);
 
-		this.passiveUserHash = this.client.getPassiveUserHash();
-		final String[] idleUsers = new String[this.passiveUserHash.size()];
-		this.passiveUserHash.keySet().toArray(idleUsers);
+		this.idleUserHash = this.client.getPassiveUserHash();
+		final String[] idleUsers = new String[this.idleUserHash.size()];
+		this.idleUserHash.keySet().toArray(idleUsers);
 		Arrays.sort(idleUsers);
 		this.idleHeader.setText("Idle (" + idleUsers.length + ")");
-		this.passiveUserList.setListData(idleUsers);
+		this.idleUserList.setListData(idleUsers);
 	}
 
 	/**

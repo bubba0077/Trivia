@@ -41,7 +41,13 @@ public class TriviaCharts {
 	/** The upper bound of the vertical axis */
 	final private static int	MAX_POINTS			= 750;
 
-
+	/**
+	 * Create an XY line chart of the team's place after each round.
+	 * 
+	 * @param trivia
+	 *            The trivia data to use
+	 * @return An XY line chart of the team's place after each round
+	 */
 	public static JFreeChart PlaceChartFactory(Trivia trivia) {
 
 		final int nRounds = trivia.getNRounds();
@@ -105,6 +111,13 @@ public class TriviaCharts {
 	}
 
 
+	/**
+	 * Create a stacked bar plot of the team's score in each round.
+	 * 
+	 * @param trivia
+	 *            The trivia data
+	 * @return A stacked bar plot of the team's score in each round
+	 */
 	public static JFreeChart ScoreByRoundChartFactory(Trivia trivia) {
 
 		final int nRounds = trivia.getNRounds();
@@ -172,6 +185,13 @@ public class TriviaCharts {
 
 	}
 
+	/**
+	 * Creates a stacked XY plot of the cumulative score after each round.
+	 * 
+	 * @param trivia
+	 *            The trivia data
+	 * @return A stacked XY plot of the cumulative score after each round
+	 */
 	public static JFreeChart CumulativePointsChartFactory(Trivia trivia) {
 
 		final int nRounds = trivia.getNRounds();
@@ -239,6 +259,13 @@ public class TriviaCharts {
 		return chart;
 	}
 
+	/**
+	 * Create an XY plot comparing each team's score in each round relative to ours.
+	 * 
+	 * @param trivia
+	 *            The trivia data
+	 * @return An XY plot comparing team scores
+	 */
 	public static JFreeChart TeamComparisonChartFactory(Trivia trivia) {
 
 		final int nRounds = trivia.getNRounds();
@@ -246,6 +273,7 @@ public class TriviaCharts {
 		int lastAnnounced = 0;
 		ArrayList<ScoreEntry[]> scores = new ArrayList<ScoreEntry[]>(0);
 
+		// Load standings from announced rounds
 		while (trivia.isAnnounced(lastAnnounced + 1)) {
 			lastAnnounced++;
 			final ScoreEntry roundStandings[] = trivia.getStandings(lastAnnounced);
@@ -253,33 +281,46 @@ public class TriviaCharts {
 			scores.add(roundStandings);
 		}
 
+		// If no rounds have been announced, don't make a plot
 		if (scores.size() < 1) {
 			return null;
 		}
 		final int nTeams = scores.get(0).length;
+
+		// Create a new dataset
 		final DefaultTableXYDataset dataset = new DefaultTableXYDataset();
+		// Create a new XY chart
 		final JFreeChart chart = ChartFactory.createXYLineChart("Team Comparison", "Round", "Point Differential",
 				dataset, PlotOrientation.VERTICAL, false, true, false);
+		// Get the plot renderer
 		final XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
 		for (int t = 0; t < nTeams; t++) {
 			final String team = scores.get(0)[t].getTeamName();
 			final XYSeries series = new XYSeries(team, true, false);
+			// Add a data point for each team with the difference between their score and ours
 			for (int r = 0; r < lastAnnounced; r++) {
 				final int ourScore = trivia.getAnnouncedPoints(r + 1);
 				series.add(r + 1, scores.get(r)[t].getScore() - ourScore);
 			}
 
+			// Plot the data points
 			renderer.setSeriesShapesVisible(t, true);
 			renderer.setSeriesShape(t, makeCircle(2D));
+
+			// Make our line (0 difference) a thick white line
 			if (team.equals(trivia.getTeamName())) {
 				renderer.setSeriesStroke(t, new BasicStroke(3F));
 				renderer.setSeriesPaint(t, Color.WHITE);
 			}
+
+			// Add the series to the dataset
 			dataset.addSeries(series);
 		}
 
+		// Change the format of the tooltip
 		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}", NumberFormat
 				.getIntegerInstance(), NumberFormat.getIntegerInstance()));
+		// Set the background color and axes
 		final XYPlot plot = chart.getXYPlot();
 		plot.setBackgroundPaint(BACKGROUND_COLOR);
 		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
@@ -300,9 +341,8 @@ public class TriviaCharts {
 
 	}
 
-
 	/**
-	 * Make circle.
+	 * Make a circle.
 	 * 
 	 * @param radius
 	 *            the radius

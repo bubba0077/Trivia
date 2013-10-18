@@ -164,8 +164,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	}
 
 	@Override
-	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect,
-			String submitter, String operator) throws RemoteException {
+	public void editQuestion(String user, int rNumber, int qNumber, int value, String qText, String aText,
+			boolean isCorrect, String submitter, String operator) throws RemoteException {
+		this.userList.updateUserActivity(user);
 		this.trivia.editQuestion(rNumber, qNumber, value, qText, aText, isCorrect, submitter, operator);
 	}
 

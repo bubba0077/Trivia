@@ -16,8 +16,11 @@ public class UserList {
 	}
 
 	/** Data */
+	// User list that is tracks when the user makes a change
 	private final Hashtable<String, Date>	activeUserList;
+	// User list that is tracks when a data refresh is requested
 	private final Hashtable<String, Date>	passiveUserList;
+	// List of user roles
 	private final Hashtable<String, Role>	roleList;
 
 	/**
@@ -46,41 +49,56 @@ public class UserList {
 	}
 
 	/**
-	 * Get users who have been active recently.
+	 * Get the users and roles that have been active. Active means having changed something on the server.
 	 * 
-	 * @param windowInSec
-	 *            The maximum time before a user is considered idle
-	 * @return A Hashtable containing the active users and corresponding roles.
+	 * @param window
+	 *            Number of seconds without making a change before becoming idle
+	 * @return The user names and roles of users who have been active within the activity window
 	 */
-	public Hashtable<String, Role> getActive(int windowInSec) {
+	public Hashtable<String, Role> getActive(int window) {
 		final Date currentDate = new Date();
 		final Hashtable<String, Role> userHash = new Hashtable<String, Role>(0);
 
+		// Build a list of users who are active
 		for (final String user : this.activeUserList.keySet()) {
 			final Date lastDate = this.activeUserList.get(user);
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
-			if (diff < windowInSec) {
+			if (diff < window) {
 				userHash.put(user, this.roleList.get(user));
 			}
 		}
 		return userHash;
 	}
 
-	public Hashtable<String, Role> getPassive(int windowInSec, int timeoutInSec) {
+	/**
+	 * Get the users and roles that are idle. Idle means they are still contacting the server for updates, but haven't
+	 * made any changes.
+	 * 
+	 * @param window
+	 *            Number of seconds without making a change before becoming idle
+	 * @param timeout
+	 *            Number of second before a disconnected user should be considered timed out
+	 * @return The user names and roles of users who have not been active but have still received an update within the
+	 *         timeout window
+	 */
+	public Hashtable<String, Role> getPassive(int window, int timeout) {
 		final Date currentDate = new Date();
 		final Hashtable<String, Role> userHash = new Hashtable<String, Role>(0);
 
+		// Build a list of users getting updates
 		for (final String user : this.passiveUserList.keySet()) {
 			final Date lastDate = this.passiveUserList.get(user);
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
-			if (diff < timeoutInSec) {
+			if (diff < timeout) {
 				userHash.put(user, this.roleList.get(user));
 			}
 		}
+
+		// Remove active users
 		for (final String user : this.activeUserList.keySet()) {
 			final Date lastDate = this.activeUserList.get(user);
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
-			if (diff < windowInSec) {
+			if (diff < window) {
 				userHash.remove(user);
 			}
 		}
@@ -109,6 +127,7 @@ public class UserList {
 	 * Update user's last activity time.
 	 * 
 	 * @param user
+	 *            The user's name
 	 */
 	public void updateUserActivity(String user) {
 		this.activeUserList.put(user, new Date());
@@ -118,6 +137,12 @@ public class UserList {
 		}
 	}
 
+	/**
+	 * Update user's last contact time.
+	 * 
+	 * @param user
+	 *            The user's name
+	 */
 	public void userHandshake(String user) {
 		this.passiveUserList.put(user, new Date());
 	}

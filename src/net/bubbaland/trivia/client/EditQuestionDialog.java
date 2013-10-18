@@ -216,7 +216,8 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 				tryNumber++;
 				try {
-					server.editQuestion(rNumber, qNumber, qValue, qText, aText, isCorrect, submitter, operator);
+					server.editQuestion(client.getUser(), rNumber, qNumber, qValue, qText, aText, isCorrect, submitter,
+							operator);
 					success = true;
 				} catch (final RemoteException e) {
 					client.log("Couldn't edit question on server (try #" + tryNumber + ").");

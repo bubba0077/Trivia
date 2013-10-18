@@ -114,6 +114,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	private volatile Hashtable<String, Role>	passiveUserHash;
 	// Sort method for the queue
 	private volatile QueueSort					queueSort;
+
 	// Sort menu items
 	final private JMenuItem						hideClosedMenuItem;
 	final private JMenuItem						sortTimestampAscendingMenuItem;
@@ -149,6 +150,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		final TriviaFetcher fetcher = new TriviaFetcher(server, this);
 		fetcher.execute();
 
+		// Load the sort state from file
 		String loadedSort = loadProperty("queueSort");
 		if (loadedSort == null) {
 			loadedSort = "";
@@ -181,9 +183,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		new UserLogin(this);
 
 		/**
-		 * Setup the menu
+		 * Setup the menus
 		 */
 		final JMenuBar menuBar = new JMenuBar();
+
 		// Add the menu to the parent frame
 		parent.setJMenuBar(menuBar);
 
@@ -209,7 +212,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		this.hideClosedMenuItem.setActionCommand("Hide Closed");
 		this.hideClosedMenuItem.addActionListener(this);
 		menu.add(this.hideClosedMenuItem);
-
 
 		final JMenu sortMenu = new JMenu("Sort by...");
 		sortMenu.setMnemonic(KeyEvent.VK_S);
@@ -349,7 +351,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		menuItem.addActionListener(this);
 		menu.add(menuItem);
 
-
+		// Make Info Menu
 		final JMenu infoMenu = new JMenu("Info");
 		infoMenu.setMnemonic(KeyEvent.VK_I);
 		menuItem = new JMenuItem("Open Wiki (broswer)", KeyEvent.VK_W);
@@ -584,7 +586,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 
 	/**
-	 * Get the queue sort method.
+	 * Get the answer queue sort method.
 	 * 
 	 * @return The sort method
 	 */
@@ -622,7 +624,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 
 	/**
-	 * Get the hash of active users and roles.
+	 * Get the hash of idle users and roles.
 	 * 
 	 * @return The hashtable of users and roles
 	 */
@@ -706,6 +708,12 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		this.user = user;
 	}
 
+	/**
+	 * Set the answer queue sort method and save to the settings file.
+	 * 
+	 * @param newSort
+	 *            The new sort method
+	 */
 	public void setSort(QueueSort newSort) {
 		this.queueSort = newSort;
 		switch (newSort) {
@@ -893,6 +901,13 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		}
 	}
 
+	/**
+	 * Load a property from the settings file.
+	 * 
+	 * @param propName
+	 *            The property name
+	 * @return The property's value
+	 */
 	public static String loadProperty(String propName) {
 		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
 		final Properties props = new Properties();
@@ -912,7 +927,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 * client will include an IRC client panel.
 	 * 
 	 * @param args
-	 *            useFX
+	 *            Command line arguments; only "useFX" is recognized as an argument
 	 * 
 	 */
 	public static void main(String[] args) {
@@ -1019,7 +1034,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 
 	/**
-	 * Clear all saved window positions from file.
+	 * Clear all saved data from file.
 	 * 
 	 */
 	public static void resetPositions() {

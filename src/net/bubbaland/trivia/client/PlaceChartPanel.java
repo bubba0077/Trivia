@@ -62,11 +62,9 @@ public class PlaceChartPanel extends TriviaPanel {
 
 		// Load the round data and determine if there are any changes
 		final int[] newPlaces = new int[nRounds];
-		final boolean[] announced = new boolean[nRounds];
 		boolean change = false;
 		for (int r = 0; r < nRounds; r++) {
 			newPlaces[r] = trivia.getAnnouncedPlace(r + 1);
-			announced[r] = trivia.isAnnounced(r + 1);
 			change = change || ( newPlaces[r] != this.places[r] );
 		}
 

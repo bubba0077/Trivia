@@ -62,8 +62,6 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 	 *            the default question number
 	 * @param qValueStart
 	 *            the default question value
-	 * @param qTextStart
-	 *            the initial question text
 	 */
 	public OpenQuestionDialog(final TriviaInterface server, final TriviaClient client, int nQuestions,
 			int qNumberStart, int qValueStart) {

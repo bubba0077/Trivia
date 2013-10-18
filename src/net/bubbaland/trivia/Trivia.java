@@ -143,6 +143,26 @@ public class Trivia implements Serializable {
 		return this.rounds[rNumber - 1].eachOpen();
 	}
 
+	/**
+	 * Edit question data.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @param value
+	 *            The new question value
+	 * @param qText
+	 *            The new question text
+	 * @param aText
+	 *            The new correct answer
+	 * @param isCorrect
+	 *            Whether the question was answered correctly
+	 * @param submitter
+	 *            The correct answer submitter
+	 * @param operator
+	 *            The operator who accepted the correct answer
+	 */
 	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect,
 			String submitter, String operator) {
 		this.rounds[rNumber - 1].setValue(qNumber, value);
@@ -152,7 +172,6 @@ public class Trivia implements Serializable {
 		} else {
 			this.rounds[rNumber - 1].markIncorrect(qNumber);
 			this.rounds[rNumber - 1].close(qNumber, aText);
-
 		}
 	}
 
@@ -381,6 +400,13 @@ public class Trivia implements Serializable {
 		return this.rounds[rNumber - 1].getAnswerText(qNumber);
 	}
 
+	/**
+	 * Get rounds that have changed. This is the primary method for retrieving updated data from the server.
+	 * 
+	 * @param oldVersions
+	 *            The round version numbers the user has.
+	 * @return An array of all the rounds that have newer versions.
+	 */
 	public Round[] getChangedRounds(int[] oldVersions) {
 		final ArrayList<Round> changedRoundList = new ArrayList<Round>(0);
 		for (int r = 0; r < this.nRounds; r++) {
@@ -431,10 +457,6 @@ public class Trivia implements Serializable {
 	 */
 	public int getCurrentRoundEarned() {
 		return this.currentRound.getEarned();
-	}
-
-	public int getCurrentRoundnumber() {
-		return this.currentRound.getRoundNumber();
 	}
 
 	/**
@@ -751,6 +773,11 @@ public class Trivia implements Serializable {
 		return this.rounds[rNumber - 1].getValue(qNumber);
 	}
 
+	/**
+	 * Get the version of each Round.
+	 * 
+	 * @return The version number for each round
+	 */
 	public int[] getVersions() {
 		final int[] versions = new int[this.nRounds];
 		for (int r = 0; r < this.nRounds; r++) {
@@ -1078,6 +1105,12 @@ public class Trivia implements Serializable {
 		this.rounds[rNumber - 1].unsetSpeed();
 	}
 
+	/**
+	 * Replace rounds with newer version retrieved from server.
+	 * 
+	 * @param newRounds
+	 *            The rounds with updated versions
+	 */
 	public void updateRounds(Round[] newRounds) {
 		final int nNew = newRounds.length;
 		for (int r = 0; r < nNew; r++) {

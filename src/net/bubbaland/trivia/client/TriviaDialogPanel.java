@@ -28,9 +28,6 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener, Focus
 
 	protected TriviaDialog		dialog;
 
-	/**
-	 * 
-	 */
 	public TriviaDialogPanel() {
 		super(new GridBagLayout());
 	}

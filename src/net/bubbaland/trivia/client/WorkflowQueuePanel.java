@@ -671,6 +671,9 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 
 		}
 
+		/**
+		 * Make a new answer row.
+		 */
 		private void makeNewRow() {
 			final int a = this.queuenumberLabels.size();
 

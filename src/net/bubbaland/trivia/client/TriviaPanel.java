@@ -33,24 +33,24 @@ public abstract class TriviaPanel extends JPanel {
 	 * changed later.
 	 * 
 	 * @param string
-	 *            the string for the label
+	 *            The string for the label
 	 * @param width
-	 *            the width
+	 *            The width
 	 * @param height
-	 *            the height
+	 *            The height
 	 * @param foreground
-	 *            the foreground color
+	 *            The foreground color
 	 * @param background
-	 *            the background color
+	 *            The background color
 	 * @param constraints
-	 *            the GridBag constraints
+	 *            The GridBag constraints
 	 * @param fontSize
-	 *            the font size
+	 *            The font size
 	 * @param labelHAlignment
-	 *            the horizontal alignment for the label (JLabel constants)
+	 *            The horizontal alignment for the label (JLabel constants)
 	 * @param labelVAlignment
-	 *            the vertical alignment for the label (JLabel constants)
-	 * @return the label inside the panel
+	 *            The vertical alignment for the label (JLabel constants)
+	 * @return The label inside the panel
 	 */
 	public JLabel enclosedLabel(String string, int width, int height, Color foreground, Color background,
 			GridBagConstraints constraints, float fontSize, int labelHAlignment, int labelVAlignment) {
@@ -81,24 +81,24 @@ public abstract class TriviaPanel extends JPanel {
 	 * so the text can be read/changed later.
 	 * 
 	 * @param string
-	 *            the initial string for the text area
+	 *            The initial string for the text area
 	 * @param width
-	 *            the width
+	 *            The width
 	 * @param height
-	 *            the height
+	 *            The height
 	 * @param foreground
-	 *            the foreground color
+	 *            The foreground color
 	 * @param background
-	 *            the background color
+	 *            The background color
 	 * @param constraints
-	 *            the GridBag constraints
+	 *            The GridBag constraints
 	 * @param fontSize
-	 *            the font size
+	 *            The font size
 	 * @param horizontalScroll
-	 *            the horizontal scroll bar policy (JScrollPane constants)
+	 *            The horizontal scroll bar policy (JScrollPane constants)
 	 * @param verticalScroll
-	 *            the vertical scroll bar policy (JScrollPane constants)
-	 * @return the text area inside the scroll pane
+	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * @return The text area inside the scroll pane
 	 */
 	public JTextArea scrollableTextArea(String string, int width, int height, Color foreground, Color background,
 			GridBagConstraints constraints, float fontSize, int horizontalScroll, int verticalScroll) {

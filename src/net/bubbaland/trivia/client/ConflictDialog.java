@@ -36,7 +36,6 @@ public class ConflictDialog extends TriviaDialogPanel {
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
 
-		//
 		constraints.gridwidth = 4;
 		constraints.gridx = 0;
 		constraints.gridy = 0;
