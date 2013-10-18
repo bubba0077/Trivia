@@ -2,6 +2,7 @@ package net.bubbaland.trivia.client;
 
 // imports for GUI
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
@@ -18,6 +19,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 // imports for RMI
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -73,6 +76,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	// URL for RMI server
 	final static private String	TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
+	// URL for Wiki
+	final static private String	WIKI_URL			= "https://github.com/bubba0077/Trivia/wiki";
 	// URL for the IRC client
 	final static private String	IRC_CLIENT_URL		= "http://webchat.freenode.net/";
 	// IRC channel to join on connection to IRC server
@@ -341,6 +346,17 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		menu.add(menuItem);
 
 
+		final JMenu infoMenu = new JMenu("Info");
+		infoMenu.setMnemonic(KeyEvent.VK_I);
+		menuItem = new JMenuItem("Open Wiki (broswer)", KeyEvent.VK_W);
+		menuItem.setActionCommand("Open wiki");
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+		menuItem.addActionListener(this);
+
+		infoMenu.add(menuItem);
+		menuBar.add(infoMenu);
+
+
 		// Make Admin Menu pinned to the right
 		menuBar.add(Box.createHorizontalGlue());
 		menu = new JMenu("Admin");
@@ -518,6 +534,13 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 				// Triggered by Reset window positions menu item
 				TriviaClient.resetPositions();
 				break;
+			case "Open wiki":
+				// Triggered by Open wiki menu item
+				try {
+					Desktop.getDesktop().browse(new URI(WIKI_URL));
+				} catch (IOException | URISyntaxException exception) {
+					this.log("Couldn't open a browser window");
+				}
 		}
 	}
 
