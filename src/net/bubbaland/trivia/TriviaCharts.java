@@ -253,6 +253,9 @@ public class TriviaCharts {
 			scores.add(roundStandings);
 		}
 
+		if (scores.size() < 1) {
+			return null;
+		}
 		final int nTeams = scores.get(0).length;
 		final DefaultTableXYDataset dataset = new DefaultTableXYDataset();
 		final JFreeChart chart = ChartFactory.createXYLineChart("Team Comparison", "Round", "Point Differential",

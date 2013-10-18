@@ -68,6 +68,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	protected static final int	MAX_RETRIES			= 10;
 	// The amount of time (in seconds) a user is considered "active"
 	final static private int	USER_LIST_WINDOW	= 10 * 60;
+	// The amount of time (in seconds) a user is considered disconnected
+	final static private int	USER_LIST_TIMEOUT	= 5 * 60;
 
 	// Height of the status bar at the bottom of the GUI
 	final static private int	STATUS_HEIGHT		= 14;
@@ -107,7 +109,9 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	// The Hide Closed menu item
 	private volatile boolean					hideClosed;
 	// Hashtable of active users and roles
-	private volatile Hashtable<String, Role>	userHash;
+	private volatile Hashtable<String, Role>	activeUserHash;
+	// Hashtable of idle users and roles
+	private volatile Hashtable<String, Role>	passiveUserHash;
 	// Sort method for the queue
 	private volatile QueueSort					queueSort;
 	// Sort menu items
@@ -613,8 +617,17 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 * 
 	 * @return The hashtable of users and roles
 	 */
-	public Hashtable<String, Role> getUserHash() {
-		return this.userHash;
+	public Hashtable<String, Role> getActiveUserHash() {
+		return this.activeUserHash;
+	}
+
+	/**
+	 * Get the hash of active users and roles.
+	 * 
+	 * @return The hashtable of users and roles
+	 */
+	public Hashtable<String, Role> getPassiveUserHash() {
+		return this.passiveUserHash;
 	}
 
 	/**
@@ -676,7 +689,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			tryNumber++;
 			try {
 				if (this.user == null) {
-					this.server.handshake(user);
+					this.server.login(user);
 				} else {
 					this.server.changeUser(this.user, user);
 				}
@@ -740,9 +753,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
 			tryNumber++;
 			try {
-				newRounds = this.server.getChangedRounds(oldVersions);
+				newRounds = this.server.getChangedRounds(user, oldVersions);
 				currentRound = this.server.getCurrentRound();
-				this.userHash = this.server.getUserList(USER_LIST_WINDOW);
+				this.activeUserHash = this.server.getActiveUsers(USER_LIST_WINDOW);
+				this.passiveUserHash = this.server.getPassiveUsers(USER_LIST_WINDOW, USER_LIST_TIMEOUT);
 				success = true;
 			} catch (final RemoteException e) {
 				this.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");

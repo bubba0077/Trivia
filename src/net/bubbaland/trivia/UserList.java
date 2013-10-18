@@ -16,14 +16,16 @@ public class UserList {
 	}
 
 	/** Data */
-	private final Hashtable<String, Date>	userList;
+	private final Hashtable<String, Date>	activeUserList;
+	private final Hashtable<String, Date>	passiveUserList;
 	private final Hashtable<String, Role>	roleList;
 
 	/**
 	 * Create a new empty user list.
 	 */
 	public UserList() {
-		this.userList = new Hashtable<String, Date>(0);
+		this.activeUserList = new Hashtable<String, Date>(0);
+		this.passiveUserList = new Hashtable<String, Date>(0);
 		this.roleList = new Hashtable<String, Role>(0);
 	};
 
@@ -37,7 +39,8 @@ public class UserList {
 	 */
 	public void changeUser(String oldUser, String newUser) {
 		final Role role = this.roleList.get(oldUser);
-		this.userList.remove(oldUser);
+		this.activeUserList.remove(oldUser);
+		this.passiveUserList.remove(oldUser);
 		this.roleList.remove(oldUser);
 		this.updateRole(newUser, role);
 	}
@@ -49,20 +52,41 @@ public class UserList {
 	 *            The maximum time before a user is considered idle
 	 * @return A Hashtable containing the active users and corresponding roles.
 	 */
-	public Hashtable<String, Role> getRecent(int windowInSec) {
+	public Hashtable<String, Role> getActive(int windowInSec) {
 		final Date currentDate = new Date();
-		final Hashtable<String, Role> recentHash = new Hashtable<String, Role>(0);
+		final Hashtable<String, Role> userHash = new Hashtable<String, Role>(0);
 
-		for (final String user : this.userList.keySet()) {
-			final Date lastDate = this.userList.get(user);
+		for (final String user : this.activeUserList.keySet()) {
+			final Date lastDate = this.activeUserList.get(user);
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
 			if (diff < windowInSec) {
-				recentHash.put(user, this.roleList.get(user));
+				userHash.put(user, this.roleList.get(user));
 			}
 		}
-
-		return recentHash;
+		return userHash;
 	}
+
+	public Hashtable<String, Role> getPassive(int windowInSec, int timeoutInSec) {
+		final Date currentDate = new Date();
+		final Hashtable<String, Role> userHash = new Hashtable<String, Role>(0);
+
+		for (final String user : this.passiveUserList.keySet()) {
+			final Date lastDate = this.passiveUserList.get(user);
+			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
+			if (diff < timeoutInSec) {
+				userHash.put(user, this.roleList.get(user));
+			}
+		}
+		for (final String user : this.activeUserList.keySet()) {
+			final Date lastDate = this.activeUserList.get(user);
+			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
+			if (diff < windowInSec) {
+				userHash.remove(user);
+			}
+		}
+		return userHash;
+	}
+
 
 	/**
 	 * Update the role of a user.
@@ -74,7 +98,9 @@ public class UserList {
 	 */
 	public void updateRole(String user, Role role) {
 		// Update last activity time
-		this.userList.put(user, new Date());
+		this.activeUserList.put(user, new Date());
+		// Update last activity time
+		this.passiveUserList.put(user, new Date());
 		// Change role
 		this.roleList.put(user, role);
 	}
@@ -84,11 +110,17 @@ public class UserList {
 	 * 
 	 * @param user
 	 */
-	public void updateUser(String user) {
-		this.userList.put(user, new Date());
+	public void updateUserActivity(String user) {
+		this.activeUserList.put(user, new Date());
+		this.passiveUserList.put(user, new Date());
 		if (!this.roleList.containsKey(user)) {
 			this.roleList.put(user, Role.RESEARCHER);
 		}
 	}
+
+	public void userHandshake(String user) {
+		this.passiveUserList.put(user, new Date());
+	}
+
 
 }

@@ -49,7 +49,7 @@ public interface TriviaInterface extends Remote {
 	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect,
 			String submitter, String operator) throws RemoteException;
 
-	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException;
+	public Round[] getChangedRounds(String user, int[] oldVersions) throws RemoteException;
 
 	public int getCurrentRound() throws RemoteException;
 
@@ -62,9 +62,11 @@ public interface TriviaInterface extends Remote {
 	 */
 	public Trivia getTrivia() throws RemoteException;
 
-	public Hashtable<String, Role> getUserList(int window) throws RemoteException;
+	public Hashtable<String, Role> getActiveUsers(int window) throws RemoteException;
 
-	public void handshake(String user) throws RemoteException;
+	public Hashtable<String, Role> getPassiveUsers(int window, int timeout) throws RemoteException;
+
+	public void login(String user) throws RemoteException;
 
 	/**
 	 * Gets a list of available saves.

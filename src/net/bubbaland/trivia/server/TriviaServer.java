@@ -140,7 +140,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void callIn(int queueIndex, String caller) throws RemoteException {
-		this.userList.updateUser(caller);
+		this.userList.updateUserActivity(caller);
 		this.trivia.callIn(queueIndex, caller);
 		this.log(caller + " is calling in item " + queueIndex + " in the answer queue.");
 	}
@@ -157,7 +157,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void close(String user, int qNumber, String answer) throws RemoteException {
-		this.userList.updateUser(user);
+		this.userList.updateUserActivity(user);
 		this.trivia.close(qNumber, answer);
 		this.log("Question " + qNumber + " closed, "
 				+ this.trivia.getValue(this.trivia.getCurrentRoundNumber(), qNumber) + " points earned.");
@@ -170,7 +170,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	}
 
 	@Override
-	public Round[] getChangedRounds(int[] oldVersions) throws RemoteException {
+	public Round[] getChangedRounds(String user, int[] oldVersions) throws RemoteException {
+		this.userList.userHandshake(user);
 		return this.trivia.getChangedRounds(oldVersions);
 	}
 
@@ -190,13 +191,18 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	}
 
 	@Override
-	public Hashtable<String, Role> getUserList(int window) throws RemoteException {
-		return this.userList.getRecent(window);
+	public Hashtable<String, Role> getActiveUsers(int window) throws RemoteException {
+		return this.userList.getActive(window);
 	}
 
 	@Override
-	public void handshake(String user) throws RemoteException {
-		this.userList.updateUser(user);
+	public Hashtable<String, Role> getPassiveUsers(int window, int timeout) throws RemoteException {
+		return this.userList.getPassive(window, timeout);
+	}
+
+	@Override
+	public void login(String user) throws RemoteException {
+		this.userList.updateUserActivity(user);
 	}
 
 	/**
@@ -225,7 +231,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void loadState(String user, String stateFile) throws RemoteException {
-		this.userList.updateUser(user);
+		this.userList.updateUserActivity(user);
 		// The full qualified file name
 		stateFile = SAVE_DIR + "/" + stateFile;
 		// Clear all data from the trivia contest
@@ -396,7 +402,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markCorrect(int queueIndex, String caller, String operator) throws RemoteException {
-		this.userList.updateUser(caller);
+		this.userList.updateUserActivity(caller);
 		this.trivia.markCorrect(queueIndex, caller, operator);
 		this.log("Item "
 				+ queueIndex
@@ -412,7 +418,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markIncorrect(int queueIndex, String caller) throws RemoteException {
-		this.userList.updateUser(caller);
+		this.userList.updateUserActivity(caller);
 		this.trivia.markIncorrect(queueIndex, caller);
 		this.log("Item " + queueIndex + " in the queue is incorrect.");
 	}
@@ -424,7 +430,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markPartial(int queueIndex, String caller) throws RemoteException {
-		this.userList.updateUser(caller);
+		this.userList.updateUserActivity(caller);
 		this.trivia.markPartial(queueIndex, caller);
 		this.log("Item " + queueIndex + " in the queue is partially correct.");
 	}
@@ -436,7 +442,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void markUncalled(String user, int queueIndex) throws RemoteException {
-		this.userList.updateUser(user);
+		this.userList.updateUserActivity(user);
 		this.trivia.markUncalled(queueIndex);
 		this.log("Item " + queueIndex + " status reset to uncalled.");
 	}
@@ -476,7 +482,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	@Override
 	@WebMethod
 	public void newRound(String user) throws RemoteException {
-		this.userList.updateUser(user);
+		this.userList.updateUserActivity(user);
 		this.log("New round starting...");
 		this.trivia.newRound();
 	}
@@ -498,7 +504,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void open(String user, int qNumber, int qValue, String question) throws RemoteException {
-		this.userList.updateUser(user);
+		this.userList.updateUserActivity(user);
 		this.trivia.open(qNumber, qValue, question);
 		this.log("Question " + qNumber + " opened for " + qValue + " Points:\n" + question);
 	}
@@ -510,7 +516,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) throws RemoteException {
-		this.userList.updateUser(submitter);
+		this.userList.updateUserActivity(submitter);
 		this.trivia.proposeAnswer(qNumber, answer, submitter, confidence);
 		this.log(submitter + " submitted an answer for Q" + qNumber + " with a confidence of " + confidence + ":\n"
 				+ answer);
@@ -768,7 +774,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void setDiscrepancyText(String user, int rNumber, String discrepancyText) throws RemoteException {
-		this.userList.updateUser(user);
+		this.userList.updateUserActivity(user);
 		this.trivia.setDiscrepencyText(rNumber, discrepancyText);
 	}
 
@@ -785,7 +791,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	@Override
 	@WebMethod
 	public void setSpeed(String user) throws RemoteException {
-		this.userList.updateUser(user);
+		this.userList.updateUserActivity(user);
 		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a speed round");
 		this.trivia.setSpeed();
 	}
@@ -797,7 +803,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public void unsetSpeed(String user) throws RemoteException {
-		this.userList.updateUser(user);
+		this.userList.updateUserActivity(user);
 		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a normal round");
 		this.trivia.unsetSpeed();
 	}

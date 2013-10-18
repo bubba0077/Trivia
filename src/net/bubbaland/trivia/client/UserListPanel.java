@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -12,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -37,6 +39,7 @@ public class UserListPanel extends TriviaPanel {
 	protected static final Color	RESEARCHER_COLOR		= Color.BLACK;
 	protected static final Color	CALLER_COLOR			= Color.BLUE;
 	protected static final Color	TYPER_COLOR				= Color.RED;
+	protected static final Color	IDLE_COLOR				= Color.DARK_GRAY;
 
 	/**
 	 * Sizes
@@ -51,11 +54,13 @@ public class UserListPanel extends TriviaPanel {
 	/**
 	 * GUI elements that will need to be updated
 	 */
-	private final JLabel			header;
-	private final JList<String>		userList;
+	private final JLabel			header, idleHeader;
+	private final JList<String>		activeUserList;
+	private final JList<String>		passiveUserList;
 
 	/** Data */
-	private Hashtable<String, Role>	userHash;
+	private Hashtable<String, Role>	activeUserHash;
+	private Hashtable<String, Role>	passiveUserHash;
 
 	/** Data sources */
 	private final TriviaClient		client;
@@ -76,30 +81,60 @@ public class UserListPanel extends TriviaPanel {
 		// Create the user list header
 		constraints.gridx = 0;
 		constraints.gridy = 0;
+		constraints.weightx = 1.0;
+		constraints.weighty = 0.0;
 		this.header = this.enclosedLabel("", WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
 				constraints, FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		JPanel panel = new JPanel(new GridBagLayout());
+		panel.setBackground(BACKGROUND_COLOR);
+		panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		panel.setMinimumSize(new Dimension(WIDTH, HEIGHT));
 
-		// Create the user list
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		this.userList = new JList<String>();
-		this.userList.setLayoutOrientation(JList.VERTICAL);
-		this.userList.setVisibleRowCount(-1);
-		this.userList.setForeground(RESEARCHER_COLOR);
-		this.userList.setBackground(BACKGROUND_COLOR);
-		this.userList.setFont(this.userList.getFont().deriveFont(FONT_SIZE));
-		this.userList.setCellRenderer(new MyCellRenderer());
-
 		// Put the list in a scroll pane
-		final JScrollPane pane = new JScrollPane(this.userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		final JScrollPane pane = new JScrollPane(panel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		pane.setBorder(BorderFactory.createEmptyBorder());
 		pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		pane.setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		this.add(pane, constraints);
 
+		// Create the active user list
+		constraints.weightx = 1.0;
+		constraints.weighty = 0.0;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.insets = new Insets(0, 0, 0, 0);
+		this.activeUserList = new JList<String>();
+		this.activeUserList.setLayoutOrientation(JList.VERTICAL);
+		this.activeUserList.setVisibleRowCount(-1);
+		this.activeUserList.setForeground(RESEARCHER_COLOR);
+		this.activeUserList.setBackground(BACKGROUND_COLOR);
+		this.activeUserList.setFont(this.activeUserList.getFont().deriveFont(FONT_SIZE));
+		this.activeUserList.setCellRenderer(new MyCellRenderer());
+		panel.add(this.activeUserList, constraints);
+
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		this.idleHeader = new JLabel("", SwingConstants.CENTER);
+		this.idleHeader.setVerticalAlignment(SwingConstants.CENTER);
+		this.idleHeader.setFont(this.idleHeader.getFont().deriveFont(FONT_SIZE));
+		this.idleHeader.setForeground(IDLE_COLOR);
+		panel.add(this.idleHeader, constraints);
+
+		constraints.weighty = 1.0;
+		constraints.gridx = 0;
+		constraints.gridy = 2;
+		this.passiveUserList = new JList<String>();
+		this.passiveUserList.setLayoutOrientation(JList.VERTICAL);
+		this.passiveUserList.setVisibleRowCount(-1);
+		this.passiveUserList.setForeground(IDLE_COLOR);
+		this.passiveUserList.setBackground(BACKGROUND_COLOR);
+		this.passiveUserList.setFont(this.passiveUserList.getFont().deriveFont(FONT_SIZE));
+		panel.add(this.passiveUserList, constraints);
 	}
 
 	/**
@@ -107,12 +142,19 @@ public class UserListPanel extends TriviaPanel {
 	 */
 	@Override
 	public void update(boolean force) {
-		this.userHash = this.client.getUserHash();
-		final String[] users = new String[this.userHash.size()];
-		this.userHash.keySet().toArray(users);
+		this.activeUserHash = this.client.getActiveUserHash();
+		final String[] users = new String[this.activeUserHash.size()];
+		this.activeUserHash.keySet().toArray(users);
 		Arrays.sort(users);
 		this.header.setText("Active (" + users.length + ")");
-		this.userList.setListData(users);
+		this.activeUserList.setListData(users);
+
+		this.passiveUserHash = this.client.getPassiveUserHash();
+		final String[] idleUsers = new String[this.passiveUserHash.size()];
+		this.passiveUserHash.keySet().toArray(idleUsers);
+		Arrays.sort(idleUsers);
+		this.idleHeader.setText("Idle (" + idleUsers.length + ")");
+		this.passiveUserList.setListData(idleUsers);
 	}
 
 	/**
@@ -131,7 +173,7 @@ public class UserListPanel extends TriviaPanel {
 			Color color = null;
 
 			// Determine color based on the user role
-			switch (UserListPanel.this.userHash.get(value)) {
+			switch (UserListPanel.this.activeUserHash.get(value)) {
 				case CALLER:
 					color = CALLER_COLOR;
 					break;
