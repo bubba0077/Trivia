@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 
 import net.bubbaland.trivia.Trivia;
@@ -59,14 +60,14 @@ public class WorkflowPanel extends TriviaPanel {
 		constraints.gridy = 0;
 		this.add(this.workflowHeaderPanel, constraints);
 
-		constraints.gridx = 0;
-		constraints.gridy = 1;
-		this.add(this.workflowQlistPanel, constraints);
-
 		constraints.weighty = 1.0;
 		constraints.gridx = 0;
-		constraints.gridy = 2;
-		this.add(this.workflowQueuePanel, constraints);
+		constraints.gridy = 1;
+
+		final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.workflowQlistPanel,
+				this.workflowQueuePanel);
+		splitPane.setResizeWeight(0.0);
+		this.add(splitPane, constraints);
 
 		// Assign CTRL+O to open a new question
 		this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(

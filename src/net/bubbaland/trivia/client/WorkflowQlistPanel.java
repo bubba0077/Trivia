@@ -39,12 +39,12 @@ public class WorkflowQlistPanel extends TriviaPanel {
 	/**
 	 * Colors
 	 */
-	private static final Color			HEADER_TEXT_COLOR				= Color.white;
-	private static final Color			HEADER_BACKGROUND_COLOR			= Color.darkGray;
-	private static final Color			ODD_QUESTION_TEXT_COLOR			= Color.black;
-	private static final Color			EVEN_QUESTION_TEXT_COLOR		= Color.black;
-	private static final Color			ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
-	private static final Color			EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
+	private static final Color			HEADER_TEXT_COLOR				= Color.WHITE;
+	private static final Color			HEADER_BACKGROUND_COLOR			= Color.DARK_GRAY;
+	private static final Color			ODD_QUESTION_TEXT_COLOR			= Color.BLACK;
+	private static final Color			EVEN_QUESTION_TEXT_COLOR		= Color.BLACK;
+	private static final Color			ODD_QUESTION_BACKGROUND_COLOR	= Color.WHITE;
+	private static final Color			EVEN_QUESTION_BACKGROUND_COLOR	= Color.LIGHT_GRAY;
 
 	/**
 	 * Sizes
@@ -75,7 +75,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 	private static final float			QUESTION_FONT_SIZE				= (float) 12.0;
 
 	/** The number of open questions to show at one time */
-	private static final int			MIN_QUESTIONS_SHOW				= 4;
+	private static final int			DEFAULT_QUESTIONS_SHOW			= 4;
 
 	/** Sub-panel that will hold the open questions */
 	private final WorkflowQListSubPanel	workflowQListSubPanel;
@@ -141,8 +141,8 @@ public class WorkflowQlistPanel extends TriviaPanel {
 		this.workflowQListSubPanel = new WorkflowQListSubPanel(server, client);
 		final JScrollPane scrollPane = new JScrollPane(this.workflowQListSubPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setPreferredSize(new Dimension(0, MIN_QUESTIONS_SHOW * QUESTION_HEIGHT + 3));
-		scrollPane.setMinimumSize(new Dimension(0, MIN_QUESTIONS_SHOW * QUESTION_HEIGHT + 3));
+		scrollPane.setPreferredSize(new Dimension(0, DEFAULT_QUESTIONS_SHOW * QUESTION_HEIGHT + 3));
+		scrollPane.setMinimumSize(new Dimension(0, QUESTION_HEIGHT + 3));
 		this.add(scrollPane, constraints);
 	}
 
@@ -212,7 +212,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			constraints.fill = GridBagConstraints.BOTH;
 			constraints.anchor = GridBagConstraints.NORTH;
 			constraints.weightx = 0.0;
-			constraints.weighty = 1.0;
+			constraints.weighty = 0.0;
 
 			/**
 			 * Create the GUI elements
@@ -282,7 +282,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				panel.add(this.closeButtons[q], buttonConstraints);
 				this.closeButtons[q].addActionListener(this);
 
-				if (q > MIN_QUESTIONS_SHOW) {
+				if (q > DEFAULT_QUESTIONS_SHOW) {
 					this.qNumberLabels[q].getParent().setVisible(false);
 					this.qValueLabels[q].getParent().setVisible(false);
 					this.qTextAreas[q].getParent().setVisible(false);
@@ -291,6 +291,19 @@ public class WorkflowQlistPanel extends TriviaPanel {
 					this.closeButtons[q].getParent().setVisible(false);
 				}
 			}
+
+			/**
+			 * Create a blank spacer row at the bottom
+			 */
+			constraints.gridx = 0;
+			constraints.gridy = this.nQuestionsMax;
+			constraints.gridwidth = 5;
+			constraints.weightx = 1.0;
+			constraints.weighty = 1.0;
+			final JPanel blank = new JPanel();
+			blank.setBackground(HEADER_BACKGROUND_COLOR);
+			blank.setPreferredSize(new Dimension(0, 0));
+			this.add(blank, constraints);
 
 			/**
 			 * Build context menu
@@ -483,9 +496,9 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 			int nQuestionsShow;
 			if (trivia.nUnopened() > 0) {
-				nQuestionsShow = Math.max(nOpen + 1, MIN_QUESTIONS_SHOW);
+				nQuestionsShow = nOpen + 1;
 			} else {
-				nQuestionsShow = Math.max(nOpen, MIN_QUESTIONS_SHOW);
+				nQuestionsShow = nOpen;
 			}
 
 			// Show rows equal to the greater of the number of questions to show and the number of open questions
