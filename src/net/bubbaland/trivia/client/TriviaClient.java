@@ -79,7 +79,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	// URL for RMI server
 	final static private String	TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
 	// URL for Wiki
-	final static private String	WIKI_URL			= "https://github.com/bubba0077/Trivia/wiki";
+	final static private String	WIKI_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
 	// URL for the IRC client
 	final static private String	IRC_CLIENT_URL		= "http://webchat.freenode.net/";
 	// IRC channel to join on connection to IRC server
