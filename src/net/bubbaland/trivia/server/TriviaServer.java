@@ -197,8 +197,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	}
 
 	@Override
-	public Hashtable<String, Role> getPassiveUsers(int window, int timeout) throws RemoteException {
-		return this.userList.getPassive(window, timeout);
+	public Hashtable<String, Role> getIdleUsers(int window, int timeout) throws RemoteException {
+		return this.userList.getIdle(window, timeout);
 	}
 
 	@Override
@@ -723,47 +723,49 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			System.out.println("Couldn't save data to file " + filename);
 		}
 
-		// Save place chart
-		filename = CHART_DIR + "/" + roundString + "_placeChart.png";
-		try {
-			File file = new File(filename);
-			ChartUtilities.saveChartAsPNG(file, TriviaCharts.PlaceChartFactory(trivia), CHART_WIDTH, CHART_HEIGHT);
-			this.log("Saved place chart to " + filename);
-		} catch (IOException exception) {
-			System.out.println("Couldn't save place chart to file " + filename);
-		}
+		if (trivia.isAnnounced(1)) {
+			// Save place chart
+			filename = CHART_DIR + "/" + roundString + "_placeChart.png";
+			try {
+				File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, TriviaCharts.PlaceChartFactory(trivia), CHART_WIDTH, CHART_HEIGHT);
+				this.log("Saved place chart to " + filename);
+			} catch (IOException exception) {
+				System.out.println("Couldn't save place chart to file " + filename);
+			}
 
-		// Save score by round chart
-		filename = CHART_DIR + "/" + roundString + "_scoreByRoundChart.png";
-		try {
-			File file = new File(filename);
-			ChartUtilities.saveChartAsPNG(file, TriviaCharts.ScoreByRoundChartFactory(trivia), CHART_WIDTH,
-					CHART_HEIGHT);
-			this.log("Saved score by round chart to " + filename);
-		} catch (IOException exception) {
-			System.out.println("Couldn't save score by round chart to file " + filename);
-		}
+			// Save score by round chart
+			filename = CHART_DIR + "/" + roundString + "_scoreByRoundChart.png";
+			try {
+				File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, TriviaCharts.ScoreByRoundChartFactory(trivia), CHART_WIDTH,
+						CHART_HEIGHT);
+				this.log("Saved score by round chart to " + filename);
+			} catch (IOException exception) {
+				System.out.println("Couldn't save score by round chart to file " + filename);
+			}
 
-		// Save cumulative score chart
-		filename = CHART_DIR + "/" + roundString + "_cumulativeScoreChart.png";
-		try {
-			File file = new File(filename);
-			ChartUtilities.saveChartAsPNG(file, TriviaCharts.CumulativePointsChartFactory(trivia), CHART_WIDTH,
-					CHART_HEIGHT);
-			this.log("Saved cumulative score chart to " + filename);
-		} catch (IOException exception) {
-			System.out.println("Couldn't save cumulative score chart to file " + filename);
-		}
+			// Save cumulative score chart
+			filename = CHART_DIR + "/" + roundString + "_cumulativeScoreChart.png";
+			try {
+				File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, TriviaCharts.CumulativePointsChartFactory(trivia), CHART_WIDTH,
+						CHART_HEIGHT);
+				this.log("Saved cumulative score chart to " + filename);
+			} catch (IOException exception) {
+				System.out.println("Couldn't save cumulative score chart to file " + filename);
+			}
 
-		// Save team comparison chart
-		filename = CHART_DIR + "/" + roundString + "_teamComparisonChart.png";
-		try {
-			File file = new File(filename);
-			ChartUtilities.saveChartAsPNG(file, TriviaCharts.TeamComparisonChartFactory(trivia), CHART_WIDTH,
-					CHART_HEIGHT);
-			this.log("Saved team comparison chart to " + filename);
-		} catch (IOException exception) {
-			System.out.println("Couldn't save team comparison chart to file " + filename);
+			// Save team comparison chart
+			filename = CHART_DIR + "/" + roundString + "_teamComparisonChart.png";
+			try {
+				File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, TriviaCharts.TeamComparisonChartFactory(trivia), CHART_WIDTH,
+						CHART_HEIGHT);
+				this.log("Saved team comparison chart to " + filename);
+			} catch (IOException exception) {
+				System.out.println("Couldn't save team comparison chart to file " + filename);
+			}
 		}
 
 	}

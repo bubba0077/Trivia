@@ -129,7 +129,7 @@ public interface TriviaInterface extends Remote {
 	 *         timeout window
 	 * @throws RemoteException
 	 */
-	public Hashtable<String, Role> getPassiveUsers(int window, int timeout) throws RemoteException;
+	public Hashtable<String, Role> getIdleUsers(int window, int timeout) throws RemoteException;
 
 	/**
 	 * Check a user in when they first start their client.

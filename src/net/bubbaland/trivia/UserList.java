@@ -12,7 +12,7 @@ import java.util.Hashtable;
 public class UserList {
 
 	public enum Role {
-		CALLER, TYPER, RESEARCHER
+		TYPIST, CALLER, RESEARCHER, IDLE
 	}
 
 	/** Data */
@@ -81,7 +81,7 @@ public class UserList {
 	 * @return The user names and roles of users who have not been active but have still received an update within the
 	 *         timeout window
 	 */
-	public Hashtable<String, Role> getPassive(int window, int timeout) {
+	public Hashtable<String, Role> getIdle(int window, int timeout) {
 		final Date currentDate = new Date();
 		final Hashtable<String, Role> userHash = new Hashtable<String, Role>(0);
 
@@ -90,7 +90,7 @@ public class UserList {
 			final Date lastDate = this.passiveUserList.get(user);
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
 			if (diff < timeout) {
-				userHash.put(user, this.roleList.get(user));
+				userHash.put(user, Role.IDLE);
 			}
 		}
 

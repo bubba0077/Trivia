@@ -328,12 +328,12 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		roleOptions.add(roleOption);
 		roleMenu.add(roleOption);
 
-		roleOption = new JRadioButtonMenuItem("Typer");
-		roleOption.setActionCommand("Typer");
+		roleOption = new JRadioButtonMenuItem("Typist");
+		roleOption.setActionCommand("Typist");
 		roleOption.setMnemonic(KeyEvent.VK_T);
 		roleOption.addActionListener(this);
 		roleOption.setSelected(false);
-		roleOption.setForeground(UserListPanel.TYPER_COLOR);
+		roleOption.setForeground(UserListPanel.TYPIST_COLOR);
 		roleOptions.add(roleOption);
 		roleMenu.add(roleOption);
 
@@ -528,9 +528,9 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 				// Triggered by Caller Role menu item
 				this.setRole(Role.CALLER);
 				break;
-			case "Typer":
-				// Triggered by Typer Role menu item
-				this.setRole(Role.TYPER);
+			case "Typist":
+				// Triggered by Typist Role menu item
+				this.setRole(Role.TYPIST);
 				break;
 			case "Researcher":
 				// Triggered by Researcher Role menu item
@@ -764,7 +764,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 				newRounds = this.server.getChangedRounds(user, oldVersions);
 				currentRound = this.server.getCurrentRound();
 				this.activeUserHash = this.server.getActiveUsers(USER_LIST_WINDOW);
-				this.passiveUserHash = this.server.getPassiveUsers(USER_LIST_WINDOW, USER_LIST_TIMEOUT);
+				this.passiveUserHash = this.server.getIdleUsers(USER_LIST_WINDOW, USER_LIST_TIMEOUT);
 				success = true;
 			} catch (final RemoteException e) {
 				this.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
