@@ -31,9 +31,9 @@ import net.bubbaland.trivia.client.TriviaClient.QueueSort;
 
 /**
  * A panel that show the current answers in the queue
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 
@@ -62,7 +62,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 	private static final int			ANSWER_HEIGHT			= 40;
 
 	private static final int			TIME_WIDTH				= 60;
-	private static final int			QNUM_WIDTH				= 40;
+	private static final int			QNUM_WIDTH				= 54;
 	private static final int			ANSWER_WIDTH			= 50;
 	private static final int			CONFIDENCE_WIDTH		= 35;
 	private static final int			SUB_CALLER_WIDTH		= 100;
@@ -100,7 +100,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 
 	/**
 	 * Instantiates a new workflow queue panel.
-	 *
+	 * 
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -222,7 +222,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -339,7 +339,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 
 		/**
 		 * Instantiates a new workflow queue sub panel.
-		 *
+		 * 
 		 * @param server
 		 *            the server
 		 * @param client
@@ -375,7 +375,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
 		 */
 		@SuppressWarnings("unchecked")
@@ -433,7 +433,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
