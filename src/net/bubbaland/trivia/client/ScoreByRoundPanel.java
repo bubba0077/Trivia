@@ -39,12 +39,12 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	final private static Color			EARNED_COLOR			= Color.GREEN;
 	final private static Color			VALUE_COLOR				= new Color(30, 144, 255);
 	final private static Color			PERCENT_COLOR			= Color.PINK;
-	final private static Color			CUMULATIVE_EARNED_COLOR	= Color.GREEN.brighter();
-	final private static Color			CUMULATIVE_VALUE_COLOR	= ( new Color(30, 144, 255) ).brighter();
+	final private static Color			CUMULATIVE_EARNED_COLOR	= EARNED_COLOR.brighter();
+	final private static Color			CUMULATIVE_VALUE_COLOR	= VALUE_COLOR.brighter();
 	final private static Color			PERCENT_TOTAL_COLOR		= Color.PINK;
 	final private static Color			ANNOUNCED_COLOR			= Color.YELLOW;
 	final private static Color			PLACE_COLOR				= Color.ORANGE;
-	final private static Color			DISCREPANCY_COLOR		= Color.RED;
+	final private static Color			DISCREPANCY_COLOR		= Color.WHITE;
 
 	/** Interval specifying how often the alternate color should be used */
 	final private static int			ALT_INTERVAL			= 5;
@@ -53,7 +53,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	 * Sizes
 	 */
 	final private static int			HEADER_HEIGHT			= 28;
-	final private static int			ROW_HEIGHT				= 12;
+	final private static int			ROW_HEIGHT				= 24;
 
 	final private static int			HOUR_WIDTH				= 35;
 	final private static int			EARNED_WIDTH			= 65;
@@ -71,6 +71,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	 */
 	final private static float			HEADER_FONT_SIZE		= 12.0f;
 	final private static float			DATA_FONT_SIZE			= 18.0f;
+	final private static float			DISCREPANCY_FONT_SIZE	= 12.0f;
 
 	/** The scroll panel that will hold the round data */
 	final private InternalScrollPanel	internalScrollPanel;
@@ -341,7 +342,8 @@ public class ScoreByRoundPanel extends TriviaPanel {
 				this.discrepancyTextField[r].setBackground(bColor.brighter());
 				this.discrepancyTextField[r].setForeground(DISCREPANCY_COLOR);
 				this.discrepancyTextField[r].setBorder(BorderFactory.createEmptyBorder());
-				this.discrepancyTextField[r].setFont(this.discrepancyTextField[r].getFont().deriveFont(DATA_FONT_SIZE));
+				this.discrepancyTextField[r].setFont(this.discrepancyTextField[r].getFont().deriveFont(
+						DISCREPANCY_FONT_SIZE));
 				this.discrepancyTextField[r].addActionListener(this);
 				this.add(this.discrepancyTextField[r], constraints);
 
