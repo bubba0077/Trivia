@@ -7,9 +7,9 @@ import javax.swing.JTextField;
 
 /**
  * Creates prompt for user name.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class UserLogin extends TriviaDialogPanel {
 
@@ -21,7 +21,7 @@ public class UserLogin extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new user login.
-	 *
+	 * 
 	 * @param client
 	 *            the client
 	 */
@@ -50,9 +50,17 @@ public class UserLogin extends TriviaDialogPanel {
 		this.add(userTextField, c);
 		userTextField.addAncestorListener(this);
 
+		String userName = client.getUser();
+		int options;
+		if (userName == null) {
+			options = JOptionPane.DEFAULT_OPTION;
+		} else {
+			userTextField.setText(userName);
+			options = JOptionPane.OK_CANCEL_OPTION;
+		}
+
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "User Login", this, JOptionPane.PLAIN_MESSAGE,
-				JOptionPane.DEFAULT_OPTION);
+		this.dialog = new TriviaDialog(client.getFrame(), "User Login", this, JOptionPane.PLAIN_MESSAGE, options);
 		this.dialog.setVisible(true);
 
 		// Set the user name to input value
