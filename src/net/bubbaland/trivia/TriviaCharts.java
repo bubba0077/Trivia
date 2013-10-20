@@ -2,6 +2,7 @@ package net.bubbaland.trivia;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
@@ -43,7 +44,7 @@ public class TriviaCharts {
 
 	/**
 	 * Create an XY line chart of the team's place after each round.
-	 *
+	 * 
 	 * @param trivia
 	 *            The trivia data to use
 	 * @return An XY line chart of the team's place after each round
@@ -113,7 +114,7 @@ public class TriviaCharts {
 
 	/**
 	 * Create a stacked bar plot of the team's score in each round.
-	 *
+	 * 
 	 * @param trivia
 	 *            The trivia data
 	 * @return A stacked bar plot of the team's score in each round
@@ -147,7 +148,10 @@ public class TriviaCharts {
 		dataset.addSeries(earnedSeries);
 		dataset.addSeries(valueSeries);
 
-		// Create a new XYBar renderer and format
+		// create a new chart with the plot
+		final JFreeChart chart = ChartFactory.createStackedXYAreaChart("Points by Round", "Round", "Points", dataset);
+
+		// Create a new XYBar renderer to override the normal one
 		final XYBarRenderer renderer = new StackedXYBarRenderer(0.0);
 		renderer.setBarPainter(new StandardXYBarPainter());
 		renderer.setDrawBarOutline(false);
@@ -157,8 +161,9 @@ public class TriviaCharts {
 		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}", NumberFormat
 				.getIntegerInstance(), NumberFormat.getIntegerInstance()));
 
-		// Create the new bar plot
-		final XYPlot plot = new XYPlot(dataset, new NumberAxis("Round"), new NumberAxis("Points"), renderer);
+		// Replace the renderer
+		final XYPlot plot = chart.getXYPlot();
+		plot.setRenderer(renderer);
 
 		// Set the background color
 		plot.setBackgroundPaint(BACKGROUND_COLOR);
@@ -177,17 +182,13 @@ public class TriviaCharts {
 		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
 		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
 
-		// create a new chart with the plot
-		final JFreeChart chart = new JFreeChart(plot);
-		chart.setTitle("Points by Round");
-
 		return chart;
 
 	}
 
 	/**
 	 * Creates a stacked XY plot of the cumulative score after each round.
-	 *
+	 * 
 	 * @param trivia
 	 *            The trivia data
 	 * @return A stacked XY plot of the cumulative score after each round
@@ -261,7 +262,7 @@ public class TriviaCharts {
 
 	/**
 	 * Create an XY plot comparing each team's score in each round relative to ours.
-	 *
+	 * 
 	 * @param trivia
 	 *            The trivia data
 	 * @return An XY plot comparing team scores
@@ -343,7 +344,7 @@ public class TriviaCharts {
 
 	/**
 	 * Make a circle.
-	 *
+	 * 
 	 * @param radius
 	 *            the radius
 	 * @return the shape

@@ -544,7 +544,6 @@ public class RoundQlistPanel extends TriviaPanel {
 
 			this.speed = newSpeed;
 			for (int q = 0; q < nQuestions; q++) {
-				// System.out.println(q + " " + qUpdated[q]);
 				if (qUpdated[q] || force) {
 					if (beenOpens[q]) {
 						// Only show values for questions that have been asked

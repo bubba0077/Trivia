@@ -146,7 +146,6 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		this.dialog.setVisible(true);
 
 		// If the OK button was pressed, add the proposed answer to the queue
-		System.out.println(this.dialog.getValue());
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			final String answer = answerTextArea.getText();
