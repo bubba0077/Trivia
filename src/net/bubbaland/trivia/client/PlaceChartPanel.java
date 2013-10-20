@@ -3,7 +3,7 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaCharts;
+import net.bubbaland.trivia.TriviaChartFactory;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -72,7 +72,7 @@ public class PlaceChartPanel extends TriviaPanel {
 
 		// If there are changes, remake the plot
 		if (change || force) {
-			JFreeChart chart = TriviaCharts.PlaceChartFactory(trivia);
+			JFreeChart chart = TriviaChartFactory.makePlaceChart(trivia);
 
 			// If there is an old chart panel, remove it
 			if (this.chartPanel != null) {

@@ -2,7 +2,7 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaCharts;
+import net.bubbaland.trivia.TriviaChartFactory;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -73,7 +73,7 @@ public class ScoreByRoundChartPanel extends TriviaPanel {
 
 		// If the data has changed, remake the chart
 		if (change || force) {
-			final JFreeChart chart = TriviaCharts.ScoreByRoundChartFactory(trivia);
+			final JFreeChart chart = TriviaChartFactory.makeScoreByRoundChart(trivia);
 
 			// If a chart panel already exists, remove it
 			if (this.chartPanel != null) {

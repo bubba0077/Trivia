@@ -25,7 +25,7 @@ import org.jfree.data.xy.DefaultTableXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class TriviaCharts {
+public class TriviaChartFactory {
 
 	/** Font Size */
 	final private static float	AXIS_FONT_SIZE		= 16.0f;
@@ -48,7 +48,7 @@ public class TriviaCharts {
 	 *            The trivia data to use
 	 * @return An XY line chart of the team's place after each round
 	 */
-	public static JFreeChart PlaceChartFactory(Trivia trivia) {
+	public static JFreeChart makePlaceChart(Trivia trivia) {
 
 		final int nRounds = trivia.getNRounds();
 		final int nTeams = trivia.getNTeams();
@@ -118,7 +118,7 @@ public class TriviaCharts {
 	 *            The trivia data
 	 * @return A stacked bar plot of the team's score in each round
 	 */
-	public static JFreeChart ScoreByRoundChartFactory(Trivia trivia) {
+	public static JFreeChart makeScoreByRoundChart(Trivia trivia) {
 
 		final int nRounds = trivia.getNRounds();
 
@@ -192,7 +192,7 @@ public class TriviaCharts {
 	 *            The trivia data
 	 * @return A stacked XY plot of the cumulative score after each round
 	 */
-	public static JFreeChart CumulativePointsChartFactory(Trivia trivia) {
+	public static JFreeChart makeCumulativePointChart(Trivia trivia) {
 
 		final int nRounds = trivia.getNRounds();
 
@@ -266,7 +266,7 @@ public class TriviaCharts {
 	 *            The trivia data
 	 * @return An XY plot comparing team scores
 	 */
-	public static JFreeChart TeamComparisonChartFactory(Trivia trivia) {
+	public static JFreeChart makeTeamComparisonChart(Trivia trivia) {
 
 		final int nRounds = trivia.getNRounds();
 

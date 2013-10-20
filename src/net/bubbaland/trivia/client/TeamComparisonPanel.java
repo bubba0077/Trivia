@@ -2,7 +2,7 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaCharts;
+import net.bubbaland.trivia.TriviaChartFactory;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -42,7 +42,7 @@ public class TeamComparisonPanel extends TriviaPanel {
 
 		if (change) {
 			// Make a new team comparison chart
-			JFreeChart chart = TriviaCharts.TeamComparisonChartFactory(trivia);
+			JFreeChart chart = TriviaChartFactory.makeTeamComparisonChart(trivia);
 
 			// Replace the existing chart, if there is one
 			if (this.chartPanel != null) {

@@ -2,7 +2,7 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaCharts;
+import net.bubbaland.trivia.TriviaChartFactory;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -74,7 +74,7 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 		// If there has been a change, remake the chart
 		if (change || force) {
 			// Create the Stacked XY plot
-			final JFreeChart chart = TriviaCharts.CumulativePointsChartFactory(trivia);
+			final JFreeChart chart = TriviaChartFactory.makeCumulativePointChart(trivia);
 
 			// Remove the old chart if it exists
 			if (this.chartPanel != null) {
