@@ -48,6 +48,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 	private static final Color			ODD_BACKGROUND_COLOR	= new Color(30, 30, 30);
 
 	private static final Color			EVEN_BACKGROUND_COLOR	= Color.BLACK;
+	private static final Color			DUPLICATE_COLOR			= Color.GRAY;
 	private static final Color			NOT_CALLED_IN_COLOR		= Color.WHITE;
 	private static final Color			CALLING_COLOR			= Color.CYAN;
 	private static final Color			INCORRECT_COLOR			= Color.RED;
@@ -80,8 +81,8 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 	private static final int			DEFAULT_N_ANSWERS_SHOW	= 4;
 
 	/** Valid statuses for queue items */
-	private static final String[]		STATUSES				= { "Not Called In", "Calling", "Incorrect", "Partial",
-			"Correct"											};
+	private static final String[]		STATUSES				= { "Duplicate", "Not Called In", "Calling",
+			"Incorrect", "Partial", "Correct"					};
 
 	/** Sort icons */
 	private final ImageIcon				upArrow;
@@ -394,6 +395,9 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 					tryNumber++;
 					try {
 						switch (newStatus) {
+							case "Duplicate":
+								this.server.markDuplicate(this.client.getUser(), queueIndex);
+								break;
 							case "Not Called In":
 								this.server.markUncalled(this.client.getUser(), queueIndex);
 								break;
@@ -442,6 +446,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 			final Trivia trivia = this.client.getTrivia();
 
 			final boolean hideClosed = this.client.hideClosed();
+			final boolean hideDuplicates = this.client.hideDuplicates();
 			final QueueSort sortMethod = this.client.getQueueSort();
 
 			// Get the queue data from the server
@@ -505,7 +510,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 				this.lastStatus.set(a, newStatus);
 				final boolean closed = !trivia.isOpen(newQNumber);
 
-				if (!( hideClosed && closed )) {
+				if (!( hideClosed && closed ) && !( hideDuplicates && newStatus.equals("Duplicate") )) {
 					shownRows++;
 				}
 
@@ -514,6 +519,9 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 					Color color = NOT_CALLED_IN_COLOR;
 					final int statusIndex = Arrays.asList(STATUSES).indexOf(newStatus);
 					switch (newStatus) {
+						case "Duplicate":
+							color = DUPLICATE_COLOR;
+							break;
 						case "Not Called In":
 							color = NOT_CALLED_IN_COLOR;
 							break;
@@ -590,7 +598,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 						this.statusComboBoxes.get(a).addItemListener(listener);
 					}
 
-					if (hideClosed && closed) {
+					if (( hideClosed && closed ) || ( hideDuplicates && newStatus.equals("Duplicate") )) {
 						// Hide this row
 						this.queuenumberLabels.get(a).setVisible(false);
 						this.timestampLabels.get(a).setVisible(false);

@@ -53,9 +53,9 @@ import net.bubbaland.trivia.UserList.Role;
 
 /**
  * Provides the root functionality for connecting to the trivia server and creating the associated GUI.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class TriviaClient extends TriviaPanel implements ActionListener, WindowListener {
 
@@ -107,7 +107,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	// The user's name
 	private volatile String						user;
 	// The Hide Closed menu item
-	private volatile boolean					hideClosed;
+	private volatile boolean					hideClosed, hideDuplicates;
 	// Hashtable of active users and roles
 	private volatile Hashtable<String, Role>	activeUserHash;
 	// Hashtable of idle users and roles
@@ -117,6 +117,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	// Sort menu items
 	final private JMenuItem						hideClosedMenuItem;
+	final private JMenuItem						hideDuplicatesMenuItem;
 	final private JMenuItem						sortTimestampAscendingMenuItem;
 	final private JMenuItem						sortTimestampDescendingMenuItem;
 	final private JMenuItem						sortQNumberAscendingMenuItem;
@@ -131,7 +132,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Creates a new trivia client GUI
-	 *
+	 * 
 	 * @param server
 	 *            The RMI Server
 	 */
@@ -198,11 +199,11 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		this.hideClosedMenuItem = new JCheckBoxMenuItem("Hide closed questions");
 		this.hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
 		this.hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
-		String loadedHide = loadProperty("hideClosed");
-		if (loadedHide == null) {
-			loadedHide = "true";
+		String loadHideClosed = loadProperty("hideClosed");
+		if (loadHideClosed == null) {
+			loadHideClosed = "true";
 		}
-		if (loadedHide.equals("false")) {
+		if (loadHideClosed.equals("false")) {
 			this.hideClosedMenuItem.setSelected(false);
 			this.hideClosed = false;
 		} else {
@@ -212,6 +213,26 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		this.hideClosedMenuItem.setActionCommand("Hide Closed");
 		this.hideClosedMenuItem.addActionListener(this);
 		menu.add(this.hideClosedMenuItem);
+
+		this.hideDuplicatesMenuItem = new JCheckBoxMenuItem("Hide duplicate questions");
+		this.hideDuplicatesMenuItem.setMnemonic(KeyEvent.VK_D);
+		this.hideDuplicatesMenuItem.setDisplayedMnemonicIndex(5);
+		this.hideDuplicatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+		String loadedHideDuplicates = loadProperty("hideDuplicates");
+		if (loadedHideDuplicates == null) {
+			loadedHideDuplicates = "true";
+		}
+		if (loadHideClosed.equals("false")) {
+			this.hideDuplicatesMenuItem.setSelected(false);
+			this.hideDuplicates = false;
+		} else {
+			this.hideDuplicatesMenuItem.setSelected(true);
+			this.hideDuplicates = true;
+		}
+		this.hideDuplicatesMenuItem.setActionCommand("Hide Duplicates");
+		this.hideDuplicatesMenuItem.addActionListener(this);
+		menu.add(this.hideDuplicatesMenuItem);
+
 
 		final JMenu sortMenu = new JMenu("Sort by...");
 		sortMenu.setMnemonic(KeyEvent.VK_S);
@@ -494,6 +515,12 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 				saveProperty("hideClosed", this.hideClosed + "");
 				this.update(true);
 				break;
+			case "Hide Duplicates":
+				// Triggered by change to Hide Closed menu item
+				this.hideDuplicates = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
+				saveProperty("hideDuplicates", this.hideDuplicates + "");
+				this.update(true);
+				break;
 			case "Sort Timestamp Ascending":
 				// Triggered by Timestamp Sort menu item
 				setSort(QueueSort.TIMESTAMP_ASCENDING);
@@ -569,7 +596,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Get the tabbed content pane.
-	 *
+	 * 
 	 * @return The tabbed content pane
 	 */
 	public JTabbedPane getBook() {
@@ -578,7 +605,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Get the root frame for this application.
-	 *
+	 * 
 	 * @return The root frame for the application
 	 */
 	public JFrame getFrame() {
@@ -587,7 +614,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Get the answer queue sort method.
-	 *
+	 * 
 	 * @return The sort method
 	 */
 
@@ -598,7 +625,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	/**
 	 * Return the local Trivia object. When updating the GUI, always get the current Trivia object first to ensure the
 	 * most recent data is used. Components should always use this local version to read data to limit server traffic.
-	 *
+	 * 
 	 * @return The local Trivia object
 	 */
 	public Trivia getTrivia() {
@@ -607,7 +634,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Gets the user name.
-	 *
+	 * 
 	 * @return The user name
 	 */
 	public String getUser() {
@@ -616,7 +643,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Get the hash of active users and roles.
-	 *
+	 * 
 	 * @return The hashtable of users and roles
 	 */
 	public Hashtable<String, Role> getActiveUserHash() {
@@ -625,7 +652,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Get the hash of idle users and roles.
-	 *
+	 * 
 	 * @return The hashtable of users and roles
 	 */
 	public Hashtable<String, Role> getPassiveUserHash() {
@@ -640,8 +667,16 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 
 	/**
+	 * Determine whether duplicate answers should be hidden in the answer queue.
+	 */
+	public boolean hideDuplicates() {
+		return this.hideDuplicates;
+	}
+
+
+	/**
 	 * Display message in the status bar and in console
-	 *
+	 * 
 	 * @param message
 	 *            Message to log
 	 */
@@ -654,7 +689,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Change the user's role.
-	 *
+	 * 
 	 * @param role
 	 */
 	private void setRole(Role role) {
@@ -680,7 +715,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Sets the user name
-	 *
+	 * 
 	 * @param user
 	 *            The new user name
 	 */
@@ -710,7 +745,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Set the answer queue sort method and save to the settings file.
-	 *
+	 * 
 	 * @param newSort
 	 *            The new sort method
 	 */
@@ -874,7 +909,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Load the saved position and size of the window from file. If none found, use preferred size of components.
-	 *
+	 * 
 	 * @param window
 	 *            The window whose position and size is to be loaded
 	 */
@@ -903,7 +938,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Load a property from the settings file.
-	 *
+	 * 
 	 * @param propName
 	 *            The property name
 	 * @return The property's value
@@ -925,10 +960,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	/**
 	 * Entry point for the client application. Only the first argument is used. If the first argument is "useFX", the
 	 * client will include an IRC client panel.
-	 *
+	 * 
 	 * @param args
 	 *            Command line arguments; only "useFX" is recognized as an argument
-	 *
+	 * 
 	 */
 	public static void main(String[] args) {
 		boolean useFX = false;
@@ -941,11 +976,11 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Convert a cardinal number into its ordinal counterpart.
-	 *
+	 * 
 	 * @param cardinal
 	 *            The number to convert to ordinal form
 	 * @return String with the ordinal representation of the number (e.g., 1st, 2nd, 3rd, etc.)
-	 *
+	 * 
 	 */
 	public static String ordinalize(int cardinal) {
 		// Short-circuit for teen numbers that don't follow normal rules
@@ -966,10 +1001,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Save the position and size of the window to file.
-	 *
+	 * 
 	 * @param window
 	 *            The window whose size and position is to be saved
-	 *
+	 * 
 	 */
 	public static void savePosition(Window window) {
 		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
@@ -1005,7 +1040,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Saves a property to the settings file.
-	 *
+	 * 
 	 * @param propName
 	 *            Name of the property to save
 	 * @param value
@@ -1026,7 +1061,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		try {
 			final BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
 			props.store(outfileBuffer, "Trivia");
-			System.out.println(propName + " " + value);
 			outfileBuffer.close();
 		} catch (final IOException e) {
 			System.out.println("Error saving property.");
@@ -1035,7 +1069,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Clear all saved data from file.
-	 *
+	 * 
 	 */
 	public static void resetPositions() {
 		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
@@ -1051,7 +1085,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Private class to handle background downloading of Trivia object from server.
-	 *
+	 * 
 	 */
 	private class TriviaFetcher extends SwingWorker<Void, Void> {
 
@@ -1094,7 +1128,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	/**
 	 * Custom Runnable class to allow passing of command line argument into invokeLater.
-	 *
+	 * 
 	 */
 	private static class TriviaRunnable implements Runnable {
 		private final boolean	useFX;

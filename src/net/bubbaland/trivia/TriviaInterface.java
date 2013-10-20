@@ -8,17 +8,17 @@ import net.bubbaland.trivia.UserList.Role;
 
 /**
  * The interface for the trivia server.
- *
+ * 
  * <code>TriviaInterface</code> provides the method API for calls to the trivia server.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public interface TriviaInterface extends Remote {
 
 	/**
 	 * Call an answer in.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location of the answer in the queue
 	 * @param caller
@@ -30,7 +30,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Change a user's name.
-	 *
+	 * 
 	 * @param oldUser
 	 *            The old user name
 	 * @param newUser
@@ -41,7 +41,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Close a question.
-	 *
+	 * 
 	 * @param user
 	 *            The user's name
 	 * @param qNumber
@@ -55,7 +55,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Edit question data.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -79,7 +79,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Get rounds that have changed. This is the primary method for retrieving updated data from the server.
-	 *
+	 * 
 	 * @param user
 	 *            The user requesting data
 	 * @param oldVersions
@@ -91,7 +91,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Get the current round number
-	 *
+	 * 
 	 * @return The current round number
 	 * @throws RemoteException
 	 */
@@ -100,7 +100,7 @@ public interface TriviaInterface extends Remote {
 	/**
 	 * Get the full trivia data structure. This is used primarily when a client starts to initialize their local trivia
 	 * data.
-	 *
+	 * 
 	 * @return The Trivia object
 	 * @throws RemoteException
 	 *             A remote exception
@@ -109,7 +109,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Get the users and roles that have been active. Active means having changed something on the server.
-	 *
+	 * 
 	 * @param window
 	 *            Number of seconds without making a change before becoming idle
 	 * @return The user names and roles of users who have been active within the activity window
@@ -120,7 +120,7 @@ public interface TriviaInterface extends Remote {
 	/**
 	 * Get the users and roles that are idle. Idle means they are still contacting the server for updates, but haven't
 	 * made any changes.
-	 *
+	 * 
 	 * @param window
 	 *            Number of seconds without making a change before becoming idle
 	 * @param timeout
@@ -133,7 +133,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Check a user in when they first start their client.
-	 *
+	 * 
 	 * @param user
 	 *            The user's name
 	 * @throws RemoteException
@@ -142,7 +142,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Gets a list of available saves.
-	 *
+	 * 
 	 * @return Array of save file names
 	 * @throws RemoteException
 	 *             A remote exception
@@ -151,12 +151,12 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Load a save state from file.
-	 *
+	 * 
 	 * @param user
 	 *            The user's name
 	 * @param stateFile
 	 *            The name of the save state file to load.
-	 *
+	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
@@ -164,7 +164,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Mark a question correct.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location of the answer in the queue
 	 * @param caller
@@ -178,7 +178,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Sets the announced scores for a round
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param score
@@ -191,7 +191,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Mark a question incorrect.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location of the answer in the queue
 	 * @param caller
@@ -203,7 +203,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Mark a question partially correct.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location of the answer in the queue
 	 * @param caller
@@ -215,23 +215,36 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Mark uncalled.
-	 *
+	 * 
 	 * @param user
 	 *            The user's name
 	 * @param queueIndex
 	 *            The location of the answer in the queue
-	 *
+	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
 	public void markUncalled(String user, int queueIndex) throws RemoteException;
 
 	/**
-	 * Starts a new round.
-	 *
+	 * Mark as duplicate.
+	 * 
 	 * @param user
 	 *            The user's name
-	 *
+	 * @param queueIndex
+	 *            The location of the answer in the queue
+	 * 
+	 * @throws RemoteException
+	 *             A remote exception
+	 */
+	public void markDuplicate(String user, int queueIndex) throws RemoteException;
+
+	/**
+	 * Starts a new round.
+	 * 
+	 * @param user
+	 *            The user's name
+	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
@@ -239,7 +252,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Open a question
-	 *
+	 * 
 	 * @param user
 	 *            The user's name
 	 * @param qNumber
@@ -248,7 +261,7 @@ public interface TriviaInterface extends Remote {
 	 *            The question's value
 	 * @param question
 	 *            The question
-	 *
+	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
@@ -256,7 +269,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Propose an answer.
-	 *
+	 * 
 	 * @param qNumber
 	 *            The question number
 	 * @param answer
@@ -272,7 +285,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Sets the discrepancy text.
-	 *
+	 * 
 	 * @param user
 	 *            The user's name
 	 * @param rNumber
@@ -286,7 +299,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Change the user's role.
-	 *
+	 * 
 	 * @param user
 	 *            The user name
 	 * @param role
@@ -297,7 +310,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Makes the current round a speed round.
-	 *
+	 * 
 	 * @param user
 	 *            The user making the change
 	 * @throws RemoteException
@@ -307,7 +320,7 @@ public interface TriviaInterface extends Remote {
 
 	/**
 	 * Makes the current round a normal round.
-	 *
+	 * 
 	 * @param user
 	 *            The user making the change
 	 * @throws RemoteException

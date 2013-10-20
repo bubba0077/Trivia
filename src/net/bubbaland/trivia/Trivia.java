@@ -5,10 +5,10 @@ import java.util.ArrayList;
 
 /**
  * The primary data structure for the trivia contest.
- *
+ * 
  * The <code>Trivia</code> class holds all of the data for a trivia contest. There are a number of fields representing
  * different parameters of the contest, and an array of <code>Round</code>s that hold data for individual rounds.
- *
+ * 
  * @author Walter Kolczynski
  */
 public class Trivia implements Serializable {
@@ -38,7 +38,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Creates a new trivia contest
-	 *
+	 * 
 	 * @param nRounds
 	 *            The number of rounds
 	 * @param nQuestions
@@ -61,7 +61,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets whether a question has ever been opened.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -74,7 +74,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Call an answer in.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location of the answer in the queue
 	 * @param caller
@@ -86,7 +86,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Close a question.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -100,7 +100,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Close a question in the current round.
-	 *
+	 * 
 	 * @param qNumber
 	 *            The question number
 	 * @param answer
@@ -112,7 +112,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets whether each question in a round has been open.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array specifying whether each question has been open
@@ -123,7 +123,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets whether each question in a round was answered correctly.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array specifying whether each question is correct
@@ -134,7 +134,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets whether each question in a round is open.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array specifying whether each question is open
@@ -145,7 +145,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Edit question data.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -177,7 +177,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the announced place.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return The announced place
@@ -189,7 +189,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the announced score for a round
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return The announced score
@@ -201,7 +201,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the Answers in the queue for the current round.
-	 *
+	 * 
 	 * @return The Answers
 	 */
 	public Answer[] getAnswerQueue() {
@@ -211,7 +211,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the Answers in the queue for the current round.
-	 *
+	 * 
 	 * @return The Answers
 	 */
 	public Answer[] getAnswerQueue(int rNumber) {
@@ -220,7 +220,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the proposed answer in the queue for the current round.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location in the queue
 	 * @return The answer text
@@ -231,7 +231,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the proposed answers in the queue for the current round.
-	 *
+	 * 
 	 * @return Array of answers
 	 */
 	public String[] getAnswerQueueAnswers() {
@@ -240,7 +240,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the caller of an answer in the queue for the current round.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location in the queue
 	 * @return The caller's name
@@ -251,7 +251,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the callers of answers in the queue for the current round.
-	 *
+	 * 
 	 * @return Array of caller names
 	 */
 	public String[] getAnswerQueueCallers() {
@@ -260,7 +260,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the confidence in answer in the queue for the current round.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location in the queue
 	 * @return The confidence
@@ -271,7 +271,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the confidences in answers in the queue for the current round.
-	 *
+	 * 
 	 * @return Array of confidences
 	 */
 	public int[] getAnswerQueueConfidences() {
@@ -280,7 +280,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the operators who accepted a correct answer in the queue for the current round.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location in the queue
 	 * @return The operator
@@ -291,7 +291,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the operators who accepted correct answers in the queue for the current round.
-	 *
+	 * 
 	 * @return Array of operators
 	 */
 	public String[] getAnswerQueueOperators() {
@@ -300,7 +300,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the question number of an answer in the queue for the current round.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location in the queue
 	 * @return The question number
@@ -311,7 +311,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the question number for answers in the queue for the current round.
-	 *
+	 * 
 	 * @return Array of question numbers
 	 */
 	public int[] getAnswerQueueQNumbers() {
@@ -320,7 +320,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the size of the answer queue for the current round.
-	 *
+	 * 
 	 * @return The answer queue size
 	 */
 	public int getAnswerQueueSize() {
@@ -329,7 +329,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the status of an answer in the queue.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location in the queue
 	 * @return The answer status
@@ -340,7 +340,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the status of answers in the queue
-	 *
+	 * 
 	 * @return Array of statuses
 	 */
 	public String[] getAnswerQueueStatuses() {
@@ -349,7 +349,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the submitter of an answer in the queue for the current round.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location in the queue
 	 * @return The submitter's name
@@ -360,7 +360,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the submitters for answers in the queue of the current round.
-	 *
+	 * 
 	 * @return Array of submitters' names
 	 */
 	public String[] getAnswerQueueSubmitters() {
@@ -369,7 +369,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the timestamp of an answer in the queue for the current round.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location in the queue
 	 * @return The timestamp of the proposed answer
@@ -380,7 +380,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the timestamps of answers in the queue for the current round.
-	 *
+	 * 
 	 * @return Array of timestamps
 	 */
 	public String[] getAnswerQueueTimestamps() {
@@ -389,7 +389,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the answer to a question.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -402,7 +402,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Get rounds that have changed. This is the primary method for retrieving updated data from the server.
-	 *
+	 * 
 	 * @param oldVersions
 	 *            The round version numbers the user has.
 	 * @return An array of all the rounds that have newer versions.
@@ -422,7 +422,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the cumulative points earned through a round
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return The cumulative number of points earned
@@ -437,7 +437,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the cumulative value of questions through a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return The cumulative value
@@ -452,7 +452,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the points earned for questions in the current round.
-	 *
+	 * 
 	 * @return The points earned
 	 */
 	public int getCurrentRoundEarned() {
@@ -461,7 +461,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the current round number.
-	 *
+	 * 
 	 * @return The current round number
 	 */
 	public int getCurrentRoundNumber() {
@@ -470,7 +470,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the value of questions in the current round.
-	 *
+	 * 
 	 * @return The value
 	 */
 	public int getCurrentRoundValue() {
@@ -479,7 +479,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the discrepancy text for a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return The discrepancy text
@@ -490,7 +490,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the answer for each question in a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array of answers
@@ -501,7 +501,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the earned points for each question in a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array of points earned
@@ -512,7 +512,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the operator for each question in a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array of operators
@@ -523,7 +523,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the text of each question in a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array of questions
@@ -534,7 +534,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the submitter for each question in a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array of submitter names
@@ -545,7 +545,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the value of each question in a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array of values
@@ -557,7 +557,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the total points earned for the contest.
-	 *
+	 * 
 	 * @return The number of points earned
 	 */
 	public int getEarned() {
@@ -570,7 +570,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the total points earned in a round
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return The number of points earned
@@ -581,7 +581,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the points earned on a question.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -594,7 +594,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the number of questions in a speed round.
-	 *
+	 * 
 	 * @return The number of questions
 	 */
 	public int getMaxQuestions() {
@@ -603,7 +603,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the number of questions in the current round.
-	 *
+	 * 
 	 * @return The number of questions
 	 */
 	public int getNQuestions() {
@@ -612,7 +612,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the number of questions in a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return The number of questions
@@ -623,7 +623,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the number of rounds.
-	 *
+	 * 
 	 * @return The number of rounds
 	 */
 	public int getNRounds() {
@@ -632,7 +632,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the number of teams in the trivia contest
-	 *
+	 * 
 	 * @return The number of teams
 	 */
 	public int getNTeams() {
@@ -641,7 +641,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the currently open question numbers.
-	 *
+	 * 
 	 * @return Array of question numbers
 	 */
 	public int[] getOpenQuestionNumbers() {
@@ -650,7 +650,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the currently open questions.
-	 *
+	 * 
 	 * @return Array of questions
 	 */
 	public String[] getOpenQuestionText() {
@@ -659,7 +659,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the currently open questions' values
-	 *
+	 * 
 	 * @return Array of question values
 	 */
 	public String[] getOpenQuestionValues() {
@@ -668,7 +668,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the operator who accepted a correct answer to a question.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -681,7 +681,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the text of a question in the current round.
-	 *
+	 * 
 	 * @param qNumber
 	 *            The question number
 	 * @return The question text
@@ -692,7 +692,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the text of a question.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -705,7 +705,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Get the standings for a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array of ScoreEntry
@@ -716,7 +716,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the submitter of a correct answer to a question.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -729,7 +729,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the team name.
-	 *
+	 * 
 	 * @return The team name
 	 */
 	public String getTeamName() {
@@ -738,7 +738,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the total value of all questions in the contest.
-	 *
+	 * 
 	 * @return The total value
 	 */
 	public int getValue() {
@@ -751,7 +751,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the value of all questions in a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return The value
@@ -762,7 +762,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the value of a question.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -775,7 +775,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Get the version of each Round.
-	 *
+	 * 
 	 * @return The version number for each round
 	 */
 	public int[] getVersions() {
@@ -788,7 +788,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Checks if the score has been announced for a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return true, if the score has been announced
@@ -800,7 +800,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Checks if the question was answered correctly.
-	 *
+	 * 
 	 * @return true, if the question is correct
 	 */
 	public boolean isCorrect(int rNumber, int qNumber) {
@@ -809,7 +809,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Checks if the current round is a speed round.
-	 *
+	 * 
 	 * @return true, if the round is a speed round
 	 */
 	public boolean isCurrentSpeed() {
@@ -818,7 +818,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Checks if the question in the current round is open.
-	 *
+	 * 
 	 * @param qNumber
 	 *            The question number
 	 * @return true, if the question is open
@@ -829,7 +829,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Checks if the question is open.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -842,7 +842,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Checks if the round is a speed round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return true, if the round is a speed round
@@ -853,7 +853,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Mark an question as correct.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -871,7 +871,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Mark an answer as correct.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location of the answer in the queue
 	 * @param caller
@@ -885,7 +885,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Mark an answer as incorrect.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location of the answer in the queue
 	 * @param caller
@@ -897,7 +897,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Mark an answer as partially correct.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location of the answer in the queue
 	 * @param caller
@@ -909,12 +909,22 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Mark an answer as uncalled.
-	 *
+	 * 
 	 * @param queueIndex
 	 *            The location of the answer in the queue
 	 */
 	public void markUncalled(int queueIndex) {
 		this.currentRound.markUncalled(queueIndex);
+	}
+
+	/**
+	 * Mark an answer as a duplicate.
+	 * 
+	 * @param queueIndex
+	 *            The location of the answer in the queue
+	 */
+	public void markDuplicate(int queueIndex) {
+		this.currentRound.markDuplicate(queueIndex);
 	}
 
 	/**
@@ -929,7 +939,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the next question that needs to be opened.
-	 *
+	 * 
 	 * @return The question number
 	 */
 	public int nextToOpen() {
@@ -938,7 +948,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Gets the number of questions still to open in the current round.
-	 *
+	 * 
 	 * @return Number of questions not yet opened
 	 */
 	public int nUnopened() {
@@ -947,7 +957,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Open a question.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param qNumber
@@ -963,7 +973,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Open a question in the current round.
-	 *
+	 * 
 	 * @param qNumber
 	 *            The question number
 	 * @param qValue
@@ -977,7 +987,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Propose an answer.
-	 *
+	 * 
 	 * @param qNumber
 	 *            The question number
 	 * @param answer
@@ -1002,7 +1012,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Checks if the current round is over.
-	 *
+	 * 
 	 * @return true, if the round is over
 	 */
 	public boolean roundOver() {
@@ -1011,7 +1021,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Sets the announced score for a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param score
@@ -1028,7 +1038,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Change the current round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The new current round number
 	 */
@@ -1038,7 +1048,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Sets the discrepancy text for a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param discrepencyText
@@ -1050,7 +1060,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Sets the number of teams.
-	 *
+	 * 
 	 * @param nTeams
 	 *            The new number of teams
 	 */
@@ -1067,7 +1077,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Makes a round a speed round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 */
@@ -1077,7 +1087,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Set the standings for a round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @param standings
@@ -1097,7 +1107,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Make the round a normal round.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 */
@@ -1107,7 +1117,7 @@ public class Trivia implements Serializable {
 
 	/**
 	 * Replace rounds with newer version retrieved from server.
-	 *
+	 * 
 	 * @param newRounds
 	 *            The rounds with updated versions
 	 */

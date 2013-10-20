@@ -47,14 +47,14 @@ import org.xml.sax.SAXException;
 
 /**
  * The main server that coordinates the trivia contest.
- *
+ * 
  * The <code>TriviaServer</code> class contains the <code>main</code> method to start the trivia server and handles all
  * interaction between the centralized <code>Trivia</code> data structure and remote clients. It also downloads the
  * hourly standings from KVSC, parses them and adds them into the <code>Trivia</code> data structure.
- *
+ * 
  * The class is also responsible for periodically saving the current <code>Trivia</code> state to an XML file and
  * loading a previous state. The save files are stored in <code>SAVE_DIR</code>, which much exist on the server.
- *
+ * 
  */
 @WebService
 public class TriviaServer implements TriviaInterface, ActionListener {
@@ -104,7 +104,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/**
 	 * Creates a new trivia server.
-	 *
+	 * 
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
@@ -135,7 +135,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#callIn(int, java.lang.String)
 	 */
 	@Override
@@ -152,7 +152,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#close(int)
 	 */
 	@Override
@@ -183,7 +183,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#getTrivia()
 	 */
 	@Override
@@ -208,7 +208,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/**
 	 * Get a list of the available saves.
-	 *
+	 * 
 	 * @return Array of save file names
 	 */
 	@Override
@@ -226,7 +226,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/**
 	 * Loads a trivia state from file.
-	 *
+	 * 
 	 * @param stateFile
 	 *            The name of the file to load
 	 */
@@ -342,6 +342,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 				this.trivia.proposeAnswer(qNumber, answer, submitter, confidence);
 
 				switch (status) {
+					case "Duplicate":
+						this.trivia.markDuplicate(a);
+						break;
 					case "Not Called In":
 						this.trivia.markUncalled(a);
 						break;
@@ -387,7 +390,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/**
 	 * Print a message with timestamp to the console.
-	 *
+	 * 
 	 * @param message
 	 *            The message
 	 */
@@ -398,7 +401,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#markCorrect(int, java.lang.String, java.lang.String)
 	 */
 	@Override
@@ -414,7 +417,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#markIncorrect(int, java.lang.String)
 	 */
 	@Override
@@ -426,7 +429,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#markPartial(int, java.lang.String)
 	 */
 	@Override
@@ -438,14 +441,26 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
-	 * @see net.bubbaland.trivia.server.TriviaInterface#markUncalled(int)
+	 * 
+	 * @see net.bubbaland.trivia.server.TriviaInterface#markUncalled(String, int)
 	 */
 	@Override
 	public void markUncalled(String user, int queueIndex) throws RemoteException {
 		this.userList.updateUserActivity(user);
 		this.trivia.markUncalled(queueIndex);
 		this.log("Item " + queueIndex + " status reset to uncalled.");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.bubbaland.trivia.server.TriviaInterface#markDuplicate(String, int)
+	 */
+	@Override
+	public void markDuplicate(String user, int queueIndex) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.trivia.markDuplicate(queueIndex);
+		this.log("Item " + queueIndex + " marked as duplicate.");
 	}
 
 	// /**
@@ -477,7 +492,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#newRound()
 	 */
 	@Override
@@ -500,7 +515,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#open(int, int, java.lang.String)
 	 */
 	@Override
@@ -512,7 +527,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#proposeAnswer(int, java.lang.String, java.lang.String, int)
 	 */
 	@Override
@@ -772,7 +787,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#setDiscrepancyText(int, java.lang.String)
 	 */
 	@Override
@@ -788,7 +803,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#setSpeed()
 	 */
 	@Override
@@ -801,7 +816,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#unsetSpeed()
 	 */
 	@Override
@@ -813,7 +828,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/**
 	 * Fetches the standings for a round from KVSC.
-	 *
+	 * 
 	 * @param rNumber
 	 *            The round number
 	 * @return Array of ScoreEntry that have the standing data
@@ -868,7 +883,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	/**
 	 * Entry point for the server application.
-	 *
+	 * 
 	 * @param args
 	 *            Unused
 	 * @throws RemoteException
