@@ -115,7 +115,7 @@ public interface TriviaInterface extends Remote {
 	 * @return The user names and roles of users who have been active within the activity window
 	 * @throws RemoteException
 	 */
-	public Hashtable<String, Role> getActiveUsers(int window) throws RemoteException;
+	public Hashtable<String, Role> getActiveUsers(int window, int timeout) throws RemoteException;
 
 	/**
 	 * Get the users and roles that are idle. Idle means they are still contacting the server for updates, but haven't

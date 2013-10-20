@@ -5,9 +5,9 @@ import java.util.Hashtable;
 
 /**
  * A data structure to track user names, last activity time and role.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class UserList {
 
@@ -34,7 +34,7 @@ public class UserList {
 
 	/**
 	 * Change a user name and transfer the role.
-	 *
+	 * 
 	 * @param oldUser
 	 *            The old user name
 	 * @param newUser
@@ -50,12 +50,12 @@ public class UserList {
 
 	/**
 	 * Get the users and roles that have been active. Active means having changed something on the server.
-	 *
+	 * 
 	 * @param window
 	 *            Number of seconds without making a change before becoming idle
 	 * @return The user names and roles of users who have been active within the activity window
 	 */
-	public Hashtable<String, Role> getActive(int window) {
+	public Hashtable<String, Role> getActive(int window, int timeout) {
 		final Date currentDate = new Date();
 		final Hashtable<String, Role> userHash = new Hashtable<String, Role>(0);
 
@@ -67,13 +67,22 @@ public class UserList {
 				userHash.put(user, this.roleList.get(user));
 			}
 		}
+		// Remove users who have timed out
+		for (final String user : this.passiveUserList.keySet()) {
+			final Date lastDate = this.passiveUserList.get(user);
+			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
+			if (diff < timeout) {
+				userHash.remove(user);
+			}
+		}
+
 		return userHash;
 	}
 
 	/**
 	 * Get the users and roles that are idle. Idle means they are still contacting the server for updates, but haven't
 	 * made any changes.
-	 *
+	 * 
 	 * @param window
 	 *            Number of seconds without making a change before becoming idle
 	 * @param timeout
@@ -108,7 +117,7 @@ public class UserList {
 
 	/**
 	 * Update the role of a user.
-	 *
+	 * 
 	 * @param user
 	 *            The user's name
 	 * @param role
@@ -125,7 +134,7 @@ public class UserList {
 
 	/**
 	 * Update user's last activity time.
-	 *
+	 * 
 	 * @param user
 	 *            The user's name
 	 */
@@ -139,7 +148,7 @@ public class UserList {
 
 	/**
 	 * Update user's last contact time.
-	 *
+	 * 
 	 * @param user
 	 *            The user's name
 	 */

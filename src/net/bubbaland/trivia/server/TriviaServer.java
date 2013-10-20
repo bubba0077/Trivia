@@ -192,8 +192,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	}
 
 	@Override
-	public Hashtable<String, Role> getActiveUsers(int window) throws RemoteException {
-		return this.userList.getActive(window);
+	public Hashtable<String, Role> getActiveUsers(int window, int timeout) throws RemoteException {
+		return this.userList.getActive(window, timeout);
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	// The amount of time (in seconds) a user is considered "active"
 	final static private int	USER_LIST_WINDOW	= 10 * 60;
 	// The amount of time (in seconds) a user is considered disconnected
-	final static private int	USER_LIST_TIMEOUT	= 5 * 60;
+	final static private int	USER_LIST_TIMEOUT	= 90;
 
 	// Height of the status bar at the bottom of the GUI
 	final static private int	STATUS_HEIGHT		= 14;
@@ -798,7 +798,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 			try {
 				newRounds = this.server.getChangedRounds(user, oldVersions);
 				currentRound = this.server.getCurrentRound();
-				this.activeUserHash = this.server.getActiveUsers(USER_LIST_WINDOW);
+				this.activeUserHash = this.server.getActiveUsers(USER_LIST_WINDOW, USER_LIST_TIMEOUT);
 				this.passiveUserHash = this.server.getIdleUsers(USER_LIST_WINDOW, USER_LIST_TIMEOUT);
 				success = true;
 			} catch (final RemoteException e) {
