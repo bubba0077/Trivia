@@ -27,6 +27,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -44,7 +46,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.Timer;
+// import javax.swing.Timer;
 
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
@@ -482,9 +484,12 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		}
 
 		// Create timer that will poll server for changes
-		final Timer refreshTimer = new Timer(REFRESH_RATE, this);
-		refreshTimer.setActionCommand("Timer");
-		refreshTimer.start();
+		// final Timer refreshTimer = new Timer(REFRESH_RATE, this);
+		// refreshTimer.setActionCommand("Timer");
+		// refreshTimer.start();
+
+		final Timer refreshTimer = new Timer();
+		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), REFRESH_RATE, REFRESH_RATE);
 
 		// Post welcome to status bar
 		this.log("Welcome " + this.user);
@@ -497,10 +502,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	public void actionPerformed(ActionEvent e) {
 		final String command = e.getActionCommand();
 		switch (command) {
-			case "Timer":
-				// Triggered by update timer
-				this.update();
-				break;
+		// case "Timer":
+		// // Triggered by update timer
+		// this.update();
+		// break;
 			case "Change name":
 				// Triggered by change name, prompt for new name
 				new UserLogin(this);
@@ -786,33 +791,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	@Override
 	public synchronized void update(boolean force) {
 
-		Round[] newRounds = null;
-		final int[] oldVersions = this.trivia.getVersions();
-		int currentRound = 0;
-
-		// Synchronize the local Trivia data to match the server
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
-			tryNumber++;
-			try {
-				newRounds = this.server.getChangedRounds(user, oldVersions);
-				currentRound = this.server.getCurrentRound();
-				this.activeUserHash = this.server.getActiveUsers(USER_LIST_WINDOW, USER_LIST_TIMEOUT);
-				this.passiveUserHash = this.server.getIdleUsers(USER_LIST_WINDOW, USER_LIST_TIMEOUT);
-				success = true;
-			} catch (final RemoteException e) {
-				this.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
-			}
-		}
-
-		if (!success) {
-			this.disconnected();
-			return;
-		}
-
-		this.trivia.updateRounds(newRounds);
-		this.trivia.setCurrentRound(currentRound);
 
 		// Update each individual tab in the GUI
 		for (final TriviaPanel page : this.pages) {
@@ -1121,6 +1099,55 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 				return null;
 			}
 			return null;
+
+		}
+
+	}
+
+	private static class RefreshTask extends TimerTask {
+
+		final TriviaClient	client;
+
+		public RefreshTask(TriviaClient client) {
+			this.client = client;
+		}
+
+		@Override
+		public void run() {
+			Round[] newRounds = null;
+			final int[] oldVersions = client.trivia.getVersions();
+			int currentRound = 0;
+
+			// Synchronize the local Trivia data to match the server
+			int tryNumber = 0;
+			boolean success = false;
+			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+				tryNumber++;
+				try {
+					newRounds = client.server.getChangedRounds(client.getUser(), oldVersions);
+					currentRound = client.server.getCurrentRound();
+					client.activeUserHash = client.server.getActiveUsers(USER_LIST_WINDOW, USER_LIST_TIMEOUT);
+					client.passiveUserHash = client.server.getIdleUsers(USER_LIST_WINDOW, USER_LIST_TIMEOUT);
+					success = true;
+				} catch (final RemoteException e) {
+					client.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
+				}
+			}
+
+			if (!success) {
+				client.disconnected();
+				return;
+			}
+
+			client.trivia.updateRounds(newRounds);
+			client.trivia.setCurrentRound(currentRound);
+
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					client.update();
+				}
+			});
 
 		}
 
