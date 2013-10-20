@@ -339,4 +339,15 @@ public interface TriviaInterface extends Remote {
 	 */
 	public void resetQuestion(String user, int qNumber) throws RemoteException;
 
+	/**
+	 * Remap a question to a new number.
+	 * 
+	 * @param oldQNumber
+	 *            The old question number
+	 * @param newQNumber
+	 *            The new question number
+	 * @throws RemoteException
+	 */
+	public void remapQuestion(int oldQNumber, int newQNumber) throws RemoteException;
+
 }

@@ -743,7 +743,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			filename = CHART_DIR + "/" + roundString + "_placeChart.png";
 			try {
 				File file = new File(filename);
-				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makePlaceChart(trivia), CHART_WIDTH, CHART_HEIGHT);
+				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makePlaceChart(trivia), CHART_WIDTH,
+						CHART_HEIGHT);
 				this.log("Saved place chart to " + filename);
 			} catch (IOException exception) {
 				System.out.println("Couldn't save place chart to file " + filename);
@@ -914,6 +915,10 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 		// server.test();
 
+	}
+
+	public void remapQuestion(int oldQNumber, int newQNumber) throws RemoteException {
+		this.trivia.remapQuestion(oldQNumber, newQNumber);
 	}
 
 }

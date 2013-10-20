@@ -27,7 +27,7 @@ public class Answer implements Serializable {
 	final private int		queueLocation;
 
 	// The question number
-	final private int		qNumber;
+	volatile private int	qNumber;
 
 	// The answer text
 	final private String	answer;
@@ -247,6 +247,10 @@ public class Answer implements Serializable {
 		this.caller = "";
 		this.operator = "";
 		this.status = Status.DUPLICATE;
+	}
+
+	public void setQNumber(int qNumber) {
+		this.qNumber = qNumber;
 	}
 
 	public static class QNumberCompare implements Comparator<Answer> {

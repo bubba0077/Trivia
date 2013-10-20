@@ -1093,4 +1093,15 @@ public class Round implements Serializable {
 		this.version++;
 	}
 
+	public void remapQuestion(int oldQNumber, int newQNumber) {
+		this.questions[newQNumber - 1] = this.getQuestion(oldQNumber);
+		this.questions[oldQNumber - 1].reset();
+		for (Answer a : this.answerQueue) {
+			if (a.getQNumber() == oldQNumber) {
+				a.setQNumber(newQNumber);
+			}
+		}
+		this.version++;
+	}
+
 }

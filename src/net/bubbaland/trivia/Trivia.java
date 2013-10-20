@@ -1145,4 +1145,8 @@ public class Trivia implements Serializable {
 		}
 	}
 
+	public void remapQuestion(int oldQNumber, int newQNumber) {
+		this.currentRound.remapQuestion(oldQNumber, newQNumber);
+	}
+
 }
