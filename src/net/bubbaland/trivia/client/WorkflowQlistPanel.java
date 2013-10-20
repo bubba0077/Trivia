@@ -27,9 +27,9 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel which displays a list of the current open questions.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class WorkflowQlistPanel extends TriviaPanel {
 
@@ -82,7 +82,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new workflow question list panel.
-	 *
+	 * 
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -148,7 +148,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -174,7 +174,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 		private final JTextArea[]		qTextAreas;
 		private final JButton[]			answerButtons, closeButtons;
 
-		private final JMenuItem			editItem;
+		private final JMenuItem			editItem, resetItem;
 
 		/**
 		 * Data sources
@@ -184,7 +184,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 		/**
 		 * Instantiates a new workflow q list sub panel.
-		 *
+		 * 
 		 * @param server
 		 *            the server
 		 * @param client
@@ -312,6 +312,11 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			this.editItem = new JMenuItem("Edit");
 			this.editItem.addMouseListener(this);
 			contextMenu.add(this.editItem);
+
+			this.resetItem = new JMenuItem("Reset");
+			this.resetItem.addMouseListener(this);
+			contextMenu.add(this.resetItem);
+
 			this.add(contextMenu);
 
 			this.client.getBook().addChangeListener(this);
@@ -320,7 +325,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		@Override
@@ -364,11 +369,20 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				final int qValue = trivia.getValue(rNumber, qNumber);
 				final String qText = trivia.getQuestionText(rNumber, qNumber);
 				new OpenQuestionDialog(this.server, this.client, nQuestions, qNumber, qValue, qText);
+			} else if (source.equals(this.resetItem)) {
+				this.resetItem.getParent().setVisible(false);
+				final Trivia trivia = this.client.getTrivia();
+				final int rNumber = trivia.getCurrentRoundNumber();
+				final int qNumber = Integer.parseInt(sourceName);
+				final int qValue = trivia.getValue(rNumber, qNumber);
+				final String qText = trivia.getQuestionText(rNumber, qNumber);
+				new ResetQuestionDialog(this.server, this.client, qNumber, qValue, qText);
 			} else {
 				// Right-click pressed, show context menu
 				if (event.getButton() == 3 && !sourceName.equals("")) {
 					this.editItem.getParent().setLocation(event.getXOnScreen(), event.getYOnScreen());
 					this.editItem.setName(source.getName());
+					this.resetItem.setName(source.getName());
 					this.editItem.getParent().setVisible(true);
 				} else {
 					this.editItem.getParent().setVisible(false);
@@ -401,7 +415,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 		/**
 		 * Propose an answer for the designated question. Creates a prompt to submit the answer.
-		 *
+		 * 
 		 * @param qNumber
 		 *            the question number
 		 */
@@ -431,7 +445,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override

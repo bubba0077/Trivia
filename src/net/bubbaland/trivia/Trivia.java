@@ -1011,6 +1011,18 @@ public class Trivia implements Serializable {
 	}
 
 	/**
+	 * Reset a question.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 */
+	public void resetQuestion(int qNumber) {
+		this.currentRound.resetQuestion(qNumber);
+	}
+
+	/**
 	 * Checks if the current round is over.
 	 * 
 	 * @return true, if the round is over

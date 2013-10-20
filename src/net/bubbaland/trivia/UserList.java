@@ -71,11 +71,10 @@ public class UserList {
 		for (final String user : this.passiveUserList.keySet()) {
 			final Date lastDate = this.passiveUserList.get(user);
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
-			if (diff < timeout) {
+			if (diff > timeout) {
 				userHash.remove(user);
 			}
 		}
-
 		return userHash;
 	}
 
