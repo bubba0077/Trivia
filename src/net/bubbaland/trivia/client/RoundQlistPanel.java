@@ -538,13 +538,14 @@ public class RoundQlistPanel extends TriviaPanel {
 								.getText().equals(operators[q]) );
 					}
 				} else {
-					qUpdated[q] = this.speed == newSpeed;
+					qUpdated[q] = !( this.speed == newSpeed );
 				}
 			}
 
+			this.speed = newSpeed;
 			for (int q = 0; q < nQuestions; q++) {
+				// System.out.println(q + " " + qUpdated[q]);
 				if (qUpdated[q] || force) {
-					this.speed = newSpeed;
 					if (beenOpens[q]) {
 						// Only show values for questions that have been asked
 						this.valueLabels[q].setText(values[q] + "");

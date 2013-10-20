@@ -51,9 +51,11 @@ public class UserLogin extends TriviaDialogPanel {
 		userTextField.addAncestorListener(this);
 
 		String userName = client.getUser();
+		boolean modal = false;
 		int options;
 		if (userName == null) {
 			options = JOptionPane.DEFAULT_OPTION;
+			modal = true;
 		} else {
 			userTextField.setText(userName);
 			options = JOptionPane.OK_CANCEL_OPTION;
@@ -61,6 +63,7 @@ public class UserLogin extends TriviaDialogPanel {
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog(client.getFrame(), "User Login", this, JOptionPane.PLAIN_MESSAGE, options);
+		this.dialog.setModal(modal);
 		this.dialog.setVisible(true);
 
 		// Set the user name to input value

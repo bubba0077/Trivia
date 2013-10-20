@@ -19,7 +19,7 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates a dialog box that prompts user to propose an answer.
- *
+ * 
  * @author Walter Kolczynski
  */
 public class AnswerEntryPanel extends TriviaDialogPanel {
@@ -42,7 +42,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 
 	/**
 	 * Creates a dialog box and prompt for response
-	 *
+	 * 
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -146,6 +146,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		this.dialog.setVisible(true);
 
 		// If the OK button was pressed, add the proposed answer to the queue
+		System.out.println(this.dialog.getValue());
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			final String answer = answerTextArea.getText();
