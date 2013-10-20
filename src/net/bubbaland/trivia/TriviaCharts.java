@@ -133,7 +133,7 @@ public class TriviaCharts {
 		// Create a new dataset
 		final DefaultTableXYDataset dataset = new DefaultTableXYDataset();
 		// Create series for the earned and possible points
-		final XYSeries valueSeries = new XYSeries("Posibble", true, false);
+		final XYSeries valueSeries = new XYSeries("Possible", true, false);
 		final XYSeries earnedSeries = new XYSeries("Earned", true, false);
 
 		for (int r = 0; r < nRounds; r++) {

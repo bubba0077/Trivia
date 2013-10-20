@@ -313,7 +313,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			this.editItem.addMouseListener(this);
 			contextMenu.add(this.editItem);
 
-			this.resetItem = new JMenuItem("Reset");
+			this.resetItem = new JMenuItem("Delete");
 			this.resetItem.addMouseListener(this);
 			contextMenu.add(this.resetItem);
 

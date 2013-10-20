@@ -46,7 +46,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-// import javax.swing.Timer;
 
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
@@ -484,12 +483,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		}
 
 		// Create timer that will poll server for changes
-		// final Timer refreshTimer = new Timer(REFRESH_RATE, this);
-		// refreshTimer.setActionCommand("Timer");
-		// refreshTimer.start();
-
 		final Timer refreshTimer = new Timer();
-		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), REFRESH_RATE, REFRESH_RATE);
+		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0, REFRESH_RATE);
 
 		// Post welcome to status bar
 		this.log("Welcome " + this.user);
