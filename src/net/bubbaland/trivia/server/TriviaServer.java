@@ -826,6 +826,11 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		this.trivia.unsetSpeed();
 	}
 
+	public void resetQuestion(String user, int qNumber) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.trivia.resetQuestion(qNumber);
+	}
+
 	/**
 	 * Fetches the standings for a round from KVSC.
 	 * 

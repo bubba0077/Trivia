@@ -945,6 +945,17 @@ public class Round implements Serializable {
 	}
 
 	/**
+	 * Reset a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 */
+	public void resetQuestion(int qNumber) {
+		this.questions[qNumber - 1].reset();
+		this.version++;
+	}
+
+	/**
 	 * Returns if the round is over (all questions have been opened and are now closed).
 	 * 
 	 * @return true, if the round is over

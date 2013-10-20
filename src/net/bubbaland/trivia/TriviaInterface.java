@@ -328,4 +328,15 @@ public interface TriviaInterface extends Remote {
 	 */
 	public void unsetSpeed(String user) throws RemoteException;
 
+	/**
+	 * Reset a question.
+	 * 
+	 * @param rNumber
+	 *            The round number
+	 * @param qNumber
+	 *            The question number
+	 * @throws RemoteException
+	 */
+	public void resetQuestion(String user, int qNumber) throws RemoteException;
+
 }
