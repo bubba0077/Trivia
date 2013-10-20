@@ -152,6 +152,11 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 			final String answer = answerTextArea.getText();
 			final int confidence = confidenceSlider.getValue();
 
+			if (answer.equals("")) {
+				new AnswerEntryPanel(server, client, qNumber, user);
+				return;
+			}
+
 			int tryNumber = 0;
 			boolean success = false;
 			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
