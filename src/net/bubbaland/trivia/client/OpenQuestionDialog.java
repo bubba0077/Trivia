@@ -18,9 +18,9 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates a prompt to enter new question data.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class OpenQuestionDialog extends TriviaDialogPanel {
 
@@ -35,7 +35,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new question entry window.
-	 *
+	 * 
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -51,7 +51,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new question entry window.
-	 *
+	 * 
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -70,7 +70,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new question entry window.
-	 *
+	 * 
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -169,6 +169,51 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 			// Get the current Trivia data object
 			final Trivia trivia = client.getTrivia();
 			final int currentRound = trivia.getCurrentRoundNumber();
+
+			if (qNumberStart != qNumber && trivia.isOpen(qNumberStart) && !trivia.beenOpen(currentRound, qNumber)) {
+
+				this.removeAll();
+
+				constraints = new GridBagConstraints();
+				constraints.fill = GridBagConstraints.BOTH;
+				constraints.anchor = GridBagConstraints.CENTER;
+
+				constraints.gridx = 0;
+				constraints.gridy = 0;
+				label = new JLabel("Change question number from " + qNumberStart + " to " + qNumber + "?");
+				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+				this.add(label, constraints);
+
+				this.dialog = new TriviaDialog(client.getFrame(), "Confirm Question Number Change " + qNumberStart
+						+ " to " + qNumber, this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+				this.dialog.setVisible(true);
+
+				final int confirm = ( (Integer) dialog.getValue() ).intValue();
+				if (confirm != JOptionPane.OK_OPTION) {
+					new OpenQuestionDialog(server, client, nQuestions, qNumberStart, qValue, qText);
+					return;
+				}
+
+				// Open the question on the server
+				int tryNumber = 0;
+				boolean success = false;
+				while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+					tryNumber++;
+					try {
+						server.remapQuestion(qNumberStart, qNumber);
+						success = true;
+					} catch (final RemoteException e) {
+						client.log("Couldn't open question on server (try #" + tryNumber + ").");
+					}
+				}
+
+				if (!success) {
+					client.disconnected();
+					return;
+				}
+
+				client.log("Question #" + qNumberStart + " changed to " + qNumber);
+			}
 
 			if (trivia.beenOpen(currentRound, qNumber)) {
 				// If the question has already been open, confirm that we want to overwrite
