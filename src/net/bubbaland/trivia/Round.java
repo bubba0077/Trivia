@@ -945,6 +945,48 @@ public class Round implements Serializable {
 	}
 
 	/**
+	 * Set an answer in the queue. Used when loading a saved state from file.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param answer
+	 *            The answer text
+	 * @param submitter
+	 *            The user submitting the answer
+	 * @param confidence
+	 *            The confidence in the answer
+	 * @param status
+	 *            The current status
+	 * @param caller
+	 *            The user calling the question in
+	 * @param operator
+	 *            The operator who accepted the correct answer
+	 */
+	protected void setAnswer(int qNumber, String answer, String submitter, int confidence, String status,
+			String caller, String operator) {
+		Answer newAnswer = new Answer(this.answerQueue.size() + 1, qNumber, answer, submitter, confidence);
+		this.answerQueue.add(newAnswer);
+		switch (status) {
+			case "Duplicate":
+				newAnswer.markDuplicate();
+				break;
+			case "Calling":
+				newAnswer.callIn(caller);
+			case "Incorrect":
+				newAnswer.markIncorrect(caller);
+				break;
+			case "Partial":
+				newAnswer.markPartial(caller);
+				break;
+			case "Correct":
+				newAnswer.markCorrect(caller, operator);
+				break;
+			default:
+		}
+		this.version++;
+	}
+
+	/**
 	 * Reset a question.
 	 * 
 	 * @param qNumber

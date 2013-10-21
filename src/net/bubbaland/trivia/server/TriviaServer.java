@@ -270,17 +270,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 					this.trivia.setSpeed(rNumber);
 				}
 
-				// Disabled because we can just grab the info from KVSC again
-				// Read/set if the round's score has been announced
-				// boolean announced =
-				// roundElement.getElementsByTagName("Announced").item(0).getTextContent().equals("true");
-				// int announcedPoints =
-				// Integer.parseInt(roundElement.getElementsByTagName("Announced_Score").item(0).getTextContent());
-				// int announcedPlace =
-				// Integer.parseInt(roundElement.getElementsByTagName("Announced_Place").item(0).getTextContent());
-				// if(announced) {
-				// trivia.setAnnounced(rNumber, announcedPoints, announcedPlace);
-				// }
 				this.trivia.setDiscrepencyText(rNumber, roundElement.getElementsByTagName("Discrepancy_Text").item(0)
 						.getTextContent());
 
@@ -339,34 +328,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 				final String caller = answerElement.getElementsByTagName("Caller").item(0).getTextContent();
 				final String operator = answerElement.getElementsByTagName("Operator").item(0).getTextContent();
 
-				this.trivia.proposeAnswer(qNumber, answer, submitter, confidence);
-
-				switch (status) {
-					case "Duplicate":
-						this.trivia.markDuplicate(a);
-						break;
-					case "Not Called In":
-						this.trivia.markUncalled(a);
-						break;
-					case "Calling":
-						this.trivia.callIn(a, caller);
-						break;
-					case "Incorrect":
-						this.trivia.markIncorrect(a, caller);
-						break;
-					case "Partial":
-						this.trivia.markPartial(a, caller);
-						break;
-					case "Correct":
-						this.trivia.markCorrect(a, caller, operator);
-						break;
-					default:
-						break;
-				}
+				this.trivia.setAnswer(qNumber, answer, submitter, confidence, status, caller, operator);
 
 			}
-
-
 		} catch (final ParserConfigurationException e) {
 
 
