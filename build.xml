@@ -1,0 +1,82 @@
+<project name="Trivia" default="main"
+    xmlns:fx="javafx:com.sun.javafx.tools.ant">
+
+    <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+                uri="javafx:com.sun.javafx.tools.ant"
+                classpath="${java.home}/../lib/ant-javafx.jar"/>
+
+
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir" value="${build.dir}/jar"/>
+    <property name="lib.dir" value="lib"/>
+
+    <property name="main-class"
+        value="net.bubbaland.trivia.client.TriviaClient"/>
+
+
+    <path id="master-classpath">
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+        <pathelement location="${java.home}/lib/jfxrt.jar"/>
+    </path>
+
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="libs">
+        <mkdir dir="${lib.dir}"/>
+        <get dest="${lib.dir}" skipexisting="true">
+            <url url="http://downloads.sourceforge.net/project/jfreechart/1.%20JFreeChart/1.0.16/jfreechart-1.0.16.zip"/>
+            <url url="http://jsoup.org/packages/jsoup-1.7.2.jar"/>
+        </get>
+        <unzip src="${lib.dir}/jfreechart-1.0.16.zip" dest="${lib.dir}">
+            <patternset>
+                <include name="jfreechart-1.0.16/lib/jcommon-1.0.20.jar"/>
+                <include name="jfreechart-1.0.16/lib/jfreechart-1.0.16.jar"/>
+            </patternset>
+            <mapper type="flatten"/>
+        </unzip>
+    </target>
+
+    <target name="compile" depends="libs">
+        <mkdir dir="${classes.dir}"/>
+        <javac includeantruntime="false" srcdir="${src.dir}"
+            destdir="${classes.dir}" classpathref="master-classpath"/>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <fx:jar destfile="${jar.dir}/${ant.project.name}-base.jar">
+            <fx:application mainClass="${main-class}"/>
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${src.dir}">
+                <include name="**/*.png"/>
+            </fileset>
+        </fx:jar>
+    </target>
+
+    <target name="bundle" depends="jar">
+        <unzip src="${jar.dir}/${ant.project.name}-base.jar"
+            dest="${build.dir}">
+            <patternset includes="META-INF/MANIFEST.MF"/>
+            <mapper type="flatten"/>
+        </unzip>
+        <jar destfile="${jar.dir}/${ant.project.name}.jar"
+            manifest="${build.dir}/MANIFEST.MF">
+            <zipfileset src="${jar.dir}/${ant.project.name}-base.jar"/>
+            <zipgroupfileset dir="${lib.dir}" includes="*.jar"/>
+        </jar>
+    </target>
+
+    <target name="run" depends="bundle">
+        <java jar="${jar.dir}/${ant.project.name}.jar" fork="true">
+            <arg value="useFX"/>
+        </java>
+    </target>
+
+    <target name="main" depends="clean,bundle"/>
+
+</project>
