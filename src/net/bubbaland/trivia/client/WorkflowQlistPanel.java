@@ -477,7 +477,6 @@ public class WorkflowQlistPanel extends TriviaPanel {
 					this.qNumberLabels[q].setText(openQuestionNumbers[q] + "");
 					this.qValueLabels[q].setText(openQuestionValues[q]);
 					this.qTextAreas[q].setText(openQuestionText[q]);
-					this.qTextAreas[q].setCaretPosition(0);
 					this.answerButtons[q].setText("Answer");
 					this.answerButtons[q].setVisible(true);
 					this.closeButtons[q].setText("Close");

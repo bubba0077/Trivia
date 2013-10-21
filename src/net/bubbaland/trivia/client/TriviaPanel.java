@@ -4,17 +4,19 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.DefaultCaret;
 
 /**
  * Super-class for most of the panels in the trivia GUI.
- *
+ * 
  * Provides methods for automatically making labels and text areas that fill their space by enclosing them in panels
- *
+ * 
  */
 public abstract class TriviaPanel extends JPanel {
 
@@ -31,7 +33,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a space-filling panel with a label to the panel. A reference to the label is returned so the text can be
 	 * changed later.
-	 *
+	 * 
 	 * @param string
 	 *            The string for the label
 	 * @param width
@@ -79,7 +81,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
 	 * so the text can be read/changed later.
-	 *
+	 * 
 	 * @param string
 	 *            The initial string for the text area
 	 * @param width
@@ -114,6 +116,8 @@ public abstract class TriviaPanel extends JPanel {
 		textArea.setForeground(foreground);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
+		DefaultCaret caret = (DefaultCaret) textArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 		pane.setViewportView(textArea);
 
 		return textArea;

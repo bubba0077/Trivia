@@ -21,6 +21,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -80,6 +81,7 @@ public class RoundQlistPanel extends TriviaPanel {
 
 	/** The sub-panel holding the questions */
 	private final RoundQListSubPanel	roundQlistSubPanel;
+	private final JScrollPane			roundQlistPane;
 
 	/**
 	 * Instantiates a new question list panel that will show data for the current round.
@@ -170,10 +172,10 @@ public class RoundQlistPanel extends TriviaPanel {
 		constraints.gridwidth = 7;
 		constraints.weighty = 1.0;
 		this.roundQlistSubPanel = new RoundQListSubPanel(server, client, live, rNumber);
-		final JScrollPane roundQlistPane = new JScrollPane(this.roundQlistSubPanel,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		roundQlistPane.setPreferredSize(new Dimension(0, 200));
-		this.add(roundQlistPane, constraints);
+		this.roundQlistPane = new JScrollPane(this.roundQlistSubPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		this.roundQlistPane.setPreferredSize(new Dimension(0, 200));
+		this.add(this.roundQlistPane, constraints);
 		constraints.weighty = 0.0;
 
 	}
@@ -340,6 +342,9 @@ public class RoundQlistPanel extends TriviaPanel {
 				Style defaultStyle = document.getStyle(StyleContext.DEFAULT_STYLE);
 				StyleConstants.setAlignment(defaultStyle, StyleConstants.ALIGN_CENTER);
 				this.submitterTextAreas[q] = new JTextPane(document);
+				DefaultCaret caret = (DefaultCaret) this.submitterTextAreas[q].getCaret();
+				caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+				this.submitterTextAreas[q].setEditable(false);
 				this.submitterTextAreas[q].setFont(this.submitterTextAreas[q].getFont().deriveFont(SMALL_FONT_SIZE));
 				this.submitterTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT / 3));
 				this.submitterTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT / 3));
@@ -355,6 +360,9 @@ public class RoundQlistPanel extends TriviaPanel {
 				defaultStyle = document.getStyle(StyleContext.DEFAULT_STYLE);
 				StyleConstants.setAlignment(defaultStyle, StyleConstants.ALIGN_CENTER);
 				this.operatorTextAreas[q] = new JTextPane(document);
+				caret = (DefaultCaret) this.operatorTextAreas[q].getCaret();
+				caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+				this.operatorTextAreas[q].setEditable(false);
 				this.operatorTextAreas[q].setFont(this.operatorTextAreas[q].getFont().deriveFont(SMALL_FONT_SIZE));
 				this.operatorTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, 2 * QUESTION_HEIGHT / 3));
 				this.operatorTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, 2 * QUESTION_HEIGHT / 3));
@@ -550,7 +558,6 @@ public class RoundQlistPanel extends TriviaPanel {
 						// Only show values for questions that have been asked
 						this.valueLabels[q].setText(values[q] + "");
 						this.questionTextAreas[q].setText(questions[q]);
-						this.questionTextAreas[q].setCaretPosition(0);
 					} else {
 						// Hide values for questions that haven't been asked yet
 						this.valueLabels[q].setText("");
@@ -560,7 +567,6 @@ public class RoundQlistPanel extends TriviaPanel {
 						// Only show answers and earned points if the question is correct or closed
 						this.earnedLabels[q].setText(earneds[q] + "");
 						this.answerTextAreas[q].setText(answers[q]);
-						this.answerTextAreas[q].setCaretPosition(0);
 						this.submitterTextAreas[q].setText(submitters[q]);
 						this.operatorTextAreas[q].setText(operators[q]);
 					} else {
@@ -598,9 +604,7 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.submitterTextAreas[q].setVisible(false);
 				this.operatorTextAreas[q].setVisible(false);
 			}
-
 		}
-
 	}
 
 }

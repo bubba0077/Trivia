@@ -564,7 +564,6 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 					this.answerTextAreas.get(a).setText(newAnswer);
 					this.answerTextAreas.get(a).setForeground(color);
 					this.answerTextAreas.get(a).setBackground(bColor);
-					this.answerTextAreas.get(a).setCaretPosition(0);
 
 					this.confidenceLabels.get(a).setText(newConfidence + "");
 					this.confidenceLabels.get(a).setForeground(color);
