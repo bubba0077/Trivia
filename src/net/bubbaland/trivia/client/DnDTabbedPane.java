@@ -33,11 +33,9 @@ public class DnDTabbedPane extends JTabbedPane {
 
 	private final Color					m_lineColor			= new Color(0, 100, 255);
 	private TabAcceptor					m_acceptor			= null;
-	private int							a;
 
 	public DnDTabbedPane() {
 		super();
-		a = 0;
 		tearTab.registerTabbedPane(this);
 		final DragSourceListener dsl = new DragSourceListener() {
 			public void dragEnter(DragSourceDragEvent e) {
@@ -46,7 +44,7 @@ public class DnDTabbedPane extends JTabbedPane {
 			}
 
 			public void dragExit(DragSourceEvent e) {
-				System.out.println(a++ + "dragExit");
+				// System.out.println(a++ + "dragExit");
 				tearTab.attach(e.getLocation());
 				// e.getDragSourceContext().setCursor(DragSource.DefaultMoveNoDrop);
 				m_lineRect.setRect(0, 0, 0, 0);
@@ -58,10 +56,10 @@ public class DnDTabbedPane extends JTabbedPane {
 			public void dragOver(DragSourceDragEvent e) {
 
 				TabTransferData data = getTabTransferData(e);
-				System.out.println(a++ + e.getTargetActions() + " " + DnDConstants.ACTION_NONE);
+				// System.out.println(a++ + e.getTargetActions() + " " + DnDConstants.ACTION_NONE);
 
 				if (data == null || e.getTargetActions() != DnDConstants.ACTION_MOVE) {
-					System.out.println("action none");
+					// System.out.println("action none");
 					tearTab.attach(e.getLocation());
 				}
 
@@ -570,14 +568,14 @@ class TearAwayTab extends JWindow {
 	}
 
 	public void attach(Point location) {
-		System.out.println("attach");
+		// System.out.println("attach");
 		center(location);
 		mousePoller.start();
 		this.setVisible(true);
 	}
 
 	public void detach() {
-		System.out.println("detatch");
+		// System.out.println("detatch");
 		mousePoller.stop();
 		this.setVisible(false);
 	}

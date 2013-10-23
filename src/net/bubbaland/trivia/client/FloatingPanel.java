@@ -3,9 +3,12 @@ package net.bubbaland.trivia.client;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -45,7 +48,19 @@ public class FloatingPanel extends JFrame implements ChangeListener {
 	public void stateChanged(ChangeEvent e) {
 		if (e.getSource().equals(this.book)) {
 			if (this.book.getTabCount() == 0) {
-				this.dispose();
+				this.setVisible(false);
+				Timer timer = new Timer(100, new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if (!FloatingPanel.this.isVisible()) {
+							FloatingPanel.this.dispose();
+						}
+					}
+				});
+				timer.setRepeats(false);
+				timer.start();
+			} else {
+				this.setVisible(true);
 			}
 		}
 
