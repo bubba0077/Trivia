@@ -99,7 +99,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	// Root frame for the application
 	final private JFrame						frame;
 	// The tabbed pane
-	final private JTabbedPane					book;
+	final private DnDTabbedPane					book;
 	// Individual pages in the tabbed pane
 	final private TriviaPanel[]					pages;
 	// The status bar at the bottom
@@ -418,7 +418,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		 * Create main content area
 		 */
 		// Create the tabbed pane
-		this.book = new JTabbedPane();
+		this.book = new DnDTabbedPane();
 
 		// Array of the tabs
 		this.pages = new TriviaPanel[8];
