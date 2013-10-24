@@ -13,6 +13,8 @@ import java.awt.datatransfer.*;
 import java.awt.dnd.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.geom.*;
 import java.awt.image.*;
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeListener {
+public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeListener, WindowFocusListener {
 	public static final long						serialVersionUID	= 1L;
 	private static final int						LINEWIDTH			= 3;
 	private static final String						NAME				= "TabTransferData";
@@ -40,6 +42,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeL
 	private static final ArrayList<DnDTabbedPane>	tabbedPaneList		= new ArrayList<DnDTabbedPane>(0);
 	private static final ArrayList<ChangeListener>	tabbedPaneListeners	= new ArrayList<ChangeListener>(0);
 	private final TriviaClient						client;
+	private final JMenuItem							closeItem;
+	private final JPopupMenu						closeMenu;
 
 	// private final AddButton addButton;
 	private final JPanel							blankPanel;
@@ -117,6 +121,21 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeL
 				return true;
 			}
 		};
+
+		/**
+		 * Build close menu
+		 */
+		this.closeMenu = new JPopupMenu();
+		this.closeItem = new JMenuItem("Close");
+		this.closeItem.addMouseListener(this);
+		this.closeMenu.add(this.closeItem);
+		this.closeMenu.setVisible(false);
+
+		// this.add(this.closeMenu);
+
+		DnDTabbedPane.registerTabbedPaneListener(this);
+		this.client.getFrame().addWindowFocusListener(this);
+		FloatingPanel.registerFloatingPanelListener(this);
 
 		this.addTab("+", blankPanel);
 		this.addChangeListener(this);
@@ -391,26 +410,10 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeL
 		}
 		for (Component child : panel.getComponents()) {
 			if (child instanceof ChangeListener) {
-				System.out.println("listener added");
 				this.addChangeListener((ChangeListener) child);
 			}
 		}
 	}
-
-	// private class AddButton extends JButton implements ActionListener {
-	// public AddButton(JPanel panel) {
-	// super("+");
-	// this.setToolTipText("Add new tab");
-	// int index = DnDTabbedPane.this.indexOfComponent(blankPanel);
-	// DnDTabbedPane.this.setTabComponentAt(index, this);
-	// this.addActionListener(this);
-	// }
-	//
-	// @Override
-	// public void actionPerformed(ActionEvent e) {
-	// System.out.println("Add Button Pressed");
-	// }
-	// }
 
 	/**
 	 * returns potential index for drop.
@@ -596,6 +599,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeL
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		// Make sure the add button stays at the end
+		// this.closeMenu.setVisible(false);
 		int nTabs = this.getTabCount();
 		int addButtonIndex = this.indexOfComponent(blankPanel);
 		if (addButtonIndex > -1 && addButtonIndex != ( nTabs - 1 )) {
@@ -606,11 +610,24 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeL
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(MouseEvent event) {
+		final JComponent source = (JComponent) event.getSource();
 		int addButtonIndex = this.indexOfComponent(blankPanel);
-		if (addButtonIndex > -1 && this.getBoundsAt(addButtonIndex).contains(e.getPoint())) {
-			System.out.println("Add tab pressed");
+		if (addButtonIndex > -1 && this.getBoundsAt(addButtonIndex).contains(event.getPoint())) {
 			new AddTabDialog(this.client, this);
+		} else if (source.equals(this.closeItem)) {
+			this.removeTabAt(Integer.parseInt(source.getName()));
+		} else if (event.isPopupTrigger()) {
+			for (int i = 0; i < this.getTabCount(); i++) {
+				if (this.getBoundsAt(i).contains(event.getPoint())) {
+					this.closeItem.setName(i + "");
+					return;
+				}
+			}
+			this.closeMenu.setLocation(event.getXOnScreen(), event.getYOnScreen());
+			this.closeMenu.setVisible(true);
+		} else {
+			this.closeMenu.setVisible(false);
 		}
 	}
 
@@ -627,7 +644,20 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeL
 	}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
+	public void mouseExited(MouseEvent event) {
+		final JComponent source = (JComponent) event.getSource();
+		if (source.equals(this)) {
+			// this.closeMenu.setVisible(false);
+		}
+	}
+
+	@Override
+	public void windowGainedFocus(WindowEvent e) {
+	}
+
+	@Override
+	public void windowLostFocus(WindowEvent e) {
+		this.closeMenu.setVisible(false);
 	}
 }
 

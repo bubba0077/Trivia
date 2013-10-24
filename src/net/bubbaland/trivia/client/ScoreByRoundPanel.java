@@ -4,10 +4,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -17,9 +17,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
@@ -227,7 +224,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	/**
 	 * Scroll panel that contains the score data for every round
 	 */
-	private class InternalScrollPanel extends TriviaPanel implements MouseListener, ChangeListener, WindowFocusListener {
+	private class InternalScrollPanel extends TriviaPanel implements ActionListener {
 
 		/** The Constant serialVersionUID. */
 		private static final long		serialVersionUID	= 7121481355244434308L;
@@ -262,6 +259,16 @@ public class ScoreByRoundPanel extends TriviaPanel {
 			this.client = client;
 
 			this.nRounds = client.getTrivia().getNRounds();
+
+			/**
+			 * Build context menu
+			 */
+			this.contextMenu = new JPopupMenu();
+			this.editItem = new JMenuItem("Edit");
+			this.editItem.setActionCommand("Edit");
+			this.editItem.addActionListener(this);
+			this.contextMenu.add(this.editItem);
+			this.add(this.contextMenu);
 
 			// Set up layout constraints
 			final GridBagConstraints constraints = new GridBagConstraints();
@@ -345,8 +352,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 				this.discrepancyLabels[r] = this.enclosedLabel("", DISCREPANCY_WIDTH, ROW_HEIGHT, DISCREPANCY_COLOR,
 						bColor, constraints, DISCREPANCY_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
 				this.discrepancyLabels[r].setName(( r + 1 ) + "");
-				this.discrepancyLabels[r].addMouseListener(this);
-
+				this.discrepancyLabels[r].addMouseListener(new PopupListener(this.contextMenu));
 			}
 
 			// Add a blank row at the bottom as a spacer
@@ -360,18 +366,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 			panel.setPreferredSize(new Dimension(0, 0));
 			this.add(panel, constraints);
 
-			/**
-			 * Build context menu
-			 */
-			this.contextMenu = new JPopupMenu();
-			this.editItem = new JMenuItem("Edit");
-			this.editItem.addMouseListener(this);
-			this.contextMenu.add(this.editItem);
-			this.add(this.contextMenu);
 
-			DnDTabbedPane.registerTabbedPaneListener(this);
-			this.client.getFrame().addWindowFocusListener(this);
-			FloatingPanel.registerFloatingPanelListener(this);
 		}
 
 		/*
@@ -440,54 +435,41 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		}
 
 		@Override
-		public void mouseClicked(MouseEvent event) {
-			final JComponent source = (JComponent) event.getSource();
-			final Trivia trivia = this.client.getTrivia();
-			final int rNumber = Integer.parseInt(source.getName());
-			if (source.equals(this.editItem)) {
-				// Edit chosen from context menu
-				this.editItem.getParent().setVisible(false);
-				new DiscrepancyDialog(this.server, this.client, rNumber);
-			} else {
-				// Right-click pressed, show context menu
-				if (event.getButton() == 3 && trivia.isAnnounced(rNumber)) {
-					this.editItem.getParent().setLocation(event.getXOnScreen(), event.getYOnScreen());
-					this.editItem.setName(source.getName());
-					this.editItem.getParent().setVisible(true);
-				} else {
-					this.editItem.getParent().setVisible(false);
+		public void actionPerformed(ActionEvent event) {
+			final int rNumber = Integer.parseInt(this.contextMenu.getName());
+			new DiscrepancyDialog(this.server, this.client, rNumber);
+		}
+
+		private class PopupListener extends MouseAdapter {
+
+			private final JPopupMenu	menu;
+
+			public PopupListener(JPopupMenu menu) {
+				this.menu = menu;
+			}
+
+			private void checkForPopup(MouseEvent event) {
+				final JComponent source = (JComponent) event.getSource();
+				final Trivia trivia = InternalScrollPanel.this.client.getTrivia();
+				final int rNumber = Integer.parseInt(source.getName());
+				if (event.isPopupTrigger() && trivia.isAnnounced(rNumber)) {
+					menu.setName(source.getName());
+					menu.show(source, event.getX(), event.getY());
 				}
 			}
-		}
 
-		@Override
-		public void mousePressed(MouseEvent e) {
-		}
+			public void mousePressed(MouseEvent e) {
+				checkForPopup(e);
+			}
 
-		@Override
-		public void mouseReleased(MouseEvent e) {
-		}
+			public void mouseReleased(MouseEvent e) {
+				checkForPopup(e);
+			}
 
-		@Override
-		public void mouseEntered(MouseEvent e) {
-		}
+			public void mouseClicked(MouseEvent e) {
+				checkForPopup(e);
+			}
 
-		@Override
-		public void mouseExited(MouseEvent event) {
-		}
-
-		@Override
-		public void stateChanged(ChangeEvent e) {
-			this.contextMenu.setVisible(false);
-		}
-
-		@Override
-		public void windowGainedFocus(WindowEvent e) {
-		}
-
-		@Override
-		public void windowLostFocus(WindowEvent e) {
-			this.contextMenu.setVisible(false);
 		}
 
 

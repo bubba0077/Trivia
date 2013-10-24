@@ -3,10 +3,10 @@ package net.bubbaland.trivia.client;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import java.rmi.RemoteException;
 
 import javax.swing.JComponent;
@@ -22,8 +22,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
@@ -212,7 +210,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	/**
 	 * A panel that displays the question data for a round.
 	 */
-	private class RoundQListSubPanel extends TriviaPanel implements MouseListener, ChangeListener, WindowFocusListener {
+	private class RoundQListSubPanel extends TriviaPanel implements ActionListener {
 
 		private static final long		serialVersionUID	= 3825357215129662133L;
 
@@ -261,6 +259,26 @@ public class RoundQlistPanel extends TriviaPanel {
 
 			this.maxQuestions = client.getTrivia().getMaxQuestions();
 
+			/**
+			 * Build context menu
+			 */
+			this.contextMenu = new JPopupMenu();
+			this.editItem = new JMenuItem("Edit");
+			this.editItem.setActionCommand("Edit");
+			this.editItem.addActionListener(this);
+			this.contextMenu.add(this.editItem);
+
+			if (live) {
+				this.reopenItem = new JMenuItem("Reopen");
+				this.reopenItem.setActionCommand("Reopen");
+				this.reopenItem.addActionListener(this);
+				this.contextMenu.add(this.reopenItem);
+			} else {
+				this.reopenItem = null;
+			}
+			this.add(this.contextMenu);
+
+
 			this.qNumberLabels = new JLabel[this.maxQuestions];
 			this.earnedLabels = new JLabel[this.maxQuestions];
 			this.valueLabels = new JLabel[this.maxQuestions];
@@ -298,21 +316,21 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.qNumberLabels[q] = this.enclosedLabel(( q + 1 ) + "", QNUM_WIDTH, QUESTION_HEIGHT, color, bColor,
 						constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.qNumberLabels[q].setName(( q + 1 ) + "");
-				this.qNumberLabels[q].addMouseListener(this);
+				this.qNumberLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 1;
 				constraints.gridy = 2 * q;
 				this.earnedLabels[q] = this.enclosedLabel("", EARNED_WIDTH, QUESTION_HEIGHT, color, bColor,
 						constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.earnedLabels[q].setName(( q + 1 ) + "");
-				this.earnedLabels[q].addMouseListener(this);
+				this.earnedLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 2;
 				constraints.gridy = 2 * q;
 				this.valueLabels[q] = this.enclosedLabel("", VALUE_WIDTH, QUESTION_HEIGHT, color, bColor, constraints,
 						LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.valueLabels[q].setName(( q + 1 ) + "");
-				this.valueLabels[q].addMouseListener(this);
+				this.valueLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 3;
 				constraints.gridy = 2 * q;
@@ -322,7 +340,7 @@ public class RoundQlistPanel extends TriviaPanel {
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.questionTextAreas[q].setEditable(false);
 				this.questionTextAreas[q].setName(( q + 1 ) + "");
-				this.questionTextAreas[q].addMouseListener(this);
+				this.questionTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
@@ -340,7 +358,7 @@ public class RoundQlistPanel extends TriviaPanel {
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.answerTextAreas[q].setEditable(false);
 				this.answerTextAreas[q].setName(( q + 1 ) + "");
-				this.answerTextAreas[q].addMouseListener(this);
+				this.answerTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
 
@@ -366,7 +384,7 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.submitterTextAreas[q].setBackground(bColor);
 				this.submitterTextAreas[q].setForeground(color);
 				this.submitterTextAreas[q].setName(( q + 1 ) + "");
-				this.submitterTextAreas[q].addMouseListener(this);
+				this.submitterTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				this.add(this.submitterTextAreas[q], constraints);
 
@@ -391,7 +409,7 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.operatorTextAreas[q].setBackground(bColor);
 				this.operatorTextAreas[q].setForeground(color);
 				this.operatorTextAreas[q].setName(( q + 1 ) + "");
-				this.operatorTextAreas[q].addMouseListener(this);
+				this.operatorTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
 				this.add(this.operatorTextAreas[q], constraints);
 
 			}
@@ -407,28 +425,6 @@ public class RoundQlistPanel extends TriviaPanel {
 			blank.setBackground(HeaderPanel.BACKGROUND_COLOR);
 			blank.setPreferredSize(new Dimension(0, 0));
 			this.add(blank, constraints);
-
-			/**
-			 * Build context menu
-			 */
-			this.contextMenu = new JPopupMenu();
-			this.editItem = new JMenuItem("Edit");
-			this.editItem.addMouseListener(this);
-			this.contextMenu.add(this.editItem);
-
-			if (live) {
-				this.reopenItem = new JMenuItem("Reopen");
-				this.reopenItem.addMouseListener(this);
-				this.contextMenu.add(this.reopenItem);
-			} else {
-				this.reopenItem = null;
-			}
-
-			this.add(this.contextMenu);
-
-			DnDTabbedPane.registerTabbedPaneListener(this);
-			this.client.getFrame().addWindowFocusListener(this);
-			FloatingPanel.registerFloatingPanelListener(this);
 		}
 
 
@@ -436,82 +432,80 @@ public class RoundQlistPanel extends TriviaPanel {
 		 * Process mouse clicks
 		 */
 		@Override
-		public void mouseClicked(MouseEvent event) {
-
-			final JComponent source = (JComponent) event.getSource();
+		public void actionPerformed(ActionEvent event) {
 			final Trivia trivia = this.client.getTrivia();
-			final int qNumber = Integer.parseInt(source.getName());
+			final int qNumber = Integer.parseInt(this.contextMenu.getName());
 			if (this.live) {
 				this.rNumber = trivia.getCurrentRoundNumber();
 			}
-			if (source.equals(this.editItem)) {
-				// Edit chosen from context menu
-				this.editItem.getParent().setVisible(false);
-				new EditQuestionDialog(this.server, this.client, this.rNumber, qNumber);
-			} else if (source.equals(this.reopenItem)) {
-				// Reopen chosen from context menu
-				this.editItem.getParent().setVisible(false);
-
-				// Repen the question on the server
-				int tryNumber = 0;
-				boolean success = false;
-				while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
-					tryNumber++;
-					try {
-						this.server.open(this.client.getUser(), qNumber, trivia.getValue(this.rNumber, qNumber),
-								trivia.getQuestionText(this.rNumber, qNumber));
-						success = true;
-					} catch (final RemoteException e) {
-						this.client.log("Couldn't reopen question on server (try #" + tryNumber + ").");
+			String command = event.getActionCommand();
+			switch (command) {
+				case "Edit":
+					new EditQuestionDialog(this.server, this.client, this.rNumber, qNumber);
+					break;
+				case "Reopen":
+					// Repen the question on the server
+					int tryNumber = 0;
+					boolean success = false;
+					while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+						tryNumber++;
+						try {
+							this.server.open(this.client.getUser(), qNumber, trivia.getValue(this.rNumber, qNumber),
+									trivia.getQuestionText(this.rNumber, qNumber));
+							success = true;
+						} catch (final RemoteException e) {
+							this.client.log("Couldn't reopen question on server (try #" + tryNumber + ").");
+						}
 					}
-				}
 
-				if (!success) {
-					this.client.disconnected();
-					return;
-				}
-
-				this.client.log("Question #" + qNumber + " reopened.");
-
-			} else {
-				// Right-click pressed, show context menu
-				if (event.getButton() == 3 && trivia.beenOpen(this.rNumber, qNumber)) {
-					this.editItem.getParent().setLocation(event.getXOnScreen(), event.getYOnScreen());
-					this.editItem.setName(source.getName());
-					if (this.live) {
-						this.reopenItem.setVisible(!trivia.isOpen(qNumber));
-						this.reopenItem.setName(source.getName());
+					if (!success) {
+						this.client.disconnected();
+						return;
 					}
-					this.editItem.getParent().setVisible(true);
-				} else {
-					this.editItem.getParent().setVisible(false);
-				}
+
+					this.client.log("Question #" + qNumber + " reopened.");
+					break;
+				default:
+					break;
 			}
 		}
 
-		@Override
-		public void mouseEntered(MouseEvent event) {
-		}
+		private class PopupListener extends MouseAdapter {
 
-		@Override
-		public void mouseExited(MouseEvent event) {
-			final JComponent source = (JComponent) event.getSource();
-			if (source.equals(this)) {
-				this.contextMenu.setVisible(false);
+			private final JPopupMenu	menu;
+
+			public PopupListener(JPopupMenu menu) {
+				this.menu = menu;
 			}
-		}
 
-		@Override
-		public void mousePressed(MouseEvent event) {
-		}
+			private void checkForPopup(MouseEvent event) {
+				final JComponent source = (JComponent) event.getSource();
+				final Trivia trivia = RoundQListSubPanel.this.client.getTrivia();
+				final int qNumber = Integer.parseInt(source.getName());
+				if (RoundQListSubPanel.this.live) {
+					RoundQListSubPanel.this.rNumber = trivia.getCurrentRoundNumber();
+				}
+				if (event.isPopupTrigger() && trivia.beenOpen(RoundQListSubPanel.this.rNumber, qNumber)) {
+					if (RoundQListSubPanel.this.live) {
+						RoundQListSubPanel.this.reopenItem.setVisible(!trivia.isOpen(qNumber));
+					}
+					menu.setName(source.getName());
+					menu.show(source, event.getX(), event.getY());
+				}
+			}
 
-		@Override
-		public void mouseReleased(MouseEvent event) {
-		}
+			public void mousePressed(MouseEvent e) {
+				checkForPopup(e);
+			}
 
-		@Override
-		public void stateChanged(ChangeEvent e) {
-			this.contextMenu.setVisible(false);
+			public void mouseReleased(MouseEvent e) {
+				checkForPopup(e);
+			}
+
+			public void mouseClicked(MouseEvent e) {
+				checkForPopup(e);
+			}
+
 		}
 
 		/**
@@ -556,7 +550,7 @@ public class RoundQlistPanel extends TriviaPanel {
 			final boolean[] qUpdated = new boolean[nQuestions];
 			for (int q = 0; q < nQuestions; q++) {
 				if (( beenOpens[q] || !this.valueLabels[q].getText().equals(values[q] + "") )) {
-					if (( beenOpens[q] && !opens[q] ) || !this.earnedLabels[q].getText().equals(earneds[q] + "")) {
+					if (beenOpens[q] && !opens[q]) {
 						qUpdated[q] = !( this.speed == newSpeed && this.valueLabels[q].getText().equals(values[q] + "")
 								&& this.earnedLabels[q].getText().equals(earneds[q] + "")
 								&& this.questionTextAreas[q].getText().equals(questions[q])
@@ -565,6 +559,7 @@ public class RoundQlistPanel extends TriviaPanel {
 								.getText().equals(operators[q]) );
 					} else {
 						qUpdated[q] = !( this.speed == newSpeed && this.valueLabels[q].getText().equals(values[q] + "")
+								&& this.earnedLabels[q].getText().equals("")
 								&& this.questionTextAreas[q].getText().equals(questions[q])
 								&& this.answerTextAreas[q].getText().equals(answers[q])
 								&& this.submitterTextAreas[q].getText().equals(submitters[q]) && this.operatorTextAreas[q]
@@ -630,14 +625,14 @@ public class RoundQlistPanel extends TriviaPanel {
 			}
 		}
 
-		@Override
-		public void windowGainedFocus(WindowEvent e) {
-		}
-
-		@Override
-		public void windowLostFocus(WindowEvent e) {
-			this.contextMenu.setVisible(false);
-		}
+		// @Override
+		// public void windowGainedFocus(WindowEvent e) {
+		// }
+		//
+		// @Override
+		// public void windowLostFocus(WindowEvent e) {
+		// this.contextMenu.setVisible(false);
+		// }
 	}
 
 }

@@ -1,16 +1,15 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -22,8 +21,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
@@ -162,8 +159,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 	/**
 	 * Panel which displays a list of the current open questions.
 	 */
-	private class WorkflowQListSubPanel extends TriviaPanel implements ActionListener, MouseListener, ChangeListener,
-			WindowFocusListener {
+	private class WorkflowQListSubPanel extends TriviaPanel implements ActionListener {
 
 		/** The Constant serialVersionUID. */
 		private static final long		serialVersionUID	= 6049067322505905668L;
@@ -203,6 +199,23 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			this.client = client;
 			this.nQuestionsMax = client.getTrivia().getMaxQuestions();
 
+			/**
+			 * Build context menu
+			 */
+			this.contextMenu = new JPopupMenu();
+
+			this.editItem = new JMenuItem("Edit");
+			this.editItem.setActionCommand("Edit");
+			this.editItem.addActionListener(this);
+			this.contextMenu.add(this.editItem);
+
+			this.resetItem = new JMenuItem("Delete");
+			this.resetItem.setActionCommand("Delete");
+			this.resetItem.addActionListener(this);
+			this.contextMenu.add(this.resetItem);
+
+			this.add(this.contextMenu);
+
 			// Set up layout constraints
 			final GridBagConstraints buttonConstraints = new GridBagConstraints();
 			buttonConstraints.fill = GridBagConstraints.BOTH;
@@ -241,13 +254,13 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				constraints.gridy = q;
 				this.qNumberLabels[q] = this.enclosedLabel("", QNUM_WIDTH, QUESTION_HEIGHT, color, bColor, constraints,
 						QNUM_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-				this.qNumberLabels[q].addMouseListener(this);
+				this.qNumberLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 1;
 				constraints.gridy = q;
 				this.qValueLabels[q] = this.enclosedLabel("", VALUE_WIDTH, QUESTION_HEIGHT, color, bColor, constraints,
 						VALUE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-				this.qValueLabels[q].addMouseListener(this);
+				this.qValueLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 2;
 				constraints.gridy = q;
@@ -256,7 +269,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 						constraints, QUESTION_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.qTextAreas[q].setEditable(false);
-				this.qTextAreas[q].addMouseListener(this);
+				this.qTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
 				constraints.weightx = 0.0;
 
 				constraints.gridx = 3;
@@ -271,6 +284,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				this.answerButtons[q].setPreferredSize(new Dimension(ANSWER_BUTTON_WIDTH, ANSWER_BUTTON_HEIGHT));
 				this.answerButtons[q].setMinimumSize(new Dimension(ANSWER_BUTTON_WIDTH, ANSWER_BUTTON_HEIGHT));
 				panel.add(this.answerButtons[q], buttonConstraints);
+				this.answerButtons[q].setActionCommand("Answer");
 				this.answerButtons[q].addActionListener(this);
 
 				constraints.gridx = 4;
@@ -285,6 +299,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				this.closeButtons[q].setPreferredSize(new Dimension(CLOSE_BUTTON_WIDTH, CLOSE_BUTTON_HEIGHT));
 				this.closeButtons[q].setMinimumSize(new Dimension(CLOSE_BUTTON_WIDTH, CLOSE_BUTTON_HEIGHT));
 				panel.add(this.closeButtons[q], buttonConstraints);
+				this.closeButtons[q].setActionCommand("Open");
 				this.closeButtons[q].addActionListener(this);
 
 				if (q > DEFAULT_QUESTIONS_SHOW) {
@@ -310,23 +325,6 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			blank.setPreferredSize(new Dimension(0, 0));
 			this.add(blank, constraints);
 
-			/**
-			 * Build context menu
-			 */
-			this.contextMenu = new JPopupMenu();
-			this.editItem = new JMenuItem("Edit");
-			this.editItem.addMouseListener(this);
-			this.contextMenu.add(this.editItem);
-
-			this.resetItem = new JMenuItem("Delete");
-			this.resetItem.addMouseListener(this);
-			this.contextMenu.add(this.resetItem);
-
-			this.add(this.contextMenu);
-
-			DnDTabbedPane.registerTabbedPaneListener(this);
-			this.client.getFrame().addWindowFocusListener(this);
-			FloatingPanel.registerFloatingPanelListener(this);
 
 		}
 
@@ -337,84 +335,34 @@ public class WorkflowQlistPanel extends TriviaPanel {
 		 */
 		@Override
 		public synchronized void actionPerformed(ActionEvent event) {
-			final JButton source = (JButton) event.getSource();
-			for (int q = 0; q < this.nQuestionsMax; q++) {
-				if (this.answerButtons[q].equals(event.getSource())) {
-					// Answer button q was pressed
-					this.answerQuestion(Integer.parseInt(this.qNumberLabels[q].getText()));
-					return;
-				}
-			}
-			for (int q = 0; q < this.nQuestionsMax; q++) {
-				if (this.closeButtons[q].equals(event.getSource())) {
-					if (source.getText() == "Close") {
-						// Close button q was pressed
-						final int qNumber = Integer.parseInt(this.qNumberLabels[q].getText());
-						new CloseQuestionDialog(this.server, this.client, qNumber);
-						// this.close(qNumber);
-					} else {
-						// Open button was pressed
-						this.open();
-					}
-					return;
-				}
-			}
-
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent event) {
-			final JComponent source = (JComponent) event.getSource();
-			final String sourceName = source.getName();
-			if (source.equals(this.editItem)) {
-				// Edit chosen from context menu
-				this.contextMenu.setVisible(false);
-				final Trivia trivia = this.client.getTrivia();
-				final int rNumber = trivia.getCurrentRoundNumber();
-				final int qNumber = Integer.parseInt(sourceName);
-				final int nQuestions = trivia.getNQuestions();
-				final int qValue = trivia.getValue(rNumber, qNumber);
-				final String qText = trivia.getQuestionText(rNumber, qNumber);
-				new OpenQuestionDialog(this.server, this.client, nQuestions, qNumber, qValue, qText);
-			} else if (source.equals(this.resetItem)) {
-				this.resetItem.getParent().setVisible(false);
-				final Trivia trivia = this.client.getTrivia();
-				final int rNumber = trivia.getCurrentRoundNumber();
-				final int qNumber = Integer.parseInt(sourceName);
-				final int qValue = trivia.getValue(rNumber, qNumber);
-				final String qText = trivia.getQuestionText(rNumber, qNumber);
-				new ResetQuestionDialog(this.server, this.client, qNumber, qValue, qText);
-			} else {
-				// Right-click pressed, show context menu
-				if (event.getButton() == 3 && !sourceName.equals("")) {
-					this.contextMenu.setLocation(event.getXOnScreen(), event.getYOnScreen());
-					this.editItem.setName(source.getName());
-					this.resetItem.setName(source.getName());
-					this.contextMenu.setVisible(true);
-				} else {
-					this.contextMenu.setVisible(false);
-				}
-			}
-
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseExited(MouseEvent event) {
-			final JComponent source = (JComponent) event.getSource();
-			if (source.equals(this)) {
-				this.contextMenu.setVisible(false);
+			Trivia trivia = this.client.getTrivia();
+			int rNumber = trivia.getCurrentRoundNumber();
+			String command = event.getActionCommand();
+			final int qNumber;
+			switch (command) {
+				case "Answer":
+					qNumber = Integer.parseInt(( (Component) event.getSource() ).getName());
+					this.answerQuestion(qNumber);
+					break;
+				case "Close":
+					qNumber = Integer.parseInt(( (Component) event.getSource() ).getName());
+					new CloseQuestionDialog(this.server, this.client, qNumber);
+					break;
+				case "Open":
+					this.open();
+					break;
+				case "Edit":
+					qNumber = Integer.parseInt(this.contextMenu.getName());
+					new EditQuestionDialog(this.server, this.client, rNumber, qNumber);
+					break;
+				case "Delete":
+					qNumber = Integer.parseInt(this.contextMenu.getName());
+					final int qValue = trivia.getValue(rNumber, qNumber);
+					final String qText = trivia.getQuestionText(rNumber, qNumber);
+					new ResetQuestionDialog(this.server, this.client, qNumber, qValue, qText);
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -483,8 +431,11 @@ public class WorkflowQlistPanel extends TriviaPanel {
 					this.qValueLabels[q].setText(openQuestionValues[q]);
 					this.qTextAreas[q].setText(openQuestionText[q]);
 					this.answerButtons[q].setText("Answer");
+					this.answerButtons[q].setName(openQuestionNumbers[q] + "");
 					this.answerButtons[q].setVisible(true);
 					this.closeButtons[q].setText("Close");
+					this.closeButtons[q].setActionCommand("Close");
+					this.closeButtons[q].setName(openQuestionNumbers[q] + "");
 					this.closeButtons[q].setVisible(true);
 
 					this.qNumberLabels[q].setName(openQuestionNumbers[q] + "");
@@ -500,8 +451,11 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				this.qValueLabels[q].setText("");
 				this.qTextAreas[q].setText("");
 				this.answerButtons[q].setText("");
+				this.answerButtons[q].setName("");
 				this.answerButtons[q].setVisible(false);
 				this.closeButtons[q].setText("Open");
+				this.closeButtons[q].setActionCommand("Open");
+				this.closeButtons[q].setName("");
 				if (q == nOpen && trivia.nUnopened() > 0) {
 					this.closeButtons[q].setVisible(true);
 				} else {
@@ -549,19 +503,36 @@ public class WorkflowQlistPanel extends TriviaPanel {
 
 		}
 
-		@Override
-		public void stateChanged(ChangeEvent e) {
-			this.contextMenu.setVisible(false);
+		private class PopupListener extends MouseAdapter {
+
+			private final JPopupMenu	menu;
+
+			public PopupListener(JPopupMenu menu) {
+				this.menu = menu;
+			}
+
+			private void checkForPopup(MouseEvent event) {
+				final JComponent source = (JComponent) event.getSource();
+				if (event.isPopupTrigger() && !source.getName().equals("")) {
+					menu.setName(source.getName());
+					menu.show(source, event.getX(), event.getY());
+				}
+			}
+
+			public void mousePressed(MouseEvent e) {
+				checkForPopup(e);
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				checkForPopup(e);
+			}
+
+			public void mouseClicked(MouseEvent e) {
+				checkForPopup(e);
+			}
+
 		}
 
-		@Override
-		public void windowGainedFocus(WindowEvent e) {
-		}
-
-		@Override
-		public void windowLostFocus(WindowEvent e) {
-			this.contextMenu.setVisible(false);
-		}
 
 	}
 
