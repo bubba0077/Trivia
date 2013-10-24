@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.Serializable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -18,7 +19,7 @@ import javax.swing.text.DefaultCaret;
  * Provides methods for automatically making labels and text areas that fill their space by enclosing them in panels
  * 
  */
-public abstract class TriviaPanel extends JPanel {
+public abstract class TriviaPanel extends JPanel implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 3713561221924406596L;
@@ -121,7 +122,6 @@ public abstract class TriviaPanel extends JPanel {
 		pane.setViewportView(textArea);
 
 		return textArea;
-
 	}
 
 	/**

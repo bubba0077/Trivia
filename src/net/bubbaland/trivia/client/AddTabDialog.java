@@ -60,8 +60,14 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		final int option = ( (Integer) dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			final String tabName = (String) tabSelector.getSelectedItem();
-			pane.addTab(tabName, client.getTab(tabName));
-			final int tabLocation = pane.indexOfTab(tabName);
+			String altName = tabName;
+			int i = 1;
+			while (pane.indexOfTab(altName) > -1) {
+				altName = tabName + " (" + i + ")";
+				i++;
+			}
+			pane.addTab(altName, client.getTab(tabName));
+			final int tabLocation = pane.indexOfTab(altName);
 			pane.setSelectedIndex(tabLocation);
 		}
 	}
