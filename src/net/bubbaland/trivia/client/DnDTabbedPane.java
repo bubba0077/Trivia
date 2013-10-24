@@ -11,10 +11,11 @@ package net.bubbaland.trivia.client;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import java.awt.geom.*;
 import java.awt.image.*;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeListener, WindowFocusListener {
+public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionListener, ChangeListener {
 	public static final long						serialVersionUID	= 1L;
 	private static final int						LINEWIDTH			= 3;
 	private static final String						NAME				= "TabTransferData";
@@ -126,16 +127,17 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeL
 		 * Build close menu
 		 */
 		this.closeMenu = new JPopupMenu();
-		this.closeItem = new JMenuItem("Close");
-		this.closeItem.addMouseListener(this);
+		this.closeItem = new JMenuItem("Close Tab");
+		this.closeItem.setActionCommand("Close Tab");
+		this.closeItem.addActionListener(this);
 		this.closeMenu.add(this.closeItem);
 		this.closeMenu.setVisible(false);
 
-		// this.add(this.closeMenu);
+		this.addMouseListener(new PopupListener(this.closeMenu));
 
-		DnDTabbedPane.registerTabbedPaneListener(this);
-		this.client.getFrame().addWindowFocusListener(this);
-		FloatingPanel.registerFloatingPanelListener(this);
+		// DnDTabbedPane.registerTabbedPaneListener(this);
+		// this.client.getFrame().addWindowFocusListener(this);
+		// FloatingPanel.registerFloatingPanelListener(this);
 
 		this.addTab("+", blankPanel);
 		this.addChangeListener(this);
@@ -610,25 +612,60 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeL
 	}
 
 	@Override
+	public void actionPerformed(ActionEvent event) {
+		final int tabIndex = Integer.parseInt(this.closeMenu.getName());
+		final String command = event.getActionCommand();
+		switch (command) {
+			case "Close Tab":
+				this.removeTabAt(tabIndex);
+				break;
+			default:
+				break;
+		}
+	}
+
+	@Override
 	public void mouseClicked(MouseEvent event) {
-		final JComponent source = (JComponent) event.getSource();
 		int addButtonIndex = this.indexOfComponent(blankPanel);
 		if (addButtonIndex > -1 && this.getBoundsAt(addButtonIndex).contains(event.getPoint())) {
 			new AddTabDialog(this.client, this);
-		} else if (source.equals(this.closeItem)) {
-			this.removeTabAt(Integer.parseInt(source.getName()));
-		} else if (event.isPopupTrigger()) {
-			for (int i = 0; i < this.getTabCount(); i++) {
-				if (this.getBoundsAt(i).contains(event.getPoint())) {
-					this.closeItem.setName(i + "");
-					return;
+		}
+	}
+
+	private class PopupListener extends MouseAdapter {
+
+		private final JPopupMenu	menu;
+
+		public PopupListener(JPopupMenu menu) {
+			this.menu = menu;
+		}
+
+		private void checkForPopup(MouseEvent event) {
+			int clickedIndex = -1;
+			for (int i = 0; i < DnDTabbedPane.this.getTabCount(); i++) {
+				if (DnDTabbedPane.this.getBoundsAt(i).contains(event.getPoint())) {
+					clickedIndex = i;
+					break;
 				}
 			}
-			this.closeMenu.setLocation(event.getXOnScreen(), event.getYOnScreen());
-			this.closeMenu.setVisible(true);
-		} else {
-			this.closeMenu.setVisible(false);
+			if (event.isPopupTrigger() && clickedIndex > -1) {
+				menu.setName(clickedIndex + "");
+				menu.show((Component) event.getSource(), event.getX(), event.getY());
+			}
 		}
+
+		public void mousePressed(MouseEvent e) {
+			checkForPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			checkForPopup(e);
+		}
+
+		public void mouseClicked(MouseEvent e) {
+			checkForPopup(e);
+		}
+
 	}
 
 	@Override
@@ -644,21 +681,9 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeL
 	}
 
 	@Override
-	public void mouseExited(MouseEvent event) {
-		final JComponent source = (JComponent) event.getSource();
-		if (source.equals(this)) {
-			// this.closeMenu.setVisible(false);
-		}
+	public void mouseExited(MouseEvent e) {
 	}
 
-	@Override
-	public void windowGainedFocus(WindowEvent e) {
-	}
-
-	@Override
-	public void windowLostFocus(WindowEvent e) {
-		this.closeMenu.setVisible(false);
-	}
 }
 
 class GhostGlassPane extends JPanel {

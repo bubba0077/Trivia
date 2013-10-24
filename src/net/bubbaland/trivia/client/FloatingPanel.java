@@ -80,7 +80,7 @@ public class FloatingPanel extends JFrame implements ChangeListener {
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		if (e.getSource().equals(this.book)) {
-			if (this.book.getTabCount() == 0) {
+			if (this.book.getTabCount() == 1) {
 				// If there are no tabs left, hide the frame
 				this.setVisible(false);
 				// Wait 100 ms to see if the tab is added back, then close if there are still no tabs
