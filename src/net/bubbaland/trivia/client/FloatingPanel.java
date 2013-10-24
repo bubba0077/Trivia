@@ -27,12 +27,13 @@ public class FloatingPanel extends JFrame implements ChangeListener {
 	private static final ArrayList<WindowFocusListener>	floatingPanelListeners	= new ArrayList<WindowFocusListener>(0);
 	private final DnDTabbedPane							book;
 
-	public FloatingPanel(DropTargetDropEvent a_event) {
-		super();
+	public FloatingPanel(TriviaClient client, DropTargetDropEvent a_event) {
+		super("Trivia Satellite Panel");
+		this.setName("Trivia Satellite Panel");
 		JPanel panel = new JPanel(new GridBagLayout());
 		registerFloatingPanel(this);
 
-		this.book = new DnDTabbedPane();
+		this.book = new DnDTabbedPane(client);
 		this.book.convertTab(this.book.getTabTransferData(a_event), this.book.getTargetTabIndex(a_event.getLocation()));
 
 		this.book.addChangeListener(this);

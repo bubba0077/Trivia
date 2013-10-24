@@ -19,8 +19,10 @@ import javax.swing.Timer;
 public class TearAwayTab extends JWindow {
 	private static final long	serialVersionUID	= -2723420566227526365L;
 	private final Timer			mousePoller;
+	private final TriviaClient	client;
 
-	public TearAwayTab() {
+	public TearAwayTab(TriviaClient client) {
+		this.client = client;
 		this.add(new JLabel("New Window"));
 		this.pack();
 		this.mousePoller = new Timer(0, new ActionListener() {
@@ -89,7 +91,7 @@ public class TearAwayTab extends JWindow {
 		@Override
 		public void drop(DropTargetDropEvent a_event) {
 			detach();
-			new FloatingPanel(a_event);
+			new FloatingPanel(TearAwayTab.this.client, a_event);
 			a_event.dropComplete(true);
 		}
 	}

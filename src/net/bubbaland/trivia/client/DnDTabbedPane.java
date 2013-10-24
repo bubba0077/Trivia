@@ -11,14 +11,17 @@ package net.bubbaland.trivia.client;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.*;
 import java.awt.image.*;
 import java.util.ArrayList;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class DnDTabbedPane extends JTabbedPane {
+public class DnDTabbedPane extends JTabbedPane implements MouseListener, ChangeListener {
 	public static final long						serialVersionUID	= 1L;
 	private static final int						LINEWIDTH			= 3;
 	private static final String						NAME				= "TabTransferData";
@@ -26,7 +29,7 @@ public class DnDTabbedPane extends JTabbedPane {
 																				DataFlavor.javaJVMLocalObjectMimeType,
 																				NAME);
 	private static GhostGlassPane					s_glassPane			= new GhostGlassPane();
-	private final static TearAwayTab				tearTab				= new TearAwayTab();
+	private final TearAwayTab						tearTab;
 
 	private boolean									m_isDrawRect		= false;
 	private final Rectangle2D						m_lineRect			= new Rectangle2D.Double();
@@ -36,9 +39,16 @@ public class DnDTabbedPane extends JTabbedPane {
 
 	private static final ArrayList<DnDTabbedPane>	tabbedPaneList		= new ArrayList<DnDTabbedPane>(0);
 	private static final ArrayList<ChangeListener>	tabbedPaneListeners	= new ArrayList<ChangeListener>(0);
+	private final TriviaClient						client;
 
-	public DnDTabbedPane() {
+	// private final AddButton addButton;
+	private final JPanel							blankPanel;
+
+	public DnDTabbedPane(TriviaClient client) {
 		super();
+		this.client = client;
+		this.tearTab = new TearAwayTab(client);
+		this.blankPanel = new JPanel();
 		registerTabbedPane(this);
 		final DragSourceListener dsl = new DragSourceListener() {
 			public void dragEnter(DragSourceDragEvent e) {
@@ -107,6 +117,10 @@ public class DnDTabbedPane extends JTabbedPane {
 				return true;
 			}
 		};
+
+		this.addTab("+", blankPanel);
+		this.addChangeListener(this);
+		this.addMouseListener(this);
 	}
 
 	public TabAcceptor getAcceptor() {
@@ -383,6 +397,21 @@ public class DnDTabbedPane extends JTabbedPane {
 		}
 	}
 
+	// private class AddButton extends JButton implements ActionListener {
+	// public AddButton(JPanel panel) {
+	// super("+");
+	// this.setToolTipText("Add new tab");
+	// int index = DnDTabbedPane.this.indexOfComponent(blankPanel);
+	// DnDTabbedPane.this.setTabComponentAt(index, this);
+	// this.addActionListener(this);
+	// }
+	//
+	// @Override
+	// public void actionPerformed(ActionEvent e) {
+	// System.out.println("Add Button Pressed");
+	// }
+	// }
+
 	/**
 	 * returns potential index for drop.
 	 * 
@@ -562,6 +591,43 @@ public class DnDTabbedPane extends JTabbedPane {
 
 	public interface TabAcceptor {
 		boolean isDropAcceptable(DnDTabbedPane a_component, int a_index);
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		// Make sure the add button stays at the end
+		int nTabs = this.getTabCount();
+		int addButtonIndex = this.indexOfComponent(blankPanel);
+		if (addButtonIndex > -1 && addButtonIndex != ( nTabs - 1 )) {
+			this.remove(addButtonIndex);
+			this.addTab("+", blankPanel);
+			// this.setEnabledAt(nTabs - 1, false);
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		int addButtonIndex = this.indexOfComponent(blankPanel);
+		if (addButtonIndex > -1 && this.getBoundsAt(addButtonIndex).contains(e.getPoint())) {
+			System.out.println("Add tab pressed");
+			new AddTabDialog(this.client, this);
+		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
 	}
 }
 

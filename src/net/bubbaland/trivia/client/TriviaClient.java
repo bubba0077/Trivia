@@ -25,9 +25,9 @@ import java.net.URISyntaxException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -109,7 +109,20 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	// The status bar at the bottom
 	final private JLabel							statusBar;
 
-	final private Hashtable<String, TriviaPanel>	panelHash;
+	final private Hashtable<String, TriviaPanel>	tabHash;
+	final static private Hashtable<String, String>	tabDescriptionHash;
+	static {
+		tabDescriptionHash = new Hashtable<String, String>(0);
+		tabDescriptionHash.put("Workflow", "Main tab with summary information, open question list, and answer queue.");
+		tabDescriptionHash.put("Current", "Tab showing question data for the current round.");
+		tabDescriptionHash.put("History", "Tab that can show question data for any round.");
+		tabDescriptionHash.put("By Round", "Tab that displays score information for every round.");
+		tabDescriptionHash.put("Place Chart", "Chart showing the team's place in time");
+		tabDescriptionHash.put("Score Chart", "Chart showing the team's score in each round.");
+		tabDescriptionHash.put("Cumul. Score Chart", "Chart showing the team's total score in time.");
+		tabDescriptionHash.put("Team Comparison", "Chart comparing each team's score to our score in time.");
+	}
+
 
 	// The user's name
 	private volatile String							user;
@@ -422,22 +435,22 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		 * Create main content area
 		 */
 		// Create the tabbed pane
-		this.book = new DnDTabbedPane();
+		this.book = new DnDTabbedPane(this);
 
-		this.panelHash = new Hashtable<String, TriviaPanel>(0);
-		this.panelHash.put("Workflow", new WorkflowPanel(server, this));
-		this.panelHash.put("Current", new RoundPanel(server, this));
-		this.panelHash.put("History", new HistoryPanel(server, this));
-		this.panelHash.put("By Round", new ScoreByRoundPanel(server, this));
-		this.panelHash.put("Place Chart", new PlaceChartPanel(this));
-		this.panelHash.put("Score Chart", new ScoreByRoundChartPanel(this));
-		this.panelHash.put("Cumul. Score Chart", new CumulativePointsChartPanel(this));
-		this.panelHash.put("Team Comparison", new TeamComparisonPanel(this));
+		this.tabHash = new Hashtable<String, TriviaPanel>(0);
+		this.tabHash.put("Workflow", new WorkflowPanel(server, this));
+		this.tabHash.put("Current", new RoundPanel(server, this));
+		this.tabHash.put("History", new HistoryPanel(server, this));
+		this.tabHash.put("By Round", new ScoreByRoundPanel(server, this));
+		this.tabHash.put("Place Chart", new PlaceChartPanel(this));
+		this.tabHash.put("Score Chart", new ScoreByRoundChartPanel(this));
+		this.tabHash.put("Cumul. Score Chart", new CumulativePointsChartPanel(this));
+		this.tabHash.put("Team Comparison", new TeamComparisonPanel(this));
 
 		for (String tabName : TriviaClient.initialTabs) {
-			System.out.println(tabName);
 			this.book.addTab(tabName, this.getTab(tabName));
 		}
+		this.book.setSelectedIndex(this.book.indexOfTab(TriviaClient.initialTabs[0]));
 
 		// Put the split pane at the top of the window
 		constraints.gridx = 0;
@@ -766,7 +779,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	@Override
 	public synchronized void update(boolean force) {
 		// Update each individual tab in the GUI
-		for (final TriviaPanel page : this.panelHash.values()) {
+		for (final TriviaPanel page : this.tabHash.values()) {
 			page.update(force);
 		}
 	}
@@ -867,12 +880,16 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		frame.setVisible(true);
 	}
 
-	public TriviaPanel getTab(String panelName) {
-		return this.panelHash.get(panelName);
+	public TriviaPanel getTab(String tabName) {
+		return this.tabHash.get(tabName);
 	}
 
-	public Enumeration<String> getTabNames() {
-		return this.panelHash.keys();
+	public Set<String> getTabNames() {
+		return this.tabHash.keySet();
+	}
+
+	public String getTabDescription(String tabName) {
+		return TriviaClient.tabDescriptionHash.get(tabName);
 	}
 
 	/**
