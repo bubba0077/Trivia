@@ -62,7 +62,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 	 * Button sizes
 	 */
 	private static final int			ANSWER_BUTTON_HEIGHT			= 32;
-	private static final int			ANSWER_BUTTON_WIDTH				= 64;
+	private static final int			ANSWER_BUTTON_WIDTH				= 80;
 	private static final int			CLOSE_BUTTON_HEIGHT				= 32;
 	private static final int			CLOSE_BUTTON_WIDTH				= 64;
 
