@@ -31,7 +31,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-public class WorkflowQlistPanel extends TriviaPanel {
+public class OpenQuestionListPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long			serialVersionUID				= 6049067322505905668L;
@@ -78,7 +78,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 	private static final int			DEFAULT_QUESTIONS_SHOW			= 4;
 
 	/** Sub-panel that will hold the open questions */
-	private final WorkflowQListSubPanel	workflowQListSubPanel;
+	private final OpenQuestionListSubPanel	workflowQListSubPanel;
 
 	/**
 	 * Instantiates a new workflow question list panel.
@@ -88,7 +88,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public WorkflowQlistPanel(TriviaInterface server, TriviaClient client) {
+	public OpenQuestionListPanel(TriviaInterface server, TriviaClient client) {
 
 		super();
 
@@ -138,7 +138,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 		/**
 		 * Create the subpanel that will hold the actual questions and put it in a scroll pane
 		 */
-		this.workflowQListSubPanel = new WorkflowQListSubPanel(server, client);
+		this.workflowQListSubPanel = new OpenQuestionListSubPanel(server, client);
 		final JScrollPane scrollPane = new JScrollPane(this.workflowQListSubPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, DEFAULT_QUESTIONS_SHOW * QUESTION_HEIGHT + 3));
@@ -159,7 +159,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 	/**
 	 * Panel which displays a list of the current open questions.
 	 */
-	private class WorkflowQListSubPanel extends TriviaPanel implements ActionListener {
+	private class OpenQuestionListSubPanel extends TriviaPanel implements ActionListener {
 
 		/** The Constant serialVersionUID. */
 		private static final long		serialVersionUID	= 6049067322505905668L;
@@ -191,7 +191,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 		 * @param client
 		 *            the client
 		 */
-		public WorkflowQListSubPanel(TriviaInterface server, TriviaClient client) {
+		public OpenQuestionListSubPanel(TriviaInterface server, TriviaClient client) {
 
 			super();
 

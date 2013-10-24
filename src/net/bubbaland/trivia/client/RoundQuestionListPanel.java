@@ -43,7 +43,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-public class RoundQlistPanel extends TriviaPanel {
+public class RoundQuestionListPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long			serialVersionUID				= 3589815467416864653L;
@@ -81,7 +81,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	private static final float			SMALL_FONT_SIZE					= (float) 12.0;
 
 	/** The sub-panel holding the questions */
-	private final RoundQListSubPanel	roundQlistSubPanel;
+	private final RoundQuestionListSubPanel	roundQlistSubPanel;
 	private final JScrollPane			roundQlistPane;
 
 	/**
@@ -92,7 +92,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	 * @param client
 	 *            the client
 	 */
-	public RoundQlistPanel(TriviaInterface server, TriviaClient client) {
+	public RoundQuestionListPanel(TriviaInterface server, TriviaClient client) {
 		this(server, client, true, 0);
 	}
 
@@ -108,7 +108,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	 * @param rNumber
 	 *            the round number
 	 */
-	public RoundQlistPanel(TriviaInterface server, TriviaClient client, boolean live, int rNumber) {
+	public RoundQuestionListPanel(TriviaInterface server, TriviaClient client, boolean live, int rNumber) {
 
 		super();
 
@@ -177,7 +177,7 @@ public class RoundQlistPanel extends TriviaPanel {
 		constraints.gridy = 1;
 		constraints.gridwidth = 7;
 		constraints.weighty = 1.0;
-		this.roundQlistSubPanel = new RoundQListSubPanel(server, client, live, rNumber);
+		this.roundQlistSubPanel = new RoundQuestionListSubPanel(server, client, live, rNumber);
 		this.roundQlistPane = new JScrollPane(this.roundQlistSubPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.roundQlistPane.setPreferredSize(new Dimension(0, 200));
@@ -210,7 +210,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	/**
 	 * A panel that displays the question data for a round.
 	 */
-	private class RoundQListSubPanel extends TriviaPanel implements ActionListener {
+	private class RoundQuestionListSubPanel extends TriviaPanel implements ActionListener {
 
 		private static final long		serialVersionUID	= 3825357215129662133L;
 
@@ -248,7 +248,7 @@ public class RoundQlistPanel extends TriviaPanel {
 		 * @param rNumber
 		 *            the round number
 		 */
-		public RoundQListSubPanel(TriviaInterface server, TriviaClient client, boolean live, int rNumber) {
+		public RoundQuestionListSubPanel(TriviaInterface server, TriviaClient client, boolean live, int rNumber) {
 			super();
 
 			this.server = server;
@@ -422,7 +422,7 @@ public class RoundQlistPanel extends TriviaPanel {
 			constraints.gridwidth = 7;
 			constraints.weighty = 1.0;
 			final JPanel blank = new JPanel();
-			blank.setBackground(HeaderPanel.BACKGROUND_COLOR);
+			blank.setBackground(SummaryPanel.BACKGROUND_COLOR);
 			blank.setPreferredSize(new Dimension(0, 0));
 			this.add(blank, constraints);
 		}
@@ -480,14 +480,14 @@ public class RoundQlistPanel extends TriviaPanel {
 
 			private void checkForPopup(MouseEvent event) {
 				final JComponent source = (JComponent) event.getSource();
-				final Trivia trivia = RoundQListSubPanel.this.client.getTrivia();
+				final Trivia trivia = RoundQuestionListSubPanel.this.client.getTrivia();
 				final int qNumber = Integer.parseInt(source.getName());
-				if (RoundQListSubPanel.this.live) {
-					RoundQListSubPanel.this.rNumber = trivia.getCurrentRoundNumber();
+				if (RoundQuestionListSubPanel.this.live) {
+					RoundQuestionListSubPanel.this.rNumber = trivia.getCurrentRoundNumber();
 				}
-				if (event.isPopupTrigger() && trivia.beenOpen(RoundQListSubPanel.this.rNumber, qNumber)) {
-					if (RoundQListSubPanel.this.live) {
-						RoundQListSubPanel.this.reopenItem.setVisible(!trivia.isOpen(qNumber));
+				if (event.isPopupTrigger() && trivia.beenOpen(RoundQuestionListSubPanel.this.rNumber, qNumber)) {
+					if (RoundQuestionListSubPanel.this.live) {
+						RoundQuestionListSubPanel.this.reopenItem.setVisible(!trivia.isOpen(qNumber));
 					}
 					menu.setName(source.getName());
 					menu.show(source, event.getX(), event.getY());

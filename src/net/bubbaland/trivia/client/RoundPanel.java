@@ -20,8 +20,8 @@ public class RoundPanel extends TriviaPanel {
 	private static final long		serialVersionUID	= 9190017804155701978L;
 
 	// Sub-panels of the round panel
-	private final HeaderPanel		roundHeaderPanel;
-	private final RoundQlistPanel	roundQlistPanel;
+	private final SummaryPanel		roundHeaderPanel;
+	private final RoundQuestionListPanel	roundQlistPanel;
 
 	/**
 	 * Instantiates a new round panel.
@@ -36,8 +36,8 @@ public class RoundPanel extends TriviaPanel {
 		super();
 
 		// Create the sub-panels
-		this.roundHeaderPanel = new HeaderPanel(server, client);
-		this.roundQlistPanel = new RoundQlistPanel(server, client);
+		this.roundHeaderPanel = new SummaryPanel(server, client);
+		this.roundQlistPanel = new RoundQuestionListPanel(server, client);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();

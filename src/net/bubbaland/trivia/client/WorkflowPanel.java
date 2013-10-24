@@ -27,9 +27,9 @@ public class WorkflowPanel extends TriviaPanel {
 	private static final long			serialVersionUID	= -5608314912146842278L;
 
 	// Sub-panels of the workflow panel
-	private final HeaderPanel			workflowHeaderPanel;
-	private final WorkflowQlistPanel	workflowQlistPanel;
-	private final WorkflowQueuePanel	workflowQueuePanel;
+	private final SummaryPanel			workflowHeaderPanel;
+	private final OpenQuestionListPanel	workflowQlistPanel;
+	private final AnswerQueuePanel	workflowQueuePanel;
 
 	/**
 	 * Instantiates a new workflow panel.
@@ -44,9 +44,9 @@ public class WorkflowPanel extends TriviaPanel {
 		super();
 
 		// Create the sub-panels
-		this.workflowHeaderPanel = new HeaderPanel(server, client);
-		this.workflowQlistPanel = new WorkflowQlistPanel(server, client);
-		this.workflowQueuePanel = new WorkflowQueuePanel(server, client);
+		this.workflowHeaderPanel = new SummaryPanel(server, client);
+		this.workflowQlistPanel = new OpenQuestionListPanel(server, client);
+		this.workflowQueuePanel = new AnswerQueuePanel(server, client);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();

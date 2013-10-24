@@ -35,7 +35,7 @@ import net.bubbaland.trivia.client.TriviaClient.QueueSort;
  * @author Walter Kolczynski
  * 
  */
-public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
+public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long			serialVersionUID		= 784049314825719490L;
@@ -107,7 +107,7 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public WorkflowQueuePanel(TriviaInterface server, TriviaClient client) {
+	public AnswerQueuePanel(TriviaInterface server, TriviaClient client) {
 
 		super();
 

@@ -29,7 +29,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  *
  */
-public class HeaderPanel extends TriviaPanel implements ActionListener {
+public class SummaryPanel extends TriviaPanel implements ActionListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long		serialVersionUID		= 3544918496657028139L;
@@ -99,7 +99,7 @@ public class HeaderPanel extends TriviaPanel implements ActionListener {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public HeaderPanel(TriviaInterface server, TriviaClient client) {
+	public SummaryPanel(TriviaInterface server, TriviaClient client) {
 
 		super();
 
