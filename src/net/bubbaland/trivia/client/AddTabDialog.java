@@ -4,6 +4,7 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.Set;
 
 import javax.swing.JComboBox;
@@ -52,16 +53,31 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		this.descriptionLabel.setWrapStyleWord(true);
 		this.add(this.descriptionLabel, constraints);
 
+		Object[] options = { "Add", "Add All", "Cancel" };
+
 		// Display the dialog box
 		this.dialog = new TriviaDialog((Frame) SwingUtilities.getWindowAncestor(pane), "Add tab", this,
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options);
 		this.dialog.setName("Add Tab");
 		this.dialog.setVisible(true);
 
 		// If the OK button was pressed, add the proposed answer to the queue
-		final int option = ( (Integer) dialog.getValue() ).intValue();
-		if (option == JOptionPane.OK_OPTION) {
-			final String tabName = (String) tabSelector.getSelectedItem();
+		final String option = (String) dialog.getValue();
+		final ArrayList<String> newTabs = new ArrayList<String>(0);
+		switch (option) {
+			case "Add": {
+				newTabs.add((String) tabSelector.getSelectedItem());
+				break;
+			}
+			case "Add All":
+				for (String tabName : tabNameSet) {
+					if (pane.indexOfTab(tabName) == -1) {
+						newTabs.add(tabName);
+					}
+				}
+				break;
+		}
+		for (String tabName : newTabs) {
 			String altName = tabName;
 			int i = 1;
 			while (pane.indexOfTab(altName) > -1) {
@@ -72,6 +88,21 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 			final int tabLocation = pane.indexOfTab(altName);
 			pane.setSelectedIndex(tabLocation);
 		}
+
+
+		// if (option == JOptionPane.OK_OPTION) {
+		// final String tabName = (String) tabSelector.getSelectedItem();
+		// String altName = tabName;
+		// int i = 1;
+		// while (pane.indexOfTab(altName) > -1) {
+		// altName = tabName + " (" + i + ")";
+		// i++;
+		// }
+		// pane.addTab(altName, client.getTab(tabName));
+		// final int tabLocation = pane.indexOfTab(altName);
+		// pane.setSelectedIndex(tabLocation);
+		// } e
+
 	}
 
 	@Override
