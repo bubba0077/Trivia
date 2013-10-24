@@ -217,7 +217,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		menu.setMnemonic(KeyEvent.VK_Q);
 		menuBar.add(menu);
 
-		this.hideClosedMenuItem = new JCheckBoxMenuItem("Hide closed questions");
+		this.hideClosedMenuItem = new JCheckBoxMenuItem("Hide answers to closed questions");
 		this.hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
 		this.hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
 		String loadHideClosed = loadProperty("hideClosed");
@@ -235,7 +235,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		this.hideClosedMenuItem.addActionListener(this);
 		menu.add(this.hideClosedMenuItem);
 
-		this.hideDuplicatesMenuItem = new JCheckBoxMenuItem("Hide duplicate questions");
+		this.hideDuplicatesMenuItem = new JCheckBoxMenuItem("Hide duplicate answers");
 		this.hideDuplicatesMenuItem.setMnemonic(KeyEvent.VK_D);
 		this.hideDuplicatesMenuItem.setDisplayedMnemonicIndex(5);
 		this.hideDuplicatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
