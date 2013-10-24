@@ -1,5 +1,6 @@
 package net.bubbaland.trivia.client;
 
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -8,6 +9,7 @@ import java.util.Set;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 
@@ -51,8 +53,8 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		this.add(this.descriptionLabel, constraints);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Add tab", this, JOptionPane.PLAIN_MESSAGE,
-				JOptionPane.OK_CANCEL_OPTION);
+		this.dialog = new TriviaDialog((Frame) SwingUtilities.getWindowAncestor(pane), "Add tab", this,
+				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setName("Add Tab");
 		this.dialog.setVisible(true);
 
