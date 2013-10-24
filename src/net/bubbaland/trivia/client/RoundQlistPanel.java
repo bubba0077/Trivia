@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -159,7 +160,12 @@ public class RoundQlistPanel extends TriviaPanel {
 		constraints.gridx = 6;
 		constraints.gridy = 0;
 		constraints.gridwidth = 1;
-		final int scrollBarWidth = ( (Integer) UIManager.get("ScrollBar.width") ).intValue();
+		final int scrollBarWidth;
+		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+			scrollBarWidth = (int) UIManager.get("ScrollBar.thumbHeight");
+		} else {
+			scrollBarWidth = ( (Integer) UIManager.get("ScrollBar.width") ).intValue();
+		}
 		this.enclosedLabel("", scrollBarWidth, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
 				FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 
@@ -348,10 +354,17 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.submitterTextAreas[q].setFont(this.submitterTextAreas[q].getFont().deriveFont(SMALL_FONT_SIZE));
 				this.submitterTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT / 3));
 				this.submitterTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT / 3));
+				if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+					UIDefaults defaults = new UIDefaults();
+					defaults.put("TextPane[Enabled].backgroundPainter", bColor);
+					this.submitterTextAreas[q].putClientProperty("Nimbus.Overrides", defaults);
+					this.submitterTextAreas[q].putClientProperty("Nimbus.Overrides.InheritDefaults", true);
+				}
 				this.submitterTextAreas[q].setBackground(bColor);
 				this.submitterTextAreas[q].setForeground(color);
 				this.submitterTextAreas[q].setName(( q + 1 ) + "");
 				this.submitterTextAreas[q].addMouseListener(this);
+
 				this.add(this.submitterTextAreas[q], constraints);
 
 				constraints.gridx = 6;
@@ -366,6 +379,12 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.operatorTextAreas[q].setFont(this.operatorTextAreas[q].getFont().deriveFont(SMALL_FONT_SIZE));
 				this.operatorTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, 2 * QUESTION_HEIGHT / 3));
 				this.operatorTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, 2 * QUESTION_HEIGHT / 3));
+				if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+					UIDefaults defaults = new UIDefaults();
+					defaults.put("TextPane[Enabled].backgroundPainter", bColor);
+					this.operatorTextAreas[q].putClientProperty("Nimbus.Overrides", defaults);
+					this.operatorTextAreas[q].putClientProperty("Nimbus.Overrides.InheritDefaults", true);
+				}
 				this.operatorTextAreas[q].setBackground(bColor);
 				this.operatorTextAreas[q].setForeground(color);
 				this.operatorTextAreas[q].setName(( q + 1 ) + "");

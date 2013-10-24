@@ -174,12 +174,6 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		this.statusLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 		this.statusLabel.addMouseListener(this);
 
-		constraints.gridx = 8;
-		constraints.gridy = 0;
-		final int scrollBarWidth = ( (Integer) UIManager.get("ScrollBar.width") ).intValue();
-		this.queueSizeLabel = this.enclosedLabel("0", scrollBarWidth, HEADER_HEIGHT, HEADER_TEXT_COLOR,
-				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
-
 		/**
 		 * Create the sub-panel that will show the queue data and put it in a scroll pane
 		 */
@@ -195,7 +189,6 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 		workflowQueuePane.setMinimumSize(new Dimension(0, ANSWER_HEIGHT));
 		this.add(workflowQueuePane, constraints);
 
-
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.gridwidth = 1;
@@ -204,6 +197,19 @@ public class WorkflowQueuePanel extends TriviaPanel implements MouseListener {
 
 		this.workflowQueueSubPanel = new WorkflowQueueSubPanel(server, client);
 		scrollPanel.add(this.workflowQueueSubPanel, constraints);
+		constraints.weightx = 0.0;
+		constraints.weighty = 0.0;
+
+		constraints.gridx = 8;
+		constraints.gridy = 0;
+		final int scrollBarWidth;
+		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+			scrollBarWidth = (int) UIManager.get("ScrollBar.thumbHeight");
+		} else {
+			scrollBarWidth = ( (Integer) UIManager.get("ScrollBar.width") ).intValue();
+		}
+		this.queueSizeLabel = this.enclosedLabel("0", scrollBarWidth, HEADER_HEIGHT, HEADER_TEXT_COLOR,
+				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		/**
 		 * Create a blank spacer row at the bottom

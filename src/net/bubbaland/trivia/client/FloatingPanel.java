@@ -12,6 +12,12 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+/**
+ * 
+ * 
+ * @author Walter Kolczynski
+ * 
+ */
 public class FloatingPanel extends JFrame implements ChangeListener {
 
 	private static final long	serialVersionUID	= -3639363131235278472L;
@@ -48,7 +54,9 @@ public class FloatingPanel extends JFrame implements ChangeListener {
 	public void stateChanged(ChangeEvent e) {
 		if (e.getSource().equals(this.book)) {
 			if (this.book.getTabCount() == 0) {
+				// If there are no tabs left, hide the frame
 				this.setVisible(false);
+				// Wait 100 ms to see if the tab is added back, then close if there are still no tabs
 				Timer timer = new Timer(100, new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {

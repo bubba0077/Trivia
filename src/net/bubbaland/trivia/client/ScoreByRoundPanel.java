@@ -4,25 +4,29 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel that displays the scores from each round.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class ScoreByRoundPanel extends TriviaPanel {
 
@@ -78,12 +82,12 @@ public class ScoreByRoundPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new score by round panel.
-	 *
+	 * 
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
-	 *
+	 * 
 	 */
 	public ScoreByRoundPanel(TriviaInterface server, TriviaClient client) {
 
@@ -211,7 +215,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -222,7 +226,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	/**
 	 * Scroll panel that contains the score data for every round
 	 */
-	private class InternalScrollPanel extends TriviaPanel implements ActionListener {
+	private class InternalScrollPanel extends TriviaPanel implements MouseListener, ChangeListener {
 
 		/** The Constant serialVersionUID. */
 		private static final long		serialVersionUID	= 7121481355244434308L;
@@ -231,13 +235,11 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		 * GUI elements that update
 		 */
 		final private JLabel[]			earnedLabels, valueLabels, percentLabels, cumulativeEarnedLabels,
-				cumulativeValueLabels, percentTotalLabels, announcedScoreLabels, placeLabels;
-		final private JTextField[]		discrepancyTextField;
+				cumulativeValueLabels, percentTotalLabels, announcedScoreLabels, placeLabels, discrepancyLabels;
+		private final JMenuItem			editItem;
 
 		/** The nunber of rounds */
 		final private int				nRounds;
-
-		private final String[]			discrepancies;
 
 		/** Data sources */
 		final private TriviaInterface	server;
@@ -245,7 +247,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 
 		/**
 		 * Instantiates a new internal scroll panel.
-		 *
+		 * 
 		 * @param server
 		 *            the server
 		 * @param client
@@ -273,8 +275,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 			this.percentTotalLabels = new JLabel[this.nRounds];
 			this.announcedScoreLabels = new JLabel[this.nRounds];
 			this.placeLabels = new JLabel[this.nRounds];
-			this.discrepancyTextField = new JTextField[this.nRounds];
-			this.discrepancies = new String[this.nRounds];
+			this.discrepancyLabels = new JLabel[this.nRounds];
 
 			// Create the labels for each round
 			for (int r = 0; r < this.nRounds; r++) {
@@ -338,16 +339,11 @@ public class ScoreByRoundPanel extends TriviaPanel {
 				constraints.weightx = 1.0;
 				constraints.gridx = 9;
 				constraints.gridy = r;
-				this.discrepancyTextField[r] = new JTextField("", 10);
-				this.discrepancyTextField[r].setBackground(bColor.brighter());
-				this.discrepancyTextField[r].setForeground(DISCREPANCY_COLOR);
-				this.discrepancyTextField[r].setBorder(BorderFactory.createEmptyBorder());
-				this.discrepancyTextField[r].setFont(this.discrepancyTextField[r].getFont().deriveFont(
-						DISCREPANCY_FONT_SIZE));
-				this.discrepancyTextField[r].addActionListener(this);
-				this.add(this.discrepancyTextField[r], constraints);
 
-				this.discrepancies[r] = "";
+				this.discrepancyLabels[r] = this.enclosedLabel("", DISCREPANCY_WIDTH, ROW_HEIGHT, DISCREPANCY_COLOR,
+						bColor, constraints, DISCREPANCY_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
+				this.discrepancyLabels[r].setName(( r + 1 ) + "");
+				this.discrepancyLabels[r].addMouseListener(this);
 
 			}
 
@@ -362,47 +358,19 @@ public class ScoreByRoundPanel extends TriviaPanel {
 			panel.setPreferredSize(new Dimension(0, 0));
 			this.add(panel, constraints);
 
-		}
-
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-		 */
-		@Override
-		public synchronized void actionPerformed(ActionEvent e) {
 			/**
-			 * This method isn't working as I'd hoped, need to replace
+			 * Build context menu
 			 */
-			final JTextField source = (JTextField) e.getSource();
-			for (int r = 0; r < this.nRounds; r++) {
-				if (source.equals(this.discrepancyTextField[r])) {
-					int tryNumber = 0;
-					boolean success = false;
-					while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
-						tryNumber++;
-						try {
-							this.server.setDiscrepancyText(this.client.getUser(), r + 1, source.getText());
-							success = true;
-						} catch (final Exception exception) {
-							this.client.log("Couldn't set discrepancy text on server (try #" + tryNumber + ").");
-						}
-					}
-
-					if (!success) {
-						this.client.disconnected();
-						return;
-					}
-
-					return;
-				}
-			}
-
+			final JPopupMenu contextMenu = new JPopupMenu();
+			this.editItem = new JMenuItem("Edit");
+			this.editItem.addMouseListener(this);
+			contextMenu.add(this.editItem);
+			this.add(contextMenu);
 		}
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
@@ -428,8 +396,8 @@ public class ScoreByRoundPanel extends TriviaPanel {
 						&& this.cumulativeEarnedLabels[r].getText().equals(cumulativeEarned + "")
 						&& this.cumulativeValueLabels[r].getText().equals(cumulativeValue + "")
 						&& ( this.announcedScoreLabels[r].getText().equals(announced + "") || !isAnnounced )
-						&& ( this.placeLabels[r].getText().equals(TriviaClient.ordinalize(place)) || !isAnnounced ) && this.discrepancies[r]
-							.equals(discrepancy) ) || force;
+						&& ( this.placeLabels[r].getText().equals(TriviaClient.ordinalize(place)) || !isAnnounced ) && this.discrepancyLabels[r]
+						.getText().equals(discrepancy) ) || force;
 
 				if (updated) {
 					if (value != 0) {
@@ -447,8 +415,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 							this.announcedScoreLabels[r].setText(announced + "");
 							this.placeLabels[r].setText(TriviaClient.ordinalize(place));
 						}
-						this.discrepancyTextField[r].setText(discrepancy);
-						this.discrepancies[r] = discrepancy;
+						this.discrepancyLabels[r].setText(discrepancy);
 					} else {
 						this.earnedLabels[r].setText("");
 						this.valueLabels[r].setText("");
@@ -458,13 +425,60 @@ public class ScoreByRoundPanel extends TriviaPanel {
 						this.percentTotalLabels[r].setText("");
 						this.announcedScoreLabels[r].setText("");
 						this.placeLabels[r].setText("");
-						this.discrepancyTextField[r].setText("");
+						this.discrepancyLabels[r].setText("");
 					}
 				}
 
 			}
 
 		}
+
+		@Override
+		public void mouseClicked(MouseEvent event) {
+			final JComponent source = (JComponent) event.getSource();
+			final Trivia trivia = this.client.getTrivia();
+			final int rNumber = Integer.parseInt(source.getName());
+			if (source.equals(this.editItem)) {
+				// Edit chosen from context menu
+				this.editItem.getParent().setVisible(false);
+				new DiscrepancyDialog(this.server, this.client, rNumber);
+			} else {
+				// Right-click pressed, show context menu
+				if (event.getButton() == 3 && trivia.isAnnounced(rNumber)) {
+					this.editItem.getParent().setLocation(event.getXOnScreen(), event.getYOnScreen());
+					this.editItem.setName(source.getName());
+					this.editItem.getParent().setVisible(true);
+				} else {
+					this.editItem.getParent().setVisible(false);
+				}
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
+
+		/**
+		 * Process tab changes
+		 */
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			// Make sure the menu is hidden when changing tabs
+			this.editItem.getParent().setVisible(false);
+		}
+
 
 	}
 

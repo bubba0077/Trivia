@@ -16,9 +16,9 @@ import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel for the workflow tab, which contains most of the trivia operations
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 @SuppressWarnings("unused")
 public class WorkflowPanel extends TriviaPanel {
@@ -33,7 +33,7 @@ public class WorkflowPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new workflow panel.
-	 *
+	 * 
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
@@ -87,7 +87,7 @@ public class WorkflowPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override

@@ -46,6 +46,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
@@ -141,7 +143,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		// Call parent constructor
 		super();
-
 		this.server = server;
 		this.frame = parent;
 
@@ -497,10 +498,6 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	public void actionPerformed(ActionEvent e) {
 		final String command = e.getActionCommand();
 		switch (command) {
-		// case "Timer":
-		// // Triggered by update timer
-		// this.update();
-		// break;
 			case "Change name":
 				// Triggered by change name, prompt for new name
 				new UserLogin(this);
@@ -826,6 +823,15 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 * Create and show the GUI.
 	 */
 	private static void createAndShowGUI(boolean useFX) {
+		try {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+				}
+			}
+		} catch (Exception e) {
+			// If Nimbus is not available, you can set the GUI to another look and feel.
+		}
 		// Create the application window
 		final JFrame frame = new JFrame("Trivia");
 		frame.setName("Main_Window");
