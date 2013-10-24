@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Timer;
@@ -63,32 +64,35 @@ import net.bubbaland.trivia.UserList.Role;
 public class TriviaClient extends TriviaPanel implements ActionListener, WindowListener {
 
 	// The Constant serialVersionUID.
-	private static final long	serialVersionUID	= 5464403297756091690L;
+	private static final long		serialVersionUID	= 5464403297756091690L;
 
 	// The refresh rate of the GUI elements (in milliseconds)
-	final private static int	REFRESH_RATE		= 500;
+	final private static int		REFRESH_RATE		= 500;
 	// The maximum number of retries the client will make when failing in communication with the server
-	protected static final int	MAX_RETRIES			= 10;
+	protected static final int		MAX_RETRIES			= 10;
 	// The amount of time (in seconds) a user is considered "active"
-	final static private int	USER_LIST_WINDOW	= 10 * 60;
+	final static private int		USER_LIST_WINDOW	= 10 * 60;
 	// The amount of time (in seconds) a user is considered disconnected
-	final static private int	USER_LIST_TIMEOUT	= 90;
+	final static private int		USER_LIST_TIMEOUT	= 90;
 
 	// Height of the status bar at the bottom of the GUI
-	final static private int	STATUS_HEIGHT		= 14;
+	final static private int		STATUS_HEIGHT		= 14;
 	// Font size of the status text
-	final static private float	STATUS_FONT_SIZE	= 12.0f;
+	final static private float		STATUS_FONT_SIZE	= 12.0f;
 
 	// URL for RMI server
-	final static private String	TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
+	final static private String		TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
 	// URL for Wiki
-	final static private String	WIKI_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
+	final static private String		WIKI_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
 	// URL for the IRC client
-	final static private String	IRC_CLIENT_URL		= "http://webchat.freenode.net/";
+	final static private String		IRC_CLIENT_URL		= "http://webchat.freenode.net/";
 	// IRC channel to join on connection to IRC server
-	final static private String	IRC_CHANNEL			= "%23kneedeeptrivia";
+	final static private String		IRC_CHANNEL			= "%23kneedeeptrivia";
 	// File name to store window positions
-	final static private String	SETTINGS_FILENAME	= ".trivia-settings";
+	final static private String		SETTINGS_FILENAME	= ".trivia-settings";
+
+	// Initial tabs
+	final static private String[]	initialTabs			= { "Workflow", "Current", "History" };
 
 	// Queue sort option
 	public static enum QueueSort {
@@ -99,39 +103,39 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 * GUI Components
 	 */
 	// Root frame for the application
-	final private JFrame						frame;
+	final private JFrame							frame;
 	// The tabbed pane
-	final private DnDTabbedPane					book;
-	// Individual pages in the tabbed pane
-	final private TriviaPanel[]					pages;
+	final private DnDTabbedPane						book;
 	// The status bar at the bottom
-	final private JLabel						statusBar;
+	final private JLabel							statusBar;
+
+	final private Hashtable<String, TriviaPanel>	panelHash;
 
 	// The user's name
-	private volatile String						user;
+	private volatile String							user;
 	// The Hide Closed menu item
-	private volatile boolean					hideClosed, hideDuplicates;
+	private volatile boolean						hideClosed, hideDuplicates;
 	// Hashtable of active users and roles
-	private volatile Hashtable<String, Role>	activeUserHash;
+	private volatile Hashtable<String, Role>		activeUserHash;
 	// Hashtable of idle users and roles
-	private volatile Hashtable<String, Role>	passiveUserHash;
+	private volatile Hashtable<String, Role>		passiveUserHash;
 	// Sort method for the queue
-	private volatile QueueSort					queueSort;
+	private volatile QueueSort						queueSort;
 
 	// Sort menu items
-	final private JMenuItem						hideClosedMenuItem;
-	final private JMenuItem						hideDuplicatesMenuItem;
-	final private JMenuItem						sortTimestampAscendingMenuItem;
-	final private JMenuItem						sortTimestampDescendingMenuItem;
-	final private JMenuItem						sortQNumberAscendingMenuItem;
-	final private JMenuItem						sortQNumberDescendingMenuItem;
-	final private JMenuItem						sortStatusAscendingMenuItem;
-	final private JMenuItem						sortStatusDescendingMenuItem;
+	final private JMenuItem							hideClosedMenuItem;
+	final private JMenuItem							hideDuplicatesMenuItem;
+	final private JMenuItem							sortTimestampAscendingMenuItem;
+	final private JMenuItem							sortTimestampDescendingMenuItem;
+	final private JMenuItem							sortQNumberAscendingMenuItem;
+	final private JMenuItem							sortQNumberDescendingMenuItem;
+	final private JMenuItem							sortStatusAscendingMenuItem;
+	final private JMenuItem							sortStatusDescendingMenuItem;
 
 	// The local trivia object holding all contest data
-	private volatile Trivia						trivia;
+	private volatile Trivia							trivia;
 	// The remote server
-	private final TriviaInterface				server;
+	private final TriviaInterface					server;
 
 	/**
 	 * Creates a new trivia client GUI
@@ -414,47 +418,26 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		this.statusBar = this.enclosedLabel("", 0, STATUS_HEIGHT, this.getForeground(), this.getBackground(),
 				constraints, STATUS_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
 
-
 		/**
 		 * Create main content area
 		 */
 		// Create the tabbed pane
 		this.book = new DnDTabbedPane();
 
-		// Array of the tabs
-		this.pages = new TriviaPanel[8];
+		this.panelHash = new Hashtable<String, TriviaPanel>(0);
+		this.panelHash.put("Workflow", new WorkflowPanel(server, this));
+		this.panelHash.put("Current", new RoundPanel(server, this));
+		this.panelHash.put("History", new HistoryPanel(server, this));
+		this.panelHash.put("By Round", new ScoreByRoundPanel(server, this));
+		this.panelHash.put("Place Chart", new PlaceChartPanel(this));
+		this.panelHash.put("Score Chart", new ScoreByRoundChartPanel(this));
+		this.panelHash.put("Cumul. Score Chart", new CumulativePointsChartPanel(this));
+		this.panelHash.put("Team Comparison", new TeamComparisonPanel(this));
 
-		// Create content for workflow tab
-		this.pages[0] = new WorkflowPanel(server, this);
-		this.book.addTab("Workflow", this.pages[0]);
-
-		// Create content for current round tab
-		this.pages[1] = new RoundPanel(server, this);
-		this.book.addTab("Current", this.pages[1]);
-
-		// Create content for history tab
-		this.pages[2] = new HistoryPanel(server, this);
-		this.book.addTab("History", this.pages[2]);
-
-		// Create content for Score by Round tab
-		this.pages[3] = new ScoreByRoundPanel(server, this);
-		this.book.addTab("By Round", this.pages[3]);
-
-		// Create place chart
-		this.pages[4] = new PlaceChartPanel(this);
-		this.book.addTab("Place Chart", this.pages[4]);
-
-		// Create score by round chart
-		this.pages[5] = new ScoreByRoundChartPanel(this);
-		this.book.addTab("Score Chart", this.pages[5]);
-
-		// Create cumulative score chart
-		this.pages[6] = new CumulativePointsChartPanel(this);
-		this.book.addTab("Cumul. Score Chart", this.pages[6]);
-
-		// Create team copmarison chart
-		this.pages[7] = new TeamComparisonPanel(this);
-		this.book.addTab("Team Comparison", this.pages[7]);
+		for (String tabName : TriviaClient.initialTabs) {
+			System.out.println(tabName);
+			this.book.addTab(tabName, this.getTab(tabName));
+		}
 
 		// Put the split pane at the top of the window
 		constraints.gridx = 0;
@@ -782,10 +765,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	 */
 	@Override
 	public synchronized void update(boolean force) {
-
-
 		// Update each individual tab in the GUI
-		for (final TriviaPanel page : this.pages) {
+		for (final TriviaPanel page : this.panelHash.values()) {
 			page.update(force);
 		}
 	}
@@ -884,6 +865,14 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		// Display the window.
 		loadPosition(frame);
 		frame.setVisible(true);
+	}
+
+	public TriviaPanel getTab(String panelName) {
+		return this.panelHash.get(panelName);
+	}
+
+	public Enumeration<String> getTabNames() {
+		return this.panelHash.keys();
 	}
 
 	/**

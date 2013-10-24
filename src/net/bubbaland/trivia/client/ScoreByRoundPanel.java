@@ -6,7 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -226,7 +227,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	/**
 	 * Scroll panel that contains the score data for every round
 	 */
-	private class InternalScrollPanel extends TriviaPanel implements MouseListener, ChangeListener {
+	private class InternalScrollPanel extends TriviaPanel implements MouseListener, ChangeListener, WindowFocusListener {
 
 		/** The Constant serialVersionUID. */
 		private static final long		serialVersionUID	= 7121481355244434308L;
@@ -237,6 +238,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		final private JLabel[]			earnedLabels, valueLabels, percentLabels, cumulativeEarnedLabels,
 				cumulativeValueLabels, percentTotalLabels, announcedScoreLabels, placeLabels, discrepancyLabels;
 		private final JMenuItem			editItem;
+		private final JPopupMenu		contextMenu;
 
 		/** The nunber of rounds */
 		final private int				nRounds;
@@ -361,11 +363,15 @@ public class ScoreByRoundPanel extends TriviaPanel {
 			/**
 			 * Build context menu
 			 */
-			final JPopupMenu contextMenu = new JPopupMenu();
+			this.contextMenu = new JPopupMenu();
 			this.editItem = new JMenuItem("Edit");
 			this.editItem.addMouseListener(this);
-			contextMenu.add(this.editItem);
-			this.add(contextMenu);
+			this.contextMenu.add(this.editItem);
+			this.add(this.contextMenu);
+
+			DnDTabbedPane.registerTabbedPaneListener(this);
+			this.client.getFrame().addWindowFocusListener(this);
+			FloatingPanel.registerFloatingPanelListener(this);
 		}
 
 		/*
@@ -467,16 +473,21 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		}
 
 		@Override
-		public void mouseExited(MouseEvent e) {
+		public void mouseExited(MouseEvent event) {
 		}
 
-		/**
-		 * Process tab changes
-		 */
 		@Override
 		public void stateChanged(ChangeEvent e) {
-			// Make sure the menu is hidden when changing tabs
-			this.editItem.getParent().setVisible(false);
+			this.contextMenu.setVisible(false);
+		}
+
+		@Override
+		public void windowGainedFocus(WindowEvent e) {
+		}
+
+		@Override
+		public void windowLostFocus(WindowEvent e) {
+			this.contextMenu.setVisible(false);
 		}
 
 

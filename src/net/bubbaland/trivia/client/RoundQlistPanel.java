@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.rmi.RemoteException;
 
 import javax.swing.JComponent;
@@ -210,7 +212,7 @@ public class RoundQlistPanel extends TriviaPanel {
 	/**
 	 * A panel that displays the question data for a round.
 	 */
-	private class RoundQListSubPanel extends TriviaPanel implements MouseListener, ChangeListener {
+	private class RoundQListSubPanel extends TriviaPanel implements MouseListener, ChangeListener, WindowFocusListener {
 
 		private static final long		serialVersionUID	= 3825357215129662133L;
 
@@ -222,6 +224,7 @@ public class RoundQlistPanel extends TriviaPanel {
 		private final JTextPane[]		submitterTextAreas, operatorTextAreas;
 		private final JSeparator[]		separators;
 		private final JMenuItem			editItem, reopenItem;
+		private final JPopupMenu		contextMenu;
 
 		/** Status variables */
 		private boolean					speed;
@@ -408,23 +411,24 @@ public class RoundQlistPanel extends TriviaPanel {
 			/**
 			 * Build context menu
 			 */
-			final JPopupMenu contextMenu = new JPopupMenu();
+			this.contextMenu = new JPopupMenu();
 			this.editItem = new JMenuItem("Edit");
 			this.editItem.addMouseListener(this);
-			contextMenu.add(this.editItem);
-			this.add(contextMenu);
+			this.contextMenu.add(this.editItem);
 
 			if (live) {
 				this.reopenItem = new JMenuItem("Reopen");
 				this.reopenItem.addMouseListener(this);
-				contextMenu.add(this.reopenItem);
-				this.add(contextMenu);
+				this.contextMenu.add(this.reopenItem);
 			} else {
 				this.reopenItem = null;
 			}
 
-			this.client.getBook().addChangeListener(this);
+			this.add(this.contextMenu);
 
+			DnDTabbedPane.registerTabbedPaneListener(this);
+			this.client.getFrame().addWindowFocusListener(this);
+			FloatingPanel.registerFloatingPanelListener(this);
 		}
 
 
@@ -491,6 +495,10 @@ public class RoundQlistPanel extends TriviaPanel {
 
 		@Override
 		public void mouseExited(MouseEvent event) {
+			final JComponent source = (JComponent) event.getSource();
+			if (source.equals(this)) {
+				this.contextMenu.setVisible(false);
+			}
 		}
 
 		@Override
@@ -499,6 +507,11 @@ public class RoundQlistPanel extends TriviaPanel {
 
 		@Override
 		public void mouseReleased(MouseEvent event) {
+		}
+
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			this.contextMenu.setVisible(false);
 		}
 
 		/**
@@ -511,14 +524,6 @@ public class RoundQlistPanel extends TriviaPanel {
 			this.rNumber = rNumber;
 		}
 
-		/**
-		 * Process tab changes
-		 */
-		@Override
-		public void stateChanged(ChangeEvent e) {
-			// Make sure the menu is hidden when changing tabs
-			this.editItem.getParent().setVisible(false);
-		}
 
 		/*
 		 * (non-Javadoc)
@@ -623,6 +628,15 @@ public class RoundQlistPanel extends TriviaPanel {
 				this.submitterTextAreas[q].setVisible(false);
 				this.operatorTextAreas[q].setVisible(false);
 			}
+		}
+
+		@Override
+		public void windowGainedFocus(WindowEvent e) {
+		}
+
+		@Override
+		public void windowLostFocus(WindowEvent e) {
+			this.contextMenu.setVisible(false);
 		}
 	}
 

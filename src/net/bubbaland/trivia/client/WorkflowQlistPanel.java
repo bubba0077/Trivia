@@ -9,6 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -159,7 +162,8 @@ public class WorkflowQlistPanel extends TriviaPanel {
 	/**
 	 * Panel which displays a list of the current open questions.
 	 */
-	private class WorkflowQListSubPanel extends TriviaPanel implements ActionListener, MouseListener, ChangeListener {
+	private class WorkflowQListSubPanel extends TriviaPanel implements ActionListener, MouseListener, ChangeListener,
+			WindowFocusListener {
 
 		/** The Constant serialVersionUID. */
 		private static final long		serialVersionUID	= 6049067322505905668L;
@@ -175,6 +179,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 		private final JButton[]			answerButtons, closeButtons;
 
 		private final JMenuItem			editItem, resetItem;
+		private final JPopupMenu		contextMenu;
 
 		/**
 		 * Data sources
@@ -308,18 +313,20 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			/**
 			 * Build context menu
 			 */
-			final JPopupMenu contextMenu = new JPopupMenu();
+			this.contextMenu = new JPopupMenu();
 			this.editItem = new JMenuItem("Edit");
 			this.editItem.addMouseListener(this);
-			contextMenu.add(this.editItem);
+			this.contextMenu.add(this.editItem);
 
 			this.resetItem = new JMenuItem("Delete");
 			this.resetItem.addMouseListener(this);
-			contextMenu.add(this.resetItem);
+			this.contextMenu.add(this.resetItem);
 
-			this.add(contextMenu);
+			this.add(this.contextMenu);
 
-			this.client.getBook().addChangeListener(this);
+			DnDTabbedPane.registerTabbedPaneListener(this);
+			this.client.getFrame().addWindowFocusListener(this);
+			FloatingPanel.registerFloatingPanelListener(this);
 
 		}
 
@@ -361,7 +368,7 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			final String sourceName = source.getName();
 			if (source.equals(this.editItem)) {
 				// Edit chosen from context menu
-				this.editItem.getParent().setVisible(false);
+				this.contextMenu.setVisible(false);
 				final Trivia trivia = this.client.getTrivia();
 				final int rNumber = trivia.getCurrentRoundNumber();
 				final int qNumber = Integer.parseInt(sourceName);
@@ -380,12 +387,12 @@ public class WorkflowQlistPanel extends TriviaPanel {
 			} else {
 				// Right-click pressed, show context menu
 				if (event.getButton() == 3 && !sourceName.equals("")) {
-					this.editItem.getParent().setLocation(event.getXOnScreen(), event.getYOnScreen());
+					this.contextMenu.setLocation(event.getXOnScreen(), event.getYOnScreen());
 					this.editItem.setName(source.getName());
 					this.resetItem.setName(source.getName());
-					this.editItem.getParent().setVisible(true);
+					this.contextMenu.setVisible(true);
 				} else {
-					this.editItem.getParent().setVisible(false);
+					this.contextMenu.setVisible(false);
 				}
 			}
 
@@ -404,13 +411,11 @@ public class WorkflowQlistPanel extends TriviaPanel {
 		}
 
 		@Override
-		public void mouseExited(MouseEvent e) {
-		}
-
-		@Override
-		public void stateChanged(ChangeEvent event) {
-			// Make sure the menu is hidden when changing tabs
-			this.editItem.getParent().setVisible(false);
+		public void mouseExited(MouseEvent event) {
+			final JComponent source = (JComponent) event.getSource();
+			if (source.equals(this)) {
+				this.contextMenu.setVisible(false);
+			}
 		}
 
 		/**
@@ -542,6 +547,20 @@ public class WorkflowQlistPanel extends TriviaPanel {
 				this.closeButtons[q].getParent().setVisible(false);
 			}
 
+		}
+
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			this.contextMenu.setVisible(false);
+		}
+
+		@Override
+		public void windowGainedFocus(WindowEvent e) {
+		}
+
+		@Override
+		public void windowLostFocus(WindowEvent e) {
+			this.contextMenu.setVisible(false);
 		}
 
 	}

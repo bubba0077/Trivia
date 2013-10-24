@@ -11,32 +11,35 @@ package net.bubbaland.trivia.client;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.*;
 import java.awt.image.*;
 import java.util.ArrayList;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 
 public class DnDTabbedPane extends JTabbedPane {
-	public static final long			serialVersionUID	= 1L;
-	private static final int			LINEWIDTH			= 3;
-	private static final String			NAME				= "TabTransferData";
-	private final DataFlavor			FLAVOR				= new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType,
-																	NAME);
-	private static GhostGlassPane		s_glassPane			= new GhostGlassPane();
-	private final static TearAwayTab	tearTab				= new TearAwayTab();
+	public static final long						serialVersionUID	= 1L;
+	private static final int						LINEWIDTH			= 3;
+	private static final String						NAME				= "TabTransferData";
+	private final DataFlavor						FLAVOR				= new DataFlavor(
+																				DataFlavor.javaJVMLocalObjectMimeType,
+																				NAME);
+	private static GhostGlassPane					s_glassPane			= new GhostGlassPane();
+	private final static TearAwayTab				tearTab				= new TearAwayTab();
 
-	private boolean						m_isDrawRect		= false;
-	private final Rectangle2D			m_lineRect			= new Rectangle2D.Double();
+	private boolean									m_isDrawRect		= false;
+	private final Rectangle2D						m_lineRect			= new Rectangle2D.Double();
 
-	private final Color					m_lineColor			= new Color(0, 100, 255);
-	private TabAcceptor					m_acceptor			= null;
+	private final Color								m_lineColor			= new Color(0, 100, 255);
+	private TabAcceptor								m_acceptor			= null;
+
+	private static final ArrayList<DnDTabbedPane>	tabbedPaneList		= new ArrayList<DnDTabbedPane>(0);
+	private static final ArrayList<ChangeListener>	tabbedPaneListeners	= new ArrayList<ChangeListener>(0);
 
 	public DnDTabbedPane() {
 		super();
-		tearTab.registerTabbedPane(this);
+		registerTabbedPane(this);
 		final DragSourceListener dsl = new DragSourceListener() {
 			public void dragEnter(DragSourceDragEvent e) {
 				// System.out.println("dragEnter");
@@ -230,6 +233,28 @@ public class DnDTabbedPane extends JTabbedPane {
 		return retval;
 	}
 
+	public static ArrayList<DnDTabbedPane> getTabbedPanes() {
+		return DnDTabbedPane.tabbedPaneList;
+	}
+
+	public static void registerTabbedPane(DnDTabbedPane newPane) {
+		DnDTabbedPane.tabbedPaneList.add(newPane);
+		for (ChangeListener listener : DnDTabbedPane.tabbedPaneListeners) {
+			newPane.addChangeListener(listener);
+		}
+	}
+
+	public static ArrayList<ChangeListener> getTabbedPaneListeners() {
+		return DnDTabbedPane.tabbedPaneListeners;
+	}
+
+	public static void registerTabbedPaneListener(ChangeListener listener) {
+		DnDTabbedPane.tabbedPaneListeners.add(listener);
+		for (DnDTabbedPane pane : DnDTabbedPane.tabbedPaneList) {
+			pane.addChangeListener(listener);
+		}
+	}
+
 	class CDropTargetListener implements DropTargetListener {
 		public void dragEnter(DropTargetDragEvent e) {
 			// System.out.println("DropTarget.dragEnter: " + DnDTabbedPane.this);
@@ -343,6 +368,19 @@ public class DnDTabbedPane extends JTabbedPane {
 
 	public boolean hasGhost() {
 		return m_hasGhost;
+	}
+
+	public void addTab(String tabName, TriviaPanel panel) {
+		super.addTab(tabName, panel);
+		if (panel instanceof ChangeListener) {
+			this.addChangeListener((ChangeListener) panel);
+		}
+		for (Component child : panel.getComponents()) {
+			if (child instanceof ChangeListener) {
+				System.out.println("listener added");
+				this.addChangeListener((ChangeListener) child);
+			}
+		}
 	}
 
 	/**
@@ -524,91 +562,6 @@ public class DnDTabbedPane extends JTabbedPane {
 
 	public interface TabAcceptor {
 		boolean isDropAcceptable(DnDTabbedPane a_component, int a_index);
-	}
-}
-
-class TearAwayTab extends JWindow {
-	private static final long				serialVersionUID	= -2723420566227526365L;
-	private final Timer						mousePoller;
-	private final ArrayList<DnDTabbedPane>	tabbedPaneList;
-
-	public TearAwayTab() {
-		this.add(new JLabel("New Window"));
-		this.pack();
-		this.mousePoller = new Timer(0, new ActionListener() {
-			private Point	lastPoint	= MouseInfo.getPointerInfo().getLocation();
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Point point = MouseInfo.getPointerInfo().getLocation();
-				if (!point.equals(lastPoint)) {
-					center(point);
-				}
-				lastPoint = point;
-			}
-		});
-		new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, new EasyDropTarget(), true);
-		this.setVisible(false);
-		this.tabbedPaneList = new ArrayList<DnDTabbedPane>(0);
-	}
-
-	private void center(Point location) {
-		// System.out.println(location);
-		Point center = new Point();
-		center.setLocation(location.x - this.getWidth() / 2, location.y - this.getHeight() / 2);
-		TearAwayTab.this.setLocation(center);
-		for (DnDTabbedPane pane : this.tabbedPaneList) {
-			Rectangle bounds = pane.getBounds();
-			// System.out.println(bounds);
-			if (bounds.contains(location)) {
-				this.detach();
-				return;
-			}
-		}
-	}
-
-	public void attach(Point location) {
-		// System.out.println("attach");
-		center(location);
-		mousePoller.start();
-		this.setVisible(true);
-	}
-
-	public void detach() {
-		// System.out.println("detatch");
-		mousePoller.stop();
-		this.setVisible(false);
-	}
-
-	public void registerTabbedPane(DnDTabbedPane newPane) {
-		this.tabbedPaneList.add(newPane);
-	}
-
-	private class EasyDropTarget implements DropTargetListener {
-
-		@Override
-		public void dragEnter(DropTargetDragEvent dtde) {
-			dtde.acceptDrag(dtde.getDropAction());
-		}
-
-		@Override
-		public void dragOver(DropTargetDragEvent dtde) {
-		}
-
-		@Override
-		public void dropActionChanged(DropTargetDragEvent dtde) {
-		}
-
-		@Override
-		public void dragExit(DropTargetEvent dte) {
-		}
-
-		@Override
-		public void drop(DropTargetDropEvent a_event) {
-			detach();
-			new FloatingPanel(a_event);
-			a_event.dropComplete(true);
-		}
 	}
 }
 
