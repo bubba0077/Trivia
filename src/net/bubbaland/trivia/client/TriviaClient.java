@@ -93,7 +93,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	final static private String		SETTINGS_FILENAME	= ".trivia-settings";
 
 	// Initial tabs
-	final static private String[]	initialTabs			= { "Workflow", "Current", "History" };
+	final static private String[]	INITIAL_TABS			= { "Workflow", "Current", "History" };
 
 	// Queue sort option
 	public static enum QueueSort {
@@ -112,19 +112,19 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 	// final private Hashtable<String, TriviaPanel> tabHash;
 	final private ArrayList<TriviaPanel>			panelList;
-	final static private Hashtable<String, String>	tabDescriptionHash;
+	final static private Hashtable<String, String>	TAB_DESCRIPTION_HASH;
 	static {
-		tabDescriptionHash = new Hashtable<String, String>(0);
-		tabDescriptionHash.put("Workflow", "Main tab with summary information, open questions, and answer queue.");
-		tabDescriptionHash.put("Current", "Tab showing question data for the current round.");
-		tabDescriptionHash.put("History", "Tab that can show question data for any round.");
-		tabDescriptionHash.put("By Round", "Tab that displays score information for every round.");
-		tabDescriptionHash.put("Place Chart", "Chart showing the team's place in time");
-		tabDescriptionHash.put("Score Chart", "Chart showing the team's score in each round.");
-		tabDescriptionHash.put("Cumul. Score Chart", "Chart showing the team's total score in time.");
-		tabDescriptionHash.put("Team Comparison", "Chart comparing each team's score to our score in time.");
-		tabDescriptionHash.put("*Open Questions", "List of current open questions");
-		tabDescriptionHash.put("*Answer Queue", "The proposed answer queue for the current round.");
+		TAB_DESCRIPTION_HASH = new Hashtable<String, String>(0);
+		TAB_DESCRIPTION_HASH.put("Workflow", "Main tab with summary information, open questions, and answer queue.");
+		TAB_DESCRIPTION_HASH.put("Current", "Tab showing question data for the current round.");
+		TAB_DESCRIPTION_HASH.put("History", "Tab that can show question data for any round.");
+		TAB_DESCRIPTION_HASH.put("By Round", "Tab that displays score information for every round.");
+		TAB_DESCRIPTION_HASH.put("Place Chart", "Chart showing the team's place in time");
+		TAB_DESCRIPTION_HASH.put("Score Chart", "Chart showing the team's score in each round.");
+		TAB_DESCRIPTION_HASH.put("Cumul. Score Chart", "Chart showing the team's total score in time.");
+		TAB_DESCRIPTION_HASH.put("Team Comparison", "Chart comparing each team's score to our score in time.");
+		TAB_DESCRIPTION_HASH.put("*Open Questions", "List of current open questions");
+		TAB_DESCRIPTION_HASH.put("*Answer Queue", "The proposed answer queue for the current round.");
 	}
 
 
@@ -443,10 +443,10 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 
 		this.panelList = new ArrayList<TriviaPanel>(0);
 
-		for (String tabName : TriviaClient.initialTabs) {
+		for (String tabName : TriviaClient.INITIAL_TABS) {
 			this.book.addTab(tabName, this.getTab(tabName));
 		}
-		this.book.setSelectedIndex(this.book.indexOfTab(TriviaClient.initialTabs[0]));
+		this.book.setSelectedIndex(this.book.indexOfTab(TriviaClient.INITIAL_TABS[0]));
 
 		// Put the split pane at the top of the window
 		constraints.gridx = 0;
@@ -915,11 +915,11 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	}
 
 	public Set<String> getTabNames() {
-		return TriviaClient.tabDescriptionHash.keySet();
+		return TriviaClient.TAB_DESCRIPTION_HASH.keySet();
 	}
 
 	public String getTabDescription(String tabName) {
-		return TriviaClient.tabDescriptionHash.get(tabName);
+		return TriviaClient.TAB_DESCRIPTION_HASH.get(tabName);
 	}
 
 	/**

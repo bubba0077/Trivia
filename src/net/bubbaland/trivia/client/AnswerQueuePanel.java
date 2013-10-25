@@ -599,35 +599,43 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 
 					this.queuenumberLabels.get(a).setText("#" + newQueueNumber);
 					this.queuenumberLabels.get(a).getParent().setBackground(bColor);
+					this.queuenumberLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					this.timestampLabels.get(a).setText(newTimestamp);
 					this.timestampLabels.get(a).setForeground(color);
 					this.timestampLabels.get(a).getParent().setBackground(bColor);
+					this.timestampLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					this.qNumberLabels.get(a).setText(newQNumber + "");
 					this.qNumberLabels.get(a).setForeground(color);
 					this.qNumberLabels.get(a).getParent().setBackground(bColor);
+					this.qNumberLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					this.answerTextAreas.get(a).setText(newAnswer);
 					// this.answerTextAreas.get(a).setToolTipText(newAnswer);
 					this.answerTextAreas.get(a).setForeground(color);
 					this.answerTextAreas.get(a).setBackground(bColor);
+					this.answerTextAreas.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					this.confidenceLabels.get(a).setText(newConfidence + "");
 					this.confidenceLabels.get(a).setForeground(color);
 					this.confidenceLabels.get(a).getParent().setBackground(bColor);
+					this.confidenceLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					this.submitterLabels.get(a).setText(newSubmitter);
 					this.submitterLabels.get(a).setForeground(color);
 					this.submitterLabels.get(a).getParent().setBackground(bColor);
+					this.submitterLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					this.operatorLabels.get(a).setText(newOperator);
 					this.operatorLabels.get(a).setForeground(color);
 					this.operatorLabels.get(a).getParent().setBackground(bColor);
+					this.operatorLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					this.callerLabels.get(a).setText(newCaller);
 					this.callerLabels.get(a).setForeground(color);
 					this.callerLabels.get(a).getParent().setBackground(bColor);
+					this.callerLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					// Temporarily remove the status box listener to prevent trigger when we change it to match server
 					// status
@@ -742,10 +750,9 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			constraints.gridheight = 1;
 			constraints.gridx = 0;
 			constraints.gridy = 2 * a;
-			this.queuenumberLabels.add(this.enclosedLabel("#" + ( a + 1 ), TIME_WIDTH, ANSWER_HEIGHT / 2,
-					NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
-					SwingConstants.CENTER));
-			this.queuenumberLabels.get(a).setName(a + "");
+			this.queuenumberLabels.add(this
+					.enclosedLabel("", TIME_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
+							constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.queuenumberLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 0;
@@ -753,7 +760,6 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.timestampLabels.add(this
 					.enclosedLabel("", TIME_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
 							constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
-			this.timestampLabels.get(a).setName(a + "");
 			this.timestampLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridheight = 2;
@@ -762,7 +768,6 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.qNumberLabels.add(this
 					.enclosedLabel("", QNUM_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
 							constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
-			this.qNumberLabels.get(a).setName(a + "");
 			this.qNumberLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 2;
@@ -772,7 +777,6 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED));
 			this.answerTextAreas.get(a).setEditable(false);
-			this.answerTextAreas.get(a).setName(a + "");
 			this.answerTextAreas.get(a).addMouseListener(new PopupListener(this.contextMenu));
 			constraints.weightx = 0.0;
 
@@ -781,7 +785,6 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.confidenceLabels.add(this
 					.enclosedLabel("", CONFIDENCE_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
 							constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
-			this.confidenceLabels.get(a).setName(a + "");
 			this.confidenceLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridheight = 1;
@@ -791,7 +794,6 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 					.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
 							HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
 							SwingConstants.CENTER));
-			this.submitterLabels.get(a).setName(a + "");
 			this.submitterLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 4;
@@ -800,7 +802,6 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 					.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
 							HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
 							SwingConstants.CENTER));
-			this.callerLabels.get(a).setName(a + "");
 			this.callerLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 			constraints.gridheight = 2;
 
@@ -809,7 +810,6 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.operatorLabels.add(this
 					.enclosedLabel("", OPERATOR_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
 							constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
-			this.operatorLabels.get(a).setName(a + "");
 			this.operatorLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 6;
