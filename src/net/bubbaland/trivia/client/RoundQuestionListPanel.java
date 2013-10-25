@@ -46,43 +46,43 @@ import net.bubbaland.trivia.TriviaInterface;
 public class RoundQuestionListPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long			serialVersionUID				= 3589815467416864653L;
+	private static final long				serialVersionUID				= 3589815467416864653L;
 
 	/**
 	 * Colors
 	 */
-	private static final Color			HEADER_TEXT_COLOR				= Color.white;
-	private static final Color			HEADER_BACKGROUND_COLOR			= Color.darkGray;
-	private static final Color			ODD_QUESTION_TEXT_COLOR			= Color.black;
+	private static final Color				HEADER_TEXT_COLOR				= Color.white;
+	private static final Color				HEADER_BACKGROUND_COLOR			= Color.darkGray;
+	private static final Color				ODD_QUESTION_TEXT_COLOR			= Color.black;
 
-	private static final Color			EVEN_QUESTION_TEXT_COLOR		= Color.black;
-	private static final Color			ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
-	private static final Color			EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
+	private static final Color				EVEN_QUESTION_TEXT_COLOR		= Color.black;
+	private static final Color				ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
+	private static final Color				EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
 
 	/**
 	 * Sizes
 	 */
-	private static final int			HEADER_HEIGHT					= 20;
-	private static final int			QUESTION_HEIGHT					= 66;
+	private static final int				HEADER_HEIGHT					= 20;
+	private static final int				QUESTION_HEIGHT					= 66;
 
-	private static final int			QNUM_WIDTH						= 54;
-	private static final int			EARNED_WIDTH					= 75;
-	private static final int			VALUE_WIDTH						= 75;
-	private static final int			QUESTION_WIDTH					= 200;
-	private static final int			ANSWER_WIDTH					= 150;
-	private static final int			SUBOP_WIDTH						= 100;
+	private static final int				QNUM_WIDTH						= 54;
+	private static final int				EARNED_WIDTH					= 75;
+	private static final int				VALUE_WIDTH						= 75;
+	private static final int				QUESTION_WIDTH					= 200;
+	private static final int				ANSWER_WIDTH					= 150;
+	private static final int				SUBOP_WIDTH						= 100;
 
 	/**
 	 * Font sizes
 	 */
-	private static final float			FONT_SIZE						= (float) 12.0;
+	private static final float				FONT_SIZE						= (float) 12.0;
 
-	private static final float			LARGE_FONT_SIZE					= (float) 36.0;
-	private static final float			SMALL_FONT_SIZE					= (float) 12.0;
+	private static final float				LARGE_FONT_SIZE					= (float) 36.0;
+	private static final float				SMALL_FONT_SIZE					= (float) 12.0;
 
 	/** The sub-panel holding the questions */
 	private final RoundQuestionListSubPanel	roundQlistSubPanel;
-	private final JScrollPane			roundQlistPane;
+	private final JScrollPane				roundQlistPane;
 
 	/**
 	 * Instantiates a new question list panel that will show data for the current round.
@@ -577,21 +577,25 @@ public class RoundQuestionListPanel extends TriviaPanel {
 						// Only show values for questions that have been asked
 						this.valueLabels[q].setText(values[q] + "");
 						this.questionTextAreas[q].setText(questions[q]);
+						// this.questionTextAreas[q].setToolTipText(questions[q]);
 					} else {
 						// Hide values for questions that haven't been asked yet
 						this.valueLabels[q].setText("");
 						this.questionTextAreas[q].setText("");
+						// this.questionTextAreas[q].setToolTipText("");
 					}
 					if (corrects[q] || ( beenOpens[q] && !opens[q] )) {
 						// Only show answers and earned points if the question is correct or closed
 						this.earnedLabels[q].setText(earneds[q] + "");
 						this.answerTextAreas[q].setText(answers[q]);
+						// this.answerTextAreas[q].setToolTipText(answers[q]);
 						this.submitterTextAreas[q].setText(submitters[q]);
 						this.operatorTextAreas[q].setText(operators[q]);
 					} else {
 						// Hide answer data for questions that haven't been closed
 						this.earnedLabels[q].setText("");
 						this.answerTextAreas[q].setText("");
+						// this.answerTextAreas[q].setToolTipText("");
 						this.submitterTextAreas[q].setText("");
 						this.operatorTextAreas[q].setText("");
 					}

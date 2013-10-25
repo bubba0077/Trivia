@@ -229,7 +229,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 				return;
 			}
 
-			client.log("Question #" + qNumber + " editted.");
+			client.log("Question #" + qNumber + " edited.");
 
 		}
 	}

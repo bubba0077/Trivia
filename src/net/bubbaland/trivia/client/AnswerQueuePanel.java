@@ -568,6 +568,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 					this.qNumberLabels.get(a).getParent().setBackground(bColor);
 
 					this.answerTextAreas.get(a).setText(newAnswer);
+					// this.answerTextAreas.get(a).setToolTipText(newAnswer);
 					this.answerTextAreas.get(a).setForeground(color);
 					this.answerTextAreas.get(a).setBackground(bColor);
 
@@ -770,8 +771,6 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.lastStatus.add("new");
 		}
 
-
 	}
-
 
 }

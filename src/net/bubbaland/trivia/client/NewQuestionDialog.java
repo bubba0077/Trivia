@@ -22,7 +22,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-public class OpenQuestionDialog extends TriviaDialogPanel {
+public class NewQuestionDialog extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 8250659442772286086L;
@@ -45,7 +45,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 	 * @param qNumberStart
 	 *            the default question number
 	 */
-	public OpenQuestionDialog(TriviaInterface server, TriviaClient client, int nQuestions, int qNumberStart) {
+	public NewQuestionDialog(TriviaInterface server, TriviaClient client, int nQuestions, int qNumberStart) {
 		this(server, client, nQuestions, qNumberStart, 10, "");
 	}
 
@@ -63,8 +63,8 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 	 * @param qValueStart
 	 *            the default question value
 	 */
-	public OpenQuestionDialog(final TriviaInterface server, final TriviaClient client, int nQuestions,
-			int qNumberStart, int qValueStart) {
+	public NewQuestionDialog(final TriviaInterface server, final TriviaClient client, int nQuestions, int qNumberStart,
+			int qValueStart) {
 		this(server, client, nQuestions, qNumberStart, qValueStart, "");
 	}
 
@@ -84,8 +84,8 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 	 * @param qTextStart
 	 *            the initial question text
 	 */
-	public OpenQuestionDialog(final TriviaInterface server, final TriviaClient client, int nQuestions,
-			int qNumberStart, int qValueStart, String qTextStart) {
+	public NewQuestionDialog(final TriviaInterface server, final TriviaClient client, int nQuestions, int qNumberStart,
+			int qValueStart, String qTextStart) {
 
 		super();
 
@@ -190,7 +190,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 
 				final int confirm = ( (Integer) dialog.getValue() ).intValue();
 				if (confirm != JOptionPane.OK_OPTION) {
-					new OpenQuestionDialog(server, client, nQuestions, qNumberStart, qValue, qText);
+					new NewQuestionDialog(server, client, nQuestions, qNumberStart, qValue, qText);
 					return;
 				}
 
@@ -302,7 +302,7 @@ public class OpenQuestionDialog extends TriviaDialogPanel {
 
 				final int confirm = ( (Integer) dialog.getValue() ).intValue();
 				if (confirm != JOptionPane.OK_OPTION) {
-					new OpenQuestionDialog(server, client, nQuestions, qNumber, qValue, qText);
+					new NewQuestionDialog(server, client, nQuestions, qNumber, qValue, qText);
 					return;
 				}
 

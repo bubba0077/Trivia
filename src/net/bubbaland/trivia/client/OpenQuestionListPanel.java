@@ -34,48 +34,48 @@ import net.bubbaland.trivia.TriviaInterface;
 public class OpenQuestionListPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long			serialVersionUID				= 6049067322505905668L;
+	private static final long				serialVersionUID				= 6049067322505905668L;
 
 	/**
 	 * Colors
 	 */
-	private static final Color			HEADER_TEXT_COLOR				= Color.WHITE;
-	private static final Color			HEADER_BACKGROUND_COLOR			= Color.DARK_GRAY;
-	private static final Color			ODD_QUESTION_TEXT_COLOR			= Color.BLACK;
-	private static final Color			EVEN_QUESTION_TEXT_COLOR		= Color.BLACK;
-	private static final Color			ODD_QUESTION_BACKGROUND_COLOR	= Color.WHITE;
-	private static final Color			EVEN_QUESTION_BACKGROUND_COLOR	= Color.LIGHT_GRAY;
+	private static final Color				HEADER_TEXT_COLOR				= Color.WHITE;
+	private static final Color				HEADER_BACKGROUND_COLOR			= Color.DARK_GRAY;
+	private static final Color				ODD_QUESTION_TEXT_COLOR			= Color.BLACK;
+	private static final Color				EVEN_QUESTION_TEXT_COLOR		= Color.BLACK;
+	private static final Color				ODD_QUESTION_BACKGROUND_COLOR	= Color.WHITE;
+	private static final Color				EVEN_QUESTION_BACKGROUND_COLOR	= Color.LIGHT_GRAY;
 
 	/**
 	 * Sizes
 	 */
-	private static final int			HEADER_HEIGHT					= 16;
-	private static final int			QUESTION_HEIGHT					= 46;
+	private static final int				HEADER_HEIGHT					= 16;
+	private static final int				QUESTION_HEIGHT					= 46;
 
-	private static final int			QNUM_WIDTH						= 48;
-	private static final int			QUESTION_WIDTH					= 50;
-	private static final int			VALUE_WIDTH						= 75;
-	private static final int			ANSWER_WIDTH					= 72;
-	private static final int			CLOSE_WIDTH						= 72;
+	private static final int				QNUM_WIDTH						= 48;
+	private static final int				QUESTION_WIDTH					= 50;
+	private static final int				VALUE_WIDTH						= 75;
+	private static final int				ANSWER_WIDTH					= 72;
+	private static final int				CLOSE_WIDTH						= 72;
 
 	/**
 	 * Button sizes
 	 */
-	private static final int			ANSWER_BUTTON_HEIGHT			= 32;
-	private static final int			ANSWER_BUTTON_WIDTH				= 80;
-	private static final int			CLOSE_BUTTON_HEIGHT				= 32;
-	private static final int			CLOSE_BUTTON_WIDTH				= 64;
+	private static final int				ANSWER_BUTTON_HEIGHT			= 32;
+	private static final int				ANSWER_BUTTON_WIDTH				= 80;
+	private static final int				CLOSE_BUTTON_HEIGHT				= 32;
+	private static final int				CLOSE_BUTTON_WIDTH				= 64;
 
 	/**
 	 * Font sizes
 	 */
-	private static final float			HEADER_FONT_SIZE				= (float) 12.0;
-	private static final float			QNUM_FONT_SIZE					= (float) 32.0;
-	private static final float			VALUE_FONT_SIZE					= (float) 32.0;
-	private static final float			QUESTION_FONT_SIZE				= (float) 12.0;
+	private static final float				HEADER_FONT_SIZE				= (float) 12.0;
+	private static final float				QNUM_FONT_SIZE					= (float) 32.0;
+	private static final float				VALUE_FONT_SIZE					= (float) 32.0;
+	private static final float				QUESTION_FONT_SIZE				= (float) 12.0;
 
 	/** The number of open questions to show at one time */
-	private static final int			DEFAULT_QUESTIONS_SHOW			= 4;
+	private static final int				DEFAULT_QUESTIONS_SHOW			= 4;
 
 	/** Sub-panel that will hold the open questions */
 	private final OpenQuestionListSubPanel	workflowQListSubPanel;
@@ -174,7 +174,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 		private final JTextArea[]		qTextAreas;
 		private final JButton[]			answerButtons, closeButtons;
 
-		private final JMenuItem			editItem, resetItem;
+		// private final JMenuItem editItem, resetItem;
 		private final JPopupMenu		contextMenu;
 
 		/**
@@ -204,15 +204,20 @@ public class OpenQuestionListPanel extends TriviaPanel {
 			 */
 			this.contextMenu = new JPopupMenu();
 
-			this.editItem = new JMenuItem("Edit");
-			this.editItem.setActionCommand("Edit");
-			this.editItem.addActionListener(this);
-			this.contextMenu.add(this.editItem);
+			JMenuItem editItem = new JMenuItem("Edit");
+			editItem.setActionCommand("Edit");
+			editItem.addActionListener(this);
+			this.contextMenu.add(editItem);
 
-			this.resetItem = new JMenuItem("Delete");
-			this.resetItem.setActionCommand("Delete");
-			this.resetItem.addActionListener(this);
-			this.contextMenu.add(this.resetItem);
+			JMenuItem resetItem = new JMenuItem("Delete");
+			resetItem.setActionCommand("Delete");
+			resetItem.addActionListener(this);
+			this.contextMenu.add(resetItem);
+
+			JMenuItem viewItem = new JMenuItem("View Full Text");
+			viewItem.setActionCommand("View");
+			viewItem.addActionListener(this);
+			this.contextMenu.add(viewItem);
 
 			this.add(this.contextMenu);
 
@@ -268,6 +273,11 @@ public class OpenQuestionListPanel extends TriviaPanel {
 				this.qTextAreas[q] = this.scrollableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
 						constraints, QUESTION_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				// this.qTextAreas[q] = this.scrollableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
+				// constraints, QUESTION_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+				// ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+				// this.qTextAreas[q] = this.expandableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
+				// constraints, QUESTION_FONT_SIZE);
 				this.qTextAreas[q].setEditable(false);
 				this.qTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
 				constraints.weightx = 0.0;
@@ -305,6 +315,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 				if (q > DEFAULT_QUESTIONS_SHOW) {
 					this.qNumberLabels[q].getParent().setVisible(false);
 					this.qValueLabels[q].getParent().setVisible(false);
+					this.qTextAreas[q].setVisible(false);
 					this.qTextAreas[q].getParent().setVisible(false);
 					this.qTextAreas[q].getParent().getParent().setVisible(false);
 					this.answerButtons[q].getParent().setVisible(false);
@@ -336,7 +347,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 		@Override
 		public synchronized void actionPerformed(ActionEvent event) {
 			Trivia trivia = this.client.getTrivia();
-			int rNumber = trivia.getCurrentRoundNumber();
+			final int rNumber = trivia.getCurrentRoundNumber();
 			String command = event.getActionCommand();
 			final int qNumber;
 			switch (command) {
@@ -353,13 +364,22 @@ public class OpenQuestionListPanel extends TriviaPanel {
 					break;
 				case "Edit":
 					qNumber = Integer.parseInt(this.contextMenu.getName());
-					new EditQuestionDialog(this.server, this.client, rNumber, qNumber);
+					int qValue = trivia.getValue(rNumber, qNumber);
+					String qText = trivia.getQuestionText(rNumber, qNumber);
+					int nQuestions = trivia.getNQuestions();
+					new NewQuestionDialog(this.server, this.client, nQuestions, qNumber, qValue, qText);
 					break;
 				case "Delete":
 					qNumber = Integer.parseInt(this.contextMenu.getName());
-					final int qValue = trivia.getValue(rNumber, qNumber);
-					final String qText = trivia.getQuestionText(rNumber, qNumber);
+					qValue = trivia.getValue(rNumber, qNumber);
+					qText = trivia.getQuestionText(rNumber, qNumber);
 					new ResetQuestionDialog(this.server, this.client, qNumber, qValue, qText);
+					break;
+				case "View":
+					qNumber = Integer.parseInt(this.contextMenu.getName());
+					qValue = trivia.getValue(rNumber, qNumber);
+					qText = trivia.getQuestionText(rNumber, qNumber);
+					new ViewQuestionDialog(this.client, qNumber, qValue, qText);
 					break;
 				default:
 					break;
@@ -388,10 +408,10 @@ public class OpenQuestionListPanel extends TriviaPanel {
 			final int rNumber = trivia.getCurrentRoundNumber();
 
 			if (trivia.isSpeed(rNumber) && nextToOpen > 1) {
-				new OpenQuestionDialog(this.server, this.client, nQuestions, nextToOpen, trivia.getValue(rNumber,
+				new NewQuestionDialog(this.server, this.client, nQuestions, nextToOpen, trivia.getValue(rNumber,
 						nextToOpen - 1));
 			} else {
-				new OpenQuestionDialog(this.server, this.client, nQuestions, nextToOpen);
+				new NewQuestionDialog(this.server, this.client, nQuestions, nextToOpen);
 			}
 
 		}
@@ -430,6 +450,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 					this.qNumberLabels[q].setText(openQuestionNumbers[q] + "");
 					this.qValueLabels[q].setText(openQuestionValues[q]);
 					this.qTextAreas[q].setText(openQuestionText[q]);
+					// this.qTextAreas[q].setToolTipText(openQuestionText[q]);
 					this.answerButtons[q].setText("Answer");
 					this.answerButtons[q].setName(openQuestionNumbers[q] + "");
 					this.answerButtons[q].setVisible(true);
@@ -450,6 +471,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 				this.qNumberLabels[q].setText("");
 				this.qValueLabels[q].setText("");
 				this.qTextAreas[q].setText("");
+				// this.qTextAreas[q].setToolTipText("");
 				this.answerButtons[q].setText("");
 				this.answerButtons[q].setName("");
 				this.answerButtons[q].setVisible(false);
@@ -481,6 +503,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 
 				this.qNumberLabels[q].getParent().setVisible(true);
 				this.qValueLabels[q].getParent().setVisible(true);
+				this.qTextAreas[q].setVisible(true);
 				this.qTextAreas[q].getParent().setVisible(true);
 				this.qTextAreas[q].getParent().getParent().setVisible(true);
 				this.answerButtons[q].getParent().setVisible(true);
@@ -495,6 +518,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 
 				this.qNumberLabels[q].getParent().setVisible(false);
 				this.qValueLabels[q].getParent().setVisible(false);
+				this.qTextAreas[q].setVisible(false);
 				this.qTextAreas[q].getParent().setVisible(false);
 				this.qTextAreas[q].getParent().getParent().setVisible(false);
 				this.answerButtons[q].getParent().setVisible(false);
