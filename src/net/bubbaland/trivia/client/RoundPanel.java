@@ -21,7 +21,7 @@ public class RoundPanel extends TriviaPanel {
 
 	// Sub-panels of the round panel
 	private final SummaryPanel		roundHeaderPanel;
-	private final RoundQuestionListPanel	roundQlistPanel;
+	private final RoundQuestionsPanel	roundQlistPanel;
 
 	/**
 	 * Instantiates a new round panel.
@@ -37,7 +37,7 @@ public class RoundPanel extends TriviaPanel {
 
 		// Create the sub-panels
 		this.roundHeaderPanel = new SummaryPanel(server, client);
-		this.roundQlistPanel = new RoundQuestionListPanel(server, client);
+		this.roundQlistPanel = new RoundQuestionsPanel(server, client);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();

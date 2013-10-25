@@ -28,7 +28,7 @@ public class WorkflowPanel extends TriviaPanel {
 
 	// Sub-panels of the workflow panel
 	private final SummaryPanel			workflowHeaderPanel;
-	private final OpenQuestionListPanel	workflowQlistPanel;
+	private final OpenQuestionsPanel	workflowQlistPanel;
 	private final AnswerQueuePanel	workflowQueuePanel;
 
 	/**
@@ -45,7 +45,7 @@ public class WorkflowPanel extends TriviaPanel {
 
 		// Create the sub-panels
 		this.workflowHeaderPanel = new SummaryPanel(server, client);
-		this.workflowQlistPanel = new OpenQuestionListPanel(server, client);
+		this.workflowQlistPanel = new OpenQuestionsPanel(server, client);
 		this.workflowQueuePanel = new AnswerQueuePanel(server, client);
 
 		// Set up layout constraints

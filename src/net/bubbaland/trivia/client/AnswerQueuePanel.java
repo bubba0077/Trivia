@@ -5,8 +5,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.rmi.RemoteException;
@@ -17,7 +20,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
@@ -319,7 +324,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 	/**
 	 * A panel that will show the current answer queue
 	 */
-	private class WorkflowQueueSubPanel extends TriviaPanel implements ItemListener {
+	private class WorkflowQueueSubPanel extends TriviaPanel implements ItemListener, ActionListener {
 
 		/** The Constant serialVersionUID */
 		private static final long					serialVersionUID	= -5462544756397828556L;
@@ -334,6 +339,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 				confidenceLabels, submitterLabels, operatorLabels, callerLabels;
 		final private ArrayList<JComboBox<String>>	statusComboBoxes;
 		final private ArrayList<JTextArea>			answerTextAreas;
+		private final JPopupMenu					contextMenu;
 
 		private Answer[]							answerQueue;
 
@@ -359,6 +365,17 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.server = server;
 			this.client = client;
 			this.answerQueue = new Answer[0];
+
+			/**
+			 * Build context menu
+			 */
+			this.contextMenu = new JPopupMenu();
+
+			JMenuItem viewItem = new JMenuItem("View");
+			viewItem.setActionCommand("View");
+			viewItem.addActionListener(this);
+			this.contextMenu.add(viewItem);
+			this.add(this.contextMenu);
 
 			// Set up layout constraints
 			final GridBagConstraints constraints = new GridBagConstraints();
@@ -439,6 +456,30 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 
 			}
 
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
+		@Override
+		public synchronized void actionPerformed(ActionEvent event) {
+			Trivia trivia = this.client.getTrivia();
+			final int rNumber = trivia.getCurrentRoundNumber();
+			String command = event.getActionCommand();
+			switch (command) {
+				case "View":
+					int queueIndex = Integer.parseInt(this.contextMenu.getName());
+					int qNumber = trivia.getAnswerQueueQNumber(queueIndex);
+					int qValue = trivia.getValue(rNumber, qNumber);
+					String qText = trivia.getQuestionText(rNumber, qNumber);
+					String aText = trivia.getAnswerQueueAnswer(queueIndex);
+					new ViewAnswerDialog(this.client, qNumber, qValue, qText, aText);
+					break;
+				default:
+					break;
+			}
 		}
 
 		/*
@@ -704,12 +745,16 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.queuenumberLabels.add(this.enclosedLabel("#" + ( a + 1 ), TIME_WIDTH, ANSWER_HEIGHT / 2,
 					NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
 					SwingConstants.CENTER));
+			this.queuenumberLabels.get(a).setName(a + "");
+			this.queuenumberLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 0;
 			constraints.gridy = 2 * a + 1;
 			this.timestampLabels.add(this
 					.enclosedLabel("", TIME_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
 							constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.timestampLabels.get(a).setName(a + "");
+			this.timestampLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridheight = 2;
 			constraints.gridx = 1;
@@ -717,6 +762,8 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.qNumberLabels.add(this
 					.enclosedLabel("", QNUM_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
 							constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.qNumberLabels.get(a).setName(a + "");
+			this.qNumberLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 2;
 			constraints.gridy = 2 * a;
@@ -725,6 +772,8 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 					HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE,
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED));
 			this.answerTextAreas.get(a).setEditable(false);
+			this.answerTextAreas.get(a).setName(a + "");
+			this.answerTextAreas.get(a).addMouseListener(new PopupListener(this.contextMenu));
 			constraints.weightx = 0.0;
 
 			constraints.gridx = 3;
@@ -732,6 +781,8 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.confidenceLabels.add(this
 					.enclosedLabel("", CONFIDENCE_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
 							constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.confidenceLabels.get(a).setName(a + "");
+			this.confidenceLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridheight = 1;
 			constraints.gridx = 4;
@@ -740,6 +791,8 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 					.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
 							HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
 							SwingConstants.CENTER));
+			this.submitterLabels.get(a).setName(a + "");
+			this.submitterLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 4;
 			constraints.gridy = 2 * a + 1;
@@ -747,6 +800,8 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 					.enclosedLabel("", SUB_CALLER_WIDTH, ANSWER_HEIGHT / 2, NOT_CALLED_IN_COLOR,
 							HEADER_BACKGROUND_COLOR, constraints, SMALL_FONT_SIZE, SwingConstants.CENTER,
 							SwingConstants.CENTER));
+			this.callerLabels.get(a).setName(a + "");
+			this.callerLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 			constraints.gridheight = 2;
 
 			constraints.gridx = 5;
@@ -754,6 +809,8 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.operatorLabels.add(this
 					.enclosedLabel("", OPERATOR_WIDTH, ANSWER_HEIGHT, NOT_CALLED_IN_COLOR, HEADER_BACKGROUND_COLOR,
 							constraints, SMALL_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.operatorLabels.get(a).setName(a + "");
+			this.operatorLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 6;
 			constraints.gridy = 2 * a;
@@ -771,6 +828,37 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.lastStatus.add("new");
 		}
 
+		private class PopupListener extends MouseAdapter {
+
+			private final JPopupMenu	menu;
+
+			public PopupListener(JPopupMenu menu) {
+				this.menu = menu;
+			}
+
+			private void checkForPopup(MouseEvent event) {
+				final JComponent source = (JComponent) event.getSource();
+				if (event.isPopupTrigger() && !source.getName().equals("")) {
+					menu.setName(source.getName());
+					menu.show(source, event.getX(), event.getY());
+				}
+			}
+
+			public void mousePressed(MouseEvent e) {
+				checkForPopup(e);
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				checkForPopup(e);
+			}
+
+			public void mouseClicked(MouseEvent e) {
+				checkForPopup(e);
+			}
+
+		}
+
 	}
+
 
 }

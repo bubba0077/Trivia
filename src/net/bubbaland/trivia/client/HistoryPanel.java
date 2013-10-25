@@ -58,7 +58,7 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 	 * GUI Elements that will need to be updated
 	 */
 	private final JComboBox<String>	roundSelector;
-	private final RoundQuestionListPanel	roundQListPanel;
+	private final RoundQuestionsPanel	roundQListPanel;
 	private final JLabel			earnedLabel, valueLabel, placeLabel;
 
 	/**
@@ -177,7 +177,7 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 		constraints.gridwidth = 9;
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
-		this.roundQListPanel = new RoundQuestionListPanel(server, client, false, 1);
+		this.roundQListPanel = new RoundQuestionsPanel(server, client, false, 1);
 		this.add(this.roundQListPanel, constraints);
 	}
 

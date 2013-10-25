@@ -31,54 +31,54 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-public class OpenQuestionListPanel extends TriviaPanel {
+public class OpenQuestionsPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long				serialVersionUID				= 6049067322505905668L;
+	private static final long			serialVersionUID				= 6049067322505905668L;
 
 	/**
 	 * Colors
 	 */
-	private static final Color				HEADER_TEXT_COLOR				= Color.WHITE;
-	private static final Color				HEADER_BACKGROUND_COLOR			= Color.DARK_GRAY;
-	private static final Color				ODD_QUESTION_TEXT_COLOR			= Color.BLACK;
-	private static final Color				EVEN_QUESTION_TEXT_COLOR		= Color.BLACK;
-	private static final Color				ODD_QUESTION_BACKGROUND_COLOR	= Color.WHITE;
-	private static final Color				EVEN_QUESTION_BACKGROUND_COLOR	= Color.LIGHT_GRAY;
+	private static final Color			HEADER_TEXT_COLOR				= Color.WHITE;
+	private static final Color			HEADER_BACKGROUND_COLOR			= Color.DARK_GRAY;
+	private static final Color			ODD_QUESTION_TEXT_COLOR			= Color.BLACK;
+	private static final Color			EVEN_QUESTION_TEXT_COLOR		= Color.BLACK;
+	private static final Color			ODD_QUESTION_BACKGROUND_COLOR	= Color.WHITE;
+	private static final Color			EVEN_QUESTION_BACKGROUND_COLOR	= Color.LIGHT_GRAY;
 
 	/**
 	 * Sizes
 	 */
-	private static final int				HEADER_HEIGHT					= 16;
-	private static final int				QUESTION_HEIGHT					= 46;
+	private static final int			HEADER_HEIGHT					= 16;
+	private static final int			QUESTION_HEIGHT					= 46;
 
-	private static final int				QNUM_WIDTH						= 48;
-	private static final int				QUESTION_WIDTH					= 50;
-	private static final int				VALUE_WIDTH						= 75;
-	private static final int				ANSWER_WIDTH					= 72;
-	private static final int				CLOSE_WIDTH						= 72;
+	private static final int			QNUM_WIDTH						= 48;
+	private static final int			QUESTION_WIDTH					= 50;
+	private static final int			VALUE_WIDTH						= 75;
+	private static final int			ANSWER_WIDTH					= 72;
+	private static final int			CLOSE_WIDTH						= 72;
 
 	/**
 	 * Button sizes
 	 */
-	private static final int				ANSWER_BUTTON_HEIGHT			= 32;
-	private static final int				ANSWER_BUTTON_WIDTH				= 80;
-	private static final int				CLOSE_BUTTON_HEIGHT				= 32;
-	private static final int				CLOSE_BUTTON_WIDTH				= 64;
+	private static final int			ANSWER_BUTTON_HEIGHT			= 32;
+	private static final int			ANSWER_BUTTON_WIDTH				= 80;
+	private static final int			CLOSE_BUTTON_HEIGHT				= 32;
+	private static final int			CLOSE_BUTTON_WIDTH				= 64;
 
 	/**
 	 * Font sizes
 	 */
-	private static final float				HEADER_FONT_SIZE				= (float) 12.0;
-	private static final float				QNUM_FONT_SIZE					= (float) 32.0;
-	private static final float				VALUE_FONT_SIZE					= (float) 32.0;
-	private static final float				QUESTION_FONT_SIZE				= (float) 12.0;
+	private static final float			HEADER_FONT_SIZE				= (float) 12.0;
+	private static final float			QNUM_FONT_SIZE					= (float) 32.0;
+	private static final float			VALUE_FONT_SIZE					= (float) 32.0;
+	private static final float			QUESTION_FONT_SIZE				= (float) 12.0;
 
 	/** The number of open questions to show at one time */
-	private static final int				DEFAULT_QUESTIONS_SHOW			= 4;
+	private static final int			DEFAULT_QUESTIONS_SHOW			= 4;
 
 	/** Sub-panel that will hold the open questions */
-	private final OpenQuestionListSubPanel	workflowQListSubPanel;
+	private final OpenQuestionsSubPanel	workflowQListSubPanel;
 
 	/**
 	 * Instantiates a new workflow question list panel.
@@ -88,7 +88,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public OpenQuestionListPanel(TriviaInterface server, TriviaClient client) {
+	public OpenQuestionsPanel(TriviaInterface server, TriviaClient client) {
 
 		super();
 
@@ -138,7 +138,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 		/**
 		 * Create the subpanel that will hold the actual questions and put it in a scroll pane
 		 */
-		this.workflowQListSubPanel = new OpenQuestionListSubPanel(server, client);
+		this.workflowQListSubPanel = new OpenQuestionsSubPanel(server, client);
 		final JScrollPane scrollPane = new JScrollPane(this.workflowQListSubPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, DEFAULT_QUESTIONS_SHOW * QUESTION_HEIGHT + 3));
@@ -159,7 +159,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 	/**
 	 * Panel which displays a list of the current open questions.
 	 */
-	private class OpenQuestionListSubPanel extends TriviaPanel implements ActionListener {
+	private class OpenQuestionsSubPanel extends TriviaPanel implements ActionListener {
 
 		/** The Constant serialVersionUID. */
 		private static final long		serialVersionUID	= 6049067322505905668L;
@@ -173,8 +173,6 @@ public class OpenQuestionListPanel extends TriviaPanel {
 		private final JLabel[]			qNumberLabels, qValueLabels;
 		private final JTextArea[]		qTextAreas;
 		private final JButton[]			answerButtons, closeButtons;
-
-		// private final JMenuItem editItem, resetItem;
 		private final JPopupMenu		contextMenu;
 
 		/**
@@ -191,7 +189,7 @@ public class OpenQuestionListPanel extends TriviaPanel {
 		 * @param client
 		 *            the client
 		 */
-		public OpenQuestionListSubPanel(TriviaInterface server, TriviaClient client) {
+		public OpenQuestionsSubPanel(TriviaInterface server, TriviaClient client) {
 
 			super();
 
@@ -204,6 +202,11 @@ public class OpenQuestionListPanel extends TriviaPanel {
 			 */
 			this.contextMenu = new JPopupMenu();
 
+			JMenuItem viewItem = new JMenuItem("View");
+			viewItem.setActionCommand("View");
+			viewItem.addActionListener(this);
+			this.contextMenu.add(viewItem);
+
 			JMenuItem editItem = new JMenuItem("Edit");
 			editItem.setActionCommand("Edit");
 			editItem.addActionListener(this);
@@ -213,11 +216,6 @@ public class OpenQuestionListPanel extends TriviaPanel {
 			resetItem.setActionCommand("Delete");
 			resetItem.addActionListener(this);
 			this.contextMenu.add(resetItem);
-
-			JMenuItem viewItem = new JMenuItem("View Full Text");
-			viewItem.setActionCommand("View");
-			viewItem.addActionListener(this);
-			this.contextMenu.add(viewItem);
 
 			this.add(this.contextMenu);
 
