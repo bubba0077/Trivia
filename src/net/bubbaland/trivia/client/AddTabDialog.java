@@ -5,6 +5,9 @@ import java.awt.GridBagConstraints;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.Set;
 
 import javax.swing.JComboBox;
@@ -29,6 +32,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		Set<String> tabNameSet = client.getTabNames();
 		String[] tabNames = new String[tabNameSet.size()];
 		tabNameSet.toArray(tabNames);
+		Arrays.sort(tabNames, new TabCompare());
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -71,13 +75,16 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 			}
 			case "Add All":
 				for (String tabName : tabNameSet) {
-					if (pane.indexOfTab(tabName) == -1) {
+					if (!tabName.startsWith("*") && pane.indexOfTab(tabName) == -1) {
 						newTabs.add(tabName);
 					}
 				}
 				break;
 		}
 		for (String tabName : newTabs) {
+			if (tabName.startsWith("*")) {
+				tabName = tabName.replaceFirst("\\*", "");
+			}
 			String altName = tabName;
 			int i = 1;
 			while (pane.indexOfTab(altName) > -1) {
@@ -89,20 +96,6 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 			pane.setSelectedIndex(tabLocation);
 		}
 
-
-		// if (option == JOptionPane.OK_OPTION) {
-		// final String tabName = (String) tabSelector.getSelectedItem();
-		// String altName = tabName;
-		// int i = 1;
-		// while (pane.indexOfTab(altName) > -1) {
-		// altName = tabName + " (" + i + ")";
-		// i++;
-		// }
-		// pane.addTab(altName, client.getTab(tabName));
-		// final int tabLocation = pane.indexOfTab(altName);
-		// pane.setSelectedIndex(tabLocation);
-		// } e
-
 	}
 
 	@Override
@@ -110,6 +103,29 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		String tabName = (String) this.tabSelector.getSelectedItem();
 		String description = this.client.getTabDescription(tabName);
 		this.descriptionLabel.setText(description);
+	}
+
+	public static class TabCompare implements Comparator<String> {
+
+		final static private Hashtable<String, Integer>	SORT_ORDER;
+		static {
+			SORT_ORDER = new Hashtable<String, Integer>(0);
+			SORT_ORDER.put("Workflow", 0);
+			SORT_ORDER.put("Current", 1);
+			SORT_ORDER.put("History", 2);
+			SORT_ORDER.put("By Round", 3);
+			SORT_ORDER.put("Place Chart", 4);
+			SORT_ORDER.put("Score Chart", 5);
+			SORT_ORDER.put("Cumul. Score Chart", 6);
+			SORT_ORDER.put("Team Comparison", 7);
+			SORT_ORDER.put("*Open Questions", 8);
+			SORT_ORDER.put("*Answer Queue", 9);
+		}
+
+		@Override
+		public int compare(String o1, String o2) {
+			return SORT_ORDER.get(o1).compareTo(SORT_ORDER.get(o2));
+		}
 	}
 
 }

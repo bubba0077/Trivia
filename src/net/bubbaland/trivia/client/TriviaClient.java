@@ -115,7 +115,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	final static private Hashtable<String, String>	tabDescriptionHash;
 	static {
 		tabDescriptionHash = new Hashtable<String, String>(0);
-		tabDescriptionHash.put("Workflow", "Main tab with summary information, open question list, and answer queue.");
+		tabDescriptionHash.put("Workflow", "Main tab with summary information, open questions, and answer queue.");
 		tabDescriptionHash.put("Current", "Tab showing question data for the current round.");
 		tabDescriptionHash.put("History", "Tab that can show question data for any round.");
 		tabDescriptionHash.put("By Round", "Tab that displays score information for every round.");
@@ -123,6 +123,8 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 		tabDescriptionHash.put("Score Chart", "Chart showing the team's score in each round.");
 		tabDescriptionHash.put("Cumul. Score Chart", "Chart showing the team's total score in time.");
 		tabDescriptionHash.put("Team Comparison", "Chart comparing each team's score to our score in time.");
+		tabDescriptionHash.put("*Open Questions", "List of current open questions");
+		tabDescriptionHash.put("*Answer Queue", "The proposed answer queue for the current round.");
 	}
 
 
@@ -900,6 +902,12 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 				break;
 			case "Team Comparison":
 				panel = new TeamComparisonPanel(this);
+				break;
+			case "Open Questions":
+				panel = new OpenQuestionsPanel(server, this);
+				break;
+			case "Answer Queue":
+				panel = new AnswerQueuePanel(server, this);
 				break;
 		}
 		this.panelList.add(panel);
