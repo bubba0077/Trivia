@@ -2,6 +2,7 @@ package net.bubbaland.trivia.client;
 
 // imports for GUI
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -20,11 +21,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -51,9 +54,8 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 	private static final Color			HEADER_BACKGROUND_COLOR	= Color.BLACK;
 	private static final Color			HEADER_TEXT_COLOR		= Color.WHITE;
 	private static final Color			ODD_BACKGROUND_COLOR	= new Color(30, 30, 30);
-
 	private static final Color			EVEN_BACKGROUND_COLOR	= Color.BLACK;
-	private static final Color			DUPLICATE_COLOR			= Color.GRAY;
+	private static final Color			DUPLICATE_COLOR			= Color.LIGHT_GRAY;
 	private static final Color			NOT_CALLED_IN_COLOR		= Color.WHITE;
 	private static final Color			CALLING_COLOR			= Color.CYAN;
 	private static final Color			INCORRECT_COLOR			= Color.RED;
@@ -643,8 +645,8 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 					for (final ItemListener listener : listeners) {
 						this.statusComboBoxes.get(a).removeItemListener(listener);
 					}
-					this.statusComboBoxes.get(a).setForeground(color);
-					this.statusComboBoxes.get(a).setBackground(bColor);
+					this.statusComboBoxes.get(a).setForeground(bColor);
+					this.statusComboBoxes.get(a).setBackground(color);
 					this.statusComboBoxes.get(a).getParent().setBackground(bColor);
 					this.statusComboBoxes.get(a).setName(( newQueueNumber - 1 ) + "");
 					this.statusComboBoxes.get(a).setSelectedIndex(statusIndex);
@@ -737,6 +739,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 		/**
 		 * Make a new answer row.
 		 */
+		@SuppressWarnings("unchecked")
 		private void makeNewRow() {
 			final int a = this.queuenumberLabels.size();
 
@@ -823,6 +826,9 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.statusComboBoxes.get(a).setName(a + "");
 			this.statusComboBoxes.get(a).addItemListener(this);
 			this.statusComboBoxes.get(a).setBackground(HEADER_BACKGROUND_COLOR);
+			this.statusComboBoxes.get(a).setRenderer(
+					new StatusCellRenderer((ListCellRenderer<String>) this.statusComboBoxes.get(a).getRenderer(),
+							this.statusComboBoxes.get(a)));
 			panel.add(this.statusComboBoxes.get(a));
 
 			this.lastStatus.add("new");
@@ -856,6 +862,58 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 				checkForPopup(e);
 			}
 
+		}
+
+		public class StatusCellRenderer implements ListCellRenderer<String> {
+			private final ListCellRenderer<String>	wrapped;
+			private final JComboBox<String>			comboBox;
+
+			public StatusCellRenderer(ListCellRenderer<String> listCellRenderer, JComboBox<String> comboBox) {
+				this.wrapped = listCellRenderer;
+				this.comboBox = comboBox;
+			}
+
+			public Component getListCellRendererComponent(JList<? extends String> list, String value, int index,
+					boolean isSelected, boolean cellHasFocus) {
+				String displayName = String.valueOf(value); // customize here
+				Component renderer = wrapped.getListCellRendererComponent(list, displayName, index, isSelected,
+						cellHasFocus);
+				if (renderer instanceof JLabel) {
+					Color color = NOT_CALLED_IN_COLOR;
+					switch (value) {
+						case "Duplicate":
+							color = DUPLICATE_COLOR;
+							break;
+						case "Not Called In":
+							color = NOT_CALLED_IN_COLOR;
+							break;
+						case "Calling":
+							color = CALLING_COLOR;
+							break;
+						case "Incorrect":
+							color = INCORRECT_COLOR;
+							break;
+						case "Partial":
+							color = PARTIAL_COLOR;
+							break;
+						case "Correct":
+							color = CORRECT_COLOR;
+							break;
+						default:
+							color = NOT_CALLED_IN_COLOR;
+							break;
+					}
+					if (isSelected) {
+						( (JLabel) renderer ).setForeground(color);
+						( (JLabel) renderer ).setBackground(this.comboBox.getForeground());
+					} else {
+						( (JLabel) renderer ).setForeground(this.comboBox.getForeground());
+						( (JLabel) renderer ).setBackground(color);
+					}
+
+				}
+				return renderer;
+			}
 		}
 
 	}

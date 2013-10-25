@@ -61,7 +61,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog((Frame) SwingUtilities.getWindowAncestor(pane), "Add tab", this,
-				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options);
+				JOptionPane.PLAIN_MESSAGE, JOptionPane.YES_NO_CANCEL_OPTION, null, options);
 		this.dialog.setName("Add Tab");
 		this.dialog.setVisible(true);
 

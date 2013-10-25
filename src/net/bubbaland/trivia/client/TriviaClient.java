@@ -93,7 +93,7 @@ public class TriviaClient extends TriviaPanel implements ActionListener, WindowL
 	final static private String		SETTINGS_FILENAME	= ".trivia-settings";
 
 	// Initial tabs
-	final static private String[]	INITIAL_TABS			= { "Workflow", "Current", "History" };
+	final static private String[]	INITIAL_TABS		= { "Workflow", "Current", "History" };
 
 	// Queue sort option
 	public static enum QueueSort {

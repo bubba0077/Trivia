@@ -272,7 +272,7 @@ public class Answer implements Serializable {
 	public static class TimestampCompare implements Comparator<Answer> {
 		@Override
 		public int compare(Answer o1, Answer o2) {
-			return o1.getTimestamp().compareTo(o2.getTimestamp());
+			return ( (Integer) o1.getQueueLocation() ).compareTo(o2.getQueueLocation());
 		}
 	}
 
@@ -295,7 +295,7 @@ public class Answer implements Serializable {
 	public static class TimestampCompareReverse implements Comparator<Answer> {
 		@Override
 		public int compare(Answer o1, Answer o2) {
-			return o2.getTimestamp().compareTo(o1.getTimestamp());
+			return ( (Integer) o2.getQueueLocation() ).compareTo(o1.getQueueLocation());
 		}
 	}
 
