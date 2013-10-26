@@ -19,7 +19,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 public class EditQuestionDialog extends TriviaDialogPanel implements ActionListener {
 
@@ -37,7 +36,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 	private final JToggleButton	correctButton;
 	private final JTextField	submitterTextField, operatorTextField;
 
-	public EditQuestionDialog(TriviaInterface server, TriviaClient client, int rNumber, int qNumber) {
+	public EditQuestionDialog(TriviaClient client, int rNumber, int qNumber) {
 
 		super();
 
@@ -195,7 +194,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		}
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Edit Question", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, "Edit Question", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
 
@@ -213,11 +212,11 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 			// Edit the question on the server
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					server.editQuestion(client.getUser(), rNumber, qNumber, qValue, qText, aText, isCorrect, submitter,
-							operator);
+					client.getServer().editQuestion(client.getUser(), rNumber, qNumber, qValue, qText, aText,
+							isCorrect, submitter, operator);
 					success = true;
 				} catch (final RemoteException e) {
 					client.log("Couldn't edit question on server (try #" + tryNumber + ").");

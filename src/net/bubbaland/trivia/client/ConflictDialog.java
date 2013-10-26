@@ -103,8 +103,8 @@ public class ConflictDialog extends TriviaDialogPanel {
 		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
 		this.add(label, constraints);
 
-		new TriviaDialog(client.getFrame(), "Score Conflict", this, JOptionPane.PLAIN_MESSAGE,
-				JOptionPane.DEFAULT_OPTION).setVisible(true);
+		new TriviaDialog(null, "Score Conflict", this, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION)
+				.setVisible(true);
 
 	}
 }

@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 public class DiscrepancyDialog extends TriviaDialogPanel {
 	/** The Constant serialVersionUID. */
@@ -22,7 +21,7 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 	 * @param client
 	 *            the client
 	 */
-	public DiscrepancyDialog(TriviaInterface server, TriviaClient client, int rNumber) {
+	public DiscrepancyDialog(TriviaClient client, int rNumber) {
 		super();
 
 		Trivia trivia = client.getTrivia();
@@ -50,7 +49,7 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 		discrepancyTextField.addAncestorListener(this);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Score Discrepancy", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, "Score Discrepancy", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
 
@@ -60,10 +59,10 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 		if (option == JOptionPane.OK_OPTION) {
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					server.setDiscrepancyText(client.getUser(), rNumber, discrepancyTextField.getText());
+					client.getServer().setDiscrepancyText(client.getUser(), rNumber, discrepancyTextField.getText());
 					success = true;
 				} catch (final Exception exception) {
 					client.log("Couldn't set discrepancy text on server (try #" + tryNumber + ").");

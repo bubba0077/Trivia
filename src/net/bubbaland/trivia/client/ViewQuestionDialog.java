@@ -62,7 +62,7 @@ public class ViewQuestionDialog extends TriviaDialogPanel {
 		this.add(scrollPane, constraints);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "View Question", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, "View Question", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.DEFAULT_OPTION);
 		this.dialog.setModal(false);
 		this.dialog.setVisible(true);

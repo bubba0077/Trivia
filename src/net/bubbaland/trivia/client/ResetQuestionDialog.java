@@ -11,8 +11,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
-import net.bubbaland.trivia.TriviaInterface;
-
 public class ResetQuestionDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 6166214835080640219L;
@@ -22,7 +20,7 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 	 */
 	private static final float	LABEL_FONT_SIZE		= 20.0f;
 
-	public ResetQuestionDialog(TriviaInterface server, TriviaClient client, int qNumber, int qValue, String qText) {
+	public ResetQuestionDialog(TriviaClient client, int qNumber, int qValue, String qText) {
 
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
@@ -65,7 +63,7 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(scrollPane, constraints);
 
-		TriviaDialog dialog = new TriviaDialog(client.getFrame(), "Confirm Question Reset " + qNumber, this,
+		TriviaDialog dialog = new TriviaDialog(null, "Confirm Question Reset " + qNumber, this,
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 		dialog.setVisible(true);
 
@@ -74,10 +72,10 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 			// Reset the question on the server
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					server.resetQuestion(client.getUser(), qNumber);
+					client.getServer().resetQuestion(client.getUser(), qNumber);
 					success = true;
 				} catch (final RemoteException e) {
 					client.log("Couldn't open question on server (try #" + tryNumber + ").");

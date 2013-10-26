@@ -8,8 +8,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import net.bubbaland.trivia.TriviaInterface;
-
 /**
  * Creates a dialog that asks for the operator to confirm a correct answer.
  * 
@@ -37,8 +35,7 @@ public class CorrectEntryPanel extends TriviaDialogPanel {
 	 * @param statusComboBox
 	 *            The status combo box for this answer, so it can be reverted to previous state if dialog is cancelled
 	 */
-	public CorrectEntryPanel(TriviaInterface server, TriviaClient client, String caller, int queueIndex,
-			JComboBox<String> statusComboBox) {
+	public CorrectEntryPanel(TriviaClient client, String caller, int queueIndex, JComboBox<String> statusComboBox) {
 		super();
 
 		// Set up layout constraints
@@ -63,7 +60,7 @@ public class CorrectEntryPanel extends TriviaDialogPanel {
 		this.add(operatorTextField, c);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Mark question correct", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, "Mark question correct", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
 
@@ -72,10 +69,10 @@ public class CorrectEntryPanel extends TriviaDialogPanel {
 			// If the OK button was pressed, mark the question as correct
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					server.markCorrect(queueIndex, caller, operatorTextField.getText());
+					client.getServer().markCorrect(queueIndex, caller, operatorTextField.getText());
 					success = true;
 				} catch (final RemoteException e) {
 					client.log("Couldn't change answer status on server (try #" + tryNumber + ").");

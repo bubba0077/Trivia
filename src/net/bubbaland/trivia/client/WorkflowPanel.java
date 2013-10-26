@@ -29,7 +29,7 @@ public class WorkflowPanel extends TriviaPanel {
 	// Sub-panels of the workflow panel
 	private final SummaryPanel			workflowHeaderPanel;
 	private final OpenQuestionsPanel	workflowQlistPanel;
-	private final AnswerQueuePanel	workflowQueuePanel;
+	private final AnswerQueuePanel		workflowQueuePanel;
 
 	/**
 	 * Instantiates a new workflow panel.
@@ -39,14 +39,14 @@ public class WorkflowPanel extends TriviaPanel {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public WorkflowPanel(final TriviaInterface server, final TriviaClient client) {
+	public WorkflowPanel(final TriviaFrame panel, final TriviaClient client) {
 
 		super();
 
 		// Create the sub-panels
-		this.workflowHeaderPanel = new SummaryPanel(server, client);
-		this.workflowQlistPanel = new OpenQuestionsPanel(server, client);
-		this.workflowQueuePanel = new AnswerQueuePanel(server, client);
+		this.workflowHeaderPanel = new SummaryPanel(client);
+		this.workflowQlistPanel = new OpenQuestionsPanel(client);
+		this.workflowQueuePanel = new AnswerQueuePanel(panel, client);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -80,7 +80,7 @@ public class WorkflowPanel extends TriviaPanel {
 				final Trivia trivia = client.getTrivia();
 				final int nQuestions = trivia.getNQuestions();
 				final int nextToOpen = trivia.nextToOpen();
-				new NewQuestionDialog(server, client, nQuestions, nextToOpen);
+				new NewQuestionDialog(client, nQuestions, nextToOpen);
 			}
 		});
 	}

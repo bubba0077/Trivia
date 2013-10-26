@@ -23,7 +23,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel which displays a list of the current open questions.
@@ -88,7 +87,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public OpenQuestionsPanel(TriviaInterface server, TriviaClient client) {
+	public OpenQuestionsPanel(TriviaClient client) {
 
 		super();
 
@@ -138,7 +137,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 		/**
 		 * Create the subpanel that will hold the actual questions and put it in a scroll pane
 		 */
-		this.workflowQListSubPanel = new OpenQuestionsSubPanel(server, client);
+		this.workflowQListSubPanel = new OpenQuestionsSubPanel(client);
 		final JScrollPane scrollPane = new JScrollPane(this.workflowQListSubPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, DEFAULT_QUESTIONS_SHOW * QUESTION_HEIGHT + 3));
@@ -162,24 +161,23 @@ public class OpenQuestionsPanel extends TriviaPanel {
 	private class OpenQuestionsSubPanel extends TriviaPanel implements ActionListener {
 
 		/** The Constant serialVersionUID. */
-		private static final long		serialVersionUID	= 6049067322505905668L;
+		private static final long	serialVersionUID	= 6049067322505905668L;
 
 		// Maximum number of questions in a round
-		private final int				nQuestionsMax;
+		private final int			nQuestionsMax;
 
 		/**
 		 * GUI Elements that will need to be updated
 		 */
-		private final JLabel[]			qNumberLabels, qValueLabels;
-		private final JTextArea[]		qTextAreas;
-		private final JButton[]			answerButtons, closeButtons;
-		private final JPopupMenu		contextMenu;
+		private final JLabel[]		qNumberLabels, qValueLabels;
+		private final JTextArea[]	qTextAreas;
+		private final JButton[]		answerButtons, closeButtons;
+		private final JPopupMenu	contextMenu;
 
 		/**
 		 * Data sources
 		 */
-		private final TriviaInterface	server;
-		private final TriviaClient		client;
+		private final TriviaClient	client;
 
 		/**
 		 * Instantiates a new workflow q list sub panel.
@@ -189,11 +187,10 @@ public class OpenQuestionsPanel extends TriviaPanel {
 		 * @param client
 		 *            the client
 		 */
-		public OpenQuestionsSubPanel(TriviaInterface server, TriviaClient client) {
+		public OpenQuestionsSubPanel(TriviaClient client) {
 
 			super();
 
-			this.server = server;
 			this.client = client;
 			this.nQuestionsMax = client.getTrivia().getMaxQuestions();
 
@@ -350,7 +347,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 					break;
 				case "Close":
 					qNumber = Integer.parseInt(( (Component) event.getSource() ).getName());
-					new CloseQuestionDialog(this.server, this.client, qNumber);
+					new CloseQuestionDialog(this.client, qNumber);
 					break;
 				case "Open":
 					this.open();
@@ -360,13 +357,13 @@ public class OpenQuestionsPanel extends TriviaPanel {
 					int qValue = trivia.getValue(rNumber, qNumber);
 					String qText = trivia.getQuestionText(rNumber, qNumber);
 					int nQuestions = trivia.getNQuestions();
-					new NewQuestionDialog(this.server, this.client, nQuestions, qNumber, qValue, qText);
+					new NewQuestionDialog(this.client, nQuestions, qNumber, qValue, qText);
 					break;
 				case "Delete":
 					qNumber = Integer.parseInt(this.contextMenu.getName());
 					qValue = trivia.getValue(rNumber, qNumber);
 					qText = trivia.getQuestionText(rNumber, qNumber);
-					new ResetQuestionDialog(this.server, this.client, qNumber, qValue, qText);
+					new ResetQuestionDialog(this.client, qNumber, qValue, qText);
 					break;
 				case "View":
 					qNumber = Integer.parseInt(this.contextMenu.getName());
@@ -386,7 +383,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 		 *            the question number
 		 */
 		private void answerQuestion(int qNumber) {
-			new AnswerEntryPanel(this.server, this.client, qNumber, this.client.getUser());
+			new AnswerEntryPanel(this.client, qNumber, this.client.getUser());
 		}
 
 		/**
@@ -401,10 +398,9 @@ public class OpenQuestionsPanel extends TriviaPanel {
 			final int rNumber = trivia.getCurrentRoundNumber();
 
 			if (trivia.isSpeed(rNumber) && nextToOpen > 1) {
-				new NewQuestionDialog(this.server, this.client, nQuestions, nextToOpen, trivia.getValue(rNumber,
-						nextToOpen - 1));
+				new NewQuestionDialog(this.client, nQuestions, nextToOpen, trivia.getValue(rNumber, nextToOpen - 1));
 			} else {
-				new NewQuestionDialog(this.server, this.client, nQuestions, nextToOpen);
+				new NewQuestionDialog(this.client, nQuestions, nextToOpen);
 			}
 
 		}

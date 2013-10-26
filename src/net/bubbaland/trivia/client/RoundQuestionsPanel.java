@@ -30,7 +30,6 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel that shows all of the questions for a round.
@@ -92,8 +91,8 @@ public class RoundQuestionsPanel extends TriviaPanel {
 	 * @param client
 	 *            the client
 	 */
-	public RoundQuestionsPanel(TriviaInterface server, TriviaClient client) {
-		this(server, client, true, 0);
+	public RoundQuestionsPanel(TriviaClient client) {
+		this(client, true, 0);
 	}
 
 	/**
@@ -108,7 +107,7 @@ public class RoundQuestionsPanel extends TriviaPanel {
 	 * @param rNumber
 	 *            the round number
 	 */
-	public RoundQuestionsPanel(TriviaInterface server, TriviaClient client, boolean live, int rNumber) {
+	public RoundQuestionsPanel(TriviaClient client, boolean live, int rNumber) {
 
 		super();
 
@@ -177,7 +176,7 @@ public class RoundQuestionsPanel extends TriviaPanel {
 		constraints.gridy = 1;
 		constraints.gridwidth = 7;
 		constraints.weighty = 1.0;
-		this.roundQlistSubPanel = new RoundQuestionsSubPanel(server, client, live, rNumber);
+		this.roundQlistSubPanel = new RoundQuestionsSubPanel(client, live, rNumber);
 		this.roundQlistPane = new JScrollPane(this.roundQlistSubPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.roundQlistPane.setPreferredSize(new Dimension(0, 200));
@@ -212,29 +211,28 @@ public class RoundQuestionsPanel extends TriviaPanel {
 	 */
 	private class RoundQuestionsSubPanel extends TriviaPanel implements ActionListener {
 
-		private static final long		serialVersionUID	= 3825357215129662133L;
+		private static final long	serialVersionUID	= 3825357215129662133L;
 
 		/**
 		 * GUI Elements that will need to be updated
 		 */
-		private final JLabel[]			qNumberLabels, earnedLabels, valueLabels;
-		private final JTextArea[]		questionTextAreas, answerTextAreas;
-		private final JTextPane[]		submitterTextAreas, operatorTextAreas;
-		private final JSeparator[]		separators;
-		private final JMenuItem			editItem, reopenItem;
-		private final JPopupMenu		contextMenu;
+		private final JLabel[]		qNumberLabels, earnedLabels, valueLabels;
+		private final JTextArea[]	questionTextAreas, answerTextAreas;
+		private final JTextPane[]	submitterTextAreas, operatorTextAreas;
+		private final JSeparator[]	separators;
+		private final JMenuItem		editItem, reopenItem;
+		private final JPopupMenu	contextMenu;
 
 		/** Status variables */
-		private boolean					speed;
+		private boolean				speed;
 
-		private final boolean			live;
-		private final int				maxQuestions;
+		private final boolean		live;
+		private final int			maxQuestions;
 
-		private int						rNumber;
+		private int					rNumber;
 
 		/** Data source */
-		private final TriviaInterface	server;
-		private final TriviaClient		client;
+		private final TriviaClient	client;
 
 		/**
 		 * Instantiates a new question list sub-panel.
@@ -248,10 +246,9 @@ public class RoundQuestionsPanel extends TriviaPanel {
 		 * @param rNumber
 		 *            the round number
 		 */
-		public RoundQuestionsSubPanel(TriviaInterface server, TriviaClient client, boolean live, int rNumber) {
+		public RoundQuestionsSubPanel(TriviaClient client, boolean live, int rNumber) {
 			super();
 
-			this.server = server;
 			this.client = client;
 			this.speed = false;
 			this.live = live;
@@ -441,16 +438,18 @@ public class RoundQuestionsPanel extends TriviaPanel {
 			String command = event.getActionCommand();
 			switch (command) {
 				case "Edit":
-					new EditQuestionDialog(this.server, this.client, this.rNumber, qNumber);
+					new EditQuestionDialog(this.client, this.rNumber, qNumber);
 					break;
 				case "Reopen":
 					// Repen the question on the server
 					int tryNumber = 0;
 					boolean success = false;
-					while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+					while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
+							&& success == false) {
 						tryNumber++;
 						try {
-							this.server.open(this.client.getUser(), qNumber, trivia.getValue(this.rNumber, qNumber),
+							this.client.getServer().open(this.client.getUser(), qNumber,
+									trivia.getValue(this.rNumber, qNumber),
 									trivia.getQuestionText(this.rNumber, qNumber));
 							success = true;
 						} catch (final RemoteException e) {

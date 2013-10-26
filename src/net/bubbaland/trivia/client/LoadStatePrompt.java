@@ -8,13 +8,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import net.bubbaland.trivia.TriviaInterface;
-
 /**
  * Creates a dialog that lists the saves and prompts for one to load.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class LoadStatePrompt extends TriviaDialogPanel {
 
@@ -23,7 +21,7 @@ public class LoadStatePrompt extends TriviaDialogPanel {
 	/** Font size */
 	private static final float	FONT_SIZE			= 20f;
 
-	public LoadStatePrompt(TriviaInterface server, TriviaClient client) {
+	public LoadStatePrompt(TriviaClient client) {
 
 		super();
 
@@ -31,11 +29,11 @@ public class LoadStatePrompt extends TriviaDialogPanel {
 		String[] saveList = null;
 		int tryNumber = 0;
 		boolean success = false;
-		while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+		while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 			tryNumber++;
 			try {
 				// Set the announced values
-				saveList = server.listSaves();
+				saveList = client.getServer().listSaves();
 				success = true;
 			} catch (final RemoteException e) {
 				// Retry if the connection is broken
@@ -81,7 +79,7 @@ public class LoadStatePrompt extends TriviaDialogPanel {
 		this.add(chooser, constraints);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Load saved state", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, "Load saved state", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
 
@@ -94,11 +92,11 @@ public class LoadStatePrompt extends TriviaDialogPanel {
 			// Try to communicate with server
 			tryNumber = 0;
 			success = false;
-			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					// Set the announced values
-					server.loadState(client.getUser(), saveFile);
+					client.getServer().loadState(client.getUser(), saveFile);
 					success = true;
 				} catch (final RemoteException e) {
 					// Retry if the connection is broken

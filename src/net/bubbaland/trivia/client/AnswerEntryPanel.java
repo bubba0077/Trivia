@@ -15,7 +15,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates a dialog box that prompts user to propose an answer.
@@ -52,7 +51,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 	 * @param user
 	 *            The user's name
 	 */
-	public AnswerEntryPanel(TriviaInterface server, TriviaClient client, int qNumber, String user) {
+	public AnswerEntryPanel(TriviaClient client, int qNumber, String user) {
 
 		super();
 
@@ -140,8 +139,8 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		this.add(confidenceSlider, c);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Submit Answer for Question " + qNumber, this,
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		this.dialog = new TriviaDialog(null, "Submit Answer for Question " + qNumber, this, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setName("Answer Question");
 		this.dialog.setVisible(true);
 
@@ -152,16 +151,16 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 			final int confidence = confidenceSlider.getValue();
 
 			if (answer.equals("")) {
-				new AnswerEntryPanel(server, client, qNumber, user);
+				new AnswerEntryPanel(client, qNumber, user);
 				return;
 			}
 
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					server.proposeAnswer(qNumber, answer, user, confidence);
+					client.getServer().proposeAnswer(qNumber, answer, user, confidence);
 					success = true;
 				} catch (final RemoteException e) {
 					client.log("Couldn't set announced round scores on server (try #" + tryNumber + ").");

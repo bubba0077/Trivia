@@ -23,8 +23,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 	private final JTextArea			descriptionLabel;
 	private final TriviaClient		client;
 
-
-	public AddTabDialog(TriviaClient client, DnDTabbedPane pane) {
+	public AddTabDialog(TriviaFrame panel, TriviaClient client, DnDTabbedPane pane) {
 		super();
 
 		this.client = client;
@@ -91,7 +90,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 				altName = tabName + " (" + i + ")";
 				i++;
 			}
-			pane.addTab(altName, client.getTab(tabName));
+			pane.addTab(altName, client.getTab(panel, tabName));
 			final int tabLocation = pane.indexOfTab(altName);
 			pane.setSelectedIndex(tabLocation);
 		}

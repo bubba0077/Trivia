@@ -11,11 +11,10 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates a dialog box that prompts user for the correct answer when closing a question.
- *
+ * 
  * @author Walter Kolczynski
  */
 public class CloseQuestionDialog extends TriviaDialogPanel {
@@ -28,7 +27,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 	private static final float	TEXTBOX_FONT_SIZE	= 16.0f;
 
 
-	public CloseQuestionDialog(TriviaInterface server, TriviaClient client, int qNumber) {
+	public CloseQuestionDialog(TriviaClient client, int qNumber) {
 
 		super();
 
@@ -93,7 +92,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		this.add(scrollPane, constraints);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Close question " + qNumber, this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, "Close question " + qNumber, this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setName("Close Question");
 		this.dialog.setVisible(true);
@@ -105,10 +104,10 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					server.close(client.getUser(), qNumber, answer);
+					client.getServer().close(client.getUser(), qNumber, answer);
 					success = true;
 				} catch (final RemoteException e) {
 					client.log("Couldn't close question on server (try #" + tryNumber + ").");

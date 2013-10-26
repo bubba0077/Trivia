@@ -91,7 +91,7 @@ public class TearAwayTab extends JWindow {
 		@Override
 		public void drop(DropTargetDropEvent a_event) {
 			detach();
-			new FloatingPanel(TearAwayTab.this.client, a_event);
+			new TriviaFrame(TearAwayTab.this.client, a_event);
 			a_event.dropComplete(true);
 		}
 	}

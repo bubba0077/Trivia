@@ -14,7 +14,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * Creates a prompt to enter new question data.
@@ -45,8 +44,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	 * @param qNumberStart
 	 *            the default question number
 	 */
-	public NewQuestionDialog(TriviaInterface server, TriviaClient client, int nQuestions, int qNumberStart) {
-		this(server, client, nQuestions, qNumberStart, 10, "");
+	public NewQuestionDialog(TriviaClient client, int nQuestions, int qNumberStart) {
+		this(client, nQuestions, qNumberStart, 10, "");
 	}
 
 	/**
@@ -63,9 +62,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	 * @param qValueStart
 	 *            the default question value
 	 */
-	public NewQuestionDialog(final TriviaInterface server, final TriviaClient client, int nQuestions, int qNumberStart,
-			int qValueStart) {
-		this(server, client, nQuestions, qNumberStart, qValueStart, "");
+	public NewQuestionDialog(final TriviaClient client, int nQuestions, int qNumberStart, int qValueStart) {
+		this(client, nQuestions, qNumberStart, qValueStart, "");
 	}
 
 	/**
@@ -84,8 +82,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	 * @param qTextStart
 	 *            the initial question text
 	 */
-	public NewQuestionDialog(final TriviaInterface server, final TriviaClient client, int nQuestions, int qNumberStart,
-			int qValueStart, String qTextStart) {
+	public NewQuestionDialog(final TriviaClient client, int nQuestions, int qNumberStart, int qValueStart,
+			String qTextStart) {
 
 		super();
 
@@ -154,7 +152,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		constraints.gridwidth = 1;
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "Open New Question", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, "Open New Question", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
 
@@ -184,23 +182,24 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
 				this.add(label, constraints);
 
-				this.dialog = new TriviaDialog(client.getFrame(), "Confirm Question Number Change " + qNumberStart
-						+ " to " + qNumber, this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+				this.dialog = new TriviaDialog(null, "Confirm Question Number Change " + qNumberStart + " to "
+						+ qNumber, this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 				this.dialog.setVisible(true);
 
 				final int confirm = ( (Integer) dialog.getValue() ).intValue();
 				if (confirm != JOptionPane.OK_OPTION) {
-					new NewQuestionDialog(server, client, nQuestions, qNumberStart, qValue, qText);
+					new NewQuestionDialog(client, nQuestions, qNumberStart, qValue, qText);
 					return;
 				}
 
 				// Open the question on the server
 				int tryNumber = 0;
 				boolean success = false;
-				while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+				while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
+						&& success == false) {
 					tryNumber++;
 					try {
-						server.remapQuestion(qNumberStart, qNumber);
+						client.getServer().remapQuestion(qNumberStart, qNumber);
 						success = true;
 					} catch (final RemoteException e) {
 						client.log("Couldn't open question on server (try #" + tryNumber + ").");
@@ -296,13 +295,13 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
 				this.add(label, constraints);
 
-				this.dialog = new TriviaDialog(client.getFrame(), "Confirm Question Overwrite " + qNumber, this,
+				this.dialog = new TriviaDialog(null, "Confirm Question Overwrite " + qNumber, this,
 						JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 				this.dialog.setVisible(true);
 
 				final int confirm = ( (Integer) dialog.getValue() ).intValue();
 				if (confirm != JOptionPane.OK_OPTION) {
-					new NewQuestionDialog(server, client, nQuestions, qNumber, qValue, qText);
+					new NewQuestionDialog(client, nQuestions, qNumber, qValue, qText);
 					return;
 				}
 
@@ -312,10 +311,10 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			// Open the question on the server
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					server.open(client.getUser(), qNumber, qValue, qText);
+					client.getServer().open(client.getUser(), qNumber, qValue, qText);
 					success = true;
 				} catch (final RemoteException e) {
 					client.log("Couldn't open question on server (try #" + tryNumber + ").");

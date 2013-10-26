@@ -92,7 +92,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		constraints.weighty = 0.0;
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "View Question", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, "View Question", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.DEFAULT_OPTION);
 		this.dialog.setModal(false);
 		this.dialog.setVisible(true);

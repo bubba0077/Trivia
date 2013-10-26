@@ -10,7 +10,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel to select and display any round.
@@ -25,52 +24,51 @@ import net.bubbaland.trivia.TriviaInterface;
 public class HistoryPanel extends TriviaPanel implements ItemListener {
 
 	/** The Constant serialVersionUID. */
-	final private static long		serialVersionUID			= -5094201314926851039L;
+	final private static long			serialVersionUID			= -5094201314926851039L;
 
 	/** Font size for the round selector */
-	final private static float		ROUND_FONT_SIZE				= 20.0f;
+	final private static float			ROUND_FONT_SIZE				= 20.0f;
 
 	/**
 	 * Colors
 	 */
-	final private static Color		TOPLINE_BACKGROUND_COLOR	= Color.BLACK;
-	final private static Color		ROUND_COLOR					= Color.YELLOW;
-	final private static Color		SELECTOR_BACKGROUND_COLOR	= Color.WHITE;
-	private static final Color		TOTAL_COLOR					= Color.RED;
-	private static final Color		ANNOUNCED_COLOR				= Color.ORANGE;
+	final private static Color			TOPLINE_BACKGROUND_COLOR	= Color.BLACK;
+	final private static Color			ROUND_COLOR					= Color.YELLOW;
+	final private static Color			SELECTOR_BACKGROUND_COLOR	= Color.WHITE;
+	private static final Color			TOTAL_COLOR					= Color.RED;
+	private static final Color			ANNOUNCED_COLOR				= Color.ORANGE;
 
 	/**
 	 * Sizes
 	 */
-	final private static int		SELECTOR_ROW_HEIGHT			= 30;
-	final private static int		SELECTOR_HEIGHT				= 30;
-	final private static int		SELECTOR_WIDTH				= 50;
+	final private static int			SELECTOR_ROW_HEIGHT			= 30;
+	final private static int			SELECTOR_HEIGHT				= 30;
+	final private static int			SELECTOR_WIDTH				= 50;
 
-	private static final int		ROUND_LABEL_WIDTH			= 90;
-	private static final int		ROUND_WIDTH					= 110;
-	private static final int		TOTAL_LABEL_WIDTH			= 75;
-	private static final int		TOTAL_WIDTH					= 180;
-	private static final int		PLACE_LABEL_WIDTH			= 80;
-	private static final int		PLACE_WIDTH					= 120;
+	private static final int			ROUND_LABEL_WIDTH			= 90;
+	private static final int			ROUND_WIDTH					= 110;
+	private static final int			TOTAL_LABEL_WIDTH			= 75;
+	private static final int			TOTAL_WIDTH					= 180;
+	private static final int			PLACE_LABEL_WIDTH			= 80;
+	private static final int			PLACE_WIDTH					= 120;
 
 
 	/**
 	 * GUI Elements that will need to be updated
 	 */
-	private final JComboBox<String>	roundSelector;
+	private final JComboBox<String>		roundSelector;
 	private final RoundQuestionsPanel	roundQListPanel;
-	private final JLabel			earnedLabel, valueLabel, placeLabel;
+	private final JLabel				earnedLabel, valueLabel, placeLabel;
 
 	/**
 	 * Data
 	 */
-	private final int				nRounds;
+	private final int					nRounds;
 
 	/**
 	 * Data sources
 	 */
-	TriviaInterface					server;
-	TriviaClient					client;
+	TriviaClient						client;
 
 	/**
 	 * Instantiates a new history panel.
@@ -80,11 +78,10 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public HistoryPanel(TriviaInterface server, TriviaClient client) {
+	public HistoryPanel(TriviaClient client) {
 
 		super();
 
-		this.server = server;
 		this.client = client;
 		this.nRounds = client.getTrivia().getNRounds();
 
@@ -177,7 +174,7 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 		constraints.gridwidth = 9;
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
-		this.roundQListPanel = new RoundQuestionsPanel(server, client, false, 1);
+		this.roundQListPanel = new RoundQuestionsPanel(client, false, 1);
 		this.add(this.roundQListPanel, constraints);
 	}
 

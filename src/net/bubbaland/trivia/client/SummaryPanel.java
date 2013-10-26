@@ -17,17 +17,16 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel which displays summary information of the trivia contest.
- *
+ * 
  * The <code>HeaderPanel</code> class is a panel that contains summary information about the current state of the trivia
  * contest and of the current round. It also provides buttons to make the current round a speed round (or not) and
  * advance to a new round.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class SummaryPanel extends TriviaPanel implements ActionListener {
 
@@ -88,22 +87,20 @@ public class SummaryPanel extends TriviaPanel implements ActionListener {
 	/**
 	 * Data sources
 	 */
-	private final TriviaInterface	server;
 	private final TriviaClient		client;
 
 	/**
 	 * Instantiates a new header panel.
-	 *
+	 * 
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 */
-	public SummaryPanel(TriviaInterface server, TriviaClient client) {
+	public SummaryPanel(TriviaClient client) {
 
 		super();
 
-		this.server = server;
 		this.client = client;
 
 		// Set up layout constraints
@@ -268,7 +265,7 @@ public class SummaryPanel extends TriviaPanel implements ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
@@ -280,10 +277,11 @@ public class SummaryPanel extends TriviaPanel implements ActionListener {
 				// Speed button now pressed, tell server
 				int tryNumber = 0;
 				boolean success = false;
-				while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+				while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
+						&& success == false) {
 					tryNumber++;
 					try {
-						this.server.setSpeed(this.client.getUser());
+						this.client.getServer().setSpeed(this.client.getUser());
 						success = true;
 					} catch (final Exception e) {
 						this.client.log("Couldn't make this a speed round (try #" + tryNumber + ").");
@@ -301,10 +299,11 @@ public class SummaryPanel extends TriviaPanel implements ActionListener {
 				// Speed button now not pressed, tell server
 				int tryNumber = 0;
 				boolean success = false;
-				while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+				while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
+						&& success == false) {
 					tryNumber++;
 					try {
-						this.server.unsetSpeed(this.client.getUser());
+						this.client.getServer().unsetSpeed(this.client.getUser());
 						success = true;
 					} catch (final RemoteException e) {
 						this.client.log("Couldn't make this a normal round (try #" + tryNumber + ").");
@@ -324,10 +323,10 @@ public class SummaryPanel extends TriviaPanel implements ActionListener {
 			// New round button pressed, tell server
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					this.server.newRound(this.client.getUser());
+					this.client.getServer().newRound(this.client.getUser());
 					success = true;
 				} catch (final Exception e) {
 					this.client.log("Couldn't get current round number from server (try #" + tryNumber + ").");
@@ -350,7 +349,7 @@ public class SummaryPanel extends TriviaPanel implements ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override

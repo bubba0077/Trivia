@@ -34,8 +34,7 @@ import javax.swing.UIManager;
 
 import net.bubbaland.trivia.Answer;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
-import net.bubbaland.trivia.client.TriviaClient.QueueSort;
+import net.bubbaland.trivia.client.TriviaFrame.QueueSort;
 
 /**
  * A panel that show the current answers in the queue
@@ -105,6 +104,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 
 	/** The local client */
 	final private TriviaClient			client;
+	final private TriviaFrame			parent;
 
 	/**
 	 * Instantiates a new workflow queue panel.
@@ -114,10 +114,11 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public AnswerQueuePanel(TriviaInterface server, TriviaClient client) {
+	public AnswerQueuePanel(TriviaFrame parent, TriviaClient client) {
 
 		super();
 
+		this.parent = parent;
 		this.client = client;
 
 		this.upArrow = new ImageIcon(getClass().getResource("images/upArrow.png"));
@@ -202,7 +203,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.0;
 
-		this.workflowQueueSubPanel = new WorkflowQueueSubPanel(server, client);
+		this.workflowQueueSubPanel = new WorkflowQueueSubPanel(client);
 		scrollPanel.add(this.workflowQueueSubPanel, constraints);
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
@@ -245,7 +246,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 		final int queueSize = this.client.getTrivia().getAnswerQueueSize();
 		this.queueSizeLabel.setText(queueSize + "");
 		this.workflowQueueSubPanel.update(force);
-		final QueueSort sortMethod = this.client.getQueueSort();
+		final QueueSort sortMethod = this.parent.getQueueSort();
 
 		switch (sortMethod) {
 			case TIMESTAMP_ASCENDING:
@@ -285,24 +286,24 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent event) {
 		final JComponent source = (JComponent) event.getSource();
-		final QueueSort sortMethod = this.client.getQueueSort();
+		final QueueSort sortMethod = this.parent.getQueueSort();
 		if (source.equals(this.timestampLabel)) {
 			if (sortMethod.equals(QueueSort.TIMESTAMP_ASCENDING)) {
-				this.client.setSort(QueueSort.TIMESTAMP_DESCENDING);
+				this.parent.setSort(QueueSort.TIMESTAMP_DESCENDING);
 			} else {
-				this.client.setSort(QueueSort.TIMESTAMP_ASCENDING);
+				this.parent.setSort(QueueSort.TIMESTAMP_ASCENDING);
 			}
 		} else if (source.equals(this.qNumberLabel)) {
 			if (sortMethod.equals(QueueSort.QNUMBER_ASCENDING)) {
-				this.client.setSort(QueueSort.QNUMBER_DESCENDING);
+				this.parent.setSort(QueueSort.QNUMBER_DESCENDING);
 			} else {
-				this.client.setSort(QueueSort.QNUMBER_ASCENDING);
+				this.parent.setSort(QueueSort.QNUMBER_ASCENDING);
 			}
 		} else if (source.equals(this.statusLabel)) {
 			if (sortMethod.equals(QueueSort.STATUS_ASCENDING)) {
-				this.client.setSort(QueueSort.STATUS_DESCENDING);
+				this.parent.setSort(QueueSort.STATUS_DESCENDING);
 			} else {
-				this.client.setSort(QueueSort.STATUS_ASCENDING);
+				this.parent.setSort(QueueSort.STATUS_ASCENDING);
 			}
 		}
 	}
@@ -348,7 +349,6 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 		/**
 		 * Data sources
 		 */
-		final private TriviaInterface				server;
 		final private TriviaClient					client;
 
 
@@ -360,11 +360,10 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 		 * @param client
 		 *            the client
 		 */
-		public WorkflowQueueSubPanel(TriviaInterface server, TriviaClient client) {
+		public WorkflowQueueSubPanel(TriviaClient client) {
 
 			super();
 
-			this.server = server;
 			this.client = client;
 			this.answerQueue = new Answer[0];
 
@@ -416,27 +415,28 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 				// Update status on server
 				int tryNumber = 0;
 				boolean success = false;
-				while (tryNumber < TriviaClient.MAX_RETRIES && success == false) {
+				while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
+						&& success == false) {
 					tryNumber++;
 					try {
 						switch (newStatus) {
 							case "Duplicate":
-								this.server.markDuplicate(this.client.getUser(), queueIndex);
+								this.client.getServer().markDuplicate(this.client.getUser(), queueIndex);
 								break;
 							case "Not Called In":
-								this.server.markUncalled(this.client.getUser(), queueIndex);
+								this.client.getServer().markUncalled(this.client.getUser(), queueIndex);
 								break;
 							case "Calling":
-								this.server.callIn(queueIndex, this.client.getUser());
+								this.client.getServer().callIn(queueIndex, this.client.getUser());
 								break;
 							case "Incorrect":
-								this.server.markIncorrect(queueIndex, this.client.getUser());
+								this.client.getServer().markIncorrect(queueIndex, this.client.getUser());
 								break;
 							case "Partial":
-								this.server.markPartial(queueIndex, this.client.getUser());
+								this.client.getServer().markPartial(queueIndex, this.client.getUser());
 								break;
 							case "Correct":
-								new CorrectEntryPanel(this.server, this.client, this.client.getUser(), queueIndex,
+								new CorrectEntryPanel(this.client, this.client.getUser(), queueIndex,
 										( (JComboBox<String>) source ));
 								break;
 							default:
@@ -494,9 +494,9 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			// Get the current Trivia data object
 			final Trivia trivia = this.client.getTrivia();
 
-			final boolean hideClosed = this.client.hideClosed();
-			final boolean hideDuplicates = this.client.hideDuplicates();
-			final QueueSort sortMethod = this.client.getQueueSort();
+			final boolean hideClosed = AnswerQueuePanel.this.parent.hideClosed();
+			final boolean hideDuplicates = AnswerQueuePanel.this.parent.hideDuplicates();
+			final QueueSort sortMethod = AnswerQueuePanel.this.parent.getQueueSort();
 
 			// Get the queue data from the server
 			final Answer[] newAnswerQueue = trivia.getAnswerQueue();

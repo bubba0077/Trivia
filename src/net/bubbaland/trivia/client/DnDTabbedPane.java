@@ -43,14 +43,14 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	private static final ArrayList<DnDTabbedPane>	tabbedPaneList		= new ArrayList<DnDTabbedPane>(0);
 	private static final ArrayList<ChangeListener>	tabbedPaneListeners	= new ArrayList<ChangeListener>(0);
 	private final TriviaClient						client;
-	// private final JMenuItem closeItem;
 	private final JPopupMenu						closeMenu;
 
-	// private final AddButton addButton;
+	private final TriviaFrame						parent;
 	private final JPanel							blankPanel;
 
-	public DnDTabbedPane(TriviaClient client) {
+	public DnDTabbedPane(TriviaFrame parent, TriviaClient client) {
 		super();
+		this.parent = parent;
 		this.client = client;
 		this.tearTab = new TearAwayTab(client);
 		this.blankPanel = new JPanel();
@@ -654,7 +654,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	public void mouseClicked(MouseEvent event) {
 		int addButtonIndex = this.indexOfComponent(blankPanel);
 		if (addButtonIndex > -1 && this.getBoundsAt(addButtonIndex).contains(event.getPoint())) {
-			new AddTabDialog(this.client, this);
+			new AddTabDialog(this.parent, this.client, this);
 		}
 	}
 

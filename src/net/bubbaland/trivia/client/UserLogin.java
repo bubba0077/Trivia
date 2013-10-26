@@ -60,7 +60,7 @@ public class UserLogin extends TriviaDialogPanel {
 		}
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(client.getFrame(), "User Login", this, JOptionPane.PLAIN_MESSAGE, options);
+		this.dialog = new TriviaDialog(null, "User Login", this, JOptionPane.PLAIN_MESSAGE, options);
 		this.dialog.setVisible(true);
 
 		// Set the user name to input value

@@ -18,7 +18,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel that displays the scores from each round.
@@ -87,7 +86,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	 *            The local trivia client
 	 * 
 	 */
-	public ScoreByRoundPanel(TriviaInterface server, TriviaClient client) {
+	public ScoreByRoundPanel(TriviaClient client) {
 
 		super();
 
@@ -202,7 +201,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		constraints.gridwidth = 11;
-		this.internalScrollPanel = new InternalScrollPanel(server, client);
+		this.internalScrollPanel = new InternalScrollPanel(client);
 		final JScrollPane scrollPane = new JScrollPane(this.internalScrollPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
@@ -227,22 +226,21 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	private class InternalScrollPanel extends TriviaPanel implements ActionListener {
 
 		/** The Constant serialVersionUID. */
-		private static final long		serialVersionUID	= 7121481355244434308L;
+		private static final long	serialVersionUID	= 7121481355244434308L;
 
 		/**
 		 * GUI elements that update
 		 */
-		final private JLabel[]			earnedLabels, valueLabels, percentLabels, cumulativeEarnedLabels,
+		final private JLabel[]		earnedLabels, valueLabels, percentLabels, cumulativeEarnedLabels,
 				cumulativeValueLabels, percentTotalLabels, announcedScoreLabels, placeLabels, discrepancyLabels;
-		private final JMenuItem			editItem;
-		private final JPopupMenu		contextMenu;
+		private final JMenuItem		editItem;
+		private final JPopupMenu	contextMenu;
 
 		/** The nunber of rounds */
-		final private int				nRounds;
+		final private int			nRounds;
 
 		/** Data sources */
-		final private TriviaInterface	server;
-		final private TriviaClient		client;
+		final private TriviaClient	client;
 
 		/**
 		 * Instantiates a new internal scroll panel.
@@ -252,10 +250,9 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		 * @param client
 		 *            the client application
 		 */
-		public InternalScrollPanel(TriviaInterface server, TriviaClient client) {
+		public InternalScrollPanel(TriviaClient client) {
 			super();
 
-			this.server = server;
 			this.client = client;
 
 			this.nRounds = client.getTrivia().getNRounds();
@@ -437,7 +434,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		@Override
 		public void actionPerformed(ActionEvent event) {
 			final int rNumber = Integer.parseInt(this.contextMenu.getName());
-			new DiscrepancyDialog(this.server, this.client, rNumber);
+			new DiscrepancyDialog(this.client, rNumber);
 		}
 
 		private class PopupListener extends MouseAdapter {

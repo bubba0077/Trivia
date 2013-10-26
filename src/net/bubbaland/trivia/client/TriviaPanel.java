@@ -226,6 +226,7 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 		return textArea;
 	}
 
+
 	/**
 	 * Requires all sub-classes to have a method that updates their contents.
 	 */

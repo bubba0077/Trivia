@@ -2,42 +2,40 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 
-import net.bubbaland.trivia.TriviaInterface;
-
 /**
  * A panel for the current round data.
- *
+ * 
  * <code>RoundPanel</code> is a panel that displays a summary and question data for the current round. There are two
  * parts: a <code>HeaderPanel</code> to display summary information, and a <RoundQlistPanel> to display the question
  * data.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class RoundPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long		serialVersionUID	= 9190017804155701978L;
+	private static final long			serialVersionUID	= 9190017804155701978L;
 
 	// Sub-panels of the round panel
-	private final SummaryPanel		roundHeaderPanel;
+	private final SummaryPanel			roundHeaderPanel;
 	private final RoundQuestionsPanel	roundQlistPanel;
 
 	/**
 	 * Instantiates a new round panel.
-	 *
+	 * 
 	 * @param server
 	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 */
-	public RoundPanel(TriviaInterface server, TriviaClient client) {
+	public RoundPanel(TriviaClient client) {
 
 		super();
 
 		// Create the sub-panels
-		this.roundHeaderPanel = new SummaryPanel(server, client);
-		this.roundQlistPanel = new RoundQuestionsPanel(server, client);
+		this.roundHeaderPanel = new SummaryPanel(client);
+		this.roundQlistPanel = new RoundQuestionsPanel(client);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -59,7 +57,7 @@ public class RoundPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
