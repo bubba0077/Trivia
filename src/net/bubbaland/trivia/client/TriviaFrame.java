@@ -68,6 +68,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	public TriviaFrame(TriviaClient client, DropTargetDropEvent a_event) {
 		this(client, false);
 		this.book.convertTab(this.book.getTabTransferData(a_event), this.book.getTargetTabIndex(a_event.getLocation()));
+		this.book.addChangeListener(this);
 	}
 
 	public TriviaFrame(TriviaClient client, String[] initialTabs, boolean showIRC) {
@@ -76,6 +77,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.book.addTab(tabName, client.getTab(this, tabName));
 		}
 		this.book.setSelectedIndex(this.book.indexOfTab(initialTabs[0]));
+		this.book.addChangeListener(this);
 	}
 
 	public TriviaFrame(TriviaClient client, boolean showIRC) {
@@ -137,7 +139,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 			// Make Trivia Menu
 			JMenu menu = new JMenu("Trivia");
-			menu.setMnemonic(KeyEvent.VK_U);
+			menu.setMnemonic(KeyEvent.VK_T);
 			menuBar.add(menu);
 
 			final JMenu roleMenu = new JMenu("Change Role...");
@@ -182,12 +184,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 			menuItem = new JMenuItem("Load Default Settings");
 			menuItem.setActionCommand("Load Default Settings");
-			menuItem.setMnemonic(KeyEvent.VK_W);
+			menuItem.setMnemonic(KeyEvent.VK_D);
+			menuItem.setDisplayedMnemonicIndex(5);
 			menuItem.addActionListener(this);
 			menu.add(menuItem);
 
 			menuItem = new JMenuItem("Exit");
 			menuItem.setActionCommand("Exit");
+			menuItem.setMnemonic(KeyEvent.VK_X);
 			menuItem.addActionListener(this);
 			menu.add(menuItem);
 
@@ -345,7 +349,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				fontSize, SwingConstants.LEFT, SwingConstants.CENTER);
 
 		this.book = new DnDTabbedPane(this, client);
-		this.book.addChangeListener(this);
 
 		constraints.gridx = 0;
 		constraints.gridy = 0;
@@ -378,7 +381,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.setVisible(true);
 
 		TriviaClient.loadPosition(this);
-
 	}
 
 	public TriviaClient getClient() {
