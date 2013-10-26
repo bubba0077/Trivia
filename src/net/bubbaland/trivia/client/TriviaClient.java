@@ -63,13 +63,7 @@ public class TriviaClient implements WindowListener {
 		/**
 		 * Default properties
 		 */
-		final InputStream defaults = TriviaClient.class.getResourceAsStream(DEFAULTS_FILENAME);
-		try {
-			PROPERTIES.load(defaults);
-		} catch (IOException e) {
-			System.out.println("Couldn't load default properties file, aborting!");
-			System.exit(-1);
-		}
+		loadDefaults();
 
 		/**
 		 * Load saved properties from file
@@ -543,15 +537,13 @@ public class TriviaClient implements WindowListener {
 	 * Clear all saved data from file.
 	 * 
 	 */
-	public static void resetPositions() {
-		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
-		final Properties props = new Properties();
+	public static void loadDefaults() {
+		final InputStream defaults = TriviaClient.class.getResourceAsStream(DEFAULTS_FILENAME);
 		try {
-			final BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
-			props.store(outfileBuffer, "Trivia");
-			outfileBuffer.close();
-		} catch (final IOException e) {
-			System.out.println("Error clearing window positions.");
+			PROPERTIES.load(defaults);
+		} catch (IOException e) {
+			System.out.println("Couldn't load default properties file, aborting!");
+			System.exit(-1);
 		}
 	}
 

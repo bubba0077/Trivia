@@ -180,8 +180,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menuItem.addActionListener(this);
 			menu.add(menuItem);
 
-			menuItem = new JMenuItem("Reset All Settings");
-			menuItem.setActionCommand("Reset All Settings");
+			menuItem = new JMenuItem("Load Default Settings");
+			menuItem.setActionCommand("Load Default Settings");
 			menuItem.setMnemonic(KeyEvent.VK_W);
 			menuItem.addActionListener(this);
 			menu.add(menuItem);
@@ -553,9 +553,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				// Triggered by Researcher Role menu item
 				this.client.setRole(Role.RESEARCHER);
 				break;
-			case "Reset window positions":
+			case "Load Default Settings":
 				// Triggered by Reset window positions menu item
-				TriviaClient.resetPositions();
+				TriviaClient.loadDefaults();
 				break;
 			case "Open wiki":
 				// Triggered by Open wiki menu item
