@@ -1,0 +1,36 @@
+#Trivia
+#Sat Oct 26 03:52:30 PDT 2013
+MaxRetries=10
+RefreshRate=500
+UserList.ActiveWindow=600
+UserList.Timeout=90
+QueueSort=Sort Timestamp Ascending
+HideClosed=true
+HideDuplicates=true
+StatusBar.Height=14
+StatusBar.FontSize=12.0
+InitialTabs=Workflow,Current,History
+Color.Value=1E90FF
+Color.Earned=008000
+Color.Announced=ffa500
+Summary.Color.Background=000000
+Summary.Color.Label=FFFFFF
+Summary.Color.Speed=FF0000
+Summary.Color.Conflict=FF0000
+Summary.Color.NewRound=FFFF00
+Summary.TopRow.Height=24
+Summary.MiddleRow.Height=30
+Summary.BottomRow.Height=30
+Summary.Column0.Width=85
+Summary.Column1.Width=90
+Summary.Column2.Width=100
+Summary.Column3.Width=120
+Summary.Column4.Width=70
+Summary.Column5.Width=75
+Summary.Label.FontSize=18.0
+Summary.Score.FontSize=28.0
+Summary.CenterButton.Width=110
+Summary.CenterButton.Height=26
+Summary.ConflictButton.Width=110
+Summary.ConflictButton.Height=20
+
