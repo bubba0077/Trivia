@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.Painter;
@@ -129,6 +130,15 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 		label.setForeground(foreground);
 	}
 
+	protected static void setTextAreaProperties(JTextArea textArea, int width, int height, Color foreground,
+			Color background, float fontSize) {
+		( (JScrollPane) textArea.getParent().getParent() ).setPreferredSize(new Dimension(width, height));
+
+		textArea.setFont(textArea.getFont().deriveFont(fontSize));
+		textArea.setForeground(foreground);
+		textArea.setBackground(background);
+	}
+
 	protected static void setPanelProperties(JPanel panel, int width, int height, Color background) {
 		panel.setBackground(background);
 		panel.setPreferredSize(new Dimension(width, height));
@@ -144,6 +154,67 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 		button.setFont(button.getFont().deriveFont(fontSize));
 		button.setPreferredSize(new Dimension(width, height));
 		button.setMinimumSize(new Dimension(width, height));
+	}
+
+	/**
+	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
+	 * so the text can be read/changed later.
+	 * 
+	 * @param string
+	 *            The initial string for the text area
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param horizontalScroll
+	 *            The horizontal scroll bar policy (JScrollPane constants)
+	 * @param verticalScroll
+	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * @return The text area inside the scroll pane
+	 */
+	public JTextArea scrollableTextArea(String string, GridBagConstraints constraints, int horizontalScroll,
+			int verticalScroll) {
+
+		final JScrollPane pane = new JScrollPane(verticalScroll, horizontalScroll) {
+			private static final long	serialVersionUID	= 1L;
+
+			@Override
+			protected void processMouseWheelEvent(MouseWheelEvent e) {
+				boolean scrollUp = e.getWheelRotation() < 0;
+				if (scrollUp && this.verticalScrollBar.getValue() == this.verticalScrollBar.getMinimum()) {
+					if (getParent() != null) {
+						getParent().dispatchEvent(SwingUtilities.convertMouseEvent(this, e, getParent()));
+					}
+					return;
+				}
+				if (!scrollUp
+						&& this.verticalScrollBar.getValue() == this.verticalScrollBar.getMaximum() - this.getHeight()) {
+					if (getParent() != null)
+						getParent().dispatchEvent(SwingUtilities.convertMouseEvent(this, e, getParent()));
+					return;
+				}
+				super.processMouseWheelEvent(e);
+			}
+		};
+		pane.setBorder(BorderFactory.createEmptyBorder());
+		this.add(pane, constraints);
+		final JTextArea textArea = new JTextArea(string) {
+			private static final long	serialVersionUID	= 1L;
+
+			// public JToolTip createToolTip() {
+			// JMultiLineToolTip tip = new JMultiLineToolTip();
+			// tip.setComponent(this);
+			// // tip.setFixedWidth(300);
+			// tip.setColumns(50);
+			// return tip;
+			// }
+		};
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setBorder(BorderFactory.createEmptyBorder());
+		DefaultCaret caret = (DefaultCaret) textArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		pane.setViewportView(textArea);
+
+		return textArea;
 	}
 
 	/**
@@ -220,72 +291,6 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 
 		return textArea;
 	}
-
-	/**
-	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
-	 * so the text can be read/changed later.
-	 * 
-	 * @param string
-	 *            The initial string for the text area
-	 * @param width
-	 *            The width
-	 * @param foreground
-	 *            The foreground color
-	 * @param background
-	 *            The background color
-	 * @param constraints
-	 *            The GridBag constraints
-	 * @param fontSize
-	 *            The font size
-	 * @return The text area inside the scroll pane
-	 */
-	public JTextArea expandableTextArea(String string, int width, int height, Color foreground, Color background,
-			GridBagConstraints constraints, float fontSize) {
-
-		final GridBagConstraints solo = new GridBagConstraints();
-		solo.fill = GridBagConstraints.BOTH;
-		solo.anchor = GridBagConstraints.CENTER;
-		solo.weightx = 1.0;
-		solo.weighty = 1.0;
-		solo.gridx = 0;
-		solo.gridy = 0;
-
-		final JPanel panel = new JPanel(new GridBagLayout());
-		panel.setBackground(background);
-		// panel.setPreferredSize(new Dimension(width, 0));
-		// panel.setMinimumSize(new Dimension(width, height));
-		this.add(panel, constraints);
-
-		final JTextArea textArea = new JTextArea(string);
-		textArea.setFont(textArea.getFont().deriveFont(fontSize));
-		textArea.setBackground(background);
-		textArea.setForeground(foreground);
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-		textArea.setBorder(BorderFactory.createEmptyBorder());
-		// textArea.setPreferredSize(new Dimension(0, 10));
-		textArea.setMinimumSize(new Dimension(0, 0));
-
-		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
-			UIDefaults defaults = new UIDefaults();
-			defaults.put("TextArea.contentMargins", new Insets(0, 0, 0, 0));
-			defaults.put("TextArea[Enabled+NotInScrollPane].backgroundPainter", new Painter<JTextArea>() {
-				@Override
-				public void paint(Graphics2D g, JTextArea o, int w, int h) {
-					g.setColor(textArea.getBackground());
-					g.fillRect(0, 0, w, h);
-				}
-			});
-			textArea.putClientProperty("Nimbus.Overrides", defaults);
-			textArea.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
-		}
-		DefaultCaret caret = (DefaultCaret) textArea.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-		panel.add(textArea, solo);
-
-		return textArea;
-	}
-
 
 	/**
 	 * Requires all sub-classes to have a method that updates their contents.

@@ -290,18 +290,18 @@ public class SummaryPanel extends TriviaPanel implements ActionListener {
 		/**
 		 * Colors
 		 */
-		backgroundColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Color.Background"),
+		backgroundColor = new Color(
+				Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.BackgroundColor"), 16));
+		final Color labelColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Label.Color"),
 				16));
-		final Color labelColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Color.Label"),
+		final Color earnedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16));
+		final Color valueColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16));
+		final Color announcedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Announced.Color"),
 				16));
-		final Color earnedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Color.Earned"), 16));
-		final Color valueColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Color.Value"), 16));
-		final Color announcedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Color.Announced"),
-				16));
-		speedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Color.Speed"), 16));
+		speedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Speed.Color"), 16));
 		final Color newRoundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("Summary.Color.NewRound"), 16));
-		conflictColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Color.Conflict"), 16));
+				TriviaClient.PROPERTIES.getProperty("Summary.NewRound.Color"), 16));
+		conflictColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Conflict.Color"), 16));
 
 		/**
 		 * Sizes

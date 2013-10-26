@@ -1,5 +1,6 @@
 package net.bubbaland.trivia.client;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
@@ -119,6 +120,12 @@ public class TriviaClient implements WindowListener {
 		// Grab a copy of the current Trivia data structure from the server in the background
 		final TriviaFetcher fetcher = new TriviaFetcher(server, this);
 		fetcher.execute();
+
+		System.out.println("LIGHT_GRAY: " + Integer.toHexString(Color.LIGHT_GRAY.getRGB()));
+		System.out.println("DARK_GRAY: " + Integer.toHexString(Color.DARK_GRAY.getRGB()));
+		System.out.println("CYAN: " + Integer.toHexString(Color.CYAN.getRGB()));
+		System.out.println("GREEN: " + Integer.toHexString(Color.GREEN.getRGB()));
+		System.out.println("GRAY: " + Integer.toHexString(Color.GRAY.getRGB()));
 
 		// Create a prompt requesting the user name
 		new UserLogin(this);
