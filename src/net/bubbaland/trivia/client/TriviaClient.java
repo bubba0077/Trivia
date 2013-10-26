@@ -285,8 +285,7 @@ public class TriviaClient implements WindowListener {
 
 			// Close if there are no more windows
 			if (this.windowList.isEmpty()) {
-				TriviaClient.savePropertyFile();
-				System.exit(0);
+				endProgram();
 			}
 		}
 	}
@@ -670,6 +669,11 @@ public class TriviaClient implements WindowListener {
 		public void run() {
 			createAndShowGUI(this.useFX);
 		}
+	}
+
+	protected void endProgram() {
+		TriviaClient.savePropertyFile();
+		System.exit(0);
 	}
 
 }

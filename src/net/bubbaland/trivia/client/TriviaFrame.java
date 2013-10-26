@@ -49,8 +49,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	// Sort menu items
-	final private JMenuItem		hideClosedMenuItem;
-	final private JMenuItem		hideDuplicatesMenuItem;
 	final private JMenuItem		sortTimestampAscendingMenuItem;
 	final private JMenuItem		sortTimestampDescendingMenuItem;
 	final private JMenuItem		sortQNumberAscendingMenuItem;
@@ -137,27 +135,83 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		{
 			final JMenuBar menuBar = new JMenuBar();
 
+			// Make Trivia Menu
+			JMenu menu = new JMenu("Trivia");
+			menu.setMnemonic(KeyEvent.VK_U);
+			menuBar.add(menu);
+
+			final JMenu roleMenu = new JMenu("Change Role...");
+			roleMenu.setMnemonic(KeyEvent.VK_R);
+
+			final ButtonGroup roleOptions = new ButtonGroup();
+			JRadioButtonMenuItem roleOption = new JRadioButtonMenuItem("Researcher");
+			roleOption.setActionCommand("Researcher");
+			roleOption.setMnemonic(KeyEvent.VK_R);
+			roleOption.addActionListener(this);
+			// roleOption.setSelected(true);
+			roleOption.setForeground(UserListPanel.RESEARCHER_COLOR);
+			roleOptions.add(roleOption);
+			roleMenu.add(roleOption);
+			// this.client.setRole(Role.RESEARCHER);
+
+			roleOption = new JRadioButtonMenuItem("Caller");
+			roleOption.setActionCommand("Caller");
+			roleOption.setMnemonic(KeyEvent.VK_C);
+			roleOption.addActionListener(this);
+			roleOption.setSelected(false);
+			roleOption.setForeground(UserListPanel.CALLER_COLOR);
+			roleOptions.add(roleOption);
+			roleMenu.add(roleOption);
+
+			roleOption = new JRadioButtonMenuItem("Typist");
+			roleOption.setActionCommand("Typist");
+			roleOption.setMnemonic(KeyEvent.VK_T);
+			roleOption.addActionListener(this);
+			roleOption.setSelected(false);
+			roleOption.setForeground(UserListPanel.TYPIST_COLOR);
+			roleOptions.add(roleOption);
+			roleMenu.add(roleOption);
+
+			menu.add(roleMenu);
+
+			JMenuItem menuItem = new JMenuItem("Change Name", KeyEvent.VK_N);
+			menuItem.setDisplayedMnemonicIndex(7);
+			menuItem.setActionCommand("Change name");
+			menuItem.addActionListener(this);
+			menu.add(menuItem);
+
+			menuItem = new JMenuItem("Reset All Settings");
+			menuItem.setActionCommand("Reset All Settings");
+			menuItem.setMnemonic(KeyEvent.VK_W);
+			menuItem.addActionListener(this);
+			menu.add(menuItem);
+
+			menuItem = new JMenuItem("Exit");
+			menuItem.setActionCommand("Exit");
+			menuItem.addActionListener(this);
+			menu.add(menuItem);
+
 			// Make Queue Menu
-			JMenu menu = new JMenu("Queue");
+			menu = new JMenu("Queue");
 			menu.setMnemonic(KeyEvent.VK_Q);
 			menuBar.add(menu);
 
-			this.hideClosedMenuItem = new JCheckBoxMenuItem("Hide answers to closed questions");
-			this.hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
-			this.hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
-			this.hideClosedMenuItem.setSelected(this.hideClosed);
-			this.hideClosedMenuItem.setActionCommand("Hide Closed");
-			this.hideClosedMenuItem.addActionListener(this);
-			menu.add(this.hideClosedMenuItem);
+			JCheckBoxMenuItem hideClosedMenuItem = new JCheckBoxMenuItem("Hide answers to closed questions");
+			hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
+			hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+			hideClosedMenuItem.setSelected(this.hideClosed);
+			hideClosedMenuItem.setActionCommand("Hide Closed");
+			hideClosedMenuItem.addActionListener(this);
+			menu.add(hideClosedMenuItem);
 
-			this.hideDuplicatesMenuItem = new JCheckBoxMenuItem("Hide duplicate answers");
-			this.hideDuplicatesMenuItem.setMnemonic(KeyEvent.VK_D);
-			this.hideDuplicatesMenuItem.setDisplayedMnemonicIndex(5);
-			this.hideDuplicatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
-			this.hideDuplicatesMenuItem.setSelected(this.hideDuplicates);
-			this.hideDuplicatesMenuItem.setActionCommand("Hide Duplicates");
-			this.hideDuplicatesMenuItem.addActionListener(this);
-			menu.add(this.hideDuplicatesMenuItem);
+			JCheckBoxMenuItem hideDuplicatesMenuItem = new JCheckBoxMenuItem("Hide duplicate answers");
+			hideDuplicatesMenuItem.setMnemonic(KeyEvent.VK_D);
+			hideDuplicatesMenuItem.setDisplayedMnemonicIndex(5);
+			hideDuplicatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+			hideDuplicatesMenuItem.setSelected(this.hideDuplicates);
+			hideDuplicatesMenuItem.setActionCommand("Hide Duplicates");
+			hideDuplicatesMenuItem.addActionListener(this);
+			menu.add(hideDuplicatesMenuItem);
 
 			final JMenu sortMenu = new JMenu("Sort by...");
 			sortMenu.setMnemonic(KeyEvent.VK_S);
@@ -245,57 +299,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			statusSort.add(sortStatusDescendingMenuItem);
 
 			menu.add(sortMenu);
-
-			// Make User Menu
-			menu = new JMenu("User");
-			menu.setMnemonic(KeyEvent.VK_U);
-			menuBar.add(menu);
-
-			final JMenu roleMenu = new JMenu("Change Role...");
-			roleMenu.setMnemonic(KeyEvent.VK_R);
-
-			final ButtonGroup roleOptions = new ButtonGroup();
-			JRadioButtonMenuItem roleOption = new JRadioButtonMenuItem("Researcher");
-			roleOption.setActionCommand("Researcher");
-			roleOption.setMnemonic(KeyEvent.VK_R);
-			roleOption.addActionListener(this);
-			// roleOption.setSelected(true);
-			roleOption.setForeground(UserListPanel.RESEARCHER_COLOR);
-			roleOptions.add(roleOption);
-			roleMenu.add(roleOption);
-			// this.client.setRole(Role.RESEARCHER);
-
-			roleOption = new JRadioButtonMenuItem("Caller");
-			roleOption.setActionCommand("Caller");
-			roleOption.setMnemonic(KeyEvent.VK_C);
-			roleOption.addActionListener(this);
-			roleOption.setSelected(false);
-			roleOption.setForeground(UserListPanel.CALLER_COLOR);
-			roleOptions.add(roleOption);
-			roleMenu.add(roleOption);
-
-			roleOption = new JRadioButtonMenuItem("Typist");
-			roleOption.setActionCommand("Typist");
-			roleOption.setMnemonic(KeyEvent.VK_T);
-			roleOption.addActionListener(this);
-			roleOption.setSelected(false);
-			roleOption.setForeground(UserListPanel.TYPIST_COLOR);
-			roleOptions.add(roleOption);
-			roleMenu.add(roleOption);
-
-			menu.add(roleMenu);
-
-			JMenuItem menuItem = new JMenuItem("Change Name", KeyEvent.VK_N);
-			menuItem.setDisplayedMnemonicIndex(7);
-			menuItem.setActionCommand("Change name");
-			menuItem.addActionListener(this);
-			menu.add(menuItem);
-
-			menuItem = new JMenuItem("Reset Window Positions");
-			menuItem.setActionCommand("Reset window positions");
-			menuItem.setMnemonic(KeyEvent.VK_W);
-			menuItem.addActionListener(this);
-			menu.add(menuItem);
 
 			// Make Info Menu
 			final JMenu infoMenu = new JMenu("Info");
@@ -561,6 +564,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				} catch (IOException | URISyntaxException exception) {
 					this.log("Couldn't open a browser window");
 				}
+				break;
+			case "Exit":
+				this.client.endProgram();
+				break;
 		}
 	}
 
