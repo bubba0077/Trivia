@@ -608,8 +608,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 	public String[] getTabNames() {
 		int nTabs = this.getTabCount();
-		String[] names = new String[nTabs];
-		for (int t = 0; t < nTabs; t++) {
+		String[] names = new String[nTabs - 1];
+		for (int t = 0; t < nTabs - 1; t++) {
 			names[t] = this.getTitleAt(t);
 		}
 		return names;
@@ -639,7 +639,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 			case "Close Other Tabs":
 				String thisTab = this.getTitleAt(tabIndex);
 				for (String tabName : this.getTabNames()) {
-					if (!tabName.equals(thisTab) && !tabName.equals("+")) {
+					if (!tabName.equals(thisTab)) {
 						int index = this.indexOfTab(tabName);
 						this.removeTabAt(index);
 					}

@@ -49,25 +49,28 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	// Sort menu items
-	final private JMenuItem		sortTimestampAscendingMenuItem;
-	final private JMenuItem		sortTimestampDescendingMenuItem;
-	final private JMenuItem		sortQNumberAscendingMenuItem;
-	final private JMenuItem		sortQNumberDescendingMenuItem;
-	final private JMenuItem		sortStatusAscendingMenuItem;
-	final private JMenuItem		sortStatusDescendingMenuItem;
+	final private JCheckBoxMenuItem	hideClosedMenuItem;
+	final private JCheckBoxMenuItem	hideDuplicatesMenuItem;
+	final private JMenuItem			sortTimestampAscendingMenuItem;
+	final private JMenuItem			sortTimestampDescendingMenuItem;
+	final private JMenuItem			sortQNumberAscendingMenuItem;
+	final private JMenuItem			sortQNumberDescendingMenuItem;
+	final private JMenuItem			sortStatusAscendingMenuItem;
+	final private JMenuItem			sortStatusDescendingMenuItem;
 
 	// The status bar at the bottom
-	final private JLabel		statusBar;
+	final private JLabel			statusBar;
 
-	final private TriviaClient	client;
-	private final DnDTabbedPane	book;
+	final private TriviaClient		client;
+	private final DnDTabbedPane		book;
 
 	// Sort method for the queue
-	private volatile QueueSort	queueSort;
+	private volatile QueueSort		queueSort;
 
 	public TriviaFrame(TriviaClient client, DropTargetDropEvent a_event) {
 		this(client, false);
 		this.book.convertTab(this.book.getTabTransferData(a_event), this.book.getTargetTabIndex(a_event.getLocation()));
+		TriviaClient.loadPosition(this);
 		this.book.addChangeListener(this);
 	}
 
@@ -77,6 +80,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.book.addTab(tabName, client.getTab(this, tabName));
 		}
 		this.book.setSelectedIndex(this.book.indexOfTab(initialTabs[0]));
+		TriviaClient.loadPosition(this);
 		this.book.addChangeListener(this);
 	}
 
@@ -103,33 +107,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 		this.client = client;
 		this.client.registerWindow(this);
-
-		this.hideClosed = Boolean.parseBoolean(TriviaClient.PROPERTIES.getProperty("HideClosed"));
-		this.hideDuplicates = Boolean.parseBoolean(TriviaClient.PROPERTIES.getProperty("HideDuplicates"));
-
-		switch (TriviaClient.PROPERTIES.getProperty("QueueSort")) {
-			case "Sort Timestamp Ascending":
-				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
-				break;
-			case "Sort Question Number Ascending":
-				this.queueSort = QueueSort.QNUMBER_ASCENDING;
-				break;
-			case "Sort Status Ascending":
-				this.queueSort = QueueSort.STATUS_ASCENDING;
-				break;
-			case "Sort Timestamp Descending":
-				this.queueSort = QueueSort.TIMESTAMP_DESCENDING;
-				break;
-			case "Sort Question Number Descending":
-				this.queueSort = QueueSort.QNUMBER_DESCENDING;
-				break;
-			case "Sort Status Descending":
-				this.queueSort = QueueSort.STATUS_DESCENDING;
-				break;
-			default:
-				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
-				break;
-		}
 
 		/**
 		 * Setup the menus
@@ -200,7 +177,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menu.setMnemonic(KeyEvent.VK_Q);
 			menuBar.add(menu);
 
-			JCheckBoxMenuItem hideClosedMenuItem = new JCheckBoxMenuItem("Hide answers to closed questions");
+			this.hideClosedMenuItem = new JCheckBoxMenuItem("Hide answers to closed questions");
 			hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
 			hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
 			hideClosedMenuItem.setSelected(this.hideClosed);
@@ -208,7 +185,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			hideClosedMenuItem.addActionListener(this);
 			menu.add(hideClosedMenuItem);
 
-			JCheckBoxMenuItem hideDuplicatesMenuItem = new JCheckBoxMenuItem("Hide duplicate answers");
+			this.hideDuplicatesMenuItem = new JCheckBoxMenuItem("Hide duplicate answers");
 			hideDuplicatesMenuItem.setMnemonic(KeyEvent.VK_D);
 			hideDuplicatesMenuItem.setDisplayedMnemonicIndex(5);
 			hideDuplicatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
@@ -343,12 +320,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		 * Setup status bar at bottom
 		 */
 		// Create status bar
-		int height = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("StatusBar.height"));
-		float fontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("StatusBar.fontSize"));
-		this.statusBar = panel.enclosedLabel("", 0, height, this.getForeground(), this.getBackground(), constraints,
-				fontSize, SwingConstants.LEFT, SwingConstants.CENTER);
+		// int height = Integer.parseInt(loadProperty("StatusBar.height"));
+		// float fontSize = Float.parseFloat(loadProperty("StatusBar.fontSize"));
+		this.statusBar = panel.enclosedLabel("", 0, 0, this.getForeground(), this.getBackground(), constraints, 0,
+				SwingConstants.LEFT, SwingConstants.CENTER);
 
 		this.book = new DnDTabbedPane(this, client);
+
 
 		constraints.gridx = 0;
 		constraints.gridy = 0;
@@ -377,14 +355,80 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 
 		this.add(panel);
-		this.pack();
 		this.setVisible(true);
 
-		TriviaClient.loadPosition(this);
+		loadAllProperties();
 	}
 
 	public TriviaClient getClient() {
 		return this.client;
+	}
+
+	private String loadProperty(String propertyName) {
+		return loadProperty(this.getTitle(), propertyName);
+	}
+
+	private String loadProperty(String id, String propertyName) {
+		return TriviaClient.PROPERTIES.getProperty(id + "." + propertyName,
+				TriviaClient.PROPERTIES.getProperty(propertyName));
+	}
+
+	private void loadAllProperties() {
+		loadAllProperties(this.getTitle());
+	}
+
+	private void loadAllProperties(String id) {
+		this.hideClosed = Boolean.parseBoolean(loadProperty(id, "HideClosed"));
+		this.hideClosedMenuItem.setSelected(this.hideClosed);
+		this.hideDuplicates = Boolean.parseBoolean(loadProperty(id, "HideDuplicates"));
+		this.hideDuplicatesMenuItem.setSelected(this.hideClosed);
+
+		switch (loadProperty(id, "QueueSort")) {
+			case "Sort Timestamp Ascending":
+				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
+				this.sortTimestampAscendingMenuItem.setSelected(true);
+				break;
+			case "Sort Question Number Ascending":
+				this.queueSort = QueueSort.QNUMBER_ASCENDING;
+				this.sortQNumberAscendingMenuItem.setSelected(true);
+				break;
+			case "Sort Status Ascending":
+				this.queueSort = QueueSort.STATUS_ASCENDING;
+				this.sortStatusAscendingMenuItem.setSelected(true);
+				break;
+			case "Sort Timestamp Descending":
+				this.queueSort = QueueSort.TIMESTAMP_DESCENDING;
+				this.sortTimestampDescendingMenuItem.setSelected(true);
+				break;
+			case "Sort Question Number Descending":
+				this.queueSort = QueueSort.QNUMBER_DESCENDING;
+				this.sortTimestampDescendingMenuItem.setSelected(true);
+				break;
+			case "Sort Status Descending":
+				this.queueSort = QueueSort.STATUS_DESCENDING;
+				this.sortTimestampDescendingMenuItem.setSelected(true);
+				break;
+			default:
+				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
+				this.sortTimestampAscendingMenuItem.setSelected(true);
+				break;
+		}
+
+		int height = Integer.parseInt(loadProperty(id, "StatusBar.Height"));
+		float fontSize = Float.parseFloat(loadProperty(id, "StatusBar.FontSize"));
+		this.statusBar.getParent().setPreferredSize(new Dimension(0, height));
+		this.statusBar.setFont(this.statusBar.getFont().deriveFont(fontSize));
+	}
+
+	protected void saveProperties() {
+		String id = this.getTitle();
+		TriviaClient.PROPERTIES.setProperty(id + "." + "HideClosed", this.hideClosed + "");
+		TriviaClient.PROPERTIES.setProperty(id + "." + "HideDuplicates", this.hideDuplicates + "");
+		int height = this.statusBar.getPreferredSize().getSize().height;
+		float fontSize = this.statusBar.getFont().getSize2D();
+		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.Height", height + "");
+		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.FontSize", fontSize + "");
+		TriviaClient.PROPERTIES.setProperty(id + "." + "OpenTabs", this.book.getTabNames().toString());
 	}
 
 	/**
@@ -485,7 +529,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				this.setVisible(true);
 			}
 		}
-
 	}
 
 	/**

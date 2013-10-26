@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -10,10 +11,12 @@ import java.awt.event.MouseWheelEvent;
 import java.io.Serializable;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 import javax.swing.Painter;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
@@ -62,7 +65,7 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 	 *            The vertical alignment for the label (JLabel constants)
 	 * @return The label inside the panel
 	 */
-	public JLabel enclosedLabel(String string, int width, int height, Color foreground, Color background,
+	protected JLabel enclosedLabel(String string, int width, int height, Color foreground, Color background,
 			GridBagConstraints constraints, float fontSize, int labelHAlignment, int labelVAlignment) {
 		final GridBagConstraints solo = new GridBagConstraints();
 		solo.fill = GridBagConstraints.BOTH;
@@ -84,6 +87,63 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 		panel.add(label, solo);
 
 		return label;
+	}
+
+	/**
+	 * Adds a space-filling panel with a label to the panel. A reference to the label is returned so the text can be
+	 * changed later.
+	 * 
+	 * @param string
+	 *            The string for the label
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param labelHAlignment
+	 *            The horizontal alignment for the label (JLabel constants)
+	 * @param labelVAlignment
+	 *            The vertical alignment for the label (JLabel constants)
+	 * @return The label inside the panel
+	 */
+	protected JLabel enclosedLabel(String string, GridBagConstraints constraints, int labelHAlignment,
+			int labelVAlignment) {
+		final GridBagConstraints solo = new GridBagConstraints();
+		solo.fill = GridBagConstraints.BOTH;
+		solo.anchor = GridBagConstraints.CENTER;
+		solo.weightx = 1.0;
+		solo.weighty = 1.0;
+		solo.gridx = 0;
+		solo.gridy = 0;
+
+		final JPanel panel = new JPanel(new GridBagLayout());
+		this.add(panel, constraints);
+		final JLabel label = new JLabel(string, labelHAlignment);
+		label.setVerticalAlignment(labelVAlignment);
+		panel.add(label, solo);
+
+		return label;
+	}
+
+	protected static void setLabelProperties(JLabel label, int width, int height, Color foreground, Color background,
+			float fontSize) {
+		setPanelProperties((JPanel) label.getParent(), width, height, background);
+		label.setFont(label.getFont().deriveFont(fontSize));
+		label.setForeground(foreground);
+	}
+
+	protected static void setPanelProperties(JPanel panel, int width, int height, Color background) {
+		panel.setBackground(background);
+		panel.setPreferredSize(new Dimension(width, height));
+		panel.setMinimumSize(new Dimension(width, height));
+	}
+
+
+	protected static void setButtonProperties(Component button, int width, int height, float fontSize, Color foreground) {
+		if (!( button instanceof JButton || button instanceof JToggleButton )) {
+			return;
+		}
+		button.setForeground(foreground);
+		button.setFont(button.getFont().deriveFont(fontSize));
+		button.setPreferredSize(new Dimension(width, height));
+		button.setMinimumSize(new Dimension(width, height));
 	}
 
 	/**

@@ -127,6 +127,12 @@ public class TriviaClient implements WindowListener {
 		new TriviaFrame(this, PROPERTIES.getProperty("InitialTabs").split(","), useFX);
 
 		// Create timer that will poll server for changes
+		while (this.trivia == null) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException exception) {
+			}
+		}
 		final Timer refreshTimer = new Timer();
 		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0,
 				Integer.parseInt(PROPERTIES.getProperty("RefreshRate")));
@@ -274,6 +280,8 @@ public class TriviaClient implements WindowListener {
 		Window window = e.getWindow();
 		savePosition(window);
 		if (window instanceof TriviaFrame) {
+			( (TriviaFrame) window ).saveProperties();
+
 			// Remove window from the list
 			this.windowList.remove(window);
 
@@ -452,7 +460,7 @@ public class TriviaClient implements WindowListener {
 			window.setBounds(x, y, width, height);
 
 		} catch (NumberFormatException e) {
-			// System.out.println("Couldn't load window position, may not exist yet.");
+			System.out.println("Couldn't load window position, may not exist yet.");
 			window.pack();
 			window.setLocationRelativeTo(null);
 		}

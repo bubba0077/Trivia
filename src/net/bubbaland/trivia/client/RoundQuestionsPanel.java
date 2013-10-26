@@ -419,7 +419,7 @@ public class RoundQuestionsPanel extends TriviaPanel {
 			constraints.gridwidth = 7;
 			constraints.weighty = 1.0;
 			final JPanel blank = new JPanel();
-			blank.setBackground(SummaryPanel.BACKGROUND_COLOR);
+			blank.setBackground(HEADER_BACKGROUND_COLOR);
 			blank.setPreferredSize(new Dimension(0, 0));
 			this.add(blank, constraints);
 		}
