@@ -55,7 +55,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 	private static final Color			HEADER_TEXT_COLOR		= Color.WHITE;
 	private static final Color			ODD_BACKGROUND_COLOR	= new Color(30, 30, 30);
 	private static final Color			EVEN_BACKGROUND_COLOR	= Color.BLACK;
-	private static final Color			DUPLICATE_COLOR			= Color.LIGHT_GRAY;
+	private static final Color			DUPLICATE_COLOR			= Color.GRAY;
 	private static final Color			NOT_CALLED_IN_COLOR		= Color.WHITE;
 	private static final Color			CALLING_COLOR			= Color.CYAN;
 	private static final Color			INCORRECT_COLOR			= Color.RED;

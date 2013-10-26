@@ -43,7 +43,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	private static final ArrayList<DnDTabbedPane>	tabbedPaneList		= new ArrayList<DnDTabbedPane>(0);
 	private static final ArrayList<ChangeListener>	tabbedPaneListeners	= new ArrayList<ChangeListener>(0);
 	private final TriviaClient						client;
-	private final JMenuItem							closeItem;
+	// private final JMenuItem closeItem;
 	private final JPopupMenu						closeMenu;
 
 	// private final AddButton addButton;
@@ -127,11 +127,19 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		 * Build close menu
 		 */
 		this.closeMenu = new JPopupMenu();
-		this.closeItem = new JMenuItem("Close Tab");
-		this.closeItem.setActionCommand("Close Tab");
-		this.closeItem.addActionListener(this);
-		this.closeMenu.add(this.closeItem);
+
+		JMenuItem menuItem = new JMenuItem("Close Tab");
+		menuItem.setActionCommand("Close Tab");
+		menuItem.addActionListener(this);
+		this.closeMenu.add(menuItem);
+
+		menuItem = new JMenuItem("Close Other Tabs");
+		menuItem.setActionCommand("Close Other Tabs");
+		menuItem.addActionListener(this);
+		this.closeMenu.add(menuItem);
+
 		this.closeMenu.setVisible(false);
+
 
 		this.addMouseListener(new PopupListener(this.closeMenu));
 
@@ -598,6 +606,15 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		boolean isDropAcceptable(DnDTabbedPane a_component, int a_index);
 	}
 
+	public String[] getTabNames() {
+		int nTabs = this.getTabCount();
+		String[] names = new String[nTabs];
+		for (int t = 0; t < nTabs; t++) {
+			names[t] = this.getTitleAt(t);
+		}
+		return names;
+	}
+
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		// Make sure the add button stays at the end
@@ -618,6 +635,15 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		switch (command) {
 			case "Close Tab":
 				this.removeTabAt(tabIndex);
+				break;
+			case "Close Other Tabs":
+				String thisTab = this.getTitleAt(tabIndex);
+				for (String tabName : this.getTabNames()) {
+					if (!tabName.equals(thisTab) && !tabName.equals("+")) {
+						int index = this.indexOfTab(tabName);
+						this.removeTabAt(index);
+					}
+				}
 				break;
 			default:
 				break;

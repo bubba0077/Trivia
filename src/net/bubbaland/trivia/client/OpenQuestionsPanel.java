@@ -271,11 +271,6 @@ public class OpenQuestionsPanel extends TriviaPanel {
 				this.qTextAreas[q] = this.scrollableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
 						constraints, QUESTION_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-				// this.qTextAreas[q] = this.scrollableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
-				// constraints, QUESTION_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
-				// ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-				// this.qTextAreas[q] = this.expandableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
-				// constraints, QUESTION_FONT_SIZE);
 				this.qTextAreas[q].setEditable(false);
 				this.qTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
 				constraints.weightx = 0.0;
