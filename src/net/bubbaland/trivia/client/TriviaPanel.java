@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -165,6 +166,16 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 		button.setFont(button.getFont().deriveFont(fontSize));
 		button.setPreferredSize(new Dimension(width, height));
 		button.setMinimumSize(new Dimension(width, height));
+	}
+
+	protected static void setComboBoxProperties(JComboBox<String> comboBox, int width, int height, float fontSize,
+			Color foreground, Color background, Color panelBackground) {
+		setPanelProperties((JPanel) comboBox.getParent(), width, height, panelBackground);
+		comboBox.setBackground(background);
+		comboBox.setPreferredSize(new Dimension(width, height));
+		comboBox.setMinimumSize(new Dimension(width, height));
+		comboBox.setBackground(background);
+		comboBox.setForeground(foreground);
 	}
 
 	/**
