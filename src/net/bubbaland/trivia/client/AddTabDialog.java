@@ -65,6 +65,9 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		this.dialog.setVisible(true);
 
 		// If the OK button was pressed, add the proposed answer to the queue
+		if (!( dialog.getValue() instanceof String )) {
+			return;
+		}
 		final String option = (String) dialog.getValue();
 		final ArrayList<String> newTabs = new ArrayList<String>(0);
 		switch (option) {
@@ -79,6 +82,8 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 					}
 				}
 				break;
+			default:
+				return;
 		}
 		for (String tabName : newTabs) {
 			if (tabName.startsWith("*")) {
