@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Properties;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -34,6 +36,7 @@ import net.bubbaland.trivia.TriviaChartFactory;
 import net.bubbaland.trivia.TriviaInterface;
 import net.bubbaland.trivia.UserList;
 import net.bubbaland.trivia.UserList.Role;
+import net.bubbaland.trivia.client.TriviaClient;
 
 import org.jfree.chart.ChartUtilities;
 import org.jsoup.HttpStatusException;
@@ -58,6 +61,9 @@ import org.xml.sax.SAXException;
  */
 @WebService
 public class TriviaServer implements TriviaInterface, ActionListener {
+
+	// File name to store window positions
+	final static private String				SETTINGS_FILENAME	= ".trivia-settings";
 
 	// The number of rounds
 	private static final int				N_ROUNDS			= 50;
@@ -101,6 +107,24 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	// The Trivia object that holds all of the contest data
 	final private Trivia					trivia;
+
+	/**
+	 * Setup properties
+	 */
+	final static public Properties			PROPERTIES			= new Properties();
+	static {
+		/**
+		 * Default properties
+		 */
+		final InputStream defaults = TriviaClient.class.getResourceAsStream(SETTINGS_FILENAME);
+		try {
+			PROPERTIES.load(defaults);
+		} catch (IOException e) {
+			System.out.println("Couldn't load default properties file, aborting!");
+			System.exit(-1);
+		}
+		TriviaChartFactory.loadProperties(PROPERTIES);
+	}
 
 	/**
 	 * Creates a new trivia server.

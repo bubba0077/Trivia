@@ -32,6 +32,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.TriviaChartFactory;
 import net.bubbaland.trivia.TriviaInterface;
 import net.bubbaland.trivia.UserList.Role;
 
@@ -76,6 +77,8 @@ public class TriviaClient implements WindowListener {
 		} catch (IOException e) {
 			System.out.println("Couldn't load properties file, may not exist yet.");
 		}
+
+		TriviaChartFactory.loadProperties(PROPERTIES);
 	}
 
 	final private ArrayList<TriviaFrame>			windowList;

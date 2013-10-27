@@ -8,6 +8,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Properties;
+
+import net.bubbaland.trivia.client.TriviaClient;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -28,18 +31,18 @@ import org.jfree.data.xy.XYSeriesCollection;
 public class TriviaChartFactory {
 
 	/** Font Size */
-	final private static float	AXIS_FONT_SIZE		= 16.0f;
+	final private static float	AXIS_FONT_SIZE	= 16.0f;
 
 	/**
 	 * Colors
 	 */
-	final private static Color	BACKGROUND_COLOR	= Color.BLACK;
-	final private static Color	PLACE_COLOR			= Color.ORANGE;
-	final private static Color	VALUE_COLOR			= new Color(30, 144, 255);
-	final private static Color	EARNED_COLOR		= Color.GREEN;
+	private static Color		backgroundColor;
+	private static Color		announcedColor;
+	private static Color		valueColor;
+	private static Color		earnedColor;
 
 	/** The upper bound of the vertical axis */
-	final private static int	MAX_POINTS			= 750;
+	private static int			maxPoints;
 
 	/**
 	 * Create an XY line chart of the team's place after each round.
@@ -81,13 +84,13 @@ public class TriviaChartFactory {
 
 		// Set the background color
 		final XYPlot plot = chart.getXYPlot();
-		plot.setBackgroundPaint(BACKGROUND_COLOR);
+		plot.setBackgroundPaint(backgroundColor);
 
 		// Set the line color and thickness, and turn on data points
 		final XYLineAndShapeRenderer rend = (XYLineAndShapeRenderer) plot.getRenderer();
 		rend.setSeriesShapesVisible(0, true);
 		rend.setSeriesShape(0, makeCircle(4));
-		rend.setSeriesPaint(0, PLACE_COLOR);
+		rend.setSeriesPaint(0, announcedColor);
 		rend.setSeriesStroke(0, new BasicStroke(3.0f));
 
 		// Set axis properties
@@ -155,8 +158,8 @@ public class TriviaChartFactory {
 		renderer.setBarPainter(new StandardXYBarPainter());
 		renderer.setDrawBarOutline(false);
 		renderer.setShadowVisible(false);
-		renderer.setSeriesPaint(0, EARNED_COLOR);
-		renderer.setSeriesPaint(1, VALUE_COLOR);
+		renderer.setSeriesPaint(0, earnedColor);
+		renderer.setSeriesPaint(1, valueColor);
 		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}", NumberFormat
 				.getIntegerInstance(), NumberFormat.getIntegerInstance()));
 
@@ -165,7 +168,7 @@ public class TriviaChartFactory {
 		plot.setRenderer(renderer);
 
 		// Set the background color
-		plot.setBackgroundPaint(BACKGROUND_COLOR);
+		plot.setBackgroundPaint(backgroundColor);
 
 		// Specify the axis parameters
 		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
@@ -176,7 +179,7 @@ public class TriviaChartFactory {
 		xAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
 		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
 		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
-		yAxis.setRange(0, MAX_POINTS);
+		yAxis.setRange(0, maxPoints);
 		yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
 		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
 		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
@@ -235,12 +238,12 @@ public class TriviaChartFactory {
 
 		// Set the colors of the areas
 		final XYItemRenderer renderer = chart.getXYPlot().getRenderer();
-		renderer.setSeriesPaint(0, EARNED_COLOR);
-		renderer.setSeriesPaint(1, VALUE_COLOR);
+		renderer.setSeriesPaint(0, earnedColor);
+		renderer.setSeriesPaint(1, valueColor);
 
 		// Set the background color
 		final XYPlot plot = chart.getXYPlot();
-		plot.setBackgroundPaint(BACKGROUND_COLOR);
+		plot.setBackgroundPaint(backgroundColor);
 
 		// Set axis properties
 		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
@@ -322,7 +325,7 @@ public class TriviaChartFactory {
 				.getIntegerInstance(), NumberFormat.getIntegerInstance()));
 		// Set the background color and axes
 		final XYPlot plot = chart.getXYPlot();
-		plot.setBackgroundPaint(BACKGROUND_COLOR);
+		plot.setBackgroundPaint(backgroundColor);
 		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
 		final NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
 		xAxis.setRange(0.5D, nRounds + 0.5D);
@@ -350,6 +353,17 @@ public class TriviaChartFactory {
 	 */
 	public static Shape makeCircle(double radius) {
 		return new Ellipse2D.Double(-radius, -radius, 2 * radius, 2 * radius);
+	}
+
+	public static void loadProperties(Properties properties) {
+		/**
+		 * Colors
+		 */
+		backgroundColor = new Color(Integer.parseInt(properties.getProperty("Chart.BackgroundColor"), 16));
+		announcedColor = new Color(Integer.parseInt(properties.getProperty("Announced.Color"), 16));
+		valueColor = new Color(Integer.parseInt(properties.getProperty("Value.Color"), 16));
+		earnedColor = new Color(Integer.parseInt(properties.getProperty("Earned.Color"), 16));
+		maxPoints = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Chart.ByRound.MaxPoints"));
 	}
 
 }
