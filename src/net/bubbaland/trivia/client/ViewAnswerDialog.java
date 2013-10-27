@@ -13,12 +13,6 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 8466638572342233271L;
 
-	/**
-	 * Font sizes
-	 */
-	private static final float	LABEL_FONT_SIZE		= 20.0f;
-	private static final float	TEXTAREA_FONT_SIZE	= 16.0f;
-
 	public ViewAnswerDialog(TriviaClient client, int qNumber, int qValue, String qText, String aText) {
 
 		super();
@@ -34,14 +28,14 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		JLabel label = new JLabel("Number: " + qNumber, JLabel.LEFT);
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		// Create the question value label
 		constraints.gridx = 1;
 		constraints.gridy = 0;
 		label = new JLabel("Value: " + qValue, JLabel.RIGHT);
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		// Create the question text area
@@ -50,7 +44,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		constraints.weightx = 1.0;
 		constraints.gridwidth = 2;
 		label = new JLabel("Question", JLabel.CENTER);
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 0;
@@ -60,7 +54,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		qTextArea.setEditable(false);
 		qTextArea.setLineWrap(true);
 		qTextArea.setWrapStyleWord(true);
-		qTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
+		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
 
 		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -73,7 +67,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 4;
 		label = new JLabel("Answer", JLabel.CENTER);
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 0;
@@ -83,7 +77,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		aTextArea.setEditable(false);
 		aTextArea.setLineWrap(true);
 		aTextArea.setWrapStyleWord(true);
-		aTextArea.setFont(aTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
+		aTextArea.setFont(aTextArea.getFont().deriveFont(textAreaFontSize));
 
 		scrollPane = new JScrollPane(aTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);

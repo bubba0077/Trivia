@@ -11,13 +11,10 @@ import javax.swing.JTextField;
  * @author Walter Kolczynski
  * 
  */
-public class UserLogin extends TriviaDialogPanel {
+public class UserLoginDialog extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 7708693892976942384L;
-
-	/** The Constant FONT_SIZE. */
-	private static final float	FONT_SIZE			= 20.0f;
 
 	/**
 	 * Instantiates a new user login.
@@ -25,7 +22,7 @@ public class UserLogin extends TriviaDialogPanel {
 	 * @param client
 	 *            the client
 	 */
-	public UserLogin(TriviaClient client) {
+	public UserLoginDialog(TriviaClient client) {
 		super();
 
 		// Set up layout constraints
@@ -39,13 +36,13 @@ public class UserLogin extends TriviaDialogPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		final JLabel label = new JLabel("Enter user name: ");
-		label.setFont(label.getFont().deriveFont(FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, c);
 
 		c.gridx = 1;
 		c.gridy = 0;
 		final JTextField userTextField = new JTextField("", 10);
-		userTextField.setFont(userTextField.getFont().deriveFont(FONT_SIZE));
+		userTextField.setFont(userTextField.getFont().deriveFont(fontSize));
 		userTextField.setToolTipText("This will be used for both flow tracking and IRC");
 		this.add(userTextField, c);
 		userTextField.addAncestorListener(this);
@@ -73,7 +70,7 @@ public class UserLogin extends TriviaDialogPanel {
 			if (user.toCharArray().length != 0) {
 				client.setUser(user);
 			} else {
-				new UserLogin(client);
+				new UserLoginDialog(client);
 			}
 		} else {
 			if (client.getUser() == null) {

@@ -23,21 +23,7 @@ import net.bubbaland.trivia.Trivia;
  */
 public class AnswerEntryPanel extends TriviaDialogPanel {
 
-	private static final long	serialVersionUID		= -5797789908178154492L;
-
-	/**
-	 * Font sizes
-	 */
-	private static final float	LABEL_FONT_SIZE			= 20.0f;
-	private static final float	TEXTBOX_FONT_SIZE		= 16.0f;
-
-	/**
-	 * Slider paddings
-	 */
-	private static final int	SLIDER_PADDING_BOTTOM	= 10;
-	private static final int	SLIDER_PADDING_LEFT		= 10;
-	private static final int	SLIDER_PADDING_RIGHT	= 10;
-	private static final int	SLIDER_PADDING_TOP		= 10;
+	private static final long	serialVersionUID	= -5797789908178154492L;
 
 	/**
 	 * Creates a dialog box and prompt for response
@@ -73,7 +59,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		JLabel label = new JLabel("Question:");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, c);
 
 		c.gridx = 0;
@@ -81,7 +67,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		c.weightx = 0.5;
 		c.weighty = 0.5;
 		final JTextArea textArea = new JTextArea(qText);
-		textArea.setFont(textArea.getFont().deriveFont(TEXTBOX_FONT_SIZE));
+		textArea.setFont(textArea.getFont().deriveFont(textAreaFontSize));
 		textArea.setEditable(false);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
@@ -96,7 +82,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		c.gridx = 0;
 		c.gridy = 2;
 		label = new JLabel("Answer: ");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, c);
 
 		c.gridx = 0;
@@ -106,7 +92,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		final JTextArea answerTextArea = new JTextArea("", 4, 50);
 		answerTextArea.setLineWrap(true);
 		answerTextArea.setWrapStyleWord(true);
-		answerTextArea.setFont(answerTextArea.getFont().deriveFont(TEXTBOX_FONT_SIZE));
+		answerTextArea.setFont(answerTextArea.getFont().deriveFont(textAreaFontSize));
 		answerTextArea.addAncestorListener(this);
 		this.addEnterOverride(answerTextArea);
 		scrollPane = new JScrollPane(answerTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -122,12 +108,12 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		c.gridy = 4;
 		label = new JLabel("Confidence", SwingConstants.RIGHT);
 		label.setVerticalAlignment(SwingConstants.CENTER);
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, c);
 
 		c.gridx = 1;
 		c.gridy = 4;
-		c.insets = new Insets(SLIDER_PADDING_BOTTOM, SLIDER_PADDING_LEFT, SLIDER_PADDING_RIGHT, SLIDER_PADDING_TOP);
+		c.insets = new Insets(sliderPaddingBottom, sliderPaddingLeft, sliderPaddingRight, sliderPaddingTop);
 		final JSlider confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 3);
 		confidenceSlider.setMajorTickSpacing(1);
 		final Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();

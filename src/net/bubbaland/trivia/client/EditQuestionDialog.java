@@ -25,12 +25,6 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 	private static final long	serialVersionUID	= 8157338357601793846L;
 
 	/**
-	 * Font sizes
-	 */
-	private static final float	LABEL_FONT_SIZE		= 20.0f;
-	private static final float	TEXTAREA_FONT_SIZE	= 16.0f;
-
-	/**
 	 * GUI elements we will need to change on an action
 	 */
 	private final JToggleButton	correctButton;
@@ -62,14 +56,14 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		JLabel label = new JLabel("Round: " + rNumber);
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		// Question number label
 		constraints.gridx = 2;
 		constraints.gridy = 0;
 		label = new JLabel("Question: " + qNumber);
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 		constraints.gridwidth = 1;
 
@@ -77,7 +71,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		label = new JLabel("Value:");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		// Value spinner
@@ -85,7 +79,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridy = 1;
 		constraints.weightx = 0.5;
 		final JSpinner qValueSpinner = new JSpinner(new SpinnerNumberModel(existingValue, 10, 1000, 5));
-		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(LABEL_FONT_SIZE));
+		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(fontSize));
 		this.addEnterOverride(qValueSpinner);
 		this.add(qValueSpinner, constraints);
 		constraints.weightx = 0.0;
@@ -104,7 +98,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		label = new JLabel("Question:");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		// Question text
@@ -115,7 +109,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		final JTextArea qTextArea = new JTextArea(existingQText, 4, 50);
 		qTextArea.setLineWrap(true);
 		qTextArea.setWrapStyleWord(true);
-		qTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
+		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
 		qTextArea.addAncestorListener(this);
 		this.addEnterOverride(qTextArea);
 		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -129,7 +123,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridx = 0;
 		constraints.gridy = 4;
 		label = new JLabel("Answer:");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		// Answer text
@@ -140,7 +134,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		final JTextArea aTextArea = new JTextArea(existingAText, 4, 50);
 		aTextArea.setLineWrap(true);
 		aTextArea.setWrapStyleWord(true);
-		aTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
+		aTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
 		this.addEnterOverride(aTextArea);
 		scrollPane = new JScrollPane(aTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -154,7 +148,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridx = 0;
 		constraints.gridy = 6;
 		label = new JLabel("Credit:");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		// Submitter text field; will be disable if question is incorrect
@@ -167,7 +161,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridx = 0;
 		constraints.gridy = 7;
 		label = new JLabel("Operator:");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		// Operator text field; will be disable if question is incorrect

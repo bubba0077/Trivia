@@ -1,6 +1,5 @@
 package net.bubbaland.trivia.client;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.rmi.RemoteException;
 
@@ -14,14 +13,11 @@ import javax.swing.JOptionPane;
  * @author Walter Kolczynski
  * 
  */
-public class LoadStatePrompt extends TriviaDialogPanel {
+public class LoadStateDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= -3297076605620744620L;
 
-	/** Font size */
-	private static final float	FONT_SIZE			= 20f;
-
-	public LoadStatePrompt(TriviaClient client) {
+	public LoadStateDialog(TriviaClient client) {
 
 		super();
 
@@ -60,8 +56,8 @@ public class LoadStatePrompt extends TriviaDialogPanel {
 		constraints.gridy = 0;
 		constraints.gridwidth = 2;
 		JLabel label = new JLabel("Warning: This will overwrite all current data.");
-		label.setFont(label.getFont().deriveFont(FONT_SIZE));
-		label.setForeground(Color.RED);
+		label.setFont(label.getFont().deriveFont(fontSize));
+		label.setForeground(warningColor);
 		this.add(label, constraints);
 		constraints.gridwidth = 1;
 
@@ -69,7 +65,7 @@ public class LoadStatePrompt extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		label = new JLabel("Choose file to load:");
-		label.setFont(label.getFont().deriveFont(FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 1;

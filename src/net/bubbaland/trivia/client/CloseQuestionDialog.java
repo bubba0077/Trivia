@@ -20,13 +20,6 @@ import net.bubbaland.trivia.Trivia;
 public class CloseQuestionDialog extends TriviaDialogPanel {
 	private static final long	serialVersionUID	= 8533094210282632603L;
 
-	/**
-	 * Font sizes
-	 */
-	private static final float	LABEL_FONT_SIZE		= 20.0f;
-	private static final float	TEXTBOX_FONT_SIZE	= 16.0f;
-
-
 	public CloseQuestionDialog(TriviaClient client, int qNumber) {
 
 		super();
@@ -49,7 +42,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		JLabel label = new JLabel("Question:");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 0;
@@ -57,7 +50,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		constraints.weightx = 0.5;
 		constraints.weighty = 0.5;
 		final JTextArea textArea = new JTextArea(qText);
-		textArea.setFont(textArea.getFont().deriveFont(TEXTBOX_FONT_SIZE));
+		textArea.setFont(textArea.getFont().deriveFont(textAreaFontSize));
 		textArea.setEditable(false);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
@@ -72,7 +65,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		label = new JLabel("Answer: ");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 0;
@@ -82,7 +75,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		final JTextArea answerTextArea = new JTextArea("", 4, 50);
 		answerTextArea.setLineWrap(true);
 		answerTextArea.setWrapStyleWord(true);
-		answerTextArea.setFont(answerTextArea.getFont().deriveFont(TEXTBOX_FONT_SIZE));
+		answerTextArea.setFont(answerTextArea.getFont().deriveFont(textAreaFontSize));
 		answerTextArea.addAncestorListener(this);
 		this.addEnterOverride(answerTextArea);
 		// answerTextArea.addKeyListener(this);

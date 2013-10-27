@@ -387,7 +387,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 								this.client.getServer().markPartial(queueIndex, this.client.getUser());
 								break;
 							case "Correct":
-								new CorrectEntryPanel(this.client, this.client.getUser(), queueIndex,
+								new CorrectEntryDialog(this.client, this.client.getUser(), queueIndex,
 										( (JComboBox<String>) source ));
 								break;
 							default:

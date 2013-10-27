@@ -540,11 +540,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		switch (command) {
 			case "Change name":
 				// Triggered by change name, prompt for new name
-				new UserLogin(this.client);
+				new UserLoginDialog(this.client);
 				break;
 			case "Load state":
 				// Triggered by change state, prompt for save file
-				new LoadStatePrompt(this.client);
+				new LoadStateDialog(this.client);
 				break;
 			case "Hide Closed":
 				// Triggered by change to Hide Closed menu item

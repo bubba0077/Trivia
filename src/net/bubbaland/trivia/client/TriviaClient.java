@@ -131,7 +131,7 @@ public class TriviaClient implements WindowListener {
 		System.out.println("GRAY: " + Integer.toHexString(Color.GRAY.getRGB()));
 
 		// Create a prompt requesting the user name
-		new UserLogin(this);
+		new UserLoginDialog(this);
 
 		// Create first frame
 		new TriviaFrame(this, PROPERTIES.getProperty("InitialTabs").split(","), useFX);

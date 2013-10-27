@@ -1,5 +1,6 @@
 package net.bubbaland.trivia.client;
 
+import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -16,15 +17,23 @@ import javax.swing.event.AncestorListener;
 
 /**
  * Super-class for most of the dialog box panels in the trivia GUI.
- *
+ * 
  * Creates a new panel using the GridBagLayout manager. Also implements an AncestorListener to allow focus on an element
  * after the dialog is created.
- *
+ * 
  */
 public class TriviaDialogPanel extends JPanel implements AncestorListener, FocusListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -4127179718225373888L;
+
+	protected static float		fontSize, textAreaFontSize;
+	protected static int		sliderPaddingBottom, sliderPaddingTop, sliderPaddingRight, sliderPaddingLeft;
+	protected static Color		warningColor;
+
+	static {
+		loadProperties();
+	}
 
 	protected TriviaDialog		dialog;
 
@@ -35,7 +44,7 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener, Focus
 	/**
 	 * Override the default behavior of the text area to click the OK button of the option pane on enter and insert a
 	 * line break on shift-enter
-	 *
+	 * 
 	 * @param component
 	 *            The text are whose behavior we want to change
 	 */
@@ -109,6 +118,32 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener, Focus
 
 		}
 
+
+	}
+
+	public static void loadProperties() {
+		/**
+		 * Warning Color
+		 */
+		warningColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Dialog.Warning.Color"), 16));
+
+		/**
+		 * Slider Paddings (used by AnswerEntryPanel)
+		 */
+		sliderPaddingBottom = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("Dialog.AnswerEntry.Slider.Padding.Bottom"));
+		sliderPaddingTop = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("Dialog.AnswerEntry.Slider.Padding.Top"));
+		sliderPaddingLeft = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("Dialog.AnswerEntry.Slider.Padding.Left"));
+		sliderPaddingRight = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("Dialog.AnswerEntry.Slider.Padding.Right"));
+
+		/**
+		 * Font Sizes
+		 */
+		fontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("Dialog.FontSize"));
+		textAreaFontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("Dialog.TextArea.FontSize"));
 
 	}
 

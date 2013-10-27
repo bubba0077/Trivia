@@ -13,13 +13,10 @@ import javax.swing.JTextField;
  * 
  * @author Walter Kolczynski
  */
-public class CorrectEntryPanel extends TriviaDialogPanel {
+public class CorrectEntryDialog extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -8974614016214193902L;
-
-	// Font size
-	private static final float	FONT_SIZE			= 20.0f;
 
 	/**
 	 * Creates a new dialog box and prompts for response
@@ -35,7 +32,7 @@ public class CorrectEntryPanel extends TriviaDialogPanel {
 	 * @param statusComboBox
 	 *            The status combo box for this answer, so it can be reverted to previous state if dialog is cancelled
 	 */
-	public CorrectEntryPanel(TriviaClient client, String caller, int queueIndex, JComboBox<String> statusComboBox) {
+	public CorrectEntryDialog(TriviaClient client, String caller, int queueIndex, JComboBox<String> statusComboBox) {
 		super();
 
 		// Set up layout constraints
@@ -49,13 +46,13 @@ public class CorrectEntryPanel extends TriviaDialogPanel {
 		c.gridx = 0;
 		c.gridy = 1;
 		final JLabel label = new JLabel("Operator: ");
-		label.setFont(label.getFont().deriveFont(FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, c);
 
 		c.gridx = 1;
 		c.gridy = 1;
 		final JTextField operatorTextField = new JTextField("", 15);
-		operatorTextField.setFont(operatorTextField.getFont().deriveFont(FONT_SIZE));
+		operatorTextField.setFont(operatorTextField.getFont().deriveFont(fontSize));
 		operatorTextField.addAncestorListener(this);
 		this.add(operatorTextField, c);
 

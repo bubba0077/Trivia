@@ -43,6 +43,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		constraints.gridy = 0;
 
 		this.tabSelector = new JComboBox<String>(tabNames);
+		this.tabSelector.setFont(this.tabSelector.getFont().deriveFont(textAreaFontSize));
 		this.add(this.tabSelector, constraints);
 		this.tabSelector.addItemListener(this);
 
@@ -51,6 +52,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		this.descriptionLabel = new JTextArea(this.client.getTabDescription(tabNames[0]));
+		this.descriptionLabel.setFont(this.descriptionLabel.getFont().deriveFont(textAreaFontSize));
 		this.descriptionLabel.setEditable(false);
 		this.descriptionLabel.setLineWrap(true);
 		this.descriptionLabel.setWrapStyleWord(true);

@@ -97,4 +97,10 @@ public class WorkflowPanel extends TriviaPanel {
 		this.workflowQueuePanel.update(force);
 	}
 
+	public void loadProperties() {
+		this.workflowHeaderPanel.loadProperties();
+		this.workflowQlistPanel.loadProperties();
+		this.workflowQueuePanel.loadProperties();
+	}
+
 }

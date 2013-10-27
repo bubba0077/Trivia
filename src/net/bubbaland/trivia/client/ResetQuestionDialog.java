@@ -15,11 +15,6 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 6166214835080640219L;
 
-	/**
-	 * Font sizes
-	 */
-	private static final float	LABEL_FONT_SIZE		= 20.0f;
-
 	public ResetQuestionDialog(TriviaClient client, int qNumber, int qValue, String qText) {
 
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -30,7 +25,7 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 		constraints.gridy = 0;
 		constraints.gridwidth = 2;
 		JLabel label = new JLabel("Are you sure you want to delete this question?");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 		constraints.gridwidth = 1;
 
@@ -38,13 +33,13 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		label = new JLabel("Existing question:");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		label = new JLabel("Value: " + qValue, JLabel.RIGHT);
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 0;

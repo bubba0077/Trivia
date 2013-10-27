@@ -134,4 +134,10 @@ ScoreByRound.FontSize=18.0
 ScoreByRound.Discrepancy.FontSize=12.0
 Chart.BackgroundColor=000000
 Chart.ByRound.MaxPoints=750
-
+Dialog.FontSize=20.0
+Dialog.TextArea.FontSize=16.0
+Dialog.AnswerEntry.Slider.Padding.Bottom=10
+Dialog.AnswerEntry.Slider.Padding.Top=10
+Dialog.AnswerEntry.Slider.Padding.Right=10
+Dialog.AnswerEntry.Slider.Padding.Left=10
+Dialog.Warning.Color=FF0000

@@ -12,9 +12,6 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 7708693892976942384L;
 
-	/** The Constant FONT_SIZE. */
-	private static final float	FONT_SIZE			= 20.0f;
-
 	/**
 	 * Instantiates a new user login.
 	 * 
@@ -38,13 +35,13 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		final JLabel label = new JLabel("Enter discrepancy note for round: " + rNumber);
-		label.setFont(label.getFont().deriveFont(FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		final JTextField discrepancyTextField = new JTextField(oldText, 10);
-		discrepancyTextField.setFont(discrepancyTextField.getFont().deriveFont(FONT_SIZE));
+		discrepancyTextField.setFont(discrepancyTextField.getFont().deriveFont(fontSize));
 		this.add(discrepancyTextField, constraints);
 		discrepancyTextField.addAncestorListener(this);
 

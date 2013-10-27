@@ -27,12 +27,6 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	private static final long	serialVersionUID	= 8250659442772286086L;
 
 	/**
-	 * Font sizes
-	 */
-	private static final float	LABEL_FONT_SIZE		= 20.0f;
-	private static final float	TEXTAREA_FONT_SIZE	= 16.0f;
-
-	/**
 	 * Instantiates a new question entry window.
 	 * 
 	 * @param server
@@ -98,13 +92,13 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		JLabel label = new JLabel("Question Number: ");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 1;
 		constraints.gridy = 0;
 		final JSpinner qNumberSpinner = new JSpinner(new SpinnerNumberModel(qNumberStart, 1, nQuestions, 1));
-		qNumberSpinner.setFont(qNumberSpinner.getFont().deriveFont(LABEL_FONT_SIZE));
+		qNumberSpinner.setFont(qNumberSpinner.getFont().deriveFont(fontSize));
 		this.addEnterOverride(qNumberSpinner);
 		this.add(qNumberSpinner, constraints);
 
@@ -112,13 +106,13 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		label = new JLabel("Question Value: ");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		final JSpinner qValueSpinner = new JSpinner(new SpinnerNumberModel(qValueStart, 10, 1000, 5));
-		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(LABEL_FONT_SIZE));
+		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(fontSize));
 		this.addEnterOverride(qValueSpinner);
 		this.add(qValueSpinner, constraints);
 		( (JSpinner.NumberEditor) qValueSpinner.getEditor() ).getTextField().addAncestorListener(this);
@@ -128,7 +122,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		label = new JLabel("Question: ");
-		label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 0;
@@ -139,7 +133,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		final JTextArea qTextArea = new JTextArea(qTextStart, 4, 50);
 		qTextArea.setLineWrap(true);
 		qTextArea.setWrapStyleWord(true);
-		qTextArea.setFont(qTextArea.getFont().deriveFont(TEXTAREA_FONT_SIZE));
+		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
 		// qTextArea.addAncestorListener(this);
 		this.addEnterOverride(qTextArea);
 
@@ -179,7 +173,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				constraints.gridx = 0;
 				constraints.gridy = 0;
 				label = new JLabel("Change question number from " + qNumberStart + " to " + qNumber + "?");
-				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+				label.setFont(label.getFont().deriveFont(fontSize));
 				this.add(label, constraints);
 
 				this.dialog = new TriviaDialog(null, "Confirm Question Number Change " + qNumberStart + " to "
@@ -230,14 +224,14 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				constraints.gridx = 0;
 				constraints.gridy = 0;
 				label = new JLabel("Question alread open, overwrite?");
-				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+				label.setFont(label.getFont().deriveFont(fontSize));
 				this.add(label, constraints);
 
 				// Show existing question data
 				constraints.gridx = 0;
 				constraints.gridy = 1;
 				label = new JLabel("Existing question:");
-				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+				label.setFont(label.getFont().deriveFont(fontSize));
 				this.add(label, constraints);
 
 				constraints.gridx = 0;
@@ -260,14 +254,14 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				constraints.gridx = 0;
 				constraints.gridy = 3;
 				label = new JLabel("Value: " + existingQValue);
-				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+				label.setFont(label.getFont().deriveFont(fontSize));
 				this.add(label, constraints);
 
 				// Show new question data
 				constraints.gridx = 0;
 				constraints.gridy = 4;
 				label = new JLabel("Entered question:");
-				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+				label.setFont(label.getFont().deriveFont(fontSize));
 				this.add(label, constraints);
 
 				constraints.gridx = 0;
@@ -292,7 +286,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				constraints.gridx = 0;
 				constraints.gridy = 6;
 				label = new JLabel("Value: " + qValue);
-				label.setFont(label.getFont().deriveFont(LABEL_FONT_SIZE));
+				label.setFont(label.getFont().deriveFont(fontSize));
 				this.add(label, constraints);
 
 				this.dialog = new TriviaDialog(null, "Confirm Question Overwrite " + qNumber, this,
