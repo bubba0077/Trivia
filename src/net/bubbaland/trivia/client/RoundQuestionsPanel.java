@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -20,7 +21,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultStyledDocument;
@@ -45,42 +45,13 @@ import net.bubbaland.trivia.Trivia;
 public class RoundQuestionsPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long				serialVersionUID				= 3589815467416864653L;
+	private static final long				serialVersionUID	= 3589815467416864653L;
 
-	/**
-	 * Colors
-	 */
-	private static final Color				HEADER_TEXT_COLOR				= Color.white;
-	private static final Color				HEADER_BACKGROUND_COLOR			= Color.darkGray;
-	private static final Color				ODD_QUESTION_TEXT_COLOR			= Color.black;
-
-	private static final Color				EVEN_QUESTION_TEXT_COLOR		= Color.black;
-	private static final Color				ODD_QUESTION_BACKGROUND_COLOR	= Color.white;
-	private static final Color				EVEN_QUESTION_BACKGROUND_COLOR	= Color.lightGray;
-
-	/**
-	 * Sizes
-	 */
-	private static final int				HEADER_HEIGHT					= 20;
-	private static final int				QUESTION_HEIGHT					= 66;
-
-	private static final int				QNUM_WIDTH						= 54;
-	private static final int				EARNED_WIDTH					= 75;
-	private static final int				VALUE_WIDTH						= 75;
-	private static final int				QUESTION_WIDTH					= 200;
-	private static final int				ANSWER_WIDTH					= 150;
-	private static final int				SUBOP_WIDTH						= 100;
-
-	/**
-	 * Font sizes
-	 */
-	private static final float				FONT_SIZE						= (float) 12.0;
-
-	private static final float				LARGE_FONT_SIZE					= (float) 36.0;
-	private static final float				SMALL_FONT_SIZE					= (float) 12.0;
+	private final JLabel					qNumberLabel, earnedLabel, valueLabel, questionLabel, answerLabel,
+			subOpLabel, blank;
 
 	/** The sub-panel holding the questions */
-	private final RoundQuestionsSubPanel	roundQlistSubPanel;
+	private final RoundQuestionsSubPanel	roundQuestionsSubPanel;
 	private final JScrollPane				roundQlistPane;
 
 	/**
@@ -123,50 +94,37 @@ public class RoundQuestionsPanel extends TriviaPanel {
 		 */
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		this.enclosedLabel("Q#", QNUM_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.qNumberLabel = this.enclosedLabel("Q#", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 1;
 		constraints.gridy = 0;
-		this.enclosedLabel("Earned", EARNED_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.earnedLabel = this.enclosedLabel("Earned", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 2;
 		constraints.gridy = 0;
-		this.enclosedLabel("Value", VALUE_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.valueLabel = this.enclosedLabel("Value", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
 		constraints.gridx = 3;
 		constraints.gridy = 0;
 		constraints.weightx = 0.6;
-		this.enclosedLabel("Question", QUESTION_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
+		this.questionLabel = this.enclosedLabel("Question", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
 		constraints.gridx = 4;
 		constraints.gridy = 0;
 		constraints.weightx = 0.4;
-		this.enclosedLabel("Answer", ANSWER_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
+		this.answerLabel = this.enclosedLabel("Answer", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
 		constraints.gridx = 5;
 		constraints.gridy = 0;
-		this.enclosedLabel("Credit/Op", SUBOP_WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.subOpLabel = this.enclosedLabel("Credit/Op", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 6;
 		constraints.gridy = 0;
 		constraints.gridwidth = 1;
-		final int scrollBarWidth;
-		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
-			scrollBarWidth = (int) UIManager.get("ScrollBar.thumbHeight");
-		} else {
-			scrollBarWidth = ( (Integer) UIManager.get("ScrollBar.width") ).intValue();
-		}
-		this.enclosedLabel("", scrollBarWidth, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.blank = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 
 		/**
@@ -176,13 +134,15 @@ public class RoundQuestionsPanel extends TriviaPanel {
 		constraints.gridy = 1;
 		constraints.gridwidth = 7;
 		constraints.weighty = 1.0;
-		this.roundQlistSubPanel = new RoundQuestionsSubPanel(client, live, rNumber);
-		this.roundQlistPane = new JScrollPane(this.roundQlistSubPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		this.roundQuestionsSubPanel = new RoundQuestionsSubPanel(client, live, rNumber);
+		this.roundQlistPane = new JScrollPane(this.roundQuestionsSubPanel,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		this.roundQlistPane.setBorder(BorderFactory.createEmptyBorder());
 		this.roundQlistPane.setPreferredSize(new Dimension(0, 200));
 		this.add(this.roundQlistPane, constraints);
 		constraints.weighty = 0.0;
 
+		loadProperties();
 	}
 
 	/**
@@ -192,7 +152,7 @@ public class RoundQuestionsPanel extends TriviaPanel {
 	 *            the new round number
 	 */
 	public void setRound(int rNumber) {
-		this.roundQlistSubPanel.setRound(rNumber);
+		this.roundQuestionsSubPanel.setRound(rNumber);
 	}
 
 	/*
@@ -202,7 +162,7 @@ public class RoundQuestionsPanel extends TriviaPanel {
 	 */
 	@Override
 	public synchronized void update(boolean force) {
-		this.roundQlistSubPanel.update(force);
+		this.roundQuestionsSubPanel.update(force);
 	}
 
 
@@ -218,10 +178,11 @@ public class RoundQuestionsPanel extends TriviaPanel {
 		 */
 		private final JLabel[]		qNumberLabels, earnedLabels, valueLabels;
 		private final JTextArea[]	questionTextAreas, answerTextAreas;
-		private final JTextPane[]	submitterTextAreas, operatorTextAreas;
+		private final JTextPane[]	submitterTextPanes, operatorTextPanes;
 		private final JSeparator[]	separators;
 		private final JMenuItem		editItem, reopenItem;
 		private final JPopupMenu	contextMenu;
+		private final JPanel		spacer;
 
 		/** Status variables */
 		private boolean				speed;
@@ -279,8 +240,8 @@ public class RoundQuestionsPanel extends TriviaPanel {
 			this.qNumberLabels = new JLabel[this.maxQuestions];
 			this.earnedLabels = new JLabel[this.maxQuestions];
 			this.valueLabels = new JLabel[this.maxQuestions];
-			this.submitterTextAreas = new JTextPane[this.maxQuestions];
-			this.operatorTextAreas = new JTextPane[this.maxQuestions];
+			this.submitterTextPanes = new JTextPane[this.maxQuestions];
+			this.operatorTextPanes = new JTextPane[this.maxQuestions];
 			this.questionTextAreas = new JTextArea[this.maxQuestions];
 			this.answerTextAreas = new JTextArea[this.maxQuestions];
 			this.separators = new JSeparator[this.maxQuestions];
@@ -293,16 +254,6 @@ public class RoundQuestionsPanel extends TriviaPanel {
 			constraints.weighty = 0.0;
 
 			for (int q = 0; q < this.maxQuestions; q++) {
-				// Set the color for this row
-				Color color, bColor;
-				if (q % 2 == 1) {
-					color = ODD_QUESTION_TEXT_COLOR;
-					bColor = ODD_QUESTION_BACKGROUND_COLOR;
-				} else {
-					color = EVEN_QUESTION_TEXT_COLOR;
-					bColor = EVEN_QUESTION_BACKGROUND_COLOR;
-				}
-
 				/**
 				 * Plot this row
 				 */
@@ -310,30 +261,29 @@ public class RoundQuestionsPanel extends TriviaPanel {
 
 				constraints.gridx = 0;
 				constraints.gridy = 2 * q;
-				this.qNumberLabels[q] = this.enclosedLabel(( q + 1 ) + "", QNUM_WIDTH, QUESTION_HEIGHT, color, bColor,
-						constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.qNumberLabels[q] = this.enclosedLabel(( q + 1 ) + "", constraints, SwingConstants.CENTER,
+						SwingConstants.CENTER);
 				this.qNumberLabels[q].setName(( q + 1 ) + "");
 				this.qNumberLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 1;
 				constraints.gridy = 2 * q;
-				this.earnedLabels[q] = this.enclosedLabel("", EARNED_WIDTH, QUESTION_HEIGHT, color, bColor,
-						constraints, LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.earnedLabels[q] = this
+						.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.earnedLabels[q].setName(( q + 1 ) + "");
 				this.earnedLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 2;
 				constraints.gridy = 2 * q;
-				this.valueLabels[q] = this.enclosedLabel("", VALUE_WIDTH, QUESTION_HEIGHT, color, bColor, constraints,
-						LARGE_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.valueLabels[q] = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.valueLabels[q].setName(( q + 1 ) + "");
 				this.valueLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 3;
 				constraints.gridy = 2 * q;
 				constraints.weightx = 0.6;
-				this.questionTextAreas[q] = this.scrollableTextArea("", QUESTION_WIDTH, QUESTION_HEIGHT, color, bColor,
-						constraints, SMALL_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+				this.questionTextAreas[q] = this.scrollableTextArea("", constraints,
+						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.questionTextAreas[q].setEditable(false);
 				this.questionTextAreas[q].setName(( q + 1 ) + "");
@@ -350,8 +300,8 @@ public class RoundQuestionsPanel extends TriviaPanel {
 				constraints.gridx = 5;
 				constraints.gridy = 2 * q;
 				constraints.weightx = 0.4;
-				this.answerTextAreas[q] = this.scrollableTextArea("", ANSWER_WIDTH, QUESTION_HEIGHT, color, bColor,
-						constraints, SMALL_FONT_SIZE, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+				this.answerTextAreas[q] = this.scrollableTextArea("", constraints,
+						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.answerTextAreas[q].setEditable(false);
 				this.answerTextAreas[q].setName(( q + 1 ) + "");
@@ -365,49 +315,27 @@ public class RoundQuestionsPanel extends TriviaPanel {
 				StyledDocument document = new DefaultStyledDocument();
 				Style defaultStyle = document.getStyle(StyleContext.DEFAULT_STYLE);
 				StyleConstants.setAlignment(defaultStyle, StyleConstants.ALIGN_CENTER);
-				this.submitterTextAreas[q] = new JTextPane(document);
-				DefaultCaret caret = (DefaultCaret) this.submitterTextAreas[q].getCaret();
+				this.submitterTextPanes[q] = new JTextPane(document);
+				DefaultCaret caret = (DefaultCaret) this.submitterTextPanes[q].getCaret();
 				caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-				this.submitterTextAreas[q].setEditable(false);
-				this.submitterTextAreas[q].setFont(this.submitterTextAreas[q].getFont().deriveFont(SMALL_FONT_SIZE));
-				this.submitterTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT / 3));
-				this.submitterTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, QUESTION_HEIGHT / 3));
-				if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
-					UIDefaults defaults = new UIDefaults();
-					defaults.put("TextPane[Enabled].backgroundPainter", bColor);
-					this.submitterTextAreas[q].putClientProperty("Nimbus.Overrides", defaults);
-					this.submitterTextAreas[q].putClientProperty("Nimbus.Overrides.InheritDefaults", true);
-				}
-				this.submitterTextAreas[q].setBackground(bColor);
-				this.submitterTextAreas[q].setForeground(color);
-				this.submitterTextAreas[q].setName(( q + 1 ) + "");
-				this.submitterTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
+				this.submitterTextPanes[q].setEditable(false);
+				this.submitterTextPanes[q].setName(( q + 1 ) + "");
+				this.submitterTextPanes[q].addMouseListener(new PopupListener(this.contextMenu));
 
-				this.add(this.submitterTextAreas[q], constraints);
+				this.add(this.submitterTextPanes[q], constraints);
 
 				constraints.gridx = 6;
 				constraints.gridy = 2 * q + 1;
 				document = new DefaultStyledDocument();
 				defaultStyle = document.getStyle(StyleContext.DEFAULT_STYLE);
 				StyleConstants.setAlignment(defaultStyle, StyleConstants.ALIGN_CENTER);
-				this.operatorTextAreas[q] = new JTextPane(document);
-				caret = (DefaultCaret) this.operatorTextAreas[q].getCaret();
+				this.operatorTextPanes[q] = new JTextPane(document);
+				caret = (DefaultCaret) this.operatorTextPanes[q].getCaret();
 				caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-				this.operatorTextAreas[q].setEditable(false);
-				this.operatorTextAreas[q].setFont(this.operatorTextAreas[q].getFont().deriveFont(SMALL_FONT_SIZE));
-				this.operatorTextAreas[q].setPreferredSize(new Dimension(SUBOP_WIDTH, 2 * QUESTION_HEIGHT / 3));
-				this.operatorTextAreas[q].setMinimumSize(new Dimension(SUBOP_WIDTH, 2 * QUESTION_HEIGHT / 3));
-				if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
-					UIDefaults defaults = new UIDefaults();
-					defaults.put("TextPane[Enabled].backgroundPainter", bColor);
-					this.operatorTextAreas[q].putClientProperty("Nimbus.Overrides", defaults);
-					this.operatorTextAreas[q].putClientProperty("Nimbus.Overrides.InheritDefaults", true);
-				}
-				this.operatorTextAreas[q].setBackground(bColor);
-				this.operatorTextAreas[q].setForeground(color);
-				this.operatorTextAreas[q].setName(( q + 1 ) + "");
-				this.operatorTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
-				this.add(this.operatorTextAreas[q], constraints);
+				this.operatorTextPanes[q].setEditable(false);
+				this.operatorTextPanes[q].setName(( q + 1 ) + "");
+				this.operatorTextPanes[q].addMouseListener(new PopupListener(this.contextMenu));
+				this.add(this.operatorTextPanes[q], constraints);
 
 			}
 
@@ -418,10 +346,9 @@ public class RoundQuestionsPanel extends TriviaPanel {
 			constraints.gridy = this.maxQuestions;
 			constraints.gridwidth = 7;
 			constraints.weighty = 1.0;
-			final JPanel blank = new JPanel();
-			blank.setBackground(HEADER_BACKGROUND_COLOR);
-			blank.setPreferredSize(new Dimension(0, 0));
-			this.add(blank, constraints);
+			this.spacer = new JPanel();
+			this.spacer.setPreferredSize(new Dimension(0, 0));
+			this.add(this.spacer, constraints);
 		}
 
 
@@ -554,14 +481,14 @@ public class RoundQuestionsPanel extends TriviaPanel {
 								&& this.earnedLabels[q].getText().equals(earneds[q] + "")
 								&& this.questionTextAreas[q].getText().equals(questions[q])
 								&& this.answerTextAreas[q].getText().equals(answers[q])
-								&& this.submitterTextAreas[q].getText().equals(submitters[q]) && this.operatorTextAreas[q]
+								&& this.submitterTextPanes[q].getText().equals(submitters[q]) && this.operatorTextPanes[q]
 								.getText().equals(operators[q]) );
 					} else {
 						qUpdated[q] = !( this.speed == newSpeed && this.valueLabels[q].getText().equals(values[q] + "")
 								&& this.earnedLabels[q].getText().equals("")
 								&& this.questionTextAreas[q].getText().equals(questions[q])
 								&& this.answerTextAreas[q].getText().equals(answers[q])
-								&& this.submitterTextAreas[q].getText().equals(submitters[q]) && this.operatorTextAreas[q]
+								&& this.submitterTextPanes[q].getText().equals(submitters[q]) && this.operatorTextPanes[q]
 								.getText().equals(operators[q]) );
 					}
 				} else {
@@ -588,15 +515,15 @@ public class RoundQuestionsPanel extends TriviaPanel {
 						this.earnedLabels[q].setText(earneds[q] + "");
 						this.answerTextAreas[q].setText(answers[q]);
 						// this.answerTextAreas[q].setToolTipText(answers[q]);
-						this.submitterTextAreas[q].setText(submitters[q]);
-						this.operatorTextAreas[q].setText(operators[q]);
+						this.submitterTextPanes[q].setText(submitters[q]);
+						this.operatorTextPanes[q].setText(operators[q]);
 					} else {
 						// Hide answer data for questions that haven't been closed
 						this.earnedLabels[q].setText("");
 						this.answerTextAreas[q].setText("");
 						// this.answerTextAreas[q].setToolTipText("");
-						this.submitterTextAreas[q].setText("");
-						this.operatorTextAreas[q].setText("");
+						this.submitterTextPanes[q].setText("");
+						this.operatorTextPanes[q].setText("");
 					}
 
 					// Make sure questions are shown
@@ -608,8 +535,8 @@ public class RoundQuestionsPanel extends TriviaPanel {
 					this.answerTextAreas[q].setVisible(true);
 					this.questionTextAreas[q].getParent().getParent().setVisible(true);
 					this.answerTextAreas[q].getParent().getParent().setVisible(true);
-					this.submitterTextAreas[q].setVisible(true);
-					this.operatorTextAreas[q].setVisible(true);
+					this.submitterTextPanes[q].setVisible(true);
+					this.operatorTextPanes[q].setVisible(true);
 				}
 			}
 
@@ -623,9 +550,68 @@ public class RoundQuestionsPanel extends TriviaPanel {
 				this.answerTextAreas[q].setVisible(false);
 				this.questionTextAreas[q].getParent().getParent().setVisible(false);
 				this.answerTextAreas[q].getParent().getParent().setVisible(false);
-				this.submitterTextAreas[q].setVisible(false);
-				this.operatorTextAreas[q].setVisible(false);
+				this.submitterTextPanes[q].setVisible(false);
+				this.operatorTextPanes[q].setVisible(false);
 			}
+		}
+
+		private void loadProperties() {
+			/**
+			 * Colors
+			 */
+			final Color headerBackgroundColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.BackgroundColor"), 16));
+			final Color oddColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("RoundQuestions.OddRow.Color"), 16));
+			final Color evenColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("RoundQuestions.EvenRow.Color"), 16));
+			final Color oddBackgroundColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("RoundQuestions.OddRow.BackgroundColor"), 16));
+			final Color evenBackgroundColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("RoundQuestions.EvenRow.BackgroundColor"), 16));
+
+			/**
+			 * Sizes
+			 */
+			final int rowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Row.Height"));
+
+			final int qNumWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.QNumber.Width"));
+			final int earnedWidth = Integer
+					.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Earned.Width"));
+			final int valueWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Value.Width"));
+			final int questionWidth = Integer.parseInt(TriviaClient.PROPERTIES
+					.getProperty("RoundQuestions.Question.Width"));
+			final int answerWidth = Integer
+					.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Answer.Width"));
+			final int subOpWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.SubOp.Width"));
+
+			/**
+			 * Font sizes
+			 */
+			final float fontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("RoundQuestions.FontSize"));
+			final float largeFontSize = Float.parseFloat(TriviaClient.PROPERTIES
+					.getProperty("RoundQuestions.LargeFontSize"));
+
+			for (int q = 0; q < this.maxQuestions; q++) {
+				// Set the color for this row
+				Color color, bColor;
+				if (q % 2 == 1) {
+					color = oddColor;
+					bColor = oddBackgroundColor;
+				} else {
+					color = evenColor;
+					bColor = evenBackgroundColor;
+				}
+				setLabelProperties(this.qNumberLabels[q], qNumWidth, rowHeight, color, bColor, largeFontSize);
+				setLabelProperties(this.earnedLabels[q], earnedWidth, rowHeight, color, bColor, largeFontSize);
+				setLabelProperties(this.valueLabels[q], valueWidth, rowHeight, color, bColor, largeFontSize);
+				setTextAreaProperties(this.questionTextAreas[q], questionWidth, rowHeight, color, bColor, fontSize);
+				setTextAreaProperties(this.answerTextAreas[q], answerWidth, rowHeight, color, bColor, fontSize);
+				setTextPaneProperties(this.submitterTextPanes[q], subOpWidth, rowHeight / 3, color, bColor, fontSize);
+				setTextPaneProperties(this.operatorTextPanes[q], subOpWidth, 2 * rowHeight / 3, color, bColor, fontSize);
+			}
+			this.spacer.setBackground(headerBackgroundColor);
+
 		}
 
 		// @Override
@@ -636,6 +622,58 @@ public class RoundQuestionsPanel extends TriviaPanel {
 		// public void windowLostFocus(WindowEvent e) {
 		// this.contextMenu.setVisible(false);
 		// }
+	}
+
+	protected void loadProperties() {
+		/**
+		 * Colors
+		 */
+		final Color headerColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.Color"), 16));
+		final Color headerBackgroundColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.BackgroundColor"), 16));
+		/**
+		 * Sizes
+		 */
+		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.Height"));
+
+		final int qNumWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.QNumber.Width"));
+		final int earnedWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Earned.Width"));
+		final int valueWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Value.Width"));
+		final int questionWidth = Integer
+				.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Question.Width"));
+		final int answerWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Answer.Width"));
+		final int subOpWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.SubOp.Width"));
+
+		/**
+		 * Font sizes
+		 */
+		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES
+				.getProperty("RoundQuestions.Header.FontSize"));
+
+		setLabelProperties(this.qNumberLabel, qNumWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.earnedLabel, earnedWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.valueLabel, valueWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.questionLabel, questionWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.answerLabel, answerWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.subOpLabel, subOpWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		final int scrollBarWidth;
+		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+			scrollBarWidth = (int) UIManager.get("ScrollBar.thumbHeight");
+		} else {
+			scrollBarWidth = ( (Integer) UIManager.get("ScrollBar.width") ).intValue();
+		}
+		setLabelProperties(this.blank, scrollBarWidth, headerHeight, headerColor, headerBackgroundColor, headerFontSize);
+
+		this.roundQuestionsSubPanel.loadProperties();
+
+
 	}
 
 }

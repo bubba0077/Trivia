@@ -3,10 +3,8 @@ package net.bubbaland.trivia.client;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.MouseWheelEvent;
 import java.io.Serializable;
 
@@ -15,10 +13,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JViewport;
+import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
-import javax.swing.Painter;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -128,6 +125,20 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 		setPanelProperties((JPanel) label.getParent(), width, height, background);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		label.setForeground(foreground);
+	}
+
+	protected static void setTextPaneProperties(JTextPane textPane, int width, int height, Color foreground,
+			Color background, float fontSize) {
+		textPane.setPreferredSize(new Dimension(width, height));
+		textPane.setFont(textPane.getFont().deriveFont(fontSize));
+		textPane.setForeground(foreground);
+		textPane.setBackground(background);
+		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+			UIDefaults defaults = new UIDefaults();
+			defaults.put("TextPane[Enabled].backgroundPainter", background);
+			textPane.putClientProperty("Nimbus.Overrides", defaults);
+			textPane.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
+		}
 	}
 
 	protected static void setTextAreaProperties(JTextArea textArea, int width, int height, Color foreground,
@@ -285,6 +296,7 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 		textArea.setForeground(foreground);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
+		textArea.setBorder(BorderFactory.createEmptyBorder());
 		DefaultCaret caret = (DefaultCaret) textArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 		pane.setViewportView(textArea);

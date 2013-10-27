@@ -17,6 +17,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -147,6 +148,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 		final JPanel scrollPanel = new JPanel(new GridBagLayout());
 		this.scrollPane = new JScrollPane(scrollPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(this.scrollPane, constraints);
 
 		constraints.gridx = 0;
