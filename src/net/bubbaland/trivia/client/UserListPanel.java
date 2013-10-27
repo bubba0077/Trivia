@@ -22,40 +22,28 @@ import net.bubbaland.trivia.UserList.Role;
 
 /**
  * Creates a panel that displays active and idle user names.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class UserListPanel extends TriviaPanel {
 
-	private static final long				serialVersionUID		= 4877267114050120590L;
+	private static final long				serialVersionUID	= 4877267114050120590L;
 
 	/**
 	 * Colors
 	 */
-	private static final Color				HEADER_BACKGROUND_COLOR	= Color.DARK_GRAY;
-	private static final Color				HEADER_TEXT_COLOR		= Color.WHITE;
-	private static final Color				BACKGROUND_COLOR		= Color.LIGHT_GRAY;
-	protected static final Color			RESEARCHER_COLOR		= Color.BLACK;
-	protected static final Color			CALLER_COLOR			= Color.BLUE;
-	protected static final Color			TYPIST_COLOR			= Color.RED;
-	protected static final Color			IDLE_COLOR				= Color.GRAY;
-
-	/**
-	 * Sizes
-	 */
-	private static final int				WIDTH					= 85;
-	private static final int				HEADER_HEIGHT			= 12;
-	private static final int				HEIGHT					= 0;
-
-	/** Font sizes */
-	private static final float				FONT_SIZE				= 10f;
+	protected static Color					researcherColor;
+	protected static Color					callerColor;
+	protected static Color					typistColor;
+	protected static Color					idleColor;
 
 	/**
 	 * GUI elements that will need to be updated
 	 */
 	private final JLabel					header;
-	private final DefaultListModel<String>	userList;
+	private final DefaultListModel<String>	userListModel;
+	private final JList<String>				userList;
 
 	/** Data */
 	private Hashtable<String, Role>			activeUserHash;
@@ -82,8 +70,7 @@ public class UserListPanel extends TriviaPanel {
 		constraints.gridy = 0;
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.0;
-		this.header = this.enclosedLabel("", WIDTH, HEADER_HEIGHT, HEADER_TEXT_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.header = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
@@ -91,22 +78,22 @@ public class UserListPanel extends TriviaPanel {
 		constraints.gridy = 1;
 
 		// Create the active user list
-		this.userList = new DefaultListModel<String>();
+		this.userListModel = new DefaultListModel<String>();
 
-		JList<String> list = new JList<String>(this.userList);
-		list.setLayoutOrientation(JList.VERTICAL);
-		list.setVisibleRowCount(-1);
-		list.setForeground(RESEARCHER_COLOR);
-		list.setBackground(BACKGROUND_COLOR);
-		list.setFont(list.getFont().deriveFont(FONT_SIZE));
-		list.setCellRenderer(new MyCellRenderer());
+		this.userList = new JList<String>(this.userListModel);
+		this.userList.setLayoutOrientation(JList.VERTICAL);
+		this.userList.setVisibleRowCount(-1);
+		this.userList.setForeground(researcherColor);
+		this.userList.setCellRenderer(new UserCellRenderer());
 
-		final JScrollPane pane = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		final JScrollPane pane = new JScrollPane(this.userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		pane.setBorder(BorderFactory.createEmptyBorder());
 		pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		pane.setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		this.add(pane, constraints);
+
+		loadProperties();
 	}
 
 	/**
@@ -125,22 +112,22 @@ public class UserListPanel extends TriviaPanel {
 		this.idleUserHash.keySet().toArray(idleUsers);
 		Arrays.sort(idleUsers);
 
-		this.userList.removeAllElements();
+		this.userListModel.removeAllElements();
 		for (String user : users) {
-			this.userList.addElement(user);
+			this.userListModel.addElement(user);
 		}
-		this.userList.addElement("Idle (" + idleUsers.length + ")");
+		this.userListModel.addElement("Idle (" + idleUsers.length + ")");
 		for (String user : idleUsers) {
-			this.userList.addElement(user);
+			this.userListModel.addElement(user);
 		}
 
 	}
 
 	/**
 	 * Custom renderer to color user names based on role.
-	 *
+	 * 
 	 */
-	private class MyCellRenderer extends DefaultListCellRenderer {
+	private class UserCellRenderer extends DefaultListCellRenderer {
 
 		private static final long	serialVersionUID	= -801444128612741125L;
 
@@ -155,20 +142,20 @@ public class UserListPanel extends TriviaPanel {
 			if (UserListPanel.this.activeUserHash.get(value) != null) {
 				switch (UserListPanel.this.activeUserHash.get(value)) {
 					case CALLER:
-						color = CALLER_COLOR;
+						color = callerColor;
 						break;
 					case TYPIST:
-						color = TYPIST_COLOR;
+						color = typistColor;
 						break;
 					case RESEARCHER:
-						color = RESEARCHER_COLOR;
+						color = researcherColor;
 						break;
 					default:
-						color = IDLE_COLOR;
+						color = idleColor;
 						break;
 				}
 			} else {
-				color = IDLE_COLOR;
+				color = idleColor;
 				if (index == UserListPanel.this.activeUserHash.size()) {
 					this.setHorizontalAlignment(CENTER);
 				}
@@ -184,7 +171,7 @@ public class UserListPanel extends TriviaPanel {
 
 	/**
 	 * Sort user names based on role.
-	 *
+	 * 
 	 */
 	public class CompareRoles implements Comparator<String> {
 		@Override
@@ -199,6 +186,40 @@ public class UserListPanel extends TriviaPanel {
 			}
 
 		}
+	}
+
+	public void loadProperties() {
+		/**
+		 * Colors
+		 */
+		final Color headerBackgroundColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("UserList.Header.BackgroundColor"), 16));
+		final Color headerColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("UserList.Header.Color"), 16));
+		final Color backgroundColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("UserList.BackgroundColor"), 16));
+		researcherColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Researcher.Color"),
+				16));
+		callerColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Caller.Color"), 16));
+		typistColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Typist.Color"), 16));
+		idleColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Idle.Color"), 16));
+
+		/**
+		 * Sizes
+		 */
+		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Header.Height"));
+		final int width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Width"));
+
+		/**
+		 * Font Sizes
+		 */
+		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("UserList.Header.FontSize"));
+		final float fontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("UserList.FontSize"));
+
+		setLabelProperties(this.header, width, headerHeight, headerColor, headerBackgroundColor, headerFontSize);
+		this.userList.setBackground(backgroundColor);
+		this.userList.setFont(this.userList.getFont().deriveFont(fontSize));
+
 	}
 
 }

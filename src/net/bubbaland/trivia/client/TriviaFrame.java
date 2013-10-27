@@ -128,7 +128,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			roleOption.setMnemonic(KeyEvent.VK_R);
 			roleOption.addActionListener(this);
 			// roleOption.setSelected(true);
-			roleOption.setForeground(UserListPanel.RESEARCHER_COLOR);
+			roleOption.setForeground(UserListPanel.researcherColor);
 			roleOptions.add(roleOption);
 			roleMenu.add(roleOption);
 			// this.client.setRole(Role.RESEARCHER);
@@ -138,7 +138,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			roleOption.setMnemonic(KeyEvent.VK_C);
 			roleOption.addActionListener(this);
 			roleOption.setSelected(false);
-			roleOption.setForeground(UserListPanel.CALLER_COLOR);
+			roleOption.setForeground(UserListPanel.callerColor);
 			roleOptions.add(roleOption);
 			roleMenu.add(roleOption);
 
@@ -147,7 +147,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			roleOption.setMnemonic(KeyEvent.VK_T);
 			roleOption.addActionListener(this);
 			roleOption.setSelected(false);
-			roleOption.setForeground(UserListPanel.TYPIST_COLOR);
+			roleOption.setForeground(UserListPanel.typistColor);
 			roleOptions.add(roleOption);
 			roleMenu.add(roleOption);
 
