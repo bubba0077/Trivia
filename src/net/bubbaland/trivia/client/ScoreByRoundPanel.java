@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -17,6 +18,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+
 import net.bubbaland.trivia.Trivia;
 
 /**
@@ -28,51 +30,15 @@ import net.bubbaland.trivia.Trivia;
 public class ScoreByRoundPanel extends TriviaPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long			serialVersionUID		= -2047479093232798581L;
+	private static final long			serialVersionUID	= -2047479093232798581L;
 
 	/**
-	 * Colors
+	 * GUI Elements to update
 	 */
-	final private static Color			HEADER_BACKGROUND_COLOR	= Color.BLACK;
-	final private static Color			BACKGROUND_COLOR		= Color.DARK_GRAY;
-	final private static Color			ALT_BACKGROUND_COLOR	= Color.BLACK;
-	final private static Color			HOUR_COLOR				= Color.WHITE;
-	final private static Color			EARNED_COLOR			= Color.GREEN;
-	final private static Color			VALUE_COLOR				= new Color(30, 144, 255);
-	final private static Color			PERCENT_COLOR			= Color.PINK;
-	final private static Color			CUMULATIVE_EARNED_COLOR	= EARNED_COLOR.brighter();
-	final private static Color			CUMULATIVE_VALUE_COLOR	= VALUE_COLOR.brighter();
-	final private static Color			PERCENT_TOTAL_COLOR		= Color.PINK;
-	final private static Color			ANNOUNCED_COLOR			= Color.YELLOW;
-	final private static Color			PLACE_COLOR				= Color.ORANGE;
-	final private static Color			DISCREPANCY_COLOR		= Color.WHITE;
-
-	/** Interval specifying how often the alternate color should be used */
-	final private static int			ALT_INTERVAL			= 5;
-
-	/**
-	 * Sizes
-	 */
-	final private static int			HEADER_HEIGHT			= 28;
-	final private static int			ROW_HEIGHT				= 24;
-
-	final private static int			HOUR_WIDTH				= 35;
-	final private static int			EARNED_WIDTH			= 65;
-	final private static int			VALUE_WIDTH				= 65;
-	final private static int			PERCENT_WIDTH			= 80;
-	final private static int			CUMULATIVE_EARNED_WIDTH	= 80;
-	final private static int			CUMULATIVE_VALUE_WIDTH	= 80;
-	final private static int			PERCENT_TOTAL_WIDTH		= 80;
-	final private static int			ANNOUNCED_WIDTH			= 85;
-	final private static int			PLACE_WIDTH				= 50;
-	final private static int			DISCREPANCY_WIDTH		= 12;
-
-	/**
-	 * Font sizes
-	 */
-	final private static float			HEADER_FONT_SIZE		= 12.0f;
-	final private static float			DATA_FONT_SIZE			= 18.0f;
-	final private static float			DISCREPANCY_FONT_SIZE	= 12.0f;
+	final private JLabel				roundLabel0, roundEarnedLabel0, roundValueLabel0, roundPercentLabel0,
+			totalEarnedLabel0, totalValueLabel0, totalPercentLabel0, announcedLabel0, placeLabel0, discrepancyLabel0;
+	final private JLabel				roundLabel1, roundEarnedLabel1, roundValueLabel1, roundPercentLabel1,
+			totalEarnedLabel1, totalValueLabel1, totalPercentLabel1, announcedLabel1, placeLabel1, discrepancyLabel1;
 
 	/** The scroll panel that will hold the round data */
 	final private InternalScrollPanel	internalScrollPanel;
@@ -103,94 +69,84 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		 */
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		this.enclosedLabel("", HOUR_WIDTH, HEADER_HEIGHT / 2, HOUR_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.roundLabel0 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		this.enclosedLabel("Hour", HOUR_WIDTH, HEADER_HEIGHT / 2, HOUR_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.roundLabel1 = this.enclosedLabel("Hour", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 1;
 		constraints.gridy = 0;
-		this.enclosedLabel("", EARNED_WIDTH, HEADER_HEIGHT / 2, EARNED_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.roundEarnedLabel0 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.gridx = 1;
 		constraints.gridy = 1;
-		this.enclosedLabel("Earned", EARNED_WIDTH, HEADER_HEIGHT / 2, EARNED_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.roundEarnedLabel1 = this
+				.enclosedLabel("Earned", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 2;
 		constraints.gridy = 0;
-		this.enclosedLabel("", VALUE_WIDTH, HEADER_HEIGHT / 2, VALUE_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.roundValueLabel0 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.gridx = 2;
 		constraints.gridy = 1;
-		this.enclosedLabel("Possible", VALUE_WIDTH, HEADER_HEIGHT / 2, VALUE_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.roundValueLabel1 = this.enclosedLabel("Possible", constraints, SwingConstants.CENTER,
+				SwingConstants.CENTER);
 
 		constraints.gridx = 3;
 		constraints.gridy = 0;
-		this.enclosedLabel("", PERCENT_WIDTH, HEADER_HEIGHT / 2, PERCENT_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.roundPercentLabel0 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.gridx = 3;
 		constraints.gridy = 1;
-		this.enclosedLabel("Percent", PERCENT_WIDTH, HEADER_HEIGHT / 2, PERCENT_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.roundPercentLabel1 = this.enclosedLabel("Percent", constraints, SwingConstants.CENTER,
+				SwingConstants.CENTER);
 
 		constraints.gridx = 4;
 		constraints.gridy = 0;
-		this.enclosedLabel("Cumulative", CUMULATIVE_EARNED_WIDTH, HEADER_HEIGHT / 2, CUMULATIVE_EARNED_COLOR,
-				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.totalEarnedLabel0 = this.enclosedLabel("Cumulative", constraints, SwingConstants.CENTER,
+				SwingConstants.CENTER);
 		constraints.gridx = 4;
 		constraints.gridy = 1;
-		this.enclosedLabel("Score", CUMULATIVE_EARNED_WIDTH, HEADER_HEIGHT / 2, CUMULATIVE_EARNED_COLOR,
-				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.totalEarnedLabel1 = this.enclosedLabel("Score", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 5;
 		constraints.gridy = 0;
-		this.enclosedLabel("Cumulative", CUMULATIVE_VALUE_WIDTH, HEADER_HEIGHT / 2, CUMULATIVE_VALUE_COLOR,
-				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.totalValueLabel0 = this.enclosedLabel("Cumulative", constraints, SwingConstants.CENTER,
+				SwingConstants.CENTER);
 		constraints.gridx = 5;
 		constraints.gridy = 1;
-		this.enclosedLabel("Possible", CUMULATIVE_VALUE_WIDTH, HEADER_HEIGHT / 2, CUMULATIVE_VALUE_COLOR,
-				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.totalValueLabel1 = this.enclosedLabel("Possible", constraints, SwingConstants.CENTER,
+				SwingConstants.CENTER);
 
 		constraints.gridx = 6;
 		constraints.gridy = 0;
-		this.enclosedLabel("Percent", PERCENT_TOTAL_WIDTH, HEADER_HEIGHT / 2, PERCENT_TOTAL_COLOR,
-				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.totalPercentLabel0 = this.enclosedLabel("Percent", constraints, SwingConstants.CENTER,
+				SwingConstants.CENTER);
 		constraints.gridx = 6;
 		constraints.gridy = 1;
-		this.enclosedLabel("Total", PERCENT_TOTAL_WIDTH, HEADER_HEIGHT / 2, PERCENT_TOTAL_COLOR,
-				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.totalPercentLabel1 = this
+				.enclosedLabel("Total", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 7;
 		constraints.gridy = 0;
-		this.enclosedLabel("Announced", ANNOUNCED_WIDTH, HEADER_HEIGHT / 2, ANNOUNCED_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.announcedLabel0 = this.enclosedLabel("Announced", constraints, SwingConstants.CENTER,
+				SwingConstants.CENTER);
 		constraints.gridx = 7;
 		constraints.gridy = 1;
-		this.enclosedLabel("Score", ANNOUNCED_WIDTH, HEADER_HEIGHT / 2, ANNOUNCED_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.announcedLabel1 = this.enclosedLabel("Score", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 8;
 		constraints.gridy = 0;
-		this.enclosedLabel("", PLACE_WIDTH, HEADER_HEIGHT / 2, PLACE_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.placeLabel0 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.gridx = 8;
 		constraints.gridy = 1;
-		this.enclosedLabel("Place", PLACE_WIDTH, HEADER_HEIGHT / 2, PLACE_COLOR, HEADER_BACKGROUND_COLOR, constraints,
-				HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.placeLabel1 = this.enclosedLabel("Place", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.weightx = 1.0;
 		constraints.gridx = 9;
 		constraints.gridy = 0;
-		this.enclosedLabel("", DISCREPANCY_WIDTH, HEADER_HEIGHT / 2, DISCREPANCY_COLOR, HEADER_BACKGROUND_COLOR,
-				constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.discrepancyLabel0 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.gridx = 9;
 		constraints.gridy = 1;
-		this.enclosedLabel("Discrepancy Notes", DISCREPANCY_WIDTH, HEADER_HEIGHT / 2, DISCREPANCY_COLOR,
-				HEADER_BACKGROUND_COLOR, constraints, HEADER_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.discrepancyLabel1 = this.enclosedLabel("Discrepancy Notes", constraints, SwingConstants.CENTER,
+				SwingConstants.CENTER);
 		constraints.weightx = 0.00;
 
 		/**
@@ -207,6 +163,8 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(scrollPane, constraints);
+
+		loadProperties();
 
 	}
 
@@ -231,10 +189,11 @@ public class ScoreByRoundPanel extends TriviaPanel {
 		/**
 		 * GUI elements that update
 		 */
-		final private JLabel[]		earnedLabels, valueLabels, percentLabels, cumulativeEarnedLabels,
+		final private JLabel[]		roundLabels, earnedLabels, valueLabels, percentLabels, cumulativeEarnedLabels,
 				cumulativeValueLabels, percentTotalLabels, announcedScoreLabels, placeLabels, discrepancyLabels;
 		private final JMenuItem		editItem;
 		private final JPopupMenu	contextMenu;
+		private final JPanel		spacer;
 
 		/** The nunber of rounds */
 		final private int			nRounds;
@@ -273,6 +232,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 			constraints.anchor = GridBagConstraints.NORTH;
 			constraints.weighty = 0.0;
 
+			this.roundLabels = new JLabel[this.nRounds];
 			this.earnedLabels = new JLabel[this.nRounds];
 			this.valueLabels = new JLabel[this.nRounds];
 			this.percentLabels = new JLabel[this.nRounds];
@@ -289,65 +249,55 @@ public class ScoreByRoundPanel extends TriviaPanel {
 				constraints.weightx = 0.0;
 				constraints.weighty = 0.0;
 
-				Color bColor = BACKGROUND_COLOR;
-				if (( r + 1 ) % ALT_INTERVAL == 0) {
-					bColor = ALT_BACKGROUND_COLOR;
-				}
-
 				constraints.gridx = 0;
 				constraints.gridy = r;
-				this.enclosedLabel(( r + 1 ) + "", HOUR_WIDTH, ROW_HEIGHT, HOUR_COLOR, bColor, constraints,
-						DATA_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.roundLabels[r] = this.enclosedLabel(( r + 1 ) + "", constraints, SwingConstants.CENTER,
+						SwingConstants.CENTER);
 
 				constraints.gridx = 1;
 				constraints.gridy = r;
-				this.earnedLabels[r] = this.enclosedLabel("", EARNED_WIDTH, ROW_HEIGHT, EARNED_COLOR, bColor,
-						constraints, DATA_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.earnedLabels[r] = this
+						.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 				constraints.gridx = 2;
 				constraints.gridy = r;
-				this.valueLabels[r] = this.enclosedLabel("", VALUE_WIDTH, ROW_HEIGHT, VALUE_COLOR, bColor, constraints,
-						DATA_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.valueLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 				constraints.gridx = 3;
 				constraints.gridy = r;
-				this.percentLabels[r] = this.enclosedLabel("", PERCENT_WIDTH, ROW_HEIGHT, PERCENT_COLOR, bColor,
-						constraints, DATA_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.percentLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
+						SwingConstants.CENTER);
 
 				constraints.gridx = 4;
 				constraints.gridy = r;
-				this.cumulativeEarnedLabels[r] = this.enclosedLabel("", CUMULATIVE_EARNED_WIDTH, ROW_HEIGHT,
-						CUMULATIVE_EARNED_COLOR, bColor, constraints, DATA_FONT_SIZE, SwingConstants.CENTER,
+				this.cumulativeEarnedLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
 						SwingConstants.CENTER);
 
 				constraints.gridx = 5;
 				constraints.gridy = r;
-				this.cumulativeValueLabels[r] = this.enclosedLabel("", CUMULATIVE_VALUE_WIDTH, ROW_HEIGHT,
-						CUMULATIVE_VALUE_COLOR, bColor, constraints, DATA_FONT_SIZE, SwingConstants.CENTER,
+				this.cumulativeValueLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
 						SwingConstants.CENTER);
 
 				constraints.gridx = 6;
 				constraints.gridy = r;
-				this.percentTotalLabels[r] = this.enclosedLabel("", PERCENT_TOTAL_WIDTH, ROW_HEIGHT,
-						PERCENT_TOTAL_COLOR, bColor, constraints, DATA_FONT_SIZE, SwingConstants.CENTER,
+				this.percentTotalLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
 						SwingConstants.CENTER);
 
 				constraints.gridx = 7;
 				constraints.gridy = r;
-				this.announcedScoreLabels[r] = this.enclosedLabel("", ANNOUNCED_WIDTH, ROW_HEIGHT, ANNOUNCED_COLOR,
-						bColor, constraints, DATA_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.announcedScoreLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
+						SwingConstants.CENTER);
 
 				constraints.gridx = 8;
 				constraints.gridy = r;
-				this.placeLabels[r] = this.enclosedLabel("", PLACE_WIDTH, ROW_HEIGHT, PLACE_COLOR, bColor, constraints,
-						DATA_FONT_SIZE, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.placeLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 				constraints.weightx = 1.0;
 				constraints.gridx = 9;
 				constraints.gridy = r;
 
-				this.discrepancyLabels[r] = this.enclosedLabel("", DISCREPANCY_WIDTH, ROW_HEIGHT, DISCREPANCY_COLOR,
-						bColor, constraints, DISCREPANCY_FONT_SIZE, SwingConstants.LEFT, SwingConstants.CENTER);
+				this.discrepancyLabels[r] = this.enclosedLabel("", constraints, SwingConstants.LEFT,
+						SwingConstants.CENTER);
 				this.discrepancyLabels[r].setName(( r + 1 ) + "");
 				this.discrepancyLabels[r].addMouseListener(new PopupListener(this.contextMenu));
 			}
@@ -358,11 +308,9 @@ public class ScoreByRoundPanel extends TriviaPanel {
 			constraints.gridx = 0;
 			constraints.gridy = this.nRounds;
 			constraints.gridwidth = 11;
-			final JPanel panel = new JPanel(new GridBagLayout());
-			panel.setBackground(HEADER_BACKGROUND_COLOR);
-			panel.setPreferredSize(new Dimension(0, 0));
-			this.add(panel, constraints);
-
+			this.spacer = new JPanel(new GridBagLayout());
+			this.spacer.setPreferredSize(new Dimension(0, 0));
+			this.add(this.spacer, constraints);
 
 		}
 
@@ -469,6 +417,177 @@ public class ScoreByRoundPanel extends TriviaPanel {
 
 		}
 
+		private void loadProperties() {
+			/**
+			 * Colors
+			 */
+			final Color headerBackgroundColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.BackgroundColor"), 16));
+			System.out.println(TriviaClient.PROPERTIES.getProperty("ScoreByRound.BackgroundColor"));
+			final Color backgroundColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.BackgroundColor"), 16));
+			final Color altBackgroundColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.AltBackgroundColor"), 16));
+			final Color roundColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Color"), 16));
+			final Color earnedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Earned.Color"),
+					16));
+			final Color valueColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16));
+			final Color percentColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Percent.Color"), 16));
+			final Color announcedColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("Announced.Color"), 16));
+			final Color discrepancyColor = new Color(Integer.parseInt(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Discrepancy.Color"), 16));
+
+			/**
+			 * Sizes
+			 */
+			final int rowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Row.Height"));
+
+			final int roundWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Width"));
+			final int roundEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
+					.getProperty("ScoreByRound.Round.Earned.Width"));
+			final int roundValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
+					.getProperty("ScoreByRound.Round.Value.Width"));
+			final int roundPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
+					.getProperty("ScoreByRound.Round.Percent.Width"));
+			final int totalEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
+					.getProperty("ScoreByRound.Total.Earned.Width"));
+			final int totalValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
+					.getProperty("ScoreByRound.Total.Value.Width"));
+			final int totalPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
+					.getProperty("ScoreByRound.Total.Percent.Width"));
+			final int announcedWidth = Integer.parseInt(TriviaClient.PROPERTIES
+					.getProperty("ScoreByRound.Announced.Width"));
+			final int placeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Place.Width"));
+			final int discrepancyWidth = Integer.parseInt(TriviaClient.PROPERTIES
+					.getProperty("ScoreByRound.Discrepancy.Width"));
+			/**
+			 * Font sizes
+			 */
+			final float fontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("ScoreByRound.FontSize"));
+			final float discrepancyFontSize = Float.parseFloat(TriviaClient.PROPERTIES
+					.getProperty("ScoreByRound.Discrepancy.FontSize"));
+
+			/** The number of open questions to show at one time */
+			final int altColorInterval = Integer.parseInt(TriviaClient.PROPERTIES
+					.getProperty("ScoreByRound.AltInterval"));
+
+			// Create the labels for each round
+			for (int r = 0; r < this.nRounds; r++) {
+				Color bColor = ( ( r + 1 ) % altColorInterval == 0 ) ? altBackgroundColor : backgroundColor;
+				setLabelProperties(this.roundLabels[r], roundWidth, rowHeight, roundColor, bColor, fontSize);
+				setLabelProperties(this.earnedLabels[r], roundEarnedWidth, rowHeight, earnedColor, bColor, fontSize);
+				setLabelProperties(this.valueLabels[r], roundValueWidth, rowHeight, valueColor, bColor, fontSize);
+				setLabelProperties(this.percentLabels[r], roundPercentWidth, rowHeight, percentColor, bColor, fontSize);
+				setLabelProperties(this.cumulativeEarnedLabels[r], totalEarnedWidth, rowHeight, earnedColor, bColor,
+						fontSize);
+				setLabelProperties(this.cumulativeValueLabels[r], totalValueWidth, rowHeight, valueColor, bColor,
+						fontSize);
+				setLabelProperties(this.percentTotalLabels[r], totalPercentWidth, rowHeight, percentColor, bColor,
+						fontSize);
+				setLabelProperties(this.announcedScoreLabels[r], announcedWidth, rowHeight, announcedColor, bColor,
+						fontSize);
+				setLabelProperties(this.placeLabels[r], placeWidth, rowHeight, announcedColor, bColor, fontSize);
+				setLabelProperties(this.discrepancyLabels[r], discrepancyWidth, rowHeight, discrepancyColor, bColor,
+						discrepancyFontSize);
+			}
+			this.spacer.setBackground(headerBackgroundColor);
+
+		}
+
+
+	}
+
+	protected void loadProperties() {
+		/**
+		 * Colors
+		 */
+		final Color headerBackgroundColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.BackgroundColor"), 16));
+		final Color roundColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Color"), 16));
+		final Color earnedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16));
+		final Color valueColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16));
+		final Color percentColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Percent.Color"), 16));
+		final Color announcedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Announced.Color"),
+				16));
+		final Color discrepancyColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Discrepancy.Color"), 16));
+
+		/**
+		 * Sizes
+		 */
+		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.Height"));
+
+		final int roundWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Width"));
+		final int roundEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Round.Earned.Width"));
+		final int roundValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Round.Value.Width"));
+		final int roundPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Round.Percent.Width"));
+		final int totalEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Total.Earned.Width"));
+		final int totalValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Total.Value.Width"));
+		final int totalPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Total.Percent.Width"));
+		final int announcedWidth = Integer
+				.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Announced.Width"));
+		final int placeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Place.Width"));
+		final int discrepancyWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Discrepancy.Width"));
+		/**
+		 * Font sizes
+		 */
+		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Header.FontSize"));
+
+		setLabelProperties(this.roundLabel0, roundWidth, headerHeight / 2, roundColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.roundLabel1, roundWidth, headerHeight / 2, roundColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.roundEarnedLabel0, roundEarnedWidth, headerHeight / 2, earnedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.roundEarnedLabel1, roundEarnedWidth, headerHeight / 2, earnedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.roundValueLabel0, roundValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.roundValueLabel1, roundValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.roundPercentLabel0, roundPercentWidth, headerHeight / 2, percentColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.roundPercentLabel1, roundPercentWidth, headerHeight / 2, percentColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.totalEarnedLabel0, totalEarnedWidth, headerHeight / 2, earnedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.totalEarnedLabel1, totalEarnedWidth, headerHeight / 2, earnedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.totalValueLabel0, totalValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.totalValueLabel1, totalValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.totalPercentLabel0, totalPercentWidth, headerHeight / 2, percentColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.totalPercentLabel1, totalPercentWidth, headerHeight / 2, percentColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.announcedLabel0, announcedWidth, headerHeight / 2, announcedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.announcedLabel1, announcedWidth, headerHeight / 2, announcedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.placeLabel0, placeWidth, headerHeight / 2, announcedColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.placeLabel1, placeWidth, headerHeight / 2, announcedColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.discrepancyLabel0, discrepancyWidth, headerHeight / 2, discrepancyColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.discrepancyLabel1, discrepancyWidth, headerHeight / 2, discrepancyColor,
+				headerBackgroundColor, headerFontSize);
+
+		this.internalScrollPanel.loadProperties();
 
 	}
 
