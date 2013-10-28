@@ -694,6 +694,7 @@ public class TriviaClient implements WindowListener {
 		for (int f = 0; f < this.getNTriviaWindows(); f++) {
 			String[] tabNames = this.windowList.get(f).getTabbedPane().getTabNames();
 			PROPERTIES.setProperty("Window" + f, Arrays.toString(tabNames));
+			this.windowList.get(f).saveProperties();
 			savePosition(this.windowList.get(f));
 		}
 		TriviaClient.savePropertyFile();
