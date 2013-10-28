@@ -544,6 +544,7 @@ public class TriviaClient implements WindowListener {
 	 * 
 	 */
 	public static void loadDefaults() {
+		PROPERTIES.clear();
 		final InputStream defaults = TriviaClient.class.getResourceAsStream(DEFAULTS_FILENAME);
 		try {
 			PROPERTIES.load(defaults);
@@ -551,6 +552,17 @@ public class TriviaClient implements WindowListener {
 			System.out.println("Couldn't load default properties file, aborting!");
 			System.exit(-1);
 		}
+	}
+
+	public void loadProperties() {
+		for (TriviaFrame frame : this.windowList) {
+			frame.loadProperties();
+		}
+	}
+
+	public void resetProperties() {
+		loadDefaults();
+		loadProperties();
 	}
 
 	/**

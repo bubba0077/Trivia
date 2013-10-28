@@ -360,7 +360,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.add(panel);
 		this.setVisible(true);
 
-		loadAllProperties();
+		loadProperties();
 	}
 
 	public TriviaClient getClient() {
@@ -372,11 +372,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				TriviaClient.PROPERTIES.getProperty(propertyName));
 	}
 
-	private void loadAllProperties() {
-		loadAllProperties(this.getTitle());
+	public void loadProperties() {
+		loadProperties(this.getTitle());
 	}
 
-	private void loadAllProperties(String id) {
+	private void loadProperties(String id) {
 		this.hideClosed = Boolean.parseBoolean(loadProperty(id, "HideClosed"));
 		this.hideClosedMenuItem.setSelected(this.hideClosed);
 		this.hideDuplicates = Boolean.parseBoolean(loadProperty(id, "HideDuplicates"));
@@ -613,7 +613,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 			case "Load Default Settings":
 				// Triggered by Reset window positions menu item
-				TriviaClient.loadDefaults();
+				client.resetProperties();
 				break;
 			case "Open wiki":
 				// Triggered by Open wiki menu item
