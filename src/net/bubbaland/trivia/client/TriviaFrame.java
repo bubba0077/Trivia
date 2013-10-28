@@ -1,5 +1,6 @@
 package net.bubbaland.trivia.client;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -416,6 +417,12 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		float fontSize = Float.parseFloat(loadProperty(id, "StatusBar.FontSize"));
 		this.statusBar.getParent().setPreferredSize(new Dimension(0, height));
 		this.statusBar.setFont(this.statusBar.getFont().deriveFont(fontSize));
+		this.researcherMenuItem.setForeground(new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("UserList.Researcher.Color"), 16)));
+		this.callerMenuItem.setForeground(new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("UserList.Caller.Color"), 16)));
+		this.typistMenuItem.setForeground(new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("UserList.Typist.Color"), 16)));
 
 		for (String tabName : this.book.getTabNames()) {
 			int index = this.book.indexOfTab(tabName);
