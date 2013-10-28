@@ -1,6 +1,5 @@
 package net.bubbaland.trivia.client;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
@@ -99,6 +98,8 @@ public class TriviaClient implements WindowListener {
 
 	// The user's name
 	private volatile String							user;
+	// The user's role
+	private volatile Role							role;
 	// Hashtable of active users and roles
 	private volatile Hashtable<String, Role>		activeUserHash;
 	// Hashtable of idle users and roles
@@ -124,14 +125,10 @@ public class TriviaClient implements WindowListener {
 		final TriviaFetcher fetcher = new TriviaFetcher(server, this);
 		fetcher.execute();
 
-		System.out.println("LIGHT_GRAY: " + Integer.toHexString(Color.LIGHT_GRAY.getRGB()));
-		System.out.println("DARK_GRAY: " + Integer.toHexString(Color.DARK_GRAY.getRGB()));
-		System.out.println("CYAN: " + Integer.toHexString(Color.CYAN.getRGB()));
-		System.out.println("GREEN: " + Integer.toHexString(Color.GREEN.getRGB()));
-		System.out.println("GRAY: " + Integer.toHexString(Color.GRAY.getRGB()));
-
 		// Create a prompt requesting the user name
 		new UserLoginDialog(this);
+
+		this.setRole(Role.RESEARCHER);
 
 		// Create first frame
 		new TriviaFrame(this, PROPERTIES.getProperty("InitialTabs").split(","), useFX);
@@ -244,6 +241,13 @@ public class TriviaClient implements WindowListener {
 			this.disconnected();
 			return;
 		}
+
+		this.role = role;
+
+	}
+
+	public Role getRole() {
+		return this.role;
 	}
 
 	/**
@@ -273,6 +277,7 @@ public class TriviaClient implements WindowListener {
 			this.disconnected();
 			return;
 		}
+
 		this.user = user;
 	}
 
@@ -374,23 +379,6 @@ public class TriviaClient implements WindowListener {
 		System.out.println("Connected to trivia server (" + TRIVIA_SERVER_URL + ").");
 
 		new TriviaClient(triviaServer, useFX);
-
-
-		// // Create the application window
-		// final JFrame frame = new JFrame("Trivia");
-		// frame.setName("Main_Window");
-		// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//
-		// // Initialize GUI and place in window
-		// try {
-		// frame.add(new TriviaClient(frame, triviaServer, useFX), BorderLayout.CENTER);
-		// } catch (final Exception e) {
-		// System.exit(0);
-		// }
-		//
-		// // Display the window.
-		// loadPosition(frame);
-		// frame.setVisible(true);
 	}
 
 	public void registerWindow(TriviaFrame frame) {

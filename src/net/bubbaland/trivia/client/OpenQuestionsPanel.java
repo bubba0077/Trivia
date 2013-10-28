@@ -477,7 +477,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 
 		}
 
-		private void loadProperties() {
+		protected void loadProperties() {
 			/**
 			 * Colors
 			 */

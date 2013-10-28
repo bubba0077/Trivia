@@ -66,4 +66,9 @@ public class RoundPanel extends TriviaPanel {
 		this.roundQlistPanel.update(force);
 	}
 
+	protected void loadProperties() {
+		this.roundHeaderPanel.loadProperties();
+		this.roundQlistPanel.loadProperties();
+	}
+
 }

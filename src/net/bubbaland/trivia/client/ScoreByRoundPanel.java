@@ -417,7 +417,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 
 		}
 
-		private void loadProperties() {
+		protected void loadProperties() {
 			/**
 			 * Colors
 			 */

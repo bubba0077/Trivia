@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
+
 import net.bubbaland.trivia.Trivia;
 
 /**
@@ -55,6 +56,7 @@ public class HistoryPanel extends TriviaPanel implements ItemListener {
 	 * @param client
 	 *            The local trivia client
 	 */
+	@SuppressWarnings("unchecked")
 	public HistoryPanel(TriviaClient client) {
 
 		super();

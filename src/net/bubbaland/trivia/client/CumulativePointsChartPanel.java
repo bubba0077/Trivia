@@ -9,9 +9,9 @@ import org.jfree.chart.JFreeChart;
 
 /**
  * A panel with a stacked XY plot that shows the cumulative score by round.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class CumulativePointsChartPanel extends TriviaPanel {
 
@@ -30,10 +30,10 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new chart panel
-	 *
+	 * 
 	 * @param client
 	 *            The local trivia client
-	 *
+	 * 
 	 */
 	public CumulativePointsChartPanel(TriviaClient client) {
 		super();
@@ -50,7 +50,7 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -95,6 +95,9 @@ public class CumulativePointsChartPanel extends TriviaPanel {
 			this.add(this.chartPanel, solo);
 		}
 
+	}
+
+	protected void loadProperties() {
 	}
 
 }

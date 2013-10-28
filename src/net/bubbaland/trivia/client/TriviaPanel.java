@@ -324,4 +324,6 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 
 	public abstract void update(boolean forceUpdate);
 
+	protected abstract void loadProperties();
+
 }

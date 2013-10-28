@@ -49,23 +49,24 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	// Sort menu items
-	final private JCheckBoxMenuItem	hideClosedMenuItem;
-	final private JCheckBoxMenuItem	hideDuplicatesMenuItem;
-	final private JMenuItem			sortTimestampAscendingMenuItem;
-	final private JMenuItem			sortTimestampDescendingMenuItem;
-	final private JMenuItem			sortQNumberAscendingMenuItem;
-	final private JMenuItem			sortQNumberDescendingMenuItem;
-	final private JMenuItem			sortStatusAscendingMenuItem;
-	final private JMenuItem			sortStatusDescendingMenuItem;
+	final private JRadioButtonMenuItem	researcherMenuItem, callerMenuItem, typistMenuItem;
+	final private JCheckBoxMenuItem		hideClosedMenuItem;
+	final private JCheckBoxMenuItem		hideDuplicatesMenuItem;
+	final private JMenuItem				sortTimestampAscendingMenuItem;
+	final private JMenuItem				sortTimestampDescendingMenuItem;
+	final private JMenuItem				sortQNumberAscendingMenuItem;
+	final private JMenuItem				sortQNumberDescendingMenuItem;
+	final private JMenuItem				sortStatusAscendingMenuItem;
+	final private JMenuItem				sortStatusDescendingMenuItem;
 
 	// The status bar at the bottom
-	final private JLabel			statusBar;
+	final private JLabel				statusBar;
 
-	final private TriviaClient		client;
-	private final DnDTabbedPane		book;
+	final private TriviaClient			client;
+	private final DnDTabbedPane			book;
 
 	// Sort method for the queue
-	private volatile QueueSort		queueSort;
+	private volatile QueueSort			queueSort;
 
 	public TriviaFrame(TriviaClient client, DropTargetDropEvent a_event) {
 		this(client, false);
@@ -103,6 +104,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			@Override
 			public void update(boolean forceUpdate) {
 			}
+
+			protected void loadProperties() {
+			}
 		};
 
 		this.client = client;
@@ -123,33 +127,31 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			roleMenu.setMnemonic(KeyEvent.VK_R);
 
 			final ButtonGroup roleOptions = new ButtonGroup();
-			JRadioButtonMenuItem roleOption = new JRadioButtonMenuItem("Researcher");
-			roleOption.setActionCommand("Researcher");
-			roleOption.setMnemonic(KeyEvent.VK_R);
-			roleOption.addActionListener(this);
-			// roleOption.setSelected(true);
-			roleOption.setForeground(UserListPanel.researcherColor);
-			roleOptions.add(roleOption);
-			roleMenu.add(roleOption);
-			// this.client.setRole(Role.RESEARCHER);
+			this.researcherMenuItem = new JRadioButtonMenuItem("Researcher");
+			this.researcherMenuItem.setActionCommand("Researcher");
+			this.researcherMenuItem.setMnemonic(KeyEvent.VK_R);
+			this.researcherMenuItem.addActionListener(this);
+			this.researcherMenuItem.setForeground(UserListPanel.researcherColor);
+			roleOptions.add(this.researcherMenuItem);
+			roleMenu.add(this.researcherMenuItem);
 
-			roleOption = new JRadioButtonMenuItem("Caller");
-			roleOption.setActionCommand("Caller");
-			roleOption.setMnemonic(KeyEvent.VK_C);
-			roleOption.addActionListener(this);
-			roleOption.setSelected(false);
-			roleOption.setForeground(UserListPanel.callerColor);
-			roleOptions.add(roleOption);
-			roleMenu.add(roleOption);
+			this.callerMenuItem = new JRadioButtonMenuItem("Caller");
+			this.callerMenuItem.setActionCommand("Caller");
+			this.callerMenuItem.setMnemonic(KeyEvent.VK_C);
+			this.callerMenuItem.addActionListener(this);
+			this.callerMenuItem.setSelected(false);
+			this.callerMenuItem.setForeground(UserListPanel.callerColor);
+			roleOptions.add(this.callerMenuItem);
+			roleMenu.add(this.callerMenuItem);
 
-			roleOption = new JRadioButtonMenuItem("Typist");
-			roleOption.setActionCommand("Typist");
-			roleOption.setMnemonic(KeyEvent.VK_T);
-			roleOption.addActionListener(this);
-			roleOption.setSelected(false);
-			roleOption.setForeground(UserListPanel.typistColor);
-			roleOptions.add(roleOption);
-			roleMenu.add(roleOption);
+			this.typistMenuItem = new JRadioButtonMenuItem("Typist");
+			this.typistMenuItem.setActionCommand("Typist");
+			this.typistMenuItem.setMnemonic(KeyEvent.VK_T);
+			this.typistMenuItem.addActionListener(this);
+			this.typistMenuItem.setSelected(false);
+			this.typistMenuItem.setForeground(UserListPanel.typistColor);
+			roleOptions.add(this.typistMenuItem);
+			roleMenu.add(this.typistMenuItem);
 
 			menu.add(roleMenu);
 
@@ -364,10 +366,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		return this.client;
 	}
 
-	private String loadProperty(String propertyName) {
-		return loadProperty(this.getTitle(), propertyName);
-	}
-
 	private String loadProperty(String id, String propertyName) {
 		return TriviaClient.PROPERTIES.getProperty(id + "." + propertyName,
 				TriviaClient.PROPERTIES.getProperty(propertyName));
@@ -418,6 +416,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		float fontSize = Float.parseFloat(loadProperty(id, "StatusBar.FontSize"));
 		this.statusBar.getParent().setPreferredSize(new Dimension(0, height));
 		this.statusBar.setFont(this.statusBar.getFont().deriveFont(fontSize));
+
+		for (String tabName : this.book.getTabNames()) {
+			int index = this.book.indexOfTab(tabName);
+			Component component = this.book.getComponentAt(index);
+			if (component instanceof TriviaPanel) {
+				( (TriviaPanel) this.book.getComponentAt(index) ).loadProperties();
+			}
+		}
 	}
 
 	protected void saveProperties() {
@@ -617,6 +623,20 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	public void update(boolean forceUpdate) {
+		Role role = this.client.getRole();
+		switch (role) {
+			case RESEARCHER:
+				this.researcherMenuItem.setSelected(true);
+				break;
+			case CALLER:
+				this.callerMenuItem.setSelected(true);
+				break;
+			case TYPIST:
+				this.typistMenuItem.setSelected(true);
+				break;
+			default:
+				break;
+		}
 		for (String tabName : this.book.getTabNames()) {
 			int index = this.book.indexOfTab(tabName);
 			Component component = this.book.getComponentAt(index);

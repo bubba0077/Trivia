@@ -774,7 +774,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 			this.lastStatus.add("new");
 		}
 
-		private void loadProperties() {
+		protected void loadProperties() {
 			/**
 			 * Colors
 			 */

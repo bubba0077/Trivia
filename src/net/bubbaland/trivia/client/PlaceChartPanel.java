@@ -10,9 +10,9 @@ import org.jfree.chart.JFreeChart;
 
 /**
  * A panel with a chart showing announced place by round.
- *
+ * 
  * @author Walter Kolczynski
- *
+ * 
  */
 public class PlaceChartPanel extends TriviaPanel {
 
@@ -30,10 +30,10 @@ public class PlaceChartPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new place chart
-	 *
+	 * 
 	 * @param client
 	 *            The local trivia client
-	 *
+	 * 
 	 */
 	public PlaceChartPanel(TriviaClient client) {
 
@@ -49,7 +49,7 @@ public class PlaceChartPanel extends TriviaPanel {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -94,6 +94,9 @@ public class PlaceChartPanel extends TriviaPanel {
 
 		}
 
+	}
+
+	protected void loadProperties() {
 	}
 
 
