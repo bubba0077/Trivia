@@ -17,6 +17,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
@@ -130,16 +131,20 @@ public class TriviaClient implements WindowListener {
 
 		this.setRole(Role.RESEARCHER);
 
-		// Create first frame
-		new TriviaFrame(this, PROPERTIES.getProperty("InitialTabs").split(","), useFX);
+		// Create startup frames
+		for (int f = 0; PROPERTIES.getProperty("Window" + f) != null; f++) {
+			new TriviaFrame(this, PROPERTIES.getProperty("Window" + f).replaceAll("[\\[\\]]", "").split(", "), useFX);
+			useFX = false; // Only put IRC in one window
+		}
 
-		// Create timer that will poll server for changes
+		// Wait for trivia object to finish downloading
 		while (this.trivia == null) {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException exception) {
 			}
 		}
+		// Create timer that will poll server for changes
 		final Timer refreshTimer = new Timer();
 		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0,
 				Integer.parseInt(PROPERTIES.getProperty("RefreshRate")));
@@ -297,12 +302,11 @@ public class TriviaClient implements WindowListener {
 		if (window instanceof TriviaFrame) {
 			( (TriviaFrame) window ).saveProperties();
 
-			// Remove window from the list
-			this.windowList.remove(window);
-
-			// Close if there are no more windows
-			if (this.windowList.isEmpty()) {
+			if (this.windowList.size() == 1) {
 				endProgram();
+			} else {
+				// Remove window from the list
+				this.windowList.remove(window);
 			}
 		}
 	}
@@ -448,12 +452,12 @@ public class TriviaClient implements WindowListener {
 	 */
 	public static void loadPosition(Window window) {
 		try {
-			final String frameID = window.getName().replaceAll(" ", "_");
+			final String frameID = window.getName();
 
-			final int x = Integer.parseInt(PROPERTIES.getProperty(frameID + "_x"));
-			final int y = Integer.parseInt(PROPERTIES.getProperty(frameID + "_y"));
-			final int width = Integer.parseInt(PROPERTIES.getProperty(frameID + "_width"));
-			final int height = Integer.parseInt(PROPERTIES.getProperty(frameID + "_height"));
+			final int x = Integer.parseInt(PROPERTIES.getProperty(frameID + ".X"));
+			final int y = Integer.parseInt(PROPERTIES.getProperty(frameID + ".Y"));
+			final int width = Integer.parseInt(PROPERTIES.getProperty(frameID + ".Width"));
+			final int height = Integer.parseInt(PROPERTIES.getProperty(frameID + ".Height"));
 
 			window.setBounds(x, y, width, height);
 
@@ -520,12 +524,12 @@ public class TriviaClient implements WindowListener {
 		final int width = (int) r.getWidth();
 		final int height = (int) r.getHeight();
 
-		final String frameID = window.getName().replaceAll(" ", "_");
+		final String frameID = window.getName();
 
-		PROPERTIES.setProperty(frameID + "_x", x + "");
-		PROPERTIES.setProperty(frameID + "_y", y + "");
-		PROPERTIES.setProperty(frameID + "_width", width + "");
-		PROPERTIES.setProperty(frameID + "_height", height + "");
+		PROPERTIES.setProperty(frameID + ".X", x + "");
+		PROPERTIES.setProperty(frameID + ".Y", y + "");
+		PROPERTIES.setProperty(frameID + ".Width", width + "");
+		PROPERTIES.setProperty(frameID + ".Height", height + "");
 	}
 
 	private static void savePropertyFile() {
@@ -682,6 +686,16 @@ public class TriviaClient implements WindowListener {
 	}
 
 	protected void endProgram() {
+		// Remove previously saved windows
+		for (int f = 0; PROPERTIES.getProperty("Window" + f) != null; f++) {
+			PROPERTIES.remove("Window" + f);
+		}
+		// Save tabs in all windows
+		for (int f = 0; f < this.getNTriviaWindows(); f++) {
+			String[] tabNames = this.windowList.get(f).getTabbedPane().getTabNames();
+			PROPERTIES.setProperty("Window" + f, Arrays.toString(tabNames));
+			savePosition(this.windowList.get(f));
+		}
 		TriviaClient.savePropertyFile();
 		System.exit(0);
 	}
