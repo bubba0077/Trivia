@@ -36,8 +36,6 @@ import net.bubbaland.trivia.TriviaChartFactory;
 import net.bubbaland.trivia.TriviaInterface;
 import net.bubbaland.trivia.UserList;
 import net.bubbaland.trivia.UserList.Role;
-import net.bubbaland.trivia.client.TriviaClient;
-
 import org.jfree.chart.ChartUtilities;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -116,7 +114,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		/**
 		 * Default properties
 		 */
-		final InputStream defaults = TriviaClient.class.getResourceAsStream(SETTINGS_FILENAME);
+		final InputStream defaults = TriviaServer.class.getResourceAsStream(SETTINGS_FILENAME);
 		try {
 			PROPERTIES.load(defaults);
 		} catch (IOException e) {
