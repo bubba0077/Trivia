@@ -82,7 +82,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 																				new ImageIcon(DnDTabbedPane.class
 																						.getResource("images/plus.png")));
 
-
 	private boolean									m_hasGhost			= true;
 
 	public DnDTabbedPane(TriviaFrame parent, TriviaClient client) {
@@ -141,7 +140,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 			public void dragGestureRecognized(DragGestureEvent e) {
 				final Point tabPt = e.getDragOrigin();
 				final int dragTabIndex = DnDTabbedPane.this.indexAtLocation(tabPt.x, tabPt.y);
-				if (dragTabIndex < 0) return;
+				if (dragTabIndex < 0 || dragTabIndex == DnDTabbedPane.this.indexOfTab("+")) return;
 
 				DnDTabbedPane.this.initGlassPane(e.getComponent(), e.getDragOrigin(), dragTabIndex);
 				try {
