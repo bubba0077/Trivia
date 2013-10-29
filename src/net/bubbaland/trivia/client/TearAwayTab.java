@@ -16,15 +16,29 @@ import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.Timer;
 
+/**
+ * A class that allows tabs to be dragged off of a frame.
+ * 
+ * This class provides a drop location when a tab is dragged off a frame by having a window follow the cursor around
+ * when not inside of a @TriviaFrame. When a tab is dropped into this, it passes the drop data along to a new
+ * TriviaFrame.
+ * 
+ * @author Walter Kolczynski
+ * 
+ */
 public class TearAwayTab extends JWindow {
 	private static final long	serialVersionUID	= -2723420566227526365L;
+
+	// A timer to poll the mouse location and move the window around
 	private final Timer			mousePoller;
+	// The root client
 	private final TriviaClient	client;
 
 	public TearAwayTab(TriviaClient client) {
 		this.client = client;
 		this.add(new JLabel("New Window"));
 		this.pack();
+		// Create a timer to poll the mouse location and update the window location
 		this.mousePoller = new Timer(0, new ActionListener() {
 			private Point	lastPoint	= MouseInfo.getPointerInfo().getLocation();
 
@@ -37,10 +51,18 @@ public class TearAwayTab extends JWindow {
 				lastPoint = point;
 			}
 		});
+		// Make this a valid drop target
 		new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, new EasyDropTarget(), true);
+		// Don't display this until needed
 		this.setVisible(false);
 	}
 
+	/**
+	 * Move the window.
+	 * 
+	 * @param location
+	 *            The new window location
+	 */
 	private void center(Point location) {
 		// System.out.println(location);
 		Point center = new Point();
@@ -56,6 +78,12 @@ public class TearAwayTab extends JWindow {
 		}
 	}
 
+	/**
+	 * Display this window and attach it to the mouse pointer.
+	 * 
+	 * @param location
+	 *            The location to start at
+	 */
 	public void attach(Point location) {
 		// System.out.println("attach");
 		center(location);
@@ -63,12 +91,21 @@ public class TearAwayTab extends JWindow {
 		this.setVisible(true);
 	}
 
+	/**
+	 * Stop displaying this window.
+	 */
 	public void detach() {
 		// System.out.println("detatch");
 		mousePoller.stop();
 		this.setVisible(false);
 	}
 
+	/**
+	 * A drop target to handle creation of a new frame when a tab is dropped.
+	 * 
+	 * @author Walter Kolczynski
+	 * 
+	 */
 	private class EasyDropTarget implements DropTargetListener {
 
 		@Override

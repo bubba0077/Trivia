@@ -46,8 +46,6 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 	/**
 	 * Instantiates a new score by round panel.
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 * 

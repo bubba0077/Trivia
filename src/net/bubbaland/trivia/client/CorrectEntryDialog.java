@@ -21,8 +21,6 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 	/**
 	 * Creates a new dialog box and prompts for response
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 * @param caller

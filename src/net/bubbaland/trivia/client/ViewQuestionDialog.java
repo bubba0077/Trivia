@@ -6,6 +6,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneConstants;
 
+/**
+ * Create a dialog that displays question data.
+ * 
+ * @author Walter Kolczynski
+ * 
+ */
 public class ViewQuestionDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 8466638572342233271L;

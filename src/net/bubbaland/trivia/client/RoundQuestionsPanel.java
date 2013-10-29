@@ -57,8 +57,6 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 	/**
 	 * Instantiates a new question list panel that will show data for the current round.
 	 * 
-	 * @param server
-	 *            the server
 	 * @param client
 	 *            the client
 	 */
@@ -69,8 +67,6 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 	/**
 	 * Instantiates a new question list panel.
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 * @param live

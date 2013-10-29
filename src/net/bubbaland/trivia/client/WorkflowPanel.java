@@ -34,19 +34,19 @@ public class WorkflowPanel extends TriviaMainPanel {
 	/**
 	 * Instantiates a new workflow panel.
 	 * 
-	 * @param server
-	 *            The remote trivia server
+	 * @param frame
+	 *            The top-level frame containing this panel
 	 * @param client
 	 *            The local trivia client
 	 */
-	public WorkflowPanel(final TriviaFrame panel, final TriviaClient client) {
+	public WorkflowPanel(final TriviaFrame frame, final TriviaClient client) {
 
 		super();
 
 		// Create the sub-panels
 		this.workflowHeaderPanel = new SummaryPanel(client);
 		this.workflowQlistPanel = new OpenQuestionsPanel(client);
-		this.workflowQueuePanel = new AnswerQueuePanel(panel, client);
+		this.workflowQueuePanel = new AnswerQueuePanel(frame, client);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();

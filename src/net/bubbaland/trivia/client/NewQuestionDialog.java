@@ -29,8 +29,6 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	/**
 	 * Instantiates a new question entry window.
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 * @param nQuestions
@@ -45,8 +43,6 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	/**
 	 * Instantiates a new question entry window.
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 * @param nQuestions
@@ -63,8 +59,6 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	/**
 	 * Instantiates a new question entry window.
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 * @param nQuestions

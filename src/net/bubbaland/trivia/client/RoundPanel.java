@@ -24,8 +24,6 @@ public class RoundPanel extends TriviaMainPanel {
 	/**
 	 * Instantiates a new round panel.
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 */

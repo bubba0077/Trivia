@@ -15,12 +15,25 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
+/**
+ * Creates a dialog that allows the user to select a tab to be added to the tabbed pane.
+ * 
+ * The dialog provides a combo box, a text area to describe the selected tab, and three option buttons: "Add",
+ * "Add All", and "Cancel". "Add" will add the selected tab. "Add All" will add all non-starred items to the pane that
+ * are not already open on the pane. "Cancel" will close the dialog with no further action.
+ * 
+ * @author Walter Kolczynski
+ * 
+ */
 public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 
 	private static final long		serialVersionUID	= -6388311089354721920L;
 
+	// GUI elements to monitor/update
 	private final JComboBox<String>	tabSelector;
 	private final JTextArea			descriptionLabel;
+
+	// Data source
 	private final TriviaClient		client;
 
 	public AddTabDialog(TriviaFrame panel, TriviaClient client, DnDTabbedPane pane) {
@@ -28,6 +41,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 
 		this.client = client;
 
+		// Get the list of tab names and sort them
 		Set<String> tabNameSet = client.getTabNames();
 		String[] tabNames = new String[tabNameSet.size()];
 		tabNameSet.toArray(tabNames);
@@ -39,14 +53,16 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
+
+		// Create the tab selector
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-
 		this.tabSelector = new JComboBox<String>(tabNames);
 		this.tabSelector.setFont(this.tabSelector.getFont().deriveFont(textAreaFontSize));
 		this.add(this.tabSelector, constraints);
 		this.tabSelector.addItemListener(this);
 
+		// Create the description area
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
 		constraints.gridx = 0;
@@ -58,6 +74,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		this.descriptionLabel.setWrapStyleWord(true);
 		this.add(this.descriptionLabel, constraints);
 
+		// Options
 		Object[] options = { "Add", "Add All", "Cancel" };
 
 		// Display the dialog box
@@ -66,17 +83,20 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		this.dialog.setName("Add Tab");
 		this.dialog.setVisible(true);
 
-		// If the OK button was pressed, add the proposed answer to the queue
+		// If a button was not pressed (option isn't a string), do nothing
 		if (!( dialog.getValue() instanceof String )) {
 			return;
 		}
 		final String option = (String) dialog.getValue();
+		// A list of tab names to add
 		final ArrayList<String> newTabs = new ArrayList<String>(0);
 		switch (option) {
+		// Add the selected tab to the list
 			case "Add": {
 				newTabs.add((String) tabSelector.getSelectedItem());
 				break;
 			}
+			// Add all tabs that don't start with a * and are not already in the tabbed pane
 			case "Add All":
 				for (String tabName : tabNameSet) {
 					if (!tabName.startsWith("*") && pane.indexOfTab(tabName) == -1) {
@@ -87,23 +107,31 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 			default:
 				return;
 		}
+		// Add all the tabs in the list to the tabbed pane
 		for (String tabName : newTabs) {
+			// Remove leading star now, since we don't want it in the tab name
 			if (tabName.startsWith("*")) {
 				tabName = tabName.replaceFirst("\\*", "");
 			}
+			// If there is already a copy of the tab, iterate the tab name
 			String altName = tabName;
 			int i = 1;
 			while (pane.indexOfTab(altName) > -1) {
 				altName = tabName + " (" + i + ")";
 				i++;
 			}
+			// Add the tab to the tabbed pane
 			pane.addTab(altName, client.getTab(panel, tabName));
+			// Make the new tab the selected one
 			final int tabLocation = pane.indexOfTab(altName);
 			pane.setSelectedIndex(tabLocation);
 		}
 
 	}
 
+	/**
+	 * Selection in combo box changed, update the description.
+	 */
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		String tabName = (String) this.tabSelector.getSelectedItem();
@@ -111,6 +139,12 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		this.descriptionLabel.setText(description);
 	}
 
+	/**
+	 * Customer comparator to sort tabs in the appropriate order.
+	 * 
+	 * @author Walter Kolczynski
+	 * 
+	 */
 	public static class TabCompare implements Comparator<String> {
 
 		final static private Hashtable<String, Integer>	SORT_ORDER;

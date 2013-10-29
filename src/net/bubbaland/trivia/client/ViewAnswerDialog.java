@@ -9,6 +9,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
+/**
+ * Create a dialog to display answer data.
+ * 
+ * @author Walter Kolczynski
+ * 
+ */
 public class ViewAnswerDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 8466638572342233271L;

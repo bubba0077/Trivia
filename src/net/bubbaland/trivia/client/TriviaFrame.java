@@ -32,7 +32,7 @@ import javax.swing.event.ChangeListener;
 import net.bubbaland.trivia.UserList.Role;
 
 /**
- * 
+ * Creates a top-level window for displaying the trivia GUI.
  * 
  * @author Walter Kolczynski
  * 
@@ -69,6 +69,15 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	// Sort method for the queue
 	private volatile QueueSort			queueSort;
 
+	/**
+	 * Creates a new frame based on a drag-drop event from the tabbed pane in another frame. This is done when a tab is
+	 * dragged outside of all other TriviaFrames.
+	 * 
+	 * @param client
+	 *            The root client
+	 * @param a_event
+	 *            The drag-drop event
+	 */
 	public TriviaFrame(TriviaClient client, DropTargetDropEvent a_event) {
 		this(client, false);
 		this.book.convertTab(this.book.getTabTransferData(a_event), this.book.getTargetTabIndex(a_event.getLocation()));
@@ -76,6 +85,16 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.book.addChangeListener(this);
 	}
 
+	/**
+	 * Creates a new frame with specified tabs.
+	 * 
+	 * @param client
+	 *            The root client
+	 * @param initialTabs
+	 *            Tabs to open initially
+	 * @param showIRC
+	 *            Whether the frame should include a browser pane for the web IRC client
+	 */
 	public TriviaFrame(TriviaClient client, String[] initialTabs, boolean showIRC) {
 		this(client, showIRC);
 		for (String tabName : initialTabs) {
@@ -86,9 +105,23 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.book.addChangeListener(this);
 	}
 
-	public TriviaFrame(TriviaClient client, boolean showIRC) {
+	/**
+	 * Internal constructor containing code common to the public constructors.
+	 * 
+	 * @param client
+	 *            The root client
+	 * @param showIRC
+	 *            Whether the frame should include a browser pane for the web IRC client
+	 */
+	private TriviaFrame(TriviaClient client, boolean showIRC) {
 		super();
 
+		this.client = client;
+
+		// Notify the client this frame exists
+		this.client.registerWindow(this);
+
+		// If this isn't the first pane, give it an iterative title
 		int nWindows = client.getNTriviaWindows();
 		String title;
 		if (nWindows == 0) {
@@ -99,6 +132,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.setTitle(title);
 		this.setName(title);
 
+		// Create a new panel to hold all GUI elements for the frame
 		final TriviaMainPanel panel = new TriviaMainPanel() {
 			private static final long	serialVersionUID	= -3431542881790392652L;
 
@@ -110,8 +144,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			}
 		};
 
-		this.client = client;
-		this.client.registerWindow(this);
 
 		/**
 		 * Setup the menus
@@ -323,14 +355,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		 * Setup status bar at bottom
 		 */
 		// Create status bar
-		// int height = Integer.parseInt(loadProperty("StatusBar.height"));
-		// float fontSize = Float.parseFloat(loadProperty("StatusBar.fontSize"));
 		this.statusBar = panel.enclosedLabel("", 0, 0, this.getForeground(), this.getBackground(), constraints, 0,
 				SwingConstants.LEFT, SwingConstants.CENTER);
 
+		// Create drag & drop tabbed pane
 		this.book = new DnDTabbedPane(this, client);
 
-
+		// Setup layout constraints
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.weightx = 1.0;
@@ -354,69 +385,86 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			splitPane.setResizeWeight(1.0);
 			panel.add(splitPane, constraints);
 		} else {
+			// Add the tabbed pane to the panel
 			panel.add(this.book, constraints);
 		}
 
+		// Add the panel to the frame and display the frame
 		this.add(panel);
 		this.setVisible(true);
 
+		// Load the properties
 		loadProperties();
 	}
 
+	/**
+	 * Get the root client.
+	 * 
+	 * @return The root client
+	 */
 	public TriviaClient getClient() {
 		return this.client;
 	}
 
+	/**
+	 * Load property for this window name. First looks for property specific to this iteration of TriviaFrame, then
+	 * looks to the default version.
+	 * 
+	 * @param id
+	 *            The frame's name
+	 * @param propertyName
+	 *            The property name
+	 * @return The property requested
+	 */
 	private String loadProperty(String id, String propertyName) {
 		return TriviaClient.PROPERTIES.getProperty(id + "." + propertyName,
 				TriviaClient.PROPERTIES.getProperty(propertyName));
 	}
 
+	/**
+	 * Load all of the properties from the client and apply them.
+	 */
 	public void loadProperties() {
-		loadProperties(this.getTitle());
-	}
+		String id = this.getTitle();
 
-	private void loadProperties(String id) {
+		// Load hide options
 		this.hideClosed = Boolean.parseBoolean(loadProperty(id, "HideClosed"));
 		this.hideClosedMenuItem.setSelected(this.hideClosed);
 		this.hideDuplicates = Boolean.parseBoolean(loadProperty(id, "HideDuplicates"));
 		this.hideDuplicatesMenuItem.setSelected(this.hideClosed);
 
+		// Load queue sort method
 		switch (loadProperty(id, "QueueSort")) {
 			case "Sort Timestamp Ascending":
-				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
-				this.sortTimestampAscendingMenuItem.setSelected(true);
+				this.setSort(QueueSort.TIMESTAMP_ASCENDING);
 				break;
 			case "Sort Question Number Ascending":
-				this.queueSort = QueueSort.QNUMBER_ASCENDING;
-				this.sortQNumberAscendingMenuItem.setSelected(true);
+				this.setSort(QueueSort.QNUMBER_ASCENDING);
 				break;
 			case "Sort Status Ascending":
-				this.queueSort = QueueSort.STATUS_ASCENDING;
-				this.sortStatusAscendingMenuItem.setSelected(true);
+				this.setSort(QueueSort.STATUS_ASCENDING);
 				break;
 			case "Sort Timestamp Descending":
-				this.queueSort = QueueSort.TIMESTAMP_DESCENDING;
-				this.sortTimestampDescendingMenuItem.setSelected(true);
+				this.setSort(QueueSort.TIMESTAMP_DESCENDING);
 				break;
 			case "Sort Question Number Descending":
-				this.queueSort = QueueSort.QNUMBER_DESCENDING;
-				this.sortTimestampDescendingMenuItem.setSelected(true);
+				this.setSort(QueueSort.QNUMBER_DESCENDING);
 				break;
 			case "Sort Status Descending":
-				this.queueSort = QueueSort.STATUS_DESCENDING;
-				this.sortTimestampDescendingMenuItem.setSelected(true);
+				this.setSort(QueueSort.STATUS_DESCENDING);
 				break;
 			default:
-				this.queueSort = QueueSort.TIMESTAMP_ASCENDING;
-				this.sortTimestampAscendingMenuItem.setSelected(true);
+				this.setSort(QueueSort.TIMESTAMP_ASCENDING);
 				break;
 		}
 
+		// Apply to status bar
 		int height = Integer.parseInt(loadProperty(id, "StatusBar.Height"));
 		float fontSize = Float.parseFloat(loadProperty(id, "StatusBar.FontSize"));
 		this.statusBar.getParent().setPreferredSize(new Dimension(0, height));
 		this.statusBar.setFont(this.statusBar.getFont().deriveFont(fontSize));
+
+		// Apply colors to role menu items
 		this.researcherMenuItem.setForeground(new Color(Integer.parseInt(
 				TriviaClient.PROPERTIES.getProperty("UserList.Researcher.Color"), 16)));
 		this.callerMenuItem.setForeground(new Color(Integer.parseInt(
@@ -424,6 +472,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.typistMenuItem.setForeground(new Color(Integer.parseInt(
 				TriviaClient.PROPERTIES.getProperty("UserList.Typist.Color"), 16)));
 
+		// Tell all of the tabs to reload the properties
 		for (String tabName : this.book.getTabNames()) {
 			int index = this.book.indexOfTab(tabName);
 			Component component = this.book.getComponentAt(index);
@@ -433,6 +482,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 	}
 
+	/**
+	 * Save properties.
+	 */
 	protected void saveProperties() {
 		String id = this.getTitle();
 		TriviaClient.PROPERTIES.setProperty(id + "." + "HideClosed", this.hideClosed + "");
@@ -442,6 +494,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.Height", height + "");
 		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.FontSize", fontSize + "");
 		TriviaClient.PROPERTIES.setProperty(id + "." + "OpenTabs", this.book.getTabNames().toString());
+		// // Tell all of the tabs to reload the properties
+		// for (String tabName : this.book.getTabNames()) {
+		// int index = this.book.indexOfTab(tabName);
+		// Component component = this.book.getComponentAt(index);
+		// if (component instanceof TriviaMainPanel) {
+		// ( (TriviaMainPanel) this.book.getComponentAt(index) ).saveProperties();
+		// }
+		// }
 	}
 
 	/**
@@ -513,10 +573,20 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		return this.queueSort;
 	}
 
+	/**
+	 * Get whether answers to closed questions should be hidden in the answer queue.
+	 * 
+	 * @return Whether answers to closed questions should be hidden
+	 */
 	public boolean hideClosed() {
 		return this.hideClosed;
 	}
 
+	/**
+	 * Get whether duplicate answers should be hidden in the answer queue.
+	 * 
+	 * @return Whether duplicate answers should be hidden
+	 */
 	public boolean hideDuplicates() {
 		return this.hideDuplicates;
 	}
@@ -624,12 +694,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				}
 				break;
 			case "Exit":
+				// Tell client to exit the program
 				this.client.endProgram();
 				break;
 		}
 	}
 
 	public void update(boolean forceUpdate) {
+		// Update role
 		Role role = this.client.getRole();
 		switch (role) {
 			case RESEARCHER:
@@ -644,6 +716,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			default:
 				break;
 		}
+		// Propagate update to tabs
 		for (String tabName : this.book.getTabNames()) {
 			int index = this.book.indexOfTab(tabName);
 			Component component = this.book.getComponentAt(index);

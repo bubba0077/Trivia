@@ -48,7 +48,7 @@ public class TriviaClient implements WindowListener {
 	final static private String						TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
 	// URL for Wiki
 	final static protected String					WIKI_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
-	// URL base for Visual Trivia
+	// URL base for Visual Trivia Pages
 	final static protected String					VISUAL_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home/visual-trivia/visual-trivia-";
 	// URL for the IRC client
 	final static protected String					IRC_CLIENT_URL		= "http://webchat.freenode.net/";
@@ -80,10 +80,16 @@ public class TriviaClient implements WindowListener {
 			System.out.println("Couldn't load properties file, may not exist yet.");
 		}
 
+		/**
+		 * Pass the properties to the chart factory (other classes will request the properties when needed).
+		 */
 		TriviaChartFactory.loadProperties(PROPERTIES);
 	}
 
+	// List of active windows
 	final private ArrayList<TriviaFrame>			windowList;
+
+	/** List of available tabs and associated descriptions. */
 	final static private Hashtable<String, String>	TAB_DESCRIPTION_HASH;
 	static {
 		TAB_DESCRIPTION_HASH = new Hashtable<String, String>(0);
@@ -122,6 +128,8 @@ public class TriviaClient implements WindowListener {
 	private TriviaClient(TriviaInterface server, boolean useFX) {
 
 		this.server = server;
+
+		// Initialize list to hold open windows
 		this.windowList = new ArrayList<TriviaFrame>(0);
 
 		// Grab a copy of the current Trivia data structure from the server in the background
@@ -130,7 +138,6 @@ public class TriviaClient implements WindowListener {
 
 		// Create a prompt requesting the user name
 		new UserLoginDialog(this);
-
 		this.setRole(Role.RESEARCHER);
 
 		// Create startup frames
@@ -253,12 +260,17 @@ public class TriviaClient implements WindowListener {
 
 	}
 
+	/**
+	 * Get the current user role.
+	 * 
+	 * @return The user's role
+	 */
 	public Role getRole() {
 		return this.role;
 	}
 
 	/**
-	 * Sets the user name
+	 * Sets the user name.
 	 * 
 	 * @param user
 	 *            The new user name
@@ -297,18 +309,24 @@ public class TriviaClient implements WindowListener {
 	public void windowClosed(WindowEvent e) {
 	}
 
+	/**
+	 * When one of the windows tries to close, save the properties and position of the window first. Then exit the
+	 * program if there are no open windows left.
+	 */
 	@Override
 	public void windowClosing(WindowEvent e) {
 		Window window = e.getWindow();
+		// Same the window position
 		savePosition(window);
 		if (window instanceof TriviaFrame) {
 			( (TriviaFrame) window ).saveProperties();
 
 			if (this.windowList.size() == 1) {
+				// This is the last window, go through exit procedures
 				endProgram();
 			} else {
 				// Remove window from the list
-				this.windowList.remove(window);
+				this.unregisterWindow((TriviaFrame) window);
 			}
 		}
 	}
@@ -329,6 +347,11 @@ public class TriviaClient implements WindowListener {
 	public void windowOpened(WindowEvent e) {
 	}
 
+	/**
+	 * Get the remote server handle to allow interaction with the server.
+	 * 
+	 * @return The remote server handle
+	 */
 	public TriviaInterface getServer() {
 		return this.server;
 	}
@@ -387,20 +410,46 @@ public class TriviaClient implements WindowListener {
 		new TriviaClient(triviaServer, useFX);
 	}
 
+	/**
+	 * Register a window as a child of the client. New Trivia Frames do this so the client can track events from them.
+	 * 
+	 * @param frame
+	 *            The window to track
+	 */
 	public void registerWindow(TriviaFrame frame) {
 		frame.addWindowListener(this);
 		this.windowList.add(frame);
 	}
 
+	/**
+	 * Unregister a window as a child of the client. This is done when a window closes.
+	 * 
+	 * @param frame
+	 *            The window to stop tracking
+	 */
 	public void unregisterWindow(TriviaFrame frame) {
 		frame.removeWindowListener(this);
 		this.windowList.remove(frame);
 	}
 
+	/**
+	 * Get the number of registered windows.
+	 * 
+	 * @return The number of windows
+	 */
 	public int getNTriviaWindows() {
 		return this.windowList.size();
 	}
 
+	/**
+	 * Create a panel to add as a tab to a tabbed pane.
+	 * 
+	 * @param frame
+	 *            The window that holds the tabbed pane
+	 * @param tabName
+	 *            The tab name to create
+	 * @return The panel to add as a tab
+	 */
 	public TriviaMainPanel getTab(TriviaFrame frame, String tabName) {
 		TriviaMainPanel panel = null;
 		switch (tabName) {
@@ -438,10 +487,22 @@ public class TriviaClient implements WindowListener {
 		return panel;
 	}
 
+	/**
+	 * Get a list of available tab names.
+	 * 
+	 * @return The available tab names
+	 */
 	public Set<String> getTabNames() {
 		return TriviaClient.TAB_DESCRIPTION_HASH.keySet();
 	}
 
+	/**
+	 * Get the description associated with a tab name
+	 * 
+	 * @param tabName
+	 *            The tab name
+	 * @return The description associated with the tab name
+	 */
 	public String getTabDescription(String tabName) {
 		return TriviaClient.TAB_DESCRIPTION_HASH.get(tabName);
 	}
@@ -534,6 +595,9 @@ public class TriviaClient implements WindowListener {
 		PROPERTIES.setProperty(frameID + ".Height", height + "");
 	}
 
+	/**
+	 * Save the current properties to the settings file.
+	 */
 	private static void savePropertyFile() {
 		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
 		try {
@@ -560,12 +624,18 @@ public class TriviaClient implements WindowListener {
 		}
 	}
 
+	/**
+	 * Ask all child windows to reload the properties.
+	 */
 	public void loadProperties() {
 		for (TriviaFrame frame : this.windowList) {
 			frame.loadProperties();
 		}
 	}
 
+	/**
+	 * Reset properties to defaults, then ask all child windows to load the new properties.
+	 */
 	public void resetProperties() {
 		loadDefaults();
 		loadProperties();
@@ -614,6 +684,12 @@ public class TriviaClient implements WindowListener {
 
 	}
 
+	/**
+	 * Task to run in the background and periodically update trivia data from the server.
+	 * 
+	 * @author Walter Kolczynski
+	 * 
+	 */
 	private static class RefreshTask extends TimerTask {
 
 		final TriviaClient	client;
@@ -664,6 +740,9 @@ public class TriviaClient implements WindowListener {
 		}
 	}
 
+	/**
+	 * Update all of the child windows.
+	 */
 	public void update() {
 		for (TriviaFrame frame : this.windowList) {
 			frame.update(false);
@@ -687,6 +766,9 @@ public class TriviaClient implements WindowListener {
 		}
 	}
 
+	/**
+	 * Add the current window contents to properties, then save the properties to the settings file and exit.
+	 */
 	protected void endProgram() {
 		// Remove previously saved windows
 		for (int f = 0; PROPERTIES.getProperty("Window" + f) != null; f++) {

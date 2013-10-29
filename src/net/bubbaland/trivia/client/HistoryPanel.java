@@ -51,8 +51,6 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 	/**
 	 * Instantiates a new history panel.
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 */
@@ -268,8 +266,8 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		setLabelProperties(this.blank0, -1, headerHeight, roundColor, headerBackgroundColor, headerFontSize);
 		setLabelProperties(this.blank1, -1, headerHeight, roundColor, headerBackgroundColor, headerFontSize);
 
-		setComboBoxProperties(this.roundSelector, selectorWidth, selectorHeight, headerFontSize, selectorColor,
-				selectorBackgroundColor, headerBackgroundColor);
+		setComboBoxProperties(this.roundSelector, selectorWidth, selectorHeight, selectorColor,
+				selectorBackgroundColor, headerBackgroundColor, headerFontSize);
 
 		this.roundQuestionPanel.loadProperties();
 	}

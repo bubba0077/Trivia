@@ -44,8 +44,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	/**
 	 * Instantiates a new workflow question list panel.
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 */

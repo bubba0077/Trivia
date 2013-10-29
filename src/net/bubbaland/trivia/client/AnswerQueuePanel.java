@@ -38,7 +38,7 @@ import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.client.TriviaFrame.QueueSort;
 
 /**
- * A panel that show the current answers in the queue
+ * A panel that shows the submitted answers for the current round.
  * 
  * @author Walter Kolczynski
  * 
@@ -53,8 +53,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 			"Partial", "Correct"							};
 
 	/** Sort icons */
-	private final ImageIcon				upArrow;
-	private final ImageIcon				downArrow;
+	private static final ImageIcon		upArrow				= new ImageIcon(
+																	AnswerQueuePanel.class
+																			.getResource("images/upArrow.png"));
+	private static final ImageIcon		downArrow			= new ImageIcon(
+																	AnswerQueuePanel.class
+																			.getResource("images/downArrow.png"));
 
 	/**
 	 * GUI elements that will be updated
@@ -74,8 +78,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 	/**
 	 * Instantiates a new workflow queue panel.
 	 * 
-	 * @param server
-	 *            The remote trivia server
+	 * @param parent
+	 *            The parent top-level frame
 	 * @param client
 	 *            The local trivia client
 	 */
@@ -85,9 +89,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 
 		this.parent = parent;
 		this.client = client;
-
-		this.upArrow = new ImageIcon(getClass().getResource("images/upArrow.png"));
-		this.downArrow = new ImageIcon(getClass().getResource("images/downArrow.png"));
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -774,6 +775,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 			this.lastStatus.add("new");
 		}
 
+		/**
+		 * Load properties from the client and apply.
+		 */
 		protected void loadProperties() {
 			/**
 			 * Colors
@@ -832,6 +836,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 
 		}
 
+		/**
+		 * Listener for events to display pop-up menu.
+		 * 
+		 * @author Walter Kolczynski
+		 * 
+		 */
 		private class PopupListener extends MouseAdapter {
 
 			private final JPopupMenu	menu;
@@ -862,6 +872,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 
 		}
 
+		/**
+		 * A custom renderer to control how the status combo box is displayed.
+		 * 
+		 * @author Walter Kolczynski
+		 * 
+		 */
 		public class StatusCellRenderer implements ListCellRenderer<String> {
 			private final ListCellRenderer<String>	wrapped;
 			private final JComboBox<String>			comboBox;
@@ -915,6 +931,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 		}
 	}
 
+	/**
+	 * Load properties from the client and apply.
+	 */
 	protected void loadProperties() {
 		/**
 		 * Colors

@@ -7,6 +7,12 @@ import javax.swing.JOptionPane;
 
 import net.bubbaland.trivia.Trivia;
 
+/**
+ * Creates a dialog notifying user of a scoring discrepancy between the announced score and the calculated score.
+ * 
+ * @author Walter Kolczynski
+ * 
+ */
 public class ConflictDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 542530522891342681L;

@@ -1013,8 +1013,6 @@ public class Trivia implements Serializable {
 	/**
 	 * Reset a question.
 	 * 
-	 * @param rNumber
-	 *            The round number
 	 * @param qNumber
 	 *            The question number
 	 */

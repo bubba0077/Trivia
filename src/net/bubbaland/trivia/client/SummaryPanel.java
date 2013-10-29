@@ -60,8 +60,6 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	/**
 	 * Instantiates a new header panel.
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 */
@@ -363,9 +361,9 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				labelFontSize);
 		setLabelProperties(this.placeLabel, col5width, bottomRowHeight, announcedColor, backgroundColor, labelFontSize);
 
-		setButtonProperties(this.speedButton, centerButtonWidth, centerButtonHeight, labelFontSize, null);
-		setButtonProperties(this.newRoundButton, centerButtonWidth, centerButtonHeight, labelFontSize, newRoundColor);
-		setButtonProperties(this.conflictButton, conflictButtonWidth, conflictButtonHeight, labelFontSize, null);
+		setButtonProperties(this.speedButton, centerButtonWidth, centerButtonHeight, null, labelFontSize);
+		setButtonProperties(this.newRoundButton, centerButtonWidth, centerButtonHeight, newRoundColor, labelFontSize);
+		setButtonProperties(this.conflictButton, conflictButtonWidth, conflictButtonHeight, null, labelFontSize);
 
 		this.userListPanel.setBackground(backgroundColor);
 	}

@@ -331,8 +331,6 @@ public interface TriviaInterface extends Remote {
 	/**
 	 * Reset a question.
 	 * 
-	 * @param rNumber
-	 *            The round number
 	 * @param qNumber
 	 *            The question number
 	 * @throws RemoteException
