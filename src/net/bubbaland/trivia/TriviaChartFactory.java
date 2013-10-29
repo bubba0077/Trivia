@@ -44,148 +44,27 @@ public class TriviaChartFactory {
 	/** The upper bound of the vertical axis */
 	private static int			maxPoints;
 
-	/**
-	 * Create an XY line chart of the team's place after each round.
-	 * 
-	 * @param trivia
-	 *            The trivia data to use
-	 * @return An XY line chart of the team's place after each round
-	 */
-	public static JFreeChart makePlaceChart(Trivia trivia) {
-
-		final int nRounds = trivia.getNRounds();
-		final int nTeams = trivia.getNTeams();
-
-		// Load the round data and determine if there are any changes
-		final int[] places = new int[nRounds];
-		final boolean[] announced = new boolean[nRounds];
-		for (int r = 0; r < nRounds; r++) {
-			places[r] = trivia.getAnnouncedPlace(r + 1);
-			announced[r] = trivia.isAnnounced(r + 1);
-		}
-
-		// Create a new dataset
-		final XYSeriesCollection dataset = new XYSeriesCollection();
-		// Create a new series
-		final XYSeries series = new XYSeries("Place");
-
-		for (int r = 0; r < nRounds; r++) {
-			// If the round has been announced, add a new point to the series
-			if (announced[r]) {
-				series.add(r + 1, places[r]);
-			}
-		}
-		// Add the series to the dataset
-		dataset.addSeries(series);
-
-		// Create the XY plot
-		final JFreeChart chart = ChartFactory.createXYLineChart("Place by Round", "Round", "Place", dataset,
-				PlotOrientation.VERTICAL, false, true, false);
-
-		// Set the background color
-		final XYPlot plot = chart.getXYPlot();
-		plot.setBackgroundPaint(backgroundColor);
-
-		// Set the line color and thickness, and turn on data points
-		final XYLineAndShapeRenderer rend = (XYLineAndShapeRenderer) plot.getRenderer();
-		rend.setSeriesShapesVisible(0, true);
-		rend.setSeriesShape(0, makeCircle(4));
-		rend.setSeriesPaint(0, announcedColor);
-		rend.setSeriesStroke(0, new BasicStroke(3.0f));
-
-		// Set axis properties
-		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
-		final NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
-		xAxis.setRange(0.5, nRounds + 0.5);
-		xAxis.setAutoRange(false);
-		xAxis.setTickUnit(new NumberTickUnit(5));
-		xAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
-		yAxis.setInverted(true);
-		yAxis.setRange(0.5, nTeams + 0.5);
-		yAxis.setAutoRange(false);
-		yAxis.setTickUnit(new NumberTickUnit(5));
-		yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
-
-		return chart;
+	public static void loadProperties(Properties properties) {
+		/**
+		 * Colors
+		 */
+		backgroundColor = new Color(Integer.parseInt(properties.getProperty("Chart.BackgroundColor"), 16));
+		announcedColor = new Color(Integer.parseInt(properties.getProperty("Announced.Color"), 16));
+		valueColor = new Color(Integer.parseInt(properties.getProperty("Value.Color"), 16));
+		earnedColor = new Color(Integer.parseInt(properties.getProperty("Earned.Color"), 16));
+		maxPoints = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Chart.ByRound.MaxPoints"));
 	}
 
 
 	/**
-	 * Create a stacked bar plot of the team's score in each round.
+	 * Make a circle.
 	 * 
-	 * @param trivia
-	 *            The trivia data
-	 * @return A stacked bar plot of the team's score in each round
+	 * @param radius
+	 *            the radius
+	 * @return the shape
 	 */
-	public static JFreeChart makeScoreByRoundChart(Trivia trivia) {
-
-		final int nRounds = trivia.getNRounds();
-
-		// Get the scores for each round and check if they are updated
-		final int[] values = new int[nRounds];
-		final int[] earneds = new int[nRounds];
-		for (int r = 0; r < nRounds; r++) {
-			values[r] = trivia.getValue(r + 1);
-			earneds[r] = trivia.getEarned(r + 1);
-		}
-
-		// Create a new dataset
-		final DefaultTableXYDataset dataset = new DefaultTableXYDataset();
-		// Create series for the earned and possible points
-		final XYSeries valueSeries = new XYSeries("Possible", true, false);
-		final XYSeries earnedSeries = new XYSeries("Earned", true, false);
-
-		for (int r = 0; r < nRounds; r++) {
-			if (values[r] != 0) {
-				// If the round has been opened, add the point to the series
-				valueSeries.add(r + 1, values[r] - earneds[r]);
-				earnedSeries.add(r + 1, earneds[r]);
-			}
-		}
-		// Add the series to the dataset
-		dataset.addSeries(earnedSeries);
-		dataset.addSeries(valueSeries);
-
-		// create a new chart with the plot
-		final JFreeChart chart = ChartFactory.createStackedXYAreaChart("Points by Round", "Round", "Points", dataset);
-
-		// Create a new XYBar renderer to override the normal one
-		final XYBarRenderer renderer = new StackedXYBarRenderer(0.0);
-		renderer.setBarPainter(new StandardXYBarPainter());
-		renderer.setDrawBarOutline(false);
-		renderer.setShadowVisible(false);
-		renderer.setSeriesPaint(0, earnedColor);
-		renderer.setSeriesPaint(1, valueColor);
-		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}", NumberFormat
-				.getIntegerInstance(), NumberFormat.getIntegerInstance()));
-
-		// Replace the renderer
-		final XYPlot plot = chart.getXYPlot();
-		plot.setRenderer(renderer);
-
-		// Set the background color
-		plot.setBackgroundPaint(backgroundColor);
-
-		// Specify the axis parameters
-		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
-		final NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
-		xAxis.setRange(0.5, nRounds + 0.5);
-		xAxis.setAutoRange(false);
-		xAxis.setTickUnit(new NumberTickUnit(5));
-		xAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
-		yAxis.setRange(0, maxPoints);
-		yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
-
-		return chart;
-
+	public static Shape makeCircle(double radius) {
+		return new Ellipse2D.Double(-radius, -radius, 2 * radius, 2 * radius);
 	}
 
 	/**
@@ -263,6 +142,149 @@ public class TriviaChartFactory {
 	}
 
 	/**
+	 * Create an XY line chart of the team's place after each round.
+	 * 
+	 * @param trivia
+	 *            The trivia data to use
+	 * @return An XY line chart of the team's place after each round
+	 */
+	public static JFreeChart makePlaceChart(Trivia trivia) {
+
+		final int nRounds = trivia.getNRounds();
+		final int nTeams = trivia.getNTeams();
+
+		// Load the round data and determine if there are any changes
+		final int[] places = new int[nRounds];
+		final boolean[] announced = new boolean[nRounds];
+		for (int r = 0; r < nRounds; r++) {
+			places[r] = trivia.getAnnouncedPlace(r + 1);
+			announced[r] = trivia.isAnnounced(r + 1);
+		}
+
+		// Create a new dataset
+		final XYSeriesCollection dataset = new XYSeriesCollection();
+		// Create a new series
+		final XYSeries series = new XYSeries("Place");
+
+		for (int r = 0; r < nRounds; r++) {
+			// If the round has been announced, add a new point to the series
+			if (announced[r]) {
+				series.add(r + 1, places[r]);
+			}
+		}
+		// Add the series to the dataset
+		dataset.addSeries(series);
+
+		// Create the XY plot
+		final JFreeChart chart = ChartFactory.createXYLineChart("Place by Round", "Round", "Place", dataset,
+				PlotOrientation.VERTICAL, false, true, false);
+
+		// Set the background color
+		final XYPlot plot = chart.getXYPlot();
+		plot.setBackgroundPaint(backgroundColor);
+
+		// Set the line color and thickness, and turn on data points
+		final XYLineAndShapeRenderer rend = (XYLineAndShapeRenderer) plot.getRenderer();
+		rend.setSeriesShapesVisible(0, true);
+		rend.setSeriesShape(0, makeCircle(4));
+		rend.setSeriesPaint(0, announcedColor);
+		rend.setSeriesStroke(0, new BasicStroke(3.0f));
+
+		// Set axis properties
+		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
+		final NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
+		xAxis.setRange(0.5, nRounds + 0.5);
+		xAxis.setAutoRange(false);
+		xAxis.setTickUnit(new NumberTickUnit(5));
+		xAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
+		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
+		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+		yAxis.setInverted(true);
+		yAxis.setRange(0.5, nTeams + 0.5);
+		yAxis.setAutoRange(false);
+		yAxis.setTickUnit(new NumberTickUnit(5));
+		yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
+		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
+		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+
+		return chart;
+	}
+
+	/**
+	 * Create a stacked bar plot of the team's score in each round.
+	 * 
+	 * @param trivia
+	 *            The trivia data
+	 * @return A stacked bar plot of the team's score in each round
+	 */
+	public static JFreeChart makeScoreByRoundChart(Trivia trivia) {
+
+		final int nRounds = trivia.getNRounds();
+
+		// Get the scores for each round and check if they are updated
+		final int[] values = new int[nRounds];
+		final int[] earneds = new int[nRounds];
+		for (int r = 0; r < nRounds; r++) {
+			values[r] = trivia.getValue(r + 1);
+			earneds[r] = trivia.getEarned(r + 1);
+		}
+
+		// Create a new dataset
+		final DefaultTableXYDataset dataset = new DefaultTableXYDataset();
+		// Create series for the earned and possible points
+		final XYSeries valueSeries = new XYSeries("Possible", true, false);
+		final XYSeries earnedSeries = new XYSeries("Earned", true, false);
+
+		for (int r = 0; r < nRounds; r++) {
+			if (values[r] != 0) {
+				// If the round has been opened, add the point to the series
+				valueSeries.add(r + 1, values[r] - earneds[r]);
+				earnedSeries.add(r + 1, earneds[r]);
+			}
+		}
+		// Add the series to the dataset
+		dataset.addSeries(earnedSeries);
+		dataset.addSeries(valueSeries);
+
+		// create a new chart with the plot
+		final JFreeChart chart = ChartFactory.createStackedXYAreaChart("Points by Round", "Round", "Points", dataset);
+
+		// Create a new XYBar renderer to override the normal one
+		final XYBarRenderer renderer = new StackedXYBarRenderer(0.0);
+		renderer.setBarPainter(new StandardXYBarPainter());
+		renderer.setDrawBarOutline(false);
+		renderer.setShadowVisible(false);
+		renderer.setSeriesPaint(0, earnedColor);
+		renderer.setSeriesPaint(1, valueColor);
+		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}", NumberFormat
+				.getIntegerInstance(), NumberFormat.getIntegerInstance()));
+
+		// Replace the renderer
+		final XYPlot plot = chart.getXYPlot();
+		plot.setRenderer(renderer);
+
+		// Set the background color
+		plot.setBackgroundPaint(backgroundColor);
+
+		// Specify the axis parameters
+		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
+		final NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
+		xAxis.setRange(0.5, nRounds + 0.5);
+		xAxis.setAutoRange(false);
+		xAxis.setTickUnit(new NumberTickUnit(5));
+		xAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
+		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
+		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+		yAxis.setRange(0, maxPoints);
+		yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
+		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
+		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+
+		return chart;
+
+	}
+
+	/**
 	 * Create an XY plot comparing each team's score in each round relative to ours.
 	 * 
 	 * @param trivia
@@ -274,7 +296,7 @@ public class TriviaChartFactory {
 		final int nRounds = trivia.getNRounds();
 
 		int lastAnnounced = 0;
-		ArrayList<ScoreEntry[]> scores = new ArrayList<ScoreEntry[]>(0);
+		final ArrayList<ScoreEntry[]> scores = new ArrayList<ScoreEntry[]>(0);
 
 		// Load standings from announced rounds
 		while (trivia.isAnnounced(lastAnnounced + 1)) {
@@ -285,9 +307,7 @@ public class TriviaChartFactory {
 		}
 
 		// If no rounds have been announced, don't make a plot
-		if (scores.size() < 1) {
-			return null;
-		}
+		if (scores.size() < 1) return null;
 		final int nTeams = scores.get(0).length;
 
 		// Create a new dataset
@@ -342,28 +362,6 @@ public class TriviaChartFactory {
 
 		return chart;
 
-	}
-
-	/**
-	 * Make a circle.
-	 * 
-	 * @param radius
-	 *            the radius
-	 * @return the shape
-	 */
-	public static Shape makeCircle(double radius) {
-		return new Ellipse2D.Double(-radius, -radius, 2 * radius, 2 * radius);
-	}
-
-	public static void loadProperties(Properties properties) {
-		/**
-		 * Colors
-		 */
-		backgroundColor = new Color(Integer.parseInt(properties.getProperty("Chart.BackgroundColor"), 16));
-		announcedColor = new Color(Integer.parseInt(properties.getProperty("Announced.Color"), 16));
-		valueColor = new Color(Integer.parseInt(properties.getProperty("Value.Color"), 16));
-		earnedColor = new Color(Integer.parseInt(properties.getProperty("Earned.Color"), 16));
-		maxPoints = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Chart.ByRound.MaxPoints"));
 	}
 
 }

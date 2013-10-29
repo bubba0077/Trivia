@@ -44,16 +44,38 @@ public class TearAwayTab extends JWindow {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Point point = MouseInfo.getPointerInfo().getLocation();
-				if (!point.equals(lastPoint)) {
-					center(point);
+				final Point point = MouseInfo.getPointerInfo().getLocation();
+				if (!point.equals(this.lastPoint)) {
+					TearAwayTab.this.center(point);
 				}
-				lastPoint = point;
+				this.lastPoint = point;
 			}
 		});
 		// Make this a valid drop target
 		new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, new EasyDropTarget(), true);
 		// Don't display this until needed
+		this.setVisible(false);
+	}
+
+	/**
+	 * Display this window and attach it to the mouse pointer.
+	 * 
+	 * @param location
+	 *            The location to start at
+	 */
+	public void attach(Point location) {
+		// System.out.println("attach");
+		this.center(location);
+		this.mousePoller.start();
+		this.setVisible(true);
+	}
+
+	/**
+	 * Stop displaying this window.
+	 */
+	public void detach() {
+		// System.out.println("detatch");
+		this.mousePoller.stop();
 		this.setVisible(false);
 	}
 
@@ -65,39 +87,17 @@ public class TearAwayTab extends JWindow {
 	 */
 	private void center(Point location) {
 		// System.out.println(location);
-		Point center = new Point();
+		final Point center = new Point();
 		center.setLocation(location.x - this.getWidth() / 2, location.y - this.getHeight() / 2);
 		TearAwayTab.this.setLocation(center);
-		for (DnDTabbedPane pane : DnDTabbedPane.getTabbedPanes()) {
-			Rectangle bounds = pane.getBounds();
+		for (final DnDTabbedPane pane : DnDTabbedPane.getTabbedPanes()) {
+			final Rectangle bounds = pane.getBounds();
 			// System.out.println(bounds);
 			if (bounds.contains(location)) {
 				this.detach();
 				return;
 			}
 		}
-	}
-
-	/**
-	 * Display this window and attach it to the mouse pointer.
-	 * 
-	 * @param location
-	 *            The location to start at
-	 */
-	public void attach(Point location) {
-		// System.out.println("attach");
-		center(location);
-		mousePoller.start();
-		this.setVisible(true);
-	}
-
-	/**
-	 * Stop displaying this window.
-	 */
-	public void detach() {
-		// System.out.println("detatch");
-		mousePoller.stop();
-		this.setVisible(false);
 	}
 
 	/**
@@ -114,22 +114,22 @@ public class TearAwayTab extends JWindow {
 		}
 
 		@Override
-		public void dragOver(DropTargetDragEvent dtde) {
-		}
-
-		@Override
-		public void dropActionChanged(DropTargetDragEvent dtde) {
-		}
-
-		@Override
 		public void dragExit(DropTargetEvent dte) {
 		}
 
 		@Override
+		public void dragOver(DropTargetDragEvent dtde) {
+		}
+
+		@Override
 		public void drop(DropTargetDropEvent a_event) {
-			detach();
+			TearAwayTab.this.detach();
 			new TriviaFrame(TearAwayTab.this.client, a_event);
 			a_event.dropComplete(true);
+		}
+
+		@Override
+		public void dropActionChanged(DropTargetDragEvent dtde) {
 		}
 	}
 }

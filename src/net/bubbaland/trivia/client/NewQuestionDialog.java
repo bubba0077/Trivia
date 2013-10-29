@@ -145,7 +145,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		this.dialog.setVisible(true);
 
 		// If the OK button was pressed, open the question
-		final int option = ( (Integer) dialog.getValue() ).intValue();
+		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			// Get the input data
 			final int qNumber = (int) qNumberSpinner.getValue();
@@ -174,7 +174,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 						+ qNumber, this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 				this.dialog.setVisible(true);
 
-				final int confirm = ( (Integer) dialog.getValue() ).intValue();
+				final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
 				if (confirm != JOptionPane.OK_OPTION) {
 					new NewQuestionDialog(client, nQuestions, qNumberStart, qValue, qText);
 					return;
@@ -287,7 +287,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 						JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 				this.dialog.setVisible(true);
 
-				final int confirm = ( (Integer) dialog.getValue() ).intValue();
+				final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
 				if (confirm != JOptionPane.OK_OPTION) {
 					new NewQuestionDialog(client, nQuestions, qNumber, qValue, qText);
 					return;

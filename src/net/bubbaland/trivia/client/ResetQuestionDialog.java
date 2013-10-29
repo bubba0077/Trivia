@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 
 public class ResetQuestionDialog extends TriviaDialogPanel {
 
@@ -17,7 +18,7 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 
 	public ResetQuestionDialog(TriviaClient client, int qNumber, int qValue, String qText) {
 
-		GridBagConstraints constraints = new GridBagConstraints();
+		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 
@@ -38,7 +39,7 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 
 		constraints.gridx = 1;
 		constraints.gridy = 1;
-		label = new JLabel("Value: " + qValue, JLabel.RIGHT);
+		label = new JLabel("Value: " + qValue, SwingConstants.RIGHT);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
@@ -47,18 +48,18 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
 		constraints.gridwidth = 2;
-		JTextArea textArea = new JTextArea(qText);
+		final JTextArea textArea = new JTextArea(qText);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 		textArea.setEditable(false);
-		JScrollPane scrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		final JScrollPane scrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(100, 100));
 		scrollPane.setViewportView(textArea);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(scrollPane, constraints);
 
-		TriviaDialog dialog = new TriviaDialog(null, "Confirm Question Reset " + qNumber, this,
+		final TriviaDialog dialog = new TriviaDialog(null, "Confirm Question Reset " + qNumber, this,
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 		dialog.setVisible(true);
 

@@ -36,6 +36,7 @@ import net.bubbaland.trivia.TriviaChartFactory;
 import net.bubbaland.trivia.TriviaInterface;
 import net.bubbaland.trivia.UserList;
 import net.bubbaland.trivia.UserList.Role;
+
 import org.jfree.chart.ChartUtilities;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -117,7 +118,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		final InputStream defaults = TriviaServer.class.getResourceAsStream(SETTINGS_FILENAME);
 		try {
 			PROPERTIES.load(defaults);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			System.out.println("Couldn't load default properties file, aborting!");
 			System.exit(-1);
 		}
@@ -193,6 +194,11 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	}
 
 	@Override
+	public Hashtable<String, Role> getActiveUsers(int window, int timeout) throws RemoteException {
+		return this.userList.getActive(window, timeout);
+	}
+
+	@Override
 	public Round[] getChangedRounds(String user, int[] oldVersions) throws RemoteException {
 		this.userList.userHandshake(user);
 		return this.trivia.getChangedRounds(oldVersions);
@@ -203,6 +209,11 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		return this.trivia.getCurrentRoundNumber();
 	}
 
+	@Override
+	public Hashtable<String, Role> getIdleUsers(int window, int timeout) throws RemoteException {
+		return this.userList.getIdle(window, timeout);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -211,21 +222,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	@Override
 	public Trivia getTrivia() throws RemoteException {
 		return this.trivia;
-	}
-
-	@Override
-	public Hashtable<String, Role> getActiveUsers(int window, int timeout) throws RemoteException {
-		return this.userList.getActive(window, timeout);
-	}
-
-	@Override
-	public Hashtable<String, Role> getIdleUsers(int window, int timeout) throws RemoteException {
-		return this.userList.getIdle(window, timeout);
-	}
-
-	@Override
-	public void login(String user) throws RemoteException {
-		this.userList.updateUserActivity(user);
 	}
 
 	/**
@@ -374,15 +370,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	}
 
-	/**
-	 * Print a message with timestamp to the console.
-	 * 
-	 * @param message
-	 *            The message
-	 */
-	private void log(String message) {
-		final Date date = new Date();
-		System.out.println(stringDateFormat.format(date) + ": " + message);
+	@Override
+	public void login(String user) throws RemoteException {
+		this.userList.updateUserActivity(user);
 	}
 
 	/*
@@ -399,6 +389,18 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 				+ " in the queue is correct, "
 				+ this.trivia.getValue(this.trivia.getCurrentRoundNumber(),
 						this.trivia.getAnswerQueueQNumbers()[queueIndex]) + " points earned!");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.bubbaland.trivia.server.TriviaInterface#markDuplicate(String, int)
+	 */
+	@Override
+	public void markDuplicate(String user, int queueIndex) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.trivia.markDuplicate(queueIndex);
+		this.log("Item " + queueIndex + " marked as duplicate.");
 	}
 
 	/*
@@ -440,13 +442,14 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see net.bubbaland.trivia.server.TriviaInterface#markDuplicate(String, int)
+	 * @see net.bubbaland.trivia.server.TriviaInterface#newRound()
 	 */
 	@Override
-	public void markDuplicate(String user, int queueIndex) throws RemoteException {
+	@WebMethod
+	public void newRound(String user) throws RemoteException {
 		this.userList.updateUserActivity(user);
-		this.trivia.markDuplicate(queueIndex);
-		this.log("Item " + queueIndex + " marked as duplicate.");
+		this.log("New round starting...");
+		this.trivia.newRound();
 	}
 
 	// /**
@@ -479,14 +482,13 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see net.bubbaland.trivia.server.TriviaInterface#newRound()
+	 * @see net.bubbaland.trivia.server.TriviaInterface#open(int, int, java.lang.String)
 	 */
 	@Override
-	@WebMethod
-	public void newRound(String user) throws RemoteException {
+	public void open(String user, int qNumber, int qValue, String question) throws RemoteException {
 		this.userList.updateUserActivity(user);
-		this.log("New round starting...");
-		this.trivia.newRound();
+		this.trivia.open(qNumber, qValue, question);
+		this.log("Question " + qNumber + " opened for " + qValue + " Points:\n" + question);
 	}
 
 	// /*
@@ -502,18 +504,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see net.bubbaland.trivia.server.TriviaInterface#open(int, int, java.lang.String)
-	 */
-	@Override
-	public void open(String user, int qNumber, int qValue, String question) throws RemoteException {
-		this.userList.updateUserActivity(user);
-		this.trivia.open(qNumber, qValue, question);
-		this.log("Question " + qNumber + " opened for " + qValue + " Points:\n" + question);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#proposeAnswer(int, java.lang.String, java.lang.String, int)
 	 */
 	@Override
@@ -522,6 +512,69 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		this.trivia.proposeAnswer(qNumber, answer, submitter, confidence);
 		this.log(submitter + " submitted an answer for Q" + qNumber + " with a confidence of " + confidence + ":\n"
 				+ answer);
+	}
+
+	@Override
+	public void remapQuestion(int oldQNumber, int newQNumber) throws RemoteException {
+		this.trivia.remapQuestion(oldQNumber, newQNumber);
+	}
+
+	@Override
+	public void resetQuestion(String user, int qNumber) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.trivia.resetQuestion(qNumber);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.bubbaland.trivia.server.TriviaInterface#setDiscrepancyText(int, java.lang.String)
+	 */
+	@Override
+	public void setDiscrepancyText(String user, int rNumber, String discrepancyText) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.trivia.setDiscrepencyText(rNumber, discrepancyText);
+	}
+
+	@Override
+	public void setRole(String user, Role role) throws RemoteException {
+		this.userList.updateRole(user, role);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.bubbaland.trivia.server.TriviaInterface#setSpeed()
+	 */
+	@Override
+	@WebMethod
+	public void setSpeed(String user) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a speed round");
+		this.trivia.setSpeed();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.bubbaland.trivia.server.TriviaInterface#unsetSpeed()
+	 */
+	@Override
+	public void unsetSpeed(String user) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a normal round");
+		this.trivia.unsetSpeed();
+	}
+
+	/**
+	 * Print a message with timestamp to the console.
+	 * 
+	 * @param message
+	 *            The message
+	 */
+	private void log(String message) {
+		final Date date = new Date();
+		System.out.println(stringDateFormat.format(date) + ": " + message);
 	}
 
 	/**
@@ -724,98 +777,52 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			System.out.println("Couldn't save data to file " + filename);
 		}
 
-		if (trivia.isAnnounced(1)) {
+		if (this.trivia.isAnnounced(1)) {
 			// Save place chart
 			filename = CHART_DIR + "/" + roundString + "_placeChart.png";
 			try {
-				File file = new File(filename);
-				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makePlaceChart(trivia), CHART_WIDTH,
+				final File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makePlaceChart(this.trivia), CHART_WIDTH,
 						CHART_HEIGHT);
 				this.log("Saved place chart to " + filename);
-			} catch (IOException exception) {
+			} catch (final IOException exception) {
 				System.out.println("Couldn't save place chart to file " + filename);
 			}
 
 			// Save score by round chart
 			filename = CHART_DIR + "/" + roundString + "_scoreByRoundChart.png";
 			try {
-				File file = new File(filename);
-				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeScoreByRoundChart(trivia), CHART_WIDTH,
+				final File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeScoreByRoundChart(this.trivia), CHART_WIDTH,
 						CHART_HEIGHT);
 				this.log("Saved score by round chart to " + filename);
-			} catch (IOException exception) {
+			} catch (final IOException exception) {
 				System.out.println("Couldn't save score by round chart to file " + filename);
 			}
 
 			// Save cumulative score chart
 			filename = CHART_DIR + "/" + roundString + "_cumulativeScoreChart.png";
 			try {
-				File file = new File(filename);
-				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeCumulativePointChart(trivia), CHART_WIDTH,
-						CHART_HEIGHT);
+				final File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeCumulativePointChart(this.trivia),
+						CHART_WIDTH, CHART_HEIGHT);
 				this.log("Saved cumulative score chart to " + filename);
-			} catch (IOException exception) {
+			} catch (final IOException exception) {
 				System.out.println("Couldn't save cumulative score chart to file " + filename);
 			}
 
 			// Save team comparison chart
 			filename = CHART_DIR + "/" + roundString + "_teamComparisonChart.png";
 			try {
-				File file = new File(filename);
-				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeTeamComparisonChart(trivia), CHART_WIDTH,
-						CHART_HEIGHT);
+				final File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeTeamComparisonChart(this.trivia),
+						CHART_WIDTH, CHART_HEIGHT);
 				this.log("Saved team comparison chart to " + filename);
-			} catch (IOException exception) {
+			} catch (final IOException exception) {
 				System.out.println("Couldn't save team comparison chart to file " + filename);
 			}
 		}
 
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.bubbaland.trivia.server.TriviaInterface#setDiscrepancyText(int, java.lang.String)
-	 */
-	@Override
-	public void setDiscrepancyText(String user, int rNumber, String discrepancyText) throws RemoteException {
-		this.userList.updateUserActivity(user);
-		this.trivia.setDiscrepencyText(rNumber, discrepancyText);
-	}
-
-	@Override
-	public void setRole(String user, Role role) throws RemoteException {
-		this.userList.updateRole(user, role);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.bubbaland.trivia.server.TriviaInterface#setSpeed()
-	 */
-	@Override
-	@WebMethod
-	public void setSpeed(String user) throws RemoteException {
-		this.userList.updateUserActivity(user);
-		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a speed round");
-		this.trivia.setSpeed();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.bubbaland.trivia.server.TriviaInterface#unsetSpeed()
-	 */
-	@Override
-	public void unsetSpeed(String user) throws RemoteException {
-		this.userList.updateUserActivity(user);
-		this.log("Making round " + this.trivia.getCurrentRoundNumber() + " a normal round");
-		this.trivia.unsetSpeed();
-	}
-
-	public void resetQuestion(String user, int qNumber) throws RemoteException {
-		this.userList.updateUserActivity(user);
-		this.trivia.resetQuestion(qNumber);
 	}
 
 	/**
@@ -901,10 +908,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 		// server.test();
 
-	}
-
-	public void remapQuestion(int oldQNumber, int newQNumber) throws RemoteException {
-		this.trivia.remapQuestion(oldQNumber, newQNumber);
 	}
 
 }

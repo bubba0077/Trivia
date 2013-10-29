@@ -184,6 +184,13 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	}
 
 	/**
+	 * Click the OK button on the option pane.
+	 */
+	public void clickOK() {
+		this.optionPane.setValue(JOptionPane.OK_OPTION);
+	}
+
+	/**
 	 * Save the position of the dialog before disposing.
 	 */
 	@Override
@@ -199,13 +206,6 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 */
 	public Object getValue() {
 		return this.optionPane.getValue();
-	}
-
-	/**
-	 * Click the OK button on the option pane.
-	 */
-	public void clickOK() {
-		this.optionPane.setValue(JOptionPane.OK_OPTION);
 	}
 
 	/**

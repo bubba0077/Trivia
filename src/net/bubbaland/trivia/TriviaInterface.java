@@ -78,6 +78,16 @@ public interface TriviaInterface extends Remote {
 			boolean isCorrect, String submitter, String operator) throws RemoteException;
 
 	/**
+	 * Get the users and roles that have been active. Active means having changed something on the server.
+	 * 
+	 * @param window
+	 *            Number of seconds without making a change before becoming idle
+	 * @return The user names and roles of users who have been active within the activity window
+	 * @throws RemoteException
+	 */
+	public Hashtable<String, Role> getActiveUsers(int window, int timeout) throws RemoteException;
+
+	/**
 	 * Get rounds that have changed. This is the primary method for retrieving updated data from the server.
 	 * 
 	 * @param user
@@ -98,26 +108,6 @@ public interface TriviaInterface extends Remote {
 	public int getCurrentRound() throws RemoteException;
 
 	/**
-	 * Get the full trivia data structure. This is used primarily when a client starts to initialize their local trivia
-	 * data.
-	 * 
-	 * @return The Trivia object
-	 * @throws RemoteException
-	 *             A remote exception
-	 */
-	public Trivia getTrivia() throws RemoteException;
-
-	/**
-	 * Get the users and roles that have been active. Active means having changed something on the server.
-	 * 
-	 * @param window
-	 *            Number of seconds without making a change before becoming idle
-	 * @return The user names and roles of users who have been active within the activity window
-	 * @throws RemoteException
-	 */
-	public Hashtable<String, Role> getActiveUsers(int window, int timeout) throws RemoteException;
-
-	/**
 	 * Get the users and roles that are idle. Idle means they are still contacting the server for updates, but haven't
 	 * made any changes.
 	 * 
@@ -132,13 +122,14 @@ public interface TriviaInterface extends Remote {
 	public Hashtable<String, Role> getIdleUsers(int window, int timeout) throws RemoteException;
 
 	/**
-	 * Check a user in when they first start their client.
+	 * Get the full trivia data structure. This is used primarily when a client starts to initialize their local trivia
+	 * data.
 	 * 
-	 * @param user
-	 *            The user's name
+	 * @return The Trivia object
 	 * @throws RemoteException
+	 *             A remote exception
 	 */
-	public void login(String user) throws RemoteException;
+	public Trivia getTrivia() throws RemoteException;
 
 	/**
 	 * Gets a list of available saves.
@@ -161,6 +152,15 @@ public interface TriviaInterface extends Remote {
 	 *             A remote exception
 	 */
 	public void loadState(String user, String stateFile) throws RemoteException;
+
+	/**
+	 * Check a user in when they first start their client.
+	 * 
+	 * @param user
+	 *            The user's name
+	 * @throws RemoteException
+	 */
+	public void login(String user) throws RemoteException;
 
 	/**
 	 * Mark a question correct.
@@ -188,6 +188,19 @@ public interface TriviaInterface extends Remote {
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
+
+	/**
+	 * Mark as duplicate.
+	 * 
+	 * @param user
+	 *            The user's name
+	 * @param queueIndex
+	 *            The location of the answer in the queue
+	 * 
+	 * @throws RemoteException
+	 *             A remote exception
+	 */
+	public void markDuplicate(String user, int queueIndex) throws RemoteException;
 
 	/**
 	 * Mark a question incorrect.
@@ -225,19 +238,6 @@ public interface TriviaInterface extends Remote {
 	 *             A remote exception
 	 */
 	public void markUncalled(String user, int queueIndex) throws RemoteException;
-
-	/**
-	 * Mark as duplicate.
-	 * 
-	 * @param user
-	 *            The user's name
-	 * @param queueIndex
-	 *            The location of the answer in the queue
-	 * 
-	 * @throws RemoteException
-	 *             A remote exception
-	 */
-	public void markDuplicate(String user, int queueIndex) throws RemoteException;
 
 	/**
 	 * Starts a new round.
@@ -284,6 +284,26 @@ public interface TriviaInterface extends Remote {
 	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) throws RemoteException;
 
 	/**
+	 * Remap a question to a new number.
+	 * 
+	 * @param oldQNumber
+	 *            The old question number
+	 * @param newQNumber
+	 *            The new question number
+	 * @throws RemoteException
+	 */
+	public void remapQuestion(int oldQNumber, int newQNumber) throws RemoteException;
+
+	/**
+	 * Reset a question.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @throws RemoteException
+	 */
+	public void resetQuestion(String user, int qNumber) throws RemoteException;
+
+	/**
 	 * Sets the discrepancy text.
 	 * 
 	 * @param user
@@ -327,25 +347,5 @@ public interface TriviaInterface extends Remote {
 	 *             A remote exception
 	 */
 	public void unsetSpeed(String user) throws RemoteException;
-
-	/**
-	 * Reset a question.
-	 * 
-	 * @param qNumber
-	 *            The question number
-	 * @throws RemoteException
-	 */
-	public void resetQuestion(String user, int qNumber) throws RemoteException;
-
-	/**
-	 * Remap a question to a new number.
-	 * 
-	 * @param oldQNumber
-	 *            The old question number
-	 * @param newQNumber
-	 *            The new question number
-	 * @throws RemoteException
-	 */
-	public void remapQuestion(int oldQNumber, int newQNumber) throws RemoteException;
 
 }

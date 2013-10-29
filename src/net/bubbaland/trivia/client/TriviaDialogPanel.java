@@ -55,7 +55,7 @@ public class TriviaDialogPanel extends TriviaPanel implements AncestorListener, 
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				submitText();
+				TriviaDialogPanel.this.submitText();
 			}
 		});
 	}
@@ -91,17 +91,6 @@ public class TriviaDialogPanel extends TriviaPanel implements AncestorListener, 
 	public void ancestorRemoved(AncestorEvent event) {
 	}
 
-	/**
-	 * Tell the dialog to click the OK button on the option pane.
-	 */
-	public void submitText() {
-		this.dialog.clickOK();
-	}
-
-	@Override
-	public void focusLost(FocusEvent e) {
-	}
-
 	@Override
 	public void focusGained(FocusEvent event) {
 		final JComponent source = (JComponent) event.getSource();
@@ -110,12 +99,24 @@ public class TriviaDialogPanel extends TriviaPanel implements AncestorListener, 
 			// Thread.sleep(10);
 			// } catch (InterruptedException e) { }
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					( (JTextField) source ).selectAll();
 				}
 			});
 
 		}
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+	}
+
+	/**
+	 * Tell the dialog to click the OK button on the option pane.
+	 */
+	public void submitText() {
+		this.dialog.clickOK();
 	}
 
 	public static void loadProperties() {

@@ -64,6 +64,7 @@ public class RoundPanel extends TriviaMainPanel {
 		this.roundQlistPanel.update(force);
 	}
 
+	@Override
 	protected void loadProperties() {
 		this.roundHeaderPanel.loadProperties();
 		this.roundQlistPanel.loadProperties();

@@ -11,13 +11,10 @@ import java.util.Hashtable;
  */
 public class UserList {
 
-	public enum Role {
-		TYPIST, CALLER, RESEARCHER, IDLE
-	}
-
 	/** Data */
 	// User list that is tracks when the user makes a change
 	private final Hashtable<String, Date>	activeUserList;
+
 	// User list that is tracks when a data refresh is requested
 	private final Hashtable<String, Date>	passiveUserList;
 	// List of user roles
@@ -30,7 +27,7 @@ public class UserList {
 		this.activeUserList = new Hashtable<String, Date>(0);
 		this.passiveUserList = new Hashtable<String, Date>(0);
 		this.roleList = new Hashtable<String, Role>(0);
-	};
+	}
 
 	/**
 	 * Change a user name and transfer the role.
@@ -46,7 +43,7 @@ public class UserList {
 		this.passiveUserList.remove(oldUser);
 		this.roleList.remove(oldUser);
 		this.updateRole(newUser, role);
-	}
+	};
 
 	/**
 	 * Get the users and roles that have been active. Active means having changed something on the server.
@@ -113,7 +110,6 @@ public class UserList {
 		return userHash;
 	}
 
-
 	/**
 	 * Update the role of a user.
 	 * 
@@ -130,6 +126,7 @@ public class UserList {
 		// Change role
 		this.roleList.put(user, role);
 	}
+
 
 	/**
 	 * Update user's last activity time.
@@ -153,6 +150,10 @@ public class UserList {
 	 */
 	public void userHandshake(String user) {
 		this.passiveUserList.put(user, new Date());
+	}
+
+	public enum Role {
+		TYPIST, CALLER, RESEARCHER, IDLE
 	}
 
 

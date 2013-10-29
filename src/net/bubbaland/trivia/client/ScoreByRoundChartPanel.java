@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
+
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaChartFactory;
 
@@ -96,6 +97,7 @@ public class ScoreByRoundChartPanel extends TriviaMainPanel {
 
 	}
 
+	@Override
 	protected void loadProperties() {
 	}
 

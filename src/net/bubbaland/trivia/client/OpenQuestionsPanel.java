@@ -96,9 +96,9 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		this.scrollPane = new JScrollPane(this.openQuestionsSubPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
-		this.add(scrollPane, constraints);
+		this.add(this.scrollPane, constraints);
 
-		loadProperties();
+		this.loadProperties();
 	}
 
 	/*
@@ -109,6 +109,54 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	@Override
 	public synchronized void update(boolean force) {
 		this.openQuestionsSubPanel.update(force);
+	}
+
+	@Override
+	protected void loadProperties() {
+		/**
+		 * Colors
+		 */
+		final Color headerColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("OpenQuestions.Header.Color"), 16));
+		final Color headerBackgroundColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("OpenQuestions.Header.BackgroundColor"), 16));
+
+		/**
+		 * Sizes
+		 */
+		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.Header.Height"));
+		final int rowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.Row.Height"));
+
+		final int qNumWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.QNumber.Width"));
+		final int valueWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.Value.Width"));
+		final int questionWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.Question.Width"));
+		final int answerWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.AnswerCol.Width"));
+		final int closeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.CloseCol.Width"));
+
+		/**
+		 * Font sizes
+		 */
+		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES
+				.getProperty("OpenQuestions.Header.FontSize"));
+
+		/** The number of open questions to show at one time */
+		final int questionsShow = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.QuestionsShow"));
+
+		setLabelProperties(this.qNumberLabel, qNumWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.valueLabel, valueWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.questionLabel, questionWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.answerColumn, answerWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.closeColumn, closeWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+
+		this.scrollPane.setPreferredSize(new Dimension(0, questionsShow * rowHeight + 3));
+		this.scrollPane.setMinimumSize(new Dimension(0, rowHeight + 3));
+
+		this.openQuestionsSubPanel.loadProperties();
 	}
 
 	/**
@@ -156,17 +204,17 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			 */
 			this.contextMenu = new JPopupMenu();
 
-			JMenuItem viewItem = new JMenuItem("View");
+			final JMenuItem viewItem = new JMenuItem("View");
 			viewItem.setActionCommand("View");
 			viewItem.addActionListener(this);
 			this.contextMenu.add(viewItem);
 
-			JMenuItem editItem = new JMenuItem("Edit");
+			final JMenuItem editItem = new JMenuItem("Edit");
 			editItem.setActionCommand("Edit");
 			editItem.addActionListener(this);
 			this.contextMenu.add(editItem);
 
-			JMenuItem resetItem = new JMenuItem("Delete");
+			final JMenuItem resetItem = new JMenuItem("Delete");
 			resetItem.setActionCommand("Delete");
 			resetItem.addActionListener(this);
 			this.contextMenu.add(resetItem);
@@ -264,9 +312,9 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		 */
 		@Override
 		public synchronized void actionPerformed(ActionEvent event) {
-			Trivia trivia = this.client.getTrivia();
+			final Trivia trivia = this.client.getTrivia();
 			final int rNumber = trivia.getCurrentRoundNumber();
-			String command = event.getActionCommand();
+			final String command = event.getActionCommand();
 			final int qNumber;
 			switch (command) {
 				case "Answer":
@@ -284,7 +332,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 					qNumber = Integer.parseInt(this.contextMenu.getName());
 					int qValue = trivia.getValue(rNumber, qNumber);
 					String qText = trivia.getQuestionText(rNumber, qNumber);
-					int nQuestions = trivia.getNQuestions();
+					final int nQuestions = trivia.getNQuestions();
 					new NewQuestionDialog(this.client, nQuestions, qNumber, qValue, qText);
 					break;
 				case "Delete":
@@ -302,35 +350,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				default:
 					break;
 			}
-		}
-
-		/**
-		 * Propose an answer for the designated question. Creates a prompt to submit the answer.
-		 * 
-		 * @param qNumber
-		 *            the question number
-		 */
-		private void answerQuestion(int qNumber) {
-			new AnswerEntryPanel(this.client, qNumber, this.client.getUser());
-		}
-
-		/**
-		 * Open a new question. Creates a prompt to enter the question.
-		 */
-		private void open() {
-
-			final Trivia trivia = this.client.getTrivia();
-
-			final int nQuestions = trivia.getNQuestions();
-			final int nextToOpen = trivia.nextToOpen();
-			final int rNumber = trivia.getCurrentRoundNumber();
-
-			if (trivia.isSpeed(rNumber) && nextToOpen > 1) {
-				new NewQuestionDialog(this.client, nQuestions, nextToOpen, trivia.getValue(rNumber, nextToOpen - 1));
-			} else {
-				new NewQuestionDialog(this.client, nQuestions, nextToOpen);
-			}
-
 		}
 
 		/*
@@ -444,36 +463,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 		}
 
-		private class PopupListener extends MouseAdapter {
-
-			private final JPopupMenu	menu;
-
-			public PopupListener(JPopupMenu menu) {
-				this.menu = menu;
-			}
-
-			private void checkForPopup(MouseEvent event) {
-				final JComponent source = (JComponent) event.getSource();
-				if (event.isPopupTrigger() && !source.getName().equals("")) {
-					menu.setName(source.getName());
-					menu.show(source, event.getX(), event.getY());
-				}
-			}
-
-			public void mousePressed(MouseEvent e) {
-				checkForPopup(e);
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				checkForPopup(e);
-			}
-
-			public void mouseClicked(MouseEvent e) {
-				checkForPopup(e);
-			}
-
-		}
-
+		@Override
 		protected void loadProperties() {
 			/**
 			 * Colors
@@ -547,53 +537,68 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			this.spacer.setBackground(headerBackgroundColor);
 		}
 
-	}
-
-	protected void loadProperties() {
 		/**
-		 * Colors
+		 * Propose an answer for the designated question. Creates a prompt to submit the answer.
+		 * 
+		 * @param qNumber
+		 *            the question number
 		 */
-		final Color headerColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("OpenQuestions.Header.Color"), 16));
-		final Color headerBackgroundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("OpenQuestions.Header.BackgroundColor"), 16));
-
-		/**
-		 * Sizes
-		 */
-		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.Header.Height"));
-		final int rowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.Row.Height"));
-
-		final int qNumWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.QNumber.Width"));
-		final int valueWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.Value.Width"));
-		final int questionWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.Question.Width"));
-		final int answerWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.AnswerCol.Width"));
-		final int closeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.CloseCol.Width"));
+		private void answerQuestion(int qNumber) {
+			new AnswerEntryPanel(this.client, qNumber, this.client.getUser());
+		}
 
 		/**
-		 * Font sizes
+		 * Open a new question. Creates a prompt to enter the question.
 		 */
-		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES
-				.getProperty("OpenQuestions.Header.FontSize"));
+		private void open() {
 
-		/** The number of open questions to show at one time */
-		final int questionsShow = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("OpenQuestions.QuestionsShow"));
+			final Trivia trivia = this.client.getTrivia();
 
-		setLabelProperties(this.qNumberLabel, qNumWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.valueLabel, valueWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.questionLabel, questionWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.answerColumn, answerWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.closeColumn, closeWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
+			final int nQuestions = trivia.getNQuestions();
+			final int nextToOpen = trivia.nextToOpen();
+			final int rNumber = trivia.getCurrentRoundNumber();
 
-		this.scrollPane.setPreferredSize(new Dimension(0, questionsShow * rowHeight + 3));
-		this.scrollPane.setMinimumSize(new Dimension(0, rowHeight + 3));
+			if (trivia.isSpeed(rNumber) && nextToOpen > 1) {
+				new NewQuestionDialog(this.client, nQuestions, nextToOpen, trivia.getValue(rNumber, nextToOpen - 1));
+			} else {
+				new NewQuestionDialog(this.client, nQuestions, nextToOpen);
+			}
 
-		this.openQuestionsSubPanel.loadProperties();
+		}
+
+		private class PopupListener extends MouseAdapter {
+
+			private final JPopupMenu	menu;
+
+			public PopupListener(JPopupMenu menu) {
+				this.menu = menu;
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				this.checkForPopup(e);
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				this.checkForPopup(e);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				this.checkForPopup(e);
+			}
+
+			private void checkForPopup(MouseEvent event) {
+				final JComponent source = (JComponent) event.getSource();
+				if (event.isPopupTrigger() && !source.getName().equals("")) {
+					this.menu.setName(source.getName());
+					this.menu.show(source, event.getX(), event.getY());
+				}
+			}
+
+		}
+
 	}
 
 

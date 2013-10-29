@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
 
 import net.bubbaland.trivia.Trivia;
 
@@ -83,7 +84,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		constraints.weightx = 0.0;
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		this.roundLabel = this.enclosedLabel(" Round:", constraints, JLabel.RIGHT, JLabel.CENTER);
+		this.roundLabel = this.enclosedLabel(" Round:", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
 		constraints.gridx = 1;
@@ -103,35 +104,35 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 
 		constraints.gridx = 2;
 		constraints.gridy = 0;
-		this.roundScoreLabel = this.enclosedLabel("", constraints, JLabel.RIGHT, JLabel.CENTER);
+		this.roundScoreLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		constraints.weightx = 1.0;
 		constraints.gridx = 3;
 		constraints.gridy = 0;
-		this.blank0 = this.enclosedLabel("", constraints, JLabel.RIGHT, JLabel.CENTER);
+		this.blank0 = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
 		constraints.gridx = 4;
 		constraints.gridy = 0;
-		this.totalLabel = this.enclosedLabel("Total: ", constraints, JLabel.RIGHT, JLabel.CENTER);
+		this.totalLabel = this.enclosedLabel("Total: ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		constraints.gridx = 5;
 		constraints.gridy = 0;
-		this.totalScoreLabel = this.enclosedLabel("", constraints, JLabel.RIGHT, JLabel.CENTER);
+		this.totalScoreLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		constraints.weightx = 1.0;
 		constraints.gridx = 6;
 		constraints.gridy = 0;
-		this.blank1 = this.enclosedLabel("", constraints, JLabel.RIGHT, JLabel.CENTER);
+		this.blank1 = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
 		constraints.gridx = 7;
 		constraints.gridy = 0;
-		this.placeLabel = this.enclosedLabel("Place: ", constraints, JLabel.RIGHT, JLabel.CENTER);
+		this.placeLabel = this.enclosedLabel("Place: ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		constraints.gridx = 8;
 		constraints.gridy = 0;
-		this.placeScoreLabel = this.enclosedLabel("", constraints, JLabel.RIGHT, JLabel.CENTER);
+		this.placeScoreLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 
 		/**
@@ -145,7 +146,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		this.roundQuestionPanel = new RoundQuestionsPanel(client, false, 1);
 		this.add(this.roundQuestionPanel, constraints);
 
-		loadProperties();
+		this.loadProperties();
 	}
 
 	/*
@@ -183,31 +184,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		this.roundQuestionPanel.update(force);
 	}
 
-	private class RoundCellRenderer implements ListCellRenderer<String> {
-		private final ListCellRenderer<String>	wrapped;
-
-		public RoundCellRenderer(ListCellRenderer<String> listCellRenderer) {
-			this.wrapped = listCellRenderer;
-		}
-
-		public Component getListCellRendererComponent(JList<? extends String> list, String value, int index,
-				boolean isSelected, boolean cellHasFocus) {
-			String displayName = String.valueOf(value); // customize here
-			Component renderer = wrapped.getListCellRendererComponent(list, displayName, index, isSelected,
-					cellHasFocus);
-			if (renderer instanceof JLabel) {
-				if (isSelected) {
-					( (JLabel) renderer ).setForeground(HistoryPanel.this.roundSelector.getBackground());
-					( (JLabel) renderer ).setBackground(HistoryPanel.this.roundSelector.getForeground());
-				} else {
-					( (JLabel) renderer ).setForeground(HistoryPanel.this.roundSelector.getForeground());
-					( (JLabel) renderer ).setBackground(HistoryPanel.this.roundSelector.getBackground());
-				}
-			}
-			return renderer;
-		}
-	}
-
+	@Override
 	protected void loadProperties() {
 		/**
 		 * Colors
@@ -270,5 +247,31 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 				selectorBackgroundColor, headerBackgroundColor, headerFontSize);
 
 		this.roundQuestionPanel.loadProperties();
+	}
+
+	private class RoundCellRenderer implements ListCellRenderer<String> {
+		private final ListCellRenderer<String>	wrapped;
+
+		public RoundCellRenderer(ListCellRenderer<String> listCellRenderer) {
+			this.wrapped = listCellRenderer;
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList<? extends String> list, String value, int index,
+				boolean isSelected, boolean cellHasFocus) {
+			final String displayName = String.valueOf(value); // customize here
+			final Component renderer = this.wrapped.getListCellRendererComponent(list, displayName, index, isSelected,
+					cellHasFocus);
+			if (renderer instanceof JLabel) {
+				if (isSelected) {
+					( (JLabel) renderer ).setForeground(HistoryPanel.this.roundSelector.getBackground());
+					( (JLabel) renderer ).setBackground(HistoryPanel.this.roundSelector.getForeground());
+				} else {
+					( (JLabel) renderer ).setForeground(HistoryPanel.this.roundSelector.getForeground());
+					( (JLabel) renderer ).setBackground(HistoryPanel.this.roundSelector.getBackground());
+				}
+			}
+			return renderer;
+		}
 	}
 }

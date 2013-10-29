@@ -162,7 +162,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(scrollPane, constraints);
 
-		loadProperties();
+		this.loadProperties();
 
 	}
 
@@ -174,6 +174,98 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 	@Override
 	public void update(boolean force) {
 		this.internalScrollPanel.update(force);
+	}
+
+	@Override
+	protected void loadProperties() {
+		/**
+		 * Colors
+		 */
+		final Color headerBackgroundColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.BackgroundColor"), 16));
+		final Color roundColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Color"), 16));
+		final Color earnedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16));
+		final Color valueColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16));
+		final Color percentColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Percent.Color"), 16));
+		final Color announcedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Announced.Color"),
+				16));
+		final Color discrepancyColor = new Color(Integer.parseInt(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Discrepancy.Color"), 16));
+
+		/**
+		 * Sizes
+		 */
+		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.Height"));
+
+		final int roundWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Width"));
+		final int roundEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Round.Earned.Width"));
+		final int roundValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Round.Value.Width"));
+		final int roundPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Round.Percent.Width"));
+		final int totalEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Total.Earned.Width"));
+		final int totalValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Total.Value.Width"));
+		final int totalPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Total.Percent.Width"));
+		final int announcedWidth = Integer
+				.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Announced.Width"));
+		final int placeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Place.Width"));
+		final int discrepancyWidth = Integer.parseInt(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Discrepancy.Width"));
+		/**
+		 * Font sizes
+		 */
+		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES
+				.getProperty("ScoreByRound.Header.FontSize"));
+
+		setLabelProperties(this.roundLabel0, roundWidth, headerHeight / 2, roundColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.roundLabel1, roundWidth, headerHeight / 2, roundColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.roundEarnedLabel0, roundEarnedWidth, headerHeight / 2, earnedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.roundEarnedLabel1, roundEarnedWidth, headerHeight / 2, earnedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.roundValueLabel0, roundValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.roundValueLabel1, roundValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.roundPercentLabel0, roundPercentWidth, headerHeight / 2, percentColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.roundPercentLabel1, roundPercentWidth, headerHeight / 2, percentColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.totalEarnedLabel0, totalEarnedWidth, headerHeight / 2, earnedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.totalEarnedLabel1, totalEarnedWidth, headerHeight / 2, earnedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.totalValueLabel0, totalValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.totalValueLabel1, totalValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.totalPercentLabel0, totalPercentWidth, headerHeight / 2, percentColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.totalPercentLabel1, totalPercentWidth, headerHeight / 2, percentColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.announcedLabel0, announcedWidth, headerHeight / 2, announcedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.announcedLabel1, announcedWidth, headerHeight / 2, announcedColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.placeLabel0, placeWidth, headerHeight / 2, announcedColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.placeLabel1, placeWidth, headerHeight / 2, announcedColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.discrepancyLabel0, discrepancyWidth, headerHeight / 2, discrepancyColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.discrepancyLabel1, discrepancyWidth, headerHeight / 2, discrepancyColor,
+				headerBackgroundColor, headerFontSize);
+
+		this.internalScrollPanel.loadProperties();
+
 	}
 
 	/**
@@ -312,6 +404,12 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 		}
 
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			final int rNumber = Integer.parseInt(this.contextMenu.getName());
+			new DiscrepancyDialog(this.client, rNumber);
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -378,43 +476,6 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent event) {
-			final int rNumber = Integer.parseInt(this.contextMenu.getName());
-			new DiscrepancyDialog(this.client, rNumber);
-		}
-
-		private class PopupListener extends MouseAdapter {
-
-			private final JPopupMenu	menu;
-
-			public PopupListener(JPopupMenu menu) {
-				this.menu = menu;
-			}
-
-			private void checkForPopup(MouseEvent event) {
-				final JComponent source = (JComponent) event.getSource();
-				final Trivia trivia = InternalScrollPanel.this.client.getTrivia();
-				final int rNumber = Integer.parseInt(source.getName());
-				if (event.isPopupTrigger() && trivia.isAnnounced(rNumber)) {
-					menu.setName(source.getName());
-					menu.show(source, event.getX(), event.getY());
-				}
-			}
-
-			public void mousePressed(MouseEvent e) {
-				checkForPopup(e);
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				checkForPopup(e);
-			}
-
-			public void mouseClicked(MouseEvent e) {
-				checkForPopup(e);
-			}
-
-		}
-
 		protected void loadProperties() {
 			/**
 			 * Colors
@@ -474,7 +535,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 			// Create the labels for each round
 			for (int r = 0; r < this.nRounds; r++) {
-				Color bColor = ( ( r + 1 ) % altColorInterval == 0 ) ? altBackgroundColor : backgroundColor;
+				final Color bColor = ( ( r + 1 ) % altColorInterval == 0 ) ? altBackgroundColor : backgroundColor;
 				setLabelProperties(this.roundLabels[r], roundWidth, rowHeight, roundColor, bColor, fontSize);
 				setLabelProperties(this.earnedLabels[r], roundEarnedWidth, rowHeight, earnedColor, bColor, fontSize);
 				setLabelProperties(this.valueLabels[r], roundValueWidth, rowHeight, valueColor, bColor, fontSize);
@@ -495,97 +556,41 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 		}
 
+		private class PopupListener extends MouseAdapter {
 
-	}
+			private final JPopupMenu	menu;
 
-	protected void loadProperties() {
-		/**
-		 * Colors
-		 */
-		final Color headerBackgroundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.BackgroundColor"), 16));
-		final Color roundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Color"), 16));
-		final Color earnedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16));
-		final Color valueColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16));
-		final Color percentColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Percent.Color"), 16));
-		final Color announcedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Announced.Color"),
-				16));
-		final Color discrepancyColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Discrepancy.Color"), 16));
+			public PopupListener(JPopupMenu menu) {
+				this.menu = menu;
+			}
 
-		/**
-		 * Sizes
-		 */
-		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.Height"));
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				this.checkForPopup(e);
+			}
 
-		final int roundWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Width"));
-		final int roundEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Round.Earned.Width"));
-		final int roundValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Round.Value.Width"));
-		final int roundPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Round.Percent.Width"));
-		final int totalEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Total.Earned.Width"));
-		final int totalValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Total.Value.Width"));
-		final int totalPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Total.Percent.Width"));
-		final int announcedWidth = Integer
-				.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Announced.Width"));
-		final int placeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Place.Width"));
-		final int discrepancyWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Discrepancy.Width"));
-		/**
-		 * Font sizes
-		 */
-		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Header.FontSize"));
+			@Override
+			public void mousePressed(MouseEvent e) {
+				this.checkForPopup(e);
+			}
 
-		setLabelProperties(this.roundLabel0, roundWidth, headerHeight / 2, roundColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.roundLabel1, roundWidth, headerHeight / 2, roundColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.roundEarnedLabel0, roundEarnedWidth, headerHeight / 2, earnedColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.roundEarnedLabel1, roundEarnedWidth, headerHeight / 2, earnedColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.roundValueLabel0, roundValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.roundValueLabel1, roundValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.roundPercentLabel0, roundPercentWidth, headerHeight / 2, percentColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.roundPercentLabel1, roundPercentWidth, headerHeight / 2, percentColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.totalEarnedLabel0, totalEarnedWidth, headerHeight / 2, earnedColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.totalEarnedLabel1, totalEarnedWidth, headerHeight / 2, earnedColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.totalValueLabel0, totalValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.totalValueLabel1, totalValueWidth, headerHeight / 2, valueColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.totalPercentLabel0, totalPercentWidth, headerHeight / 2, percentColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.totalPercentLabel1, totalPercentWidth, headerHeight / 2, percentColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.announcedLabel0, announcedWidth, headerHeight / 2, announcedColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.announcedLabel1, announcedWidth, headerHeight / 2, announcedColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.placeLabel0, placeWidth, headerHeight / 2, announcedColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.placeLabel1, placeWidth, headerHeight / 2, announcedColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.discrepancyLabel0, discrepancyWidth, headerHeight / 2, discrepancyColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.discrepancyLabel1, discrepancyWidth, headerHeight / 2, discrepancyColor,
-				headerBackgroundColor, headerFontSize);
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				this.checkForPopup(e);
+			}
 
-		this.internalScrollPanel.loadProperties();
+			private void checkForPopup(MouseEvent event) {
+				final JComponent source = (JComponent) event.getSource();
+				final Trivia trivia = InternalScrollPanel.this.client.getTrivia();
+				final int rNumber = Integer.parseInt(source.getName());
+				if (event.isPopupTrigger() && trivia.isAnnounced(rNumber)) {
+					this.menu.setName(source.getName());
+					this.menu.show(source, event.getX(), event.getY());
+				}
+			}
+
+		}
+
 
 	}
 

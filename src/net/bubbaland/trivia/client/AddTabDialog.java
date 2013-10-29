@@ -42,8 +42,8 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		this.client = client;
 
 		// Get the list of tab names and sort them
-		Set<String> tabNameSet = client.getTabNames();
-		String[] tabNames = new String[tabNameSet.size()];
+		final Set<String> tabNameSet = client.getTabNames();
+		final String[] tabNames = new String[tabNameSet.size()];
 		tabNameSet.toArray(tabNames);
 		Arrays.sort(tabNames, new TabCompare());
 
@@ -75,7 +75,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		this.add(this.descriptionLabel, constraints);
 
 		// Options
-		Object[] options = { "Add", "Add All", "Cancel" };
+		final Object[] options = { "Add", "Add All", "Cancel" };
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog((Frame) SwingUtilities.getWindowAncestor(pane), "Add tab", this,
@@ -84,21 +84,19 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		this.dialog.setVisible(true);
 
 		// If a button was not pressed (option isn't a string), do nothing
-		if (!( dialog.getValue() instanceof String )) {
-			return;
-		}
-		final String option = (String) dialog.getValue();
+		if (!( this.dialog.getValue() instanceof String )) return;
+		final String option = (String) this.dialog.getValue();
 		// A list of tab names to add
 		final ArrayList<String> newTabs = new ArrayList<String>(0);
 		switch (option) {
 		// Add the selected tab to the list
 			case "Add": {
-				newTabs.add((String) tabSelector.getSelectedItem());
+				newTabs.add((String) this.tabSelector.getSelectedItem());
 				break;
 			}
 			// Add all tabs that don't start with a * and are not already in the tabbed pane
 			case "Add All":
-				for (String tabName : tabNameSet) {
+				for (final String tabName : tabNameSet) {
 					if (!tabName.startsWith("*") && pane.indexOfTab(tabName) == -1) {
 						newTabs.add(tabName);
 					}
@@ -134,8 +132,8 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 	 */
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		String tabName = (String) this.tabSelector.getSelectedItem();
-		String description = this.client.getTabDescription(tabName);
+		final String tabName = (String) this.tabSelector.getSelectedItem();
+		final String description = this.client.getTabDescription(tabName);
 		this.descriptionLabel.setText(description);
 	}
 

@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 
 /**
  * Create a dialog that displays question data.
@@ -21,7 +22,7 @@ public class ViewQuestionDialog extends TriviaDialogPanel {
 		super();
 
 		// Set up layout constraints
-		GridBagConstraints constraints = new GridBagConstraints();
+		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.weightx = 0.5;
@@ -30,14 +31,14 @@ public class ViewQuestionDialog extends TriviaDialogPanel {
 		// Create the question number label
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		JLabel label = new JLabel("Number: " + qNumber, JLabel.LEFT);
+		JLabel label = new JLabel("Number: " + qNumber, SwingConstants.LEFT);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		// Create the question value label
 		constraints.gridx = 1;
 		constraints.gridy = 0;
-		label = new JLabel("Value: " + qValue, JLabel.RIGHT);
+		label = new JLabel("Value: " + qValue, SwingConstants.RIGHT);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 

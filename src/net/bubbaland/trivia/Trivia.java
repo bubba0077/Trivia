@@ -884,6 +884,16 @@ public class Trivia implements Serializable {
 	}
 
 	/**
+	 * Mark an answer as a duplicate.
+	 * 
+	 * @param queueIndex
+	 *            The location of the answer in the queue
+	 */
+	public void markDuplicate(int queueIndex) {
+		this.currentRound.markDuplicate(queueIndex);
+	}
+
+	/**
 	 * Mark an answer as incorrect.
 	 * 
 	 * @param queueIndex
@@ -915,16 +925,6 @@ public class Trivia implements Serializable {
 	 */
 	public void markUncalled(int queueIndex) {
 		this.currentRound.markUncalled(queueIndex);
-	}
-
-	/**
-	 * Mark an answer as a duplicate.
-	 * 
-	 * @param queueIndex
-	 *            The location of the answer in the queue
-	 */
-	public void markDuplicate(int queueIndex) {
-		this.currentRound.markDuplicate(queueIndex);
 	}
 
 	/**
@@ -1001,6 +1001,10 @@ public class Trivia implements Serializable {
 		this.currentRound.proposeAnswer(qNumber, answer, user, confidence);
 	}
 
+	public void remapQuestion(int oldQNumber, int newQNumber) {
+		this.currentRound.remapQuestion(oldQNumber, newQNumber);
+	}
+
 	/**
 	 * Reset the entire trivia contest.
 	 */
@@ -1044,6 +1048,11 @@ public class Trivia implements Serializable {
 			this.rounds[rNumber - 1].setAnnounced(score, place);
 		}
 		return;
+	}
+
+	public void setAnswer(int qNumber, String answer, String submitter, int confidence, String status, String caller,
+			String operator) {
+		this.currentRound.setAnswer(qNumber, answer, submitter, confidence, status, caller, operator);
 	}
 
 	/**
@@ -1141,15 +1150,6 @@ public class Trivia implements Serializable {
 				this.nTeams = newRound.getStandings().length;
 			}
 		}
-	}
-
-	public void setAnswer(int qNumber, String answer, String submitter, int confidence, String status, String caller,
-			String operator) {
-		this.currentRound.setAnswer(qNumber, answer, submitter, confidence, status, caller, operator);
-	}
-
-	public void remapQuestion(int oldQNumber, int newQNumber) {
-		this.currentRound.remapQuestion(oldQNumber, newQNumber);
 	}
 
 }

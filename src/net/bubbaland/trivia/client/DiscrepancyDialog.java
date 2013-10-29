@@ -21,8 +21,8 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 	public DiscrepancyDialog(TriviaClient client, int rNumber) {
 		super();
 
-		Trivia trivia = client.getTrivia();
-		String oldText = trivia.getDiscrepancyText(rNumber);
+		final Trivia trivia = client.getTrivia();
+		final String oldText = trivia.getDiscrepancyText(rNumber);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();

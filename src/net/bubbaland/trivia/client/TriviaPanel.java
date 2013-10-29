@@ -43,16 +43,180 @@ public abstract class TriviaPanel extends JPanel {
 		super();
 	}
 
-	public TriviaPanel(LayoutManager layout) {
-		super(layout);
-	}
-
 	public TriviaPanel(boolean isDoubleBuffered) {
 		super(isDoubleBuffered);
 	}
 
+	public TriviaPanel(LayoutManager layout) {
+		super(layout);
+	}
+
 	public TriviaPanel(LayoutManager layout, boolean isDoubleBuffered) {
 		super(layout, isDoubleBuffered);
+	}
+
+	/**
+	 * Adds a word-wrapping text pane inside of a scrollable pane to the panel that can process hyperlink clicks. A
+	 * reference to the text pane is returned so the text can be read/changed later.
+	 * 
+	 * @param string
+	 *            The initial string for the text pane
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param horizontalScroll
+	 *            The horizontal scroll bar policy (JScrollPane constants)
+	 * @param verticalScroll
+	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * @return The text pane inside the scroll pane
+	 */
+	public QuestionPane hyperlinkedTextPane(String string, GridBagConstraints constraints, int horizontalScroll,
+			int verticalScroll) {
+
+		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
+		pane.setBorder(BorderFactory.createEmptyBorder());
+		this.add(pane, constraints);
+		final QuestionPane textPane = new QuestionPane(new DefaultStyledDocument());
+		textPane.setContentType("text/html");
+		textPane.addHyperlinkListener(new HyperlinkListener() {
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					System.out.println(e.getURL());
+					try {
+						Desktop.getDesktop().browse(e.getURL().toURI());
+					} catch (IOException | URISyntaxException exception) {
+						// this.log("Couldn't open a browser window");
+					}
+				}
+			}
+		});
+		textPane.setText(string);
+		textPane.setBorder(BorderFactory.createEmptyBorder());
+		final DefaultCaret caret = (DefaultCaret) textPane.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		pane.setViewportView(textPane);
+
+		return textPane;
+	}
+
+	/**
+	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
+	 * so the text can be read/changed later.
+	 * 
+	 * @param string
+	 *            The initial string for the text area
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param horizontalScroll
+	 *            The horizontal scroll bar policy (JScrollPane constants)
+	 * @param verticalScroll
+	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * @return The text area inside the scroll pane
+	 */
+	public JTextArea scrollableTextArea(String string, GridBagConstraints constraints, int horizontalScroll,
+			int verticalScroll) {
+
+		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
+		pane.setBorder(BorderFactory.createEmptyBorder());
+		this.add(pane, constraints);
+		final JTextArea textArea = new JTextArea(string) {
+			private static final long	serialVersionUID	= 1L;
+
+			// public JToolTip createToolTip() {
+			// JMultiLineToolTip tip = new JMultiLineToolTip();
+			// tip.setComponent(this);
+			// // tip.setFixedWidth(300);
+			// tip.setColumns(50);
+			// return tip;
+			// }
+		};
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setBorder(BorderFactory.createEmptyBorder());
+		final DefaultCaret caret = (DefaultCaret) textArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		pane.setViewportView(textArea);
+
+		return textArea;
+	}
+
+	/**
+	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
+	 * so the text can be read/changed later.
+	 * 
+	 * @param string
+	 *            The initial string for the text area
+	 * @param width
+	 *            The width
+	 * @param height
+	 *            The height
+	 * @param foreground
+	 *            The foreground color
+	 * @param background
+	 *            The background color
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param fontSize
+	 *            The font size
+	 * @param horizontalScroll
+	 *            The horizontal scroll bar policy (JScrollPane constants)
+	 * @param verticalScroll
+	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * @return The text area inside the scroll pane
+	 */
+	public JTextArea scrollableTextArea(String string, int width, int height, Color foreground, Color background,
+			GridBagConstraints constraints, float fontSize, int horizontalScroll, int verticalScroll) {
+
+		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
+		pane.setPreferredSize(new Dimension(width, height));
+		// pane.setMinimumSize(new Dimension(width, height));
+		pane.setBorder(BorderFactory.createEmptyBorder());
+		this.add(pane, constraints);
+		final JTextArea textArea = new JTextArea(string);
+		textArea.setFont(textArea.getFont().deriveFont(fontSize));
+		textArea.setBackground(background);
+		textArea.setForeground(foreground);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setBorder(BorderFactory.createEmptyBorder());
+		final DefaultCaret caret = (DefaultCaret) textArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		pane.setViewportView(textArea);
+
+		return textArea;
+	}
+
+	/**
+	 * Adds a space-filling panel with a label to the panel. A reference to the label is returned so the text can be
+	 * changed later.
+	 * 
+	 * @param string
+	 *            The string for the label
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param labelHAlignment
+	 *            The horizontal alignment for the label (JLabel constants)
+	 * @param labelVAlignment
+	 *            The vertical alignment for the label (JLabel constants)
+	 * @return The label inside the panel
+	 */
+	protected JLabel enclosedLabel(String string, GridBagConstraints constraints, int labelHAlignment,
+			int labelVAlignment) {
+		final GridBagConstraints solo = new GridBagConstraints();
+		solo.fill = GridBagConstraints.BOTH;
+		solo.anchor = GridBagConstraints.CENTER;
+		solo.weightx = 1.0;
+		solo.weighty = 1.0;
+		solo.gridx = 0;
+		solo.gridy = 0;
+
+		final JPanel panel = new JPanel(new GridBagLayout());
+		this.add(panel, constraints);
+		final JLabel label = new JLabel(string, labelHAlignment);
+		label.setVerticalAlignment(labelVAlignment);
+		panel.add(label, solo);
+
+		return label;
 	}
 
 	/**
@@ -104,135 +268,6 @@ public abstract class TriviaPanel extends JPanel {
 	}
 
 	/**
-	 * Adds a space-filling panel with a label to the panel. A reference to the label is returned so the text can be
-	 * changed later.
-	 * 
-	 * @param string
-	 *            The string for the label
-	 * @param constraints
-	 *            The GridBag constraints
-	 * @param labelHAlignment
-	 *            The horizontal alignment for the label (JLabel constants)
-	 * @param labelVAlignment
-	 *            The vertical alignment for the label (JLabel constants)
-	 * @return The label inside the panel
-	 */
-	protected JLabel enclosedLabel(String string, GridBagConstraints constraints, int labelHAlignment,
-			int labelVAlignment) {
-		final GridBagConstraints solo = new GridBagConstraints();
-		solo.fill = GridBagConstraints.BOTH;
-		solo.anchor = GridBagConstraints.CENTER;
-		solo.weightx = 1.0;
-		solo.weighty = 1.0;
-		solo.gridx = 0;
-		solo.gridy = 0;
-
-		final JPanel panel = new JPanel(new GridBagLayout());
-		this.add(panel, constraints);
-		final JLabel label = new JLabel(string, labelHAlignment);
-		label.setVerticalAlignment(labelVAlignment);
-		panel.add(label, solo);
-
-		return label;
-	}
-
-	/**
-	 * Update a label's properties.
-	 * 
-	 * @param label
-	 *            The label to update
-	 * @param width
-	 *            The new width
-	 * @param height
-	 *            The new height
-	 * @param foreground
-	 *            The new foreground color
-	 * @param background
-	 *            The new background color
-	 * @param fontSize
-	 *            The new font size
-	 */
-	protected static void setLabelProperties(JLabel label, int width, int height, Color foreground, Color background,
-			float fontSize) {
-		setPanelProperties((JPanel) label.getParent(), width, height, background);
-		label.setFont(label.getFont().deriveFont(fontSize));
-		label.setForeground(foreground);
-	}
-
-	/**
-	 * Update a text pane's properties.
-	 * 
-	 * @param textPane
-	 *            The text pane to update
-	 * @param width
-	 *            The new width
-	 * @param height
-	 *            The new height
-	 * @param foreground
-	 *            The new foreground color
-	 * @param background
-	 *            The new background color
-	 * @param fontSize
-	 *            The new font size
-	 */
-	protected static void setTextPaneProperties(JTextPane textPane, int width, int height, Color foreground,
-			Color background, float fontSize) {
-		textPane.setPreferredSize(new Dimension(width, height));
-		textPane.setFont(textPane.getFont().deriveFont(fontSize));
-		textPane.setForeground(foreground);
-		textPane.setBackground(background);
-		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
-			UIDefaults defaults = new UIDefaults();
-			defaults.put("TextPane[Enabled].backgroundPainter", background);
-			textPane.putClientProperty("Nimbus.Overrides", defaults);
-			textPane.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
-		}
-	}
-
-	/**
-	 * Update a text area's properties.
-	 * 
-	 * @param textArea
-	 *            The text area to update
-	 * @param width
-	 *            The new width
-	 * @param height
-	 *            The new height
-	 * @param foreground
-	 *            The new foreground color
-	 * @param background
-	 *            The new background color
-	 * @param fontSize
-	 *            The new font size
-	 */
-	protected static void setTextAreaProperties(JTextArea textArea, int width, int height, Color foreground,
-			Color background, float fontSize) {
-		( (JScrollPane) textArea.getParent().getParent() ).setPreferredSize(new Dimension(width, height));
-
-		textArea.setFont(textArea.getFont().deriveFont(fontSize));
-		textArea.setForeground(foreground);
-		textArea.setBackground(background);
-	}
-
-	/**
-	 * Update a panel's properties.
-	 * 
-	 * @param panel
-	 *            The panel to update
-	 * @param width
-	 *            The new width
-	 * @param height
-	 *            The new height
-	 * @param background
-	 *            The new background color
-	 */
-	protected static void setPanelProperties(JPanel panel, int width, int height, Color background) {
-		panel.setBackground(background);
-		panel.setPreferredSize(new Dimension(width, height));
-		panel.setMinimumSize(new Dimension(width, height));
-	}
-
-	/**
 	 * Update a button's properties.
 	 * 
 	 * @param button
@@ -247,9 +282,7 @@ public abstract class TriviaPanel extends JPanel {
 	 *            The new font size
 	 */
 	protected static void setButtonProperties(Component button, int width, int height, Color foreground, float fontSize) {
-		if (!( button instanceof JButton || button instanceof JToggleButton )) {
-			return;
-		}
+		if (!( button instanceof JButton || button instanceof JToggleButton )) return;
 		button.setForeground(foreground);
 		button.setFont(button.getFont().deriveFont(fontSize));
 		button.setPreferredSize(new Dimension(width, height));
@@ -285,134 +318,99 @@ public abstract class TriviaPanel extends JPanel {
 	}
 
 	/**
-	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
-	 * so the text can be read/changed later.
+	 * Update a label's properties.
 	 * 
-	 * @param string
-	 *            The initial string for the text area
-	 * @param constraints
-	 *            The GridBag constraints
-	 * @param horizontalScroll
-	 *            The horizontal scroll bar policy (JScrollPane constants)
-	 * @param verticalScroll
-	 *            The vertical scroll bar policy (JScrollPane constants)
-	 * @return The text area inside the scroll pane
-	 */
-	public JTextArea scrollableTextArea(String string, GridBagConstraints constraints, int horizontalScroll,
-			int verticalScroll) {
-
-		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
-		pane.setBorder(BorderFactory.createEmptyBorder());
-		this.add(pane, constraints);
-		final JTextArea textArea = new JTextArea(string) {
-			private static final long	serialVersionUID	= 1L;
-
-			// public JToolTip createToolTip() {
-			// JMultiLineToolTip tip = new JMultiLineToolTip();
-			// tip.setComponent(this);
-			// // tip.setFixedWidth(300);
-			// tip.setColumns(50);
-			// return tip;
-			// }
-		};
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-		textArea.setBorder(BorderFactory.createEmptyBorder());
-		DefaultCaret caret = (DefaultCaret) textArea.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-		pane.setViewportView(textArea);
-
-		return textArea;
-	}
-
-	/**
-	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
-	 * so the text can be read/changed later.
-	 * 
-	 * @param string
-	 *            The initial string for the text area
+	 * @param label
+	 *            The label to update
 	 * @param width
-	 *            The width
+	 *            The new width
 	 * @param height
-	 *            The height
+	 *            The new height
 	 * @param foreground
-	 *            The foreground color
+	 *            The new foreground color
 	 * @param background
-	 *            The background color
-	 * @param constraints
-	 *            The GridBag constraints
+	 *            The new background color
 	 * @param fontSize
-	 *            The font size
-	 * @param horizontalScroll
-	 *            The horizontal scroll bar policy (JScrollPane constants)
-	 * @param verticalScroll
-	 *            The vertical scroll bar policy (JScrollPane constants)
-	 * @return The text area inside the scroll pane
+	 *            The new font size
 	 */
-	public JTextArea scrollableTextArea(String string, int width, int height, Color foreground, Color background,
-			GridBagConstraints constraints, float fontSize, int horizontalScroll, int verticalScroll) {
-
-		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
-		pane.setPreferredSize(new Dimension(width, height));
-		// pane.setMinimumSize(new Dimension(width, height));
-		pane.setBorder(BorderFactory.createEmptyBorder());
-		this.add(pane, constraints);
-		final JTextArea textArea = new JTextArea(string);
-		textArea.setFont(textArea.getFont().deriveFont(fontSize));
-		textArea.setBackground(background);
-		textArea.setForeground(foreground);
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-		textArea.setBorder(BorderFactory.createEmptyBorder());
-		DefaultCaret caret = (DefaultCaret) textArea.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-		pane.setViewportView(textArea);
-
-		return textArea;
+	protected static void setLabelProperties(JLabel label, int width, int height, Color foreground, Color background,
+			float fontSize) {
+		setPanelProperties((JPanel) label.getParent(), width, height, background);
+		label.setFont(label.getFont().deriveFont(fontSize));
+		label.setForeground(foreground);
 	}
 
 	/**
-	 * Adds a word-wrapping text pane inside of a scrollable pane to the panel that can process hyperlink clicks. A
-	 * reference to the text pane is returned so the text can be read/changed later.
+	 * Update a panel's properties.
 	 * 
-	 * @param string
-	 *            The initial string for the text pane
-	 * @param constraints
-	 *            The GridBag constraints
-	 * @param horizontalScroll
-	 *            The horizontal scroll bar policy (JScrollPane constants)
-	 * @param verticalScroll
-	 *            The vertical scroll bar policy (JScrollPane constants)
-	 * @return The text pane inside the scroll pane
+	 * @param panel
+	 *            The panel to update
+	 * @param width
+	 *            The new width
+	 * @param height
+	 *            The new height
+	 * @param background
+	 *            The new background color
 	 */
-	public QuestionPane hyperlinkedTextPane(String string, GridBagConstraints constraints, int horizontalScroll,
-			int verticalScroll) {
+	protected static void setPanelProperties(JPanel panel, int width, int height, Color background) {
+		panel.setBackground(background);
+		panel.setPreferredSize(new Dimension(width, height));
+		panel.setMinimumSize(new Dimension(width, height));
+	}
 
-		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
-		pane.setBorder(BorderFactory.createEmptyBorder());
-		this.add(pane, constraints);
-		final QuestionPane textPane = new QuestionPane(new DefaultStyledDocument());
-		textPane.setContentType("text/html");
-		textPane.addHyperlinkListener(new HyperlinkListener() {
-			@Override
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-					System.out.println(e.getURL());
-					try {
-						Desktop.getDesktop().browse(e.getURL().toURI());
-					} catch (IOException | URISyntaxException exception) {
-						// this.log("Couldn't open a browser window");
-					}
-				}
-			}
-		});
-		textPane.setText(string);
-		textPane.setBorder(BorderFactory.createEmptyBorder());
-		DefaultCaret caret = (DefaultCaret) textPane.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-		pane.setViewportView(textPane);
+	/**
+	 * Update a text area's properties.
+	 * 
+	 * @param textArea
+	 *            The text area to update
+	 * @param width
+	 *            The new width
+	 * @param height
+	 *            The new height
+	 * @param foreground
+	 *            The new foreground color
+	 * @param background
+	 *            The new background color
+	 * @param fontSize
+	 *            The new font size
+	 */
+	protected static void setTextAreaProperties(JTextArea textArea, int width, int height, Color foreground,
+			Color background, float fontSize) {
+		( (JScrollPane) textArea.getParent().getParent() ).setPreferredSize(new Dimension(width, height));
 
-		return textPane;
+		textArea.setFont(textArea.getFont().deriveFont(fontSize));
+		textArea.setForeground(foreground);
+		textArea.setBackground(background);
+	}
+
+	/**
+	 * Update a text pane's properties.
+	 * 
+	 * @param textPane
+	 *            The text pane to update
+	 * @param width
+	 *            The new width
+	 * @param height
+	 *            The new height
+	 * @param foreground
+	 *            The new foreground color
+	 * @param background
+	 *            The new background color
+	 * @param fontSize
+	 *            The new font size
+	 */
+	protected static void setTextPaneProperties(JTextPane textPane, int width, int height, Color foreground,
+			Color background, float fontSize) {
+		textPane.setPreferredSize(new Dimension(width, height));
+		textPane.setFont(textPane.getFont().deriveFont(fontSize));
+		textPane.setForeground(foreground);
+		textPane.setBackground(background);
+		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+			final UIDefaults defaults = new UIDefaults();
+			defaults.put("TextPane[Enabled].backgroundPainter", background);
+			textPane.putClientProperty("Nimbus.Overrides", defaults);
+			textPane.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
+		}
 	}
 
 	/**
@@ -423,6 +421,8 @@ public abstract class TriviaPanel extends JPanel {
 	 * 
 	 */
 	public class QuestionPane extends JTextPane {
+		private static final long	serialVersionUID	= -4043733624909281303L;
+
 		public QuestionPane() {
 			super();
 		}
@@ -431,11 +431,10 @@ public abstract class TriviaPanel extends JPanel {
 			super(doc);
 		}
 
-		private static final long	serialVersionUID	= -4043733624909281303L;
-
+		@Override
 		public void setText(String question) {
-			String pattern = "([Vv]isual )([Tt]rivia )?(#)?([0-9])+";
-			String hQuestion = question.replaceFirst(pattern, "<a href=\"" + TriviaClient.VISUAL_URL
+			final String pattern = "([Vv]isual )([Tt]rivia )?(#)?([0-9])+";
+			final String hQuestion = question.replaceFirst(pattern, "<a href=\"" + TriviaClient.VISUAL_URL
 					+ "$4\">Visual Trivia #$4</a>");
 			super.setText(hQuestion);
 		}
@@ -452,28 +451,29 @@ public abstract class TriviaPanel extends JPanel {
 
 		private static final long	serialVersionUID	= -8318646989146037930L;
 
+		public InternalScrollPane(int vsbPolicy, int hsbPolicy) {
+			super(vsbPolicy, hsbPolicy);
+		}
+
 		@Override
 		protected void processMouseWheelEvent(MouseWheelEvent e) {
-			boolean scrollUp = e.getWheelRotation() < 0;
+			final boolean scrollUp = e.getWheelRotation() < 0;
 			// If the mouse wheel scrolls up and we are already at top, tell parent to scroll up
 			if (scrollUp && this.verticalScrollBar.getValue() == this.verticalScrollBar.getMinimum()) {
-				if (getParent() != null) {
-					getParent().dispatchEvent(SwingUtilities.convertMouseEvent(this, e, getParent()));
+				if (this.getParent() != null) {
+					this.getParent().dispatchEvent(SwingUtilities.convertMouseEvent(this, e, this.getParent()));
 				}
 				return;
 			}
 			// If the mouse wheel scrolls down and we are already at bottom, tell parent to scroll down
 			if (!scrollUp
 					&& this.verticalScrollBar.getValue() == this.verticalScrollBar.getMaximum() - this.getHeight()) {
-				if (getParent() != null)
-					getParent().dispatchEvent(SwingUtilities.convertMouseEvent(this, e, getParent()));
+				if (this.getParent() != null) {
+					this.getParent().dispatchEvent(SwingUtilities.convertMouseEvent(this, e, this.getParent()));
+				}
 				return;
 			}
 			super.processMouseWheelEvent(e);
-		}
-
-		public InternalScrollPane(int vsbPolicy, int hsbPolicy) {
-			super(vsbPolicy, hsbPolicy);
 		}
 	}
 

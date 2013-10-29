@@ -44,13 +44,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	// The Hide Closed menu item
 	private volatile boolean	hideClosed, hideDuplicates;
 
-	// Queue sort option
-	public static enum QueueSort {
-		TIMESTAMP_ASCENDING, QNUMBER_ASCENDING, STATUS_ASCENDING, TIMESTAMP_DESCENDING, QNUMBER_DESCENDING, STATUS_DESCENDING
-	}
-
 	// Sort menu items
 	final private JRadioButtonMenuItem	researcherMenuItem, callerMenuItem, typistMenuItem;
+
 	final private JCheckBoxMenuItem		hideClosedMenuItem;
 	final private JCheckBoxMenuItem		hideDuplicatesMenuItem;
 	final private JMenuItem				sortTimestampAscendingMenuItem;
@@ -59,13 +55,12 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final private JMenuItem				sortQNumberDescendingMenuItem;
 	final private JMenuItem				sortStatusAscendingMenuItem;
 	final private JMenuItem				sortStatusDescendingMenuItem;
-
 	// The status bar at the bottom
 	final private JLabel				statusBar;
 
 	final private TriviaClient			client;
-	private final DnDTabbedPane			book;
 
+	private final DnDTabbedPane			book;
 	// Sort method for the queue
 	private volatile QueueSort			queueSort;
 
@@ -97,7 +92,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 */
 	public TriviaFrame(TriviaClient client, String[] initialTabs, boolean showIRC) {
 		this(client, showIRC);
-		for (String tabName : initialTabs) {
+		for (final String tabName : initialTabs) {
 			this.book.addTab(tabName, client.getTab(this, tabName));
 		}
 		this.book.setSelectedIndex(this.book.indexOfTab(initialTabs[0]));
@@ -122,7 +117,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.client.registerWindow(this);
 
 		// If this isn't the first pane, give it an iterative title
-		int nWindows = client.getNTriviaWindows();
+		final int nWindows = client.getNTriviaWindows();
 		String title;
 		if (nWindows == 0) {
 			title = "Trivia";
@@ -140,6 +135,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			public void update(boolean forceUpdate) {
 			}
 
+			@Override
 			protected void loadProperties() {
 			}
 		};
@@ -213,21 +209,21 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menuBar.add(menu);
 
 			this.hideClosedMenuItem = new JCheckBoxMenuItem("Hide answers to closed questions");
-			hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
-			hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
-			hideClosedMenuItem.setSelected(this.hideClosed);
-			hideClosedMenuItem.setActionCommand("Hide Closed");
-			hideClosedMenuItem.addActionListener(this);
-			menu.add(hideClosedMenuItem);
+			this.hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
+			this.hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+			this.hideClosedMenuItem.setSelected(this.hideClosed);
+			this.hideClosedMenuItem.setActionCommand("Hide Closed");
+			this.hideClosedMenuItem.addActionListener(this);
+			menu.add(this.hideClosedMenuItem);
 
 			this.hideDuplicatesMenuItem = new JCheckBoxMenuItem("Hide duplicate answers");
-			hideDuplicatesMenuItem.setMnemonic(KeyEvent.VK_D);
-			hideDuplicatesMenuItem.setDisplayedMnemonicIndex(5);
-			hideDuplicatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
-			hideDuplicatesMenuItem.setSelected(this.hideDuplicates);
-			hideDuplicatesMenuItem.setActionCommand("Hide Duplicates");
-			hideDuplicatesMenuItem.addActionListener(this);
-			menu.add(hideDuplicatesMenuItem);
+			this.hideDuplicatesMenuItem.setMnemonic(KeyEvent.VK_D);
+			this.hideDuplicatesMenuItem.setDisplayedMnemonicIndex(5);
+			this.hideDuplicatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+			this.hideDuplicatesMenuItem.setSelected(this.hideDuplicates);
+			this.hideDuplicatesMenuItem.setActionCommand("Hide Duplicates");
+			this.hideDuplicatesMenuItem.addActionListener(this);
+			menu.add(this.hideDuplicatesMenuItem);
 
 			final JMenu sortMenu = new JMenu("Sort by...");
 			sortMenu.setMnemonic(KeyEvent.VK_S);
@@ -237,82 +233,85 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			sortMenu.add(timestampSort);
 
 			final ButtonGroup sortOptions = new ButtonGroup();
-			sortTimestampAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
-			sortTimestampAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
-			sortTimestampAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
-			sortTimestampAscendingMenuItem.setActionCommand("Sort Timestamp Ascending");
-			sortTimestampAscendingMenuItem.addActionListener(this);
+			this.sortTimestampAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
+			this.sortTimestampAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
+					ActionEvent.CTRL_MASK));
+			this.sortTimestampAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
+			this.sortTimestampAscendingMenuItem.setActionCommand("Sort Timestamp Ascending");
+			this.sortTimestampAscendingMenuItem.addActionListener(this);
 			if (this.queueSort == QueueSort.TIMESTAMP_ASCENDING) {
-				sortTimestampAscendingMenuItem.setSelected(true);
+				this.sortTimestampAscendingMenuItem.setSelected(true);
 			}
-			sortOptions.add(sortTimestampAscendingMenuItem);
-			timestampSort.add(sortTimestampAscendingMenuItem);
+			sortOptions.add(this.sortTimestampAscendingMenuItem);
+			timestampSort.add(this.sortTimestampAscendingMenuItem);
 
-			sortTimestampDescendingMenuItem = new JRadioButtonMenuItem("Descending");
-			sortTimestampDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK
-					+ ActionEvent.SHIFT_MASK));
-			sortTimestampDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
-			sortTimestampDescendingMenuItem.setActionCommand("Sort Timestamp Descending");
-			sortTimestampDescendingMenuItem.addActionListener(this);
+			this.sortTimestampDescendingMenuItem = new JRadioButtonMenuItem("Descending");
+			this.sortTimestampDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
+					ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+			this.sortTimestampDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
+			this.sortTimestampDescendingMenuItem.setActionCommand("Sort Timestamp Descending");
+			this.sortTimestampDescendingMenuItem.addActionListener(this);
 			if (this.queueSort == QueueSort.TIMESTAMP_DESCENDING) {
-				sortTimestampDescendingMenuItem.setSelected(true);
+				this.sortTimestampDescendingMenuItem.setSelected(true);
 			}
-			sortOptions.add(sortTimestampDescendingMenuItem);
-			timestampSort.add(sortTimestampDescendingMenuItem);
+			sortOptions.add(this.sortTimestampDescendingMenuItem);
+			timestampSort.add(this.sortTimestampDescendingMenuItem);
 
 			final JMenu qNumberSort = new JMenu("Question Number");
 			qNumberSort.setMnemonic(KeyEvent.VK_Q);
 			sortMenu.add(qNumberSort);
 
-			sortQNumberAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
-			sortQNumberAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
-			sortQNumberAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
-			sortQNumberAscendingMenuItem.setActionCommand("Sort Question Number Ascending");
-			sortQNumberAscendingMenuItem.addActionListener(this);
+			this.sortQNumberAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
+			this.sortQNumberAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
+					ActionEvent.CTRL_MASK));
+			this.sortQNumberAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
+			this.sortQNumberAscendingMenuItem.setActionCommand("Sort Question Number Ascending");
+			this.sortQNumberAscendingMenuItem.addActionListener(this);
 			if (this.queueSort == QueueSort.QNUMBER_ASCENDING) {
-				sortQNumberAscendingMenuItem.setSelected(true);
+				this.sortQNumberAscendingMenuItem.setSelected(true);
 			}
-			sortOptions.add(sortQNumberAscendingMenuItem);
-			qNumberSort.add(sortQNumberAscendingMenuItem);
+			sortOptions.add(this.sortQNumberAscendingMenuItem);
+			qNumberSort.add(this.sortQNumberAscendingMenuItem);
 
-			sortQNumberDescendingMenuItem = new JRadioButtonMenuItem("Descending");
-			sortQNumberDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK
-					+ ActionEvent.SHIFT_MASK));
-			sortQNumberDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
-			sortQNumberDescendingMenuItem.setActionCommand("Sort Question Number Descending");
-			sortQNumberDescendingMenuItem.addActionListener(this);
+			this.sortQNumberDescendingMenuItem = new JRadioButtonMenuItem("Descending");
+			this.sortQNumberDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
+					ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+			this.sortQNumberDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
+			this.sortQNumberDescendingMenuItem.setActionCommand("Sort Question Number Descending");
+			this.sortQNumberDescendingMenuItem.addActionListener(this);
 			if (this.queueSort == QueueSort.QNUMBER_DESCENDING) {
-				sortQNumberDescendingMenuItem.setSelected(true);
+				this.sortQNumberDescendingMenuItem.setSelected(true);
 			}
-			sortOptions.add(sortQNumberDescendingMenuItem);
-			qNumberSort.add(sortQNumberDescendingMenuItem);
+			sortOptions.add(this.sortQNumberDescendingMenuItem);
+			qNumberSort.add(this.sortQNumberDescendingMenuItem);
 
 			final JMenu statusSort = new JMenu("Status");
 			statusSort.setMnemonic(KeyEvent.VK_S);
 			sortMenu.add(statusSort);
 
-			sortStatusAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
-			sortStatusAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-			sortStatusAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
-			sortStatusAscendingMenuItem.setActionCommand("Sort Status Ascending");
-			sortStatusAscendingMenuItem.addActionListener(this);
+			this.sortStatusAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
+			this.sortStatusAscendingMenuItem.setAccelerator(KeyStroke
+					.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+			this.sortStatusAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
+			this.sortStatusAscendingMenuItem.setActionCommand("Sort Status Ascending");
+			this.sortStatusAscendingMenuItem.addActionListener(this);
 			if (this.queueSort == QueueSort.STATUS_ASCENDING) {
-				sortStatusAscendingMenuItem.setSelected(true);
+				this.sortStatusAscendingMenuItem.setSelected(true);
 			}
-			sortOptions.add(sortStatusAscendingMenuItem);
-			statusSort.add(sortStatusAscendingMenuItem);
+			sortOptions.add(this.sortStatusAscendingMenuItem);
+			statusSort.add(this.sortStatusAscendingMenuItem);
 
-			sortStatusDescendingMenuItem = new JRadioButtonMenuItem("Descending");
-			sortStatusDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK
-					+ ActionEvent.SHIFT_MASK));
-			sortStatusDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
-			sortStatusDescendingMenuItem.setActionCommand("Sort Status Descending");
-			sortStatusDescendingMenuItem.addActionListener(this);
+			this.sortStatusDescendingMenuItem = new JRadioButtonMenuItem("Descending");
+			this.sortStatusDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+					ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+			this.sortStatusDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
+			this.sortStatusDescendingMenuItem.setActionCommand("Sort Status Descending");
+			this.sortStatusDescendingMenuItem.addActionListener(this);
 			if (this.queueSort == QueueSort.STATUS_DESCENDING) {
-				sortStatusDescendingMenuItem.setSelected(true);
+				this.sortStatusDescendingMenuItem.setSelected(true);
 			}
-			sortOptions.add(sortStatusDescendingMenuItem);
-			statusSort.add(sortStatusDescendingMenuItem);
+			sortOptions.add(this.sortStatusDescendingMenuItem);
+			statusSort.add(this.sortStatusDescendingMenuItem);
 
 			menu.add(sortMenu);
 
@@ -394,7 +393,93 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.setVisible(true);
 
 		// Load the properties
-		loadProperties();
+		this.loadProperties();
+	}
+
+	/**
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		final String command = e.getActionCommand();
+		switch (command) {
+			case "Change name":
+				// Triggered by change name, prompt for new name
+				new UserLoginDialog(this.client);
+				break;
+			case "Load state":
+				// Triggered by change state, prompt for save file
+				new LoadStateDialog(this.client);
+				break;
+			case "Hide Closed":
+				// Triggered by change to Hide Closed menu item
+				this.hideClosed = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
+				this.update(true);
+				break;
+			case "Hide Duplicates":
+				// Triggered by change to Hide Closed menu item
+				this.hideDuplicates = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
+				this.update(true);
+				break;
+			case "Sort Timestamp Ascending":
+				// Triggered by Timestamp Sort menu item
+				this.setSort(QueueSort.TIMESTAMP_ASCENDING);
+				this.update(true);
+				break;
+			case "Sort Question Number Ascending":
+				// Triggered by Question Number Sort menu item
+				this.setSort(QueueSort.QNUMBER_ASCENDING);
+				this.update(true);
+				break;
+			case "Sort Status Ascending":
+				// Triggered by Status Sort menu item
+				this.setSort(QueueSort.STATUS_ASCENDING);
+				this.update(true);
+				break;
+			case "Sort Timestamp Descending":
+				// Triggered by Timestamp Sort menu item
+				this.setSort(QueueSort.TIMESTAMP_DESCENDING);
+				this.update(true);
+				break;
+			case "Sort Question Number Descending":
+				// Triggered by Question Number Sort menu item
+				this.setSort(QueueSort.QNUMBER_DESCENDING);
+				this.update(true);
+				break;
+			case "Sort Status Descending":
+				// Triggered by Status Sort menu item
+				this.setSort(QueueSort.STATUS_DESCENDING);
+				this.update(true);
+				break;
+			case "Caller":
+				// Triggered by Caller Role menu item
+				this.client.setRole(Role.CALLER);
+				break;
+			case "Typist":
+				// Triggered by Typist Role menu item
+				this.client.setRole(Role.TYPIST);
+				break;
+			case "Researcher":
+				// Triggered by Researcher Role menu item
+				this.client.setRole(Role.RESEARCHER);
+				break;
+			case "Load Default Settings":
+				// Triggered by Reset window positions menu item
+				this.client.resetProperties();
+				break;
+			case "Open wiki":
+				// Triggered by Open wiki menu item
+				try {
+					Desktop.getDesktop().browse(new URI(TriviaClient.WIKI_URL));
+				} catch (IOException | URISyntaxException exception) {
+					this.log("Couldn't open a browser window");
+				}
+				break;
+			case "Exit":
+				// Tell client to exit the program
+				this.client.endProgram();
+				break;
+		}
 	}
 
 	/**
@@ -407,34 +492,63 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	/**
-	 * Load property for this window name. First looks for property specific to this iteration of TriviaFrame, then
-	 * looks to the default version.
+	 * Get the answer queue sort method.
 	 * 
-	 * @param id
-	 *            The frame's name
-	 * @param propertyName
-	 *            The property name
-	 * @return The property requested
+	 * @return The sort method
 	 */
-	private String loadProperty(String id, String propertyName) {
-		return TriviaClient.PROPERTIES.getProperty(id + "." + propertyName,
-				TriviaClient.PROPERTIES.getProperty(propertyName));
+	public QueueSort getQueueSort() {
+		return this.queueSort;
+	}
+
+	/**
+	 * Get the tabbed content pane.
+	 * 
+	 * @return The tabbed content pane
+	 */
+	public DnDTabbedPane getTabbedPane() {
+		return this.book;
+	}
+
+	/**
+	 * Get whether answers to closed questions should be hidden in the answer queue.
+	 * 
+	 * @return Whether answers to closed questions should be hidden
+	 */
+	public boolean hideClosed() {
+		return this.hideClosed;
+	}
+
+	/**
+	 * Get whether duplicate answers should be hidden in the answer queue.
+	 * 
+	 * @return Whether duplicate answers should be hidden
+	 */
+	public boolean hideDuplicates() {
+		return this.hideDuplicates;
+	}
+
+	/**
+	 * Load the saved position and size of the window from file. If none found, use preferred size of components.
+	 * 
+	 */
+	public void loadPosition() {
+		TriviaClient.loadPosition(this);
 	}
 
 	/**
 	 * Load all of the properties from the client and apply them.
 	 */
 	public void loadProperties() {
-		String id = this.getTitle();
+		final String id = this.getTitle();
 
 		// Load hide options
-		this.hideClosed = Boolean.parseBoolean(loadProperty(id, "HideClosed"));
+		this.hideClosed = Boolean.parseBoolean(this.loadProperty(id, "HideClosed"));
 		this.hideClosedMenuItem.setSelected(this.hideClosed);
-		this.hideDuplicates = Boolean.parseBoolean(loadProperty(id, "HideDuplicates"));
+		this.hideDuplicates = Boolean.parseBoolean(this.loadProperty(id, "HideDuplicates"));
 		this.hideDuplicatesMenuItem.setSelected(this.hideClosed);
 
 		// Load queue sort method
-		switch (loadProperty(id, "QueueSort")) {
+		switch (this.loadProperty(id, "QueueSort")) {
 			case "Sort Timestamp Ascending":
 				this.setSort(QueueSort.TIMESTAMP_ASCENDING);
 				break;
@@ -459,8 +573,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 
 		// Apply to status bar
-		int height = Integer.parseInt(loadProperty(id, "StatusBar.Height"));
-		float fontSize = Float.parseFloat(loadProperty(id, "StatusBar.FontSize"));
+		final int height = Integer.parseInt(this.loadProperty(id, "StatusBar.Height"));
+		final float fontSize = Float.parseFloat(this.loadProperty(id, "StatusBar.FontSize"));
 		this.statusBar.getParent().setPreferredSize(new Dimension(0, height));
 		this.statusBar.setFont(this.statusBar.getFont().deriveFont(fontSize));
 
@@ -473,44 +587,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				TriviaClient.PROPERTIES.getProperty("UserList.Typist.Color"), 16)));
 
 		// Tell all of the tabs to reload the properties
-		for (String tabName : this.book.getTabNames()) {
-			int index = this.book.indexOfTab(tabName);
-			Component component = this.book.getComponentAt(index);
+		for (final String tabName : this.book.getTabNames()) {
+			final int index = this.book.indexOfTab(tabName);
+			final Component component = this.book.getComponentAt(index);
 			if (component instanceof TriviaMainPanel) {
 				( (TriviaMainPanel) this.book.getComponentAt(index) ).loadProperties();
 			}
 		}
-	}
-
-	/**
-	 * Save properties.
-	 */
-	protected void saveProperties() {
-		String id = this.getTitle();
-		TriviaClient.PROPERTIES.setProperty(id + "." + "HideClosed", this.hideClosed + "");
-		TriviaClient.PROPERTIES.setProperty(id + "." + "HideDuplicates", this.hideDuplicates + "");
-		int height = this.statusBar.getPreferredSize().getSize().height;
-		float fontSize = this.statusBar.getFont().getSize2D();
-		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.Height", height + "");
-		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.FontSize", fontSize + "");
-		TriviaClient.PROPERTIES.setProperty(id + "." + "OpenTabs", this.book.getTabNames().toString());
-		// // Tell all of the tabs to reload the properties
-		// for (String tabName : this.book.getTabNames()) {
-		// int index = this.book.indexOfTab(tabName);
-		// Component component = this.book.getComponentAt(index);
-		// if (component instanceof TriviaMainPanel) {
-		// ( (TriviaMainPanel) this.book.getComponentAt(index) ).saveProperties();
-		// }
-		// }
-	}
-
-	/**
-	 * Get the tabbed content pane.
-	 * 
-	 * @return The tabbed content pane
-	 */
-	public DnDTabbedPane getTabbedPane() {
-		return this.book;
 	}
 
 	/**
@@ -524,14 +607,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.statusBar.setText(message);
 		// Print message to console
 		// System.out.println("LOG: " + message);
-	}
-
-	/**
-	 * Load the saved position and size of the window from file. If none found, use preferred size of components.
-	 * 
-	 */
-	public void loadPosition() {
-		TriviaClient.loadPosition(this);
 	}
 
 	/**
@@ -564,33 +639,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 	}
 
-	/**
-	 * Get the answer queue sort method.
-	 * 
-	 * @return The sort method
-	 */
-	public QueueSort getQueueSort() {
-		return this.queueSort;
-	}
-
-	/**
-	 * Get whether answers to closed questions should be hidden in the answer queue.
-	 * 
-	 * @return Whether answers to closed questions should be hidden
-	 */
-	public boolean hideClosed() {
-		return this.hideClosed;
-	}
-
-	/**
-	 * Get whether duplicate answers should be hidden in the answer queue.
-	 * 
-	 * @return Whether duplicate answers should be hidden
-	 */
-	public boolean hideDuplicates() {
-		return this.hideDuplicates;
-	}
-
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		if (e.getSource().equals(this.book)) {
@@ -598,7 +646,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				// If there are no tabs left, hide the frame
 				this.setVisible(false);
 				// Wait 100 ms to see if the tab is added back, then close if there are still no tabs
-				Timer timer = new Timer(100, new ActionListener() {
+				final Timer timer = new Timer(100, new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						if (!TriviaFrame.this.isVisible()) {
@@ -614,95 +662,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 	}
 
-	/**
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		final String command = e.getActionCommand();
-		switch (command) {
-			case "Change name":
-				// Triggered by change name, prompt for new name
-				new UserLoginDialog(this.client);
-				break;
-			case "Load state":
-				// Triggered by change state, prompt for save file
-				new LoadStateDialog(this.client);
-				break;
-			case "Hide Closed":
-				// Triggered by change to Hide Closed menu item
-				this.hideClosed = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
-				this.update(true);
-				break;
-			case "Hide Duplicates":
-				// Triggered by change to Hide Closed menu item
-				this.hideDuplicates = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
-				this.update(true);
-				break;
-			case "Sort Timestamp Ascending":
-				// Triggered by Timestamp Sort menu item
-				setSort(QueueSort.TIMESTAMP_ASCENDING);
-				this.update(true);
-				break;
-			case "Sort Question Number Ascending":
-				// Triggered by Question Number Sort menu item
-				setSort(QueueSort.QNUMBER_ASCENDING);
-				this.update(true);
-				break;
-			case "Sort Status Ascending":
-				// Triggered by Status Sort menu item
-				setSort(QueueSort.STATUS_ASCENDING);
-				this.update(true);
-				break;
-			case "Sort Timestamp Descending":
-				// Triggered by Timestamp Sort menu item
-				setSort(QueueSort.TIMESTAMP_DESCENDING);
-				this.update(true);
-				break;
-			case "Sort Question Number Descending":
-				// Triggered by Question Number Sort menu item
-				setSort(QueueSort.QNUMBER_DESCENDING);
-				this.update(true);
-				break;
-			case "Sort Status Descending":
-				// Triggered by Status Sort menu item
-				setSort(QueueSort.STATUS_DESCENDING);
-				this.update(true);
-				break;
-			case "Caller":
-				// Triggered by Caller Role menu item
-				this.client.setRole(Role.CALLER);
-				break;
-			case "Typist":
-				// Triggered by Typist Role menu item
-				this.client.setRole(Role.TYPIST);
-				break;
-			case "Researcher":
-				// Triggered by Researcher Role menu item
-				this.client.setRole(Role.RESEARCHER);
-				break;
-			case "Load Default Settings":
-				// Triggered by Reset window positions menu item
-				client.resetProperties();
-				break;
-			case "Open wiki":
-				// Triggered by Open wiki menu item
-				try {
-					Desktop.getDesktop().browse(new URI(TriviaClient.WIKI_URL));
-				} catch (IOException | URISyntaxException exception) {
-					this.log("Couldn't open a browser window");
-				}
-				break;
-			case "Exit":
-				// Tell client to exit the program
-				this.client.endProgram();
-				break;
-		}
-	}
-
 	public void update(boolean forceUpdate) {
 		// Update role
-		Role role = this.client.getRole();
+		final Role role = this.client.getRole();
 		switch (role) {
 			case RESEARCHER:
 				this.researcherMenuItem.setSelected(true);
@@ -717,13 +679,55 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 		}
 		// Propagate update to tabs
-		for (String tabName : this.book.getTabNames()) {
-			int index = this.book.indexOfTab(tabName);
-			Component component = this.book.getComponentAt(index);
+		for (final String tabName : this.book.getTabNames()) {
+			final int index = this.book.indexOfTab(tabName);
+			final Component component = this.book.getComponentAt(index);
 			if (component instanceof TriviaMainPanel) {
 				( (TriviaMainPanel) this.book.getComponentAt(index) ).update(forceUpdate);
 			}
 		}
+	}
+
+	/**
+	 * Save properties.
+	 */
+	protected void saveProperties() {
+		final String id = this.getTitle();
+		TriviaClient.PROPERTIES.setProperty(id + "." + "HideClosed", this.hideClosed + "");
+		TriviaClient.PROPERTIES.setProperty(id + "." + "HideDuplicates", this.hideDuplicates + "");
+		final int height = this.statusBar.getPreferredSize().getSize().height;
+		final float fontSize = this.statusBar.getFont().getSize2D();
+		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.Height", height + "");
+		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.FontSize", fontSize + "");
+		TriviaClient.PROPERTIES.setProperty(id + "." + "OpenTabs", this.book.getTabNames().toString());
+		// // Tell all of the tabs to reload the properties
+		// for (String tabName : this.book.getTabNames()) {
+		// int index = this.book.indexOfTab(tabName);
+		// Component component = this.book.getComponentAt(index);
+		// if (component instanceof TriviaMainPanel) {
+		// ( (TriviaMainPanel) this.book.getComponentAt(index) ).saveProperties();
+		// }
+		// }
+	}
+
+	/**
+	 * Load property for this window name. First looks for property specific to this iteration of TriviaFrame, then
+	 * looks to the default version.
+	 * 
+	 * @param id
+	 *            The frame's name
+	 * @param propertyName
+	 *            The property name
+	 * @return The property requested
+	 */
+	private String loadProperty(String id, String propertyName) {
+		return TriviaClient.PROPERTIES.getProperty(id + "." + propertyName,
+				TriviaClient.PROPERTIES.getProperty(propertyName));
+	}
+
+	// Queue sort option
+	public static enum QueueSort {
+		TIMESTAMP_ASCENDING, QNUMBER_ASCENDING, STATUS_ASCENDING, TIMESTAMP_DESCENDING, QNUMBER_DESCENDING, STATUS_DESCENDING
 	}
 
 

@@ -91,7 +91,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		this.dialog.setVisible(true);
 
 		// If the OK button was pressed, add the proposed answer to the queue
-		final int option = ( (Integer) dialog.getValue() ).intValue();
+		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			final String answer = answerTextArea.getText();
 

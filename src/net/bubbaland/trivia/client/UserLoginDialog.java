@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -47,7 +48,7 @@ public class UserLoginDialog extends TriviaDialogPanel {
 		this.add(userTextField, c);
 		userTextField.addAncestorListener(this);
 
-		String userName = client.getUser();
+		final String userName = client.getUser();
 		int options;
 		if (userName == null) {
 			options = JOptionPane.DEFAULT_OPTION;

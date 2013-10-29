@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 
 /**
  * Create a dialog to display answer data.
@@ -24,7 +25,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		super();
 
 		// Set up layout constraints
-		GridBagConstraints constraints = new GridBagConstraints();
+		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.weightx = 0.5;
@@ -33,14 +34,14 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		// Create the question number label
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		JLabel label = new JLabel("Number: " + qNumber, JLabel.LEFT);
+		JLabel label = new JLabel("Number: " + qNumber, SwingConstants.LEFT);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		// Create the question value label
 		constraints.gridx = 1;
 		constraints.gridy = 0;
-		label = new JLabel("Value: " + qValue, JLabel.RIGHT);
+		label = new JLabel("Value: " + qValue, SwingConstants.RIGHT);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
@@ -49,7 +50,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		constraints.gridy = 1;
 		constraints.weightx = 1.0;
 		constraints.gridwidth = 2;
-		label = new JLabel("Question", JLabel.CENTER);
+		label = new JLabel("Question", SwingConstants.CENTER);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
@@ -72,7 +73,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		// Create the answer text area
 		constraints.gridx = 0;
 		constraints.gridy = 4;
-		label = new JLabel("Answer", JLabel.CENTER);
+		label = new JLabel("Answer", SwingConstants.CENTER);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 

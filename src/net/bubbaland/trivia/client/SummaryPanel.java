@@ -284,6 +284,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 	}
 
+	@Override
 	public void loadProperties() {
 		/**
 		 * Colors
@@ -382,7 +383,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		final int currentRound = trivia.getCurrentRoundNumber();
 
 		// Update all the labels to match the current data
-		this.teamNameLabel.setText(client.getTrivia().getTeamName());
+		this.teamNameLabel.setText(this.client.getTrivia().getTeamName());
 		this.roundEarnedLabel.setText("" + trivia.getCurrentRoundEarned());
 		this.totalEarnedLabel.setText("" + trivia.getEarned());
 		this.roundValueLabel.setText("" + trivia.getCurrentRoundValue());

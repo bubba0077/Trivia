@@ -6,13 +6,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaInterface;
 
 /**
  * A panel for the workflow tab, which contains most of the trivia operations
@@ -20,7 +18,6 @@ import net.bubbaland.trivia.TriviaInterface;
  * @author Walter Kolczynski
  * 
  */
-@SuppressWarnings("unused")
 public class WorkflowPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
@@ -85,6 +82,13 @@ public class WorkflowPanel extends TriviaMainPanel {
 		});
 	}
 
+	@Override
+	public void loadProperties() {
+		this.workflowHeaderPanel.loadProperties();
+		this.workflowQlistPanel.loadProperties();
+		this.workflowQueuePanel.loadProperties();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -95,12 +99,6 @@ public class WorkflowPanel extends TriviaMainPanel {
 		this.workflowHeaderPanel.update(force);
 		this.workflowQlistPanel.update(force);
 		this.workflowQueuePanel.update(force);
-	}
-
-	public void loadProperties() {
-		this.workflowHeaderPanel.loadProperties();
-		this.workflowQlistPanel.loadProperties();
-		this.workflowQueuePanel.loadProperties();
 	}
 
 }

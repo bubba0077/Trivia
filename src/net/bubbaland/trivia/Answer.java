@@ -18,37 +18,32 @@ public class Answer implements Serializable {
 
 	private static final long	serialVersionUID	= -2367986992067473980L;
 
-	// Valid statuses
-	protected static enum Status {
-		DUPLICATE, NOT_CALLED_IN, CALLING, INCORRECT, PARTIAL, CORRECT
-	}
-
 	// Place in the queue
-	final private int		queueLocation;
+	final private int			queueLocation;
 
 	// The question number
-	volatile private int	qNumber;
+	volatile private int		qNumber;
 
 	// The answer text
-	final private String	answer;
+	final private String		answer;
 
 	// The confidence in the answer
-	final private int		confidence;
+	final private int			confidence;
 
 	// The timestamp of when the answer was submitted
-	final private String	timestamp;
+	final private String		timestamp;
 
 	// The user name of the answer submitter
-	final private String	submitter;
+	final private String		submitter;
 
 	// The user name of the person who is calling in the answer
-	private volatile String	caller;
+	private volatile String		caller;
 
 	// The operator who accepted a correct answer
-	private volatile String	operator;
+	private volatile String		operator;
 
 	// The current status of the question
-	private volatile Status	status;
+	private volatile Status		status;
 
 	/**
 	 * Create a new answer
@@ -62,7 +57,7 @@ public class Answer implements Serializable {
 	 */
 	public Answer(int queueLocation, int qNumber, String answer, String submitter) {
 		this(queueLocation, qNumber, answer, submitter, -1);
-	};
+	}
 
 	/**
 	 * Instantiates a new answer.
@@ -88,7 +83,7 @@ public class Answer implements Serializable {
 		this.caller = "";
 		this.operator = "";
 		this.status = Status.NOT_CALLED_IN;
-	}
+	};
 
 	/**
 	 * Mark this answer as being called in
@@ -208,6 +203,15 @@ public class Answer implements Serializable {
 	}
 
 	/**
+	 * Mark this answer as a duplicate
+	 */
+	public void markDuplicate() {
+		this.caller = "";
+		this.operator = "";
+		this.status = Status.DUPLICATE;
+	}
+
+	/**
 	 * Mark this answer as incorrect
 	 * 
 	 * @param caller
@@ -240,15 +244,6 @@ public class Answer implements Serializable {
 		this.status = Status.NOT_CALLED_IN;
 	}
 
-	/**
-	 * Mark this answer as a duplicate
-	 */
-	public void markDuplicate() {
-		this.caller = "";
-		this.operator = "";
-		this.status = Status.DUPLICATE;
-	}
-
 	public void setQNumber(int qNumber) {
 		this.qNumber = qNumber;
 	}
@@ -262,10 +257,26 @@ public class Answer implements Serializable {
 
 	}
 
+	public static class QNumberCompareReverse implements Comparator<Answer> {
+
+		@Override
+		public int compare(Answer o1, Answer o2) {
+			return ( (Integer) o2.getQNumber() ).compareTo(o1.getQNumber());
+		}
+
+	}
+
 	public static class StatusCompare implements Comparator<Answer> {
 		@Override
 		public int compare(Answer o1, Answer o2) {
 			return o1.status.compareTo(o2.status);
+		}
+	}
+
+	public static class StatusCompareReverse implements Comparator<Answer> {
+		@Override
+		public int compare(Answer o1, Answer o2) {
+			return o2.status.compareTo(o1.status);
 		}
 	}
 
@@ -276,27 +287,16 @@ public class Answer implements Serializable {
 		}
 	}
 
-	public static class QNumberCompareReverse implements Comparator<Answer> {
-
-		@Override
-		public int compare(Answer o1, Answer o2) {
-			return ( (Integer) o2.getQNumber() ).compareTo(o1.getQNumber());
-		}
-
-	}
-
-	public static class StatusCompareReverse implements Comparator<Answer> {
-		@Override
-		public int compare(Answer o1, Answer o2) {
-			return o2.status.compareTo(o1.status);
-		}
-	}
-
 	public static class TimestampCompareReverse implements Comparator<Answer> {
 		@Override
 		public int compare(Answer o1, Answer o2) {
 			return ( (Integer) o2.getQueueLocation() ).compareTo(o1.getQueueLocation());
 		}
+	}
+
+	// Valid statuses
+	protected static enum Status {
+		DUPLICATE, NOT_CALLED_IN, CALLING, INCORRECT, PARTIAL, CORRECT
 	}
 
 }

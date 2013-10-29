@@ -541,24 +541,6 @@ public class Round implements Serializable {
 	}
 
 	/**
-	 * Gets the current open questions.
-	 * 
-	 * @return Array of the open Questions
-	 */
-	private Question[] getOpenQuestions() {
-		final int nOpen = this.nOpen();
-		final Question[] questions = new Question[nOpen];
-		int q1 = 0;
-		for (final Question q : this.questions) {
-			if (q.isOpen()) {
-				questions[q1] = q;
-				q1++;
-			}
-		}
-		return questions;
-	}
-
-	/**
 	 * Gets the text of currently open questions.
 	 * 
 	 * @return Array of text for open questions
@@ -619,7 +601,6 @@ public class Round implements Serializable {
 		return this.questions[qNumber - 1];
 	}
 
-
 	/**
 	 * Gets the question text for a question.
 	 * 
@@ -631,6 +612,7 @@ public class Round implements Serializable {
 		return this.questions[qNumber - 1].getQuestionText();
 	}
 
+
 	/**
 	 * Gets the round number.
 	 * 
@@ -640,7 +622,6 @@ public class Round implements Serializable {
 		return this.rNumber;
 	}
 
-
 	/**
 	 * Gets the announced standings for this round.
 	 * 
@@ -649,6 +630,7 @@ public class Round implements Serializable {
 	public ScoreEntry[] getStandings() {
 		return this.standings;
 	}
+
 
 	/**
 	 * Gets the submitter of the correct answer for a question.
@@ -660,7 +642,6 @@ public class Round implements Serializable {
 	public String getSubmitter(int qNumber) {
 		return this.questions[qNumber - 1].getSubmitter();
 	}
-
 
 	/**
 	 * Gets the total value of questions in this round.
@@ -675,6 +656,7 @@ public class Round implements Serializable {
 		return value;
 	}
 
+
 	/**
 	 * Gets the value of a question.
 	 * 
@@ -686,10 +668,10 @@ public class Round implements Serializable {
 		return this.questions[qNumber - 1].getValue();
 	}
 
-
 	public int getVersion() {
 		return this.version;
 	}
+
 
 	/**
 	 * Checks if this round's score has been announced.
@@ -781,6 +763,19 @@ public class Round implements Serializable {
 	}
 
 	/**
+	 * Mark an answer in the queue as a duplicate.
+	 * 
+	 * @param queueIndex
+	 *            The index of the answer in the queue
+	 * 
+	 */
+	public void markDuplicate(int queueIndex) {
+		final Answer answer = this.answerQueue.get(queueIndex);
+		answer.markDuplicate();
+		this.version++;
+	}
+
+	/**
 	 * Mark a question as incorrect.
 	 * 
 	 * @param qNumber
@@ -839,19 +834,6 @@ public class Round implements Serializable {
 	}
 
 	/**
-	 * Mark an answer in the queue as a duplicate.
-	 * 
-	 * @param queueIndex
-	 *            The index of the answer in the queue
-	 * 
-	 */
-	public void markDuplicate(int queueIndex) {
-		final Answer answer = this.answerQueue.get(queueIndex);
-		answer.markDuplicate();
-		this.version++;
-	}
-
-	/**
 	 * Get the number of correct answers in this round
 	 * 
 	 * @return The number of correct answers
@@ -864,16 +846,6 @@ public class Round implements Serializable {
 			}
 		}
 		return nCorrect;
-	}
-
-	public int nUnopened() {
-		int nUnopened = 0;
-		for (int q = 0; q < this.getNQuestions(); q++) {
-			if (!this.questions[q].beenOpen()) {
-				nUnopened++;
-			}
-		}
-		return nUnopened;
 	}
 
 	/**
@@ -910,6 +882,16 @@ public class Round implements Serializable {
 		return nOpen;
 	}
 
+	public int nUnopened() {
+		int nUnopened = 0;
+		for (int q = 0; q < this.getNQuestions(); q++) {
+			if (!this.questions[q].beenOpen()) {
+				nUnopened++;
+			}
+		}
+		return nUnopened;
+	}
+
 	/**
 	 * Open a question.
 	 * 
@@ -944,44 +926,13 @@ public class Round implements Serializable {
 		this.version++;
 	}
 
-	/**
-	 * Set an answer in the queue. Used when loading a saved state from file.
-	 * 
-	 * @param qNumber
-	 *            The question number
-	 * @param answer
-	 *            The answer text
-	 * @param submitter
-	 *            The user submitting the answer
-	 * @param confidence
-	 *            The confidence in the answer
-	 * @param status
-	 *            The current status
-	 * @param caller
-	 *            The user calling the question in
-	 * @param operator
-	 *            The operator who accepted the correct answer
-	 */
-	protected void setAnswer(int qNumber, String answer, String submitter, int confidence, String status,
-			String caller, String operator) {
-		Answer newAnswer = new Answer(this.answerQueue.size() + 1, qNumber, answer, submitter, confidence);
-		this.answerQueue.add(newAnswer);
-		switch (status) {
-			case "Duplicate":
-				newAnswer.markDuplicate();
-				break;
-			case "Calling":
-				newAnswer.callIn(caller);
-			case "Incorrect":
-				newAnswer.markIncorrect(caller);
-				break;
-			case "Partial":
-				newAnswer.markPartial(caller);
-				break;
-			case "Correct":
-				newAnswer.markCorrect(caller, operator);
-				break;
-			default:
+	public void remapQuestion(int oldQNumber, int newQNumber) {
+		this.questions[newQNumber - 1].copy(this.getQuestion(oldQNumber));
+		this.questions[oldQNumber - 1].reset();
+		for (final Answer a : this.answerQueue) {
+			if (a.getQNumber() == oldQNumber) {
+				a.setQNumber(newQNumber);
+			}
 		}
 		this.version++;
 	}
@@ -1135,15 +1086,64 @@ public class Round implements Serializable {
 		this.version++;
 	}
 
-	public void remapQuestion(int oldQNumber, int newQNumber) {
-		this.questions[newQNumber - 1].copy(this.getQuestion(oldQNumber));
-		this.questions[oldQNumber - 1].reset();
-		for (Answer a : this.answerQueue) {
-			if (a.getQNumber() == oldQNumber) {
-				a.setQNumber(newQNumber);
-			}
+	/**
+	 * Set an answer in the queue. Used when loading a saved state from file.
+	 * 
+	 * @param qNumber
+	 *            The question number
+	 * @param answer
+	 *            The answer text
+	 * @param submitter
+	 *            The user submitting the answer
+	 * @param confidence
+	 *            The confidence in the answer
+	 * @param status
+	 *            The current status
+	 * @param caller
+	 *            The user calling the question in
+	 * @param operator
+	 *            The operator who accepted the correct answer
+	 */
+	protected void setAnswer(int qNumber, String answer, String submitter, int confidence, String status,
+			String caller, String operator) {
+		final Answer newAnswer = new Answer(this.answerQueue.size() + 1, qNumber, answer, submitter, confidence);
+		this.answerQueue.add(newAnswer);
+		switch (status) {
+			case "Duplicate":
+				newAnswer.markDuplicate();
+				break;
+			case "Calling":
+				newAnswer.callIn(caller);
+			case "Incorrect":
+				newAnswer.markIncorrect(caller);
+				break;
+			case "Partial":
+				newAnswer.markPartial(caller);
+				break;
+			case "Correct":
+				newAnswer.markCorrect(caller, operator);
+				break;
+			default:
 		}
 		this.version++;
+	}
+
+	/**
+	 * Gets the current open questions.
+	 * 
+	 * @return Array of the open Questions
+	 */
+	private Question[] getOpenQuestions() {
+		final int nOpen = this.nOpen();
+		final Question[] questions = new Question[nOpen];
+		int q1 = 0;
+		for (final Question q : this.questions) {
+			if (q.isOpen()) {
+				questions[q1] = q;
+				q1++;
+			}
+		}
+		return questions;
 	}
 
 }
