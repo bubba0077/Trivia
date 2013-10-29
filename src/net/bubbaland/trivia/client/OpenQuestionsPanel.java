@@ -530,8 +530,10 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				setTextPaneProperties(this.qTextPanes[q], questionWidth, rowHeight, color, bColor, questionFontSize);
 				setPanelProperties((JPanel) this.answerButtons[q].getParent(), answerWidth, rowHeight, bColor);
 				setPanelProperties((JPanel) this.closeButtons[q].getParent(), closeWidth, rowHeight, bColor);
-				this.answerButtons[q].setPreferredSize(new Dimension(answerButtonWidth, answerButtonHeight));
-				this.closeButtons[q].setPreferredSize(new Dimension(closeButtonWidth, closeButtonHeight));
+				setButtonProperties(this.answerButtons[q], answerButtonWidth, answerButtonHeight, null,
+						this.answerButtons[q].getFont().getSize2D());
+				setButtonProperties(this.closeButtons[q], closeButtonWidth, closeButtonHeight, null,
+						this.closeButtons[q].getFont().getSize2D());
 			}
 
 			this.spacer.setBackground(headerBackgroundColor);

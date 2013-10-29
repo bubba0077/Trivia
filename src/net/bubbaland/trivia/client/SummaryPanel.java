@@ -363,7 +363,8 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		setLabelProperties(this.placeLabel, col5width, bottomRowHeight, announcedColor, backgroundColor, labelFontSize);
 
 		setButtonProperties(this.speedButton, centerButtonWidth, centerButtonHeight, null, labelFontSize);
-		setButtonProperties(this.newRoundButton, centerButtonWidth, centerButtonHeight, newRoundColor, labelFontSize);
+		setButtonProperties(this.newRoundButton, centerButtonWidth, centerButtonHeight, null, labelFontSize);
+		this.newRoundButton.setBackground(newRoundColor);
 		setButtonProperties(this.conflictButton, conflictButtonWidth, conflictButtonHeight, null, labelFontSize);
 
 		this.userListPanel.setBackground(backgroundColor);
