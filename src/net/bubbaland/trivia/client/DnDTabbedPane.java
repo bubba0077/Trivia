@@ -40,12 +40,17 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
+import javax.swing.Painter;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -72,6 +77,11 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 	private final TriviaFrame						parent;
 	private final JPanel							blankPanel;
+
+	private static final JLabel						addTabLabel			= new JLabel(
+																				new ImageIcon(DnDTabbedPane.class
+																						.getResource("images/plus.png")));
+
 
 	private boolean									m_hasGhost			= true;
 
@@ -102,9 +112,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 			@Override
 			public void dragExit(DragSourceEvent e) {
-				// System.out.println(a++ + "dragExit");
 				DnDTabbedPane.this.tearTab.attach(e.getLocation());
-				// e.getDragSourceContext().setCursor(DragSource.DefaultMoveNoDrop);
 				DnDTabbedPane.this.m_lineRect.setRect(0, 0, 0, 0);
 				DnDTabbedPane.this.m_isDrawRect = false;
 				s_glassPane.setPoint(new Point(-1000, -1000));
@@ -115,10 +123,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 			public void dragOver(DragSourceDragEvent e) {
 
 				final TabTransferData data = DnDTabbedPane.this.getTabTransferData(e);
-				// System.out.println(a++ + e.getTargetActions() + " " + DnDConstants.ACTION_NONE);
 
 				if (data == null || e.getTargetActions() != DnDConstants.ACTION_MOVE) {
-					// System.out.println("action none");
 					DnDTabbedPane.this.tearTab.attach(e.getLocation());
 				}
 
@@ -172,16 +178,19 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 		this.closeMenu.setVisible(false);
 
+		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+			final UIDefaults defaults = new UIDefaults();
+			Painter<?> painter = (Painter<?>) UIManager.get("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter");
+			defaults.put("TabbedPane:TabbedPaneTab[Disabled].backgroundPainter", painter);
+			this.putClientProperty("Nimbus.Overrides", defaults);
+			this.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
+		}
 
 		this.addMouseListener(new PopupListener(this.closeMenu));
-
-		// DnDTabbedPane.registerTabbedPaneListener(this);
-		// this.client.getFrame().addWindowFocusListener(this);
-		// FloatingPanel.registerFloatingPanelListener(this);
-
-		this.addTab("+", this.blankPanel);
 		this.addChangeListener(this);
 		this.addMouseListener(this);
+
+		makeNewTabTab();
 	}
 
 	@Override
@@ -204,6 +213,13 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 			default:
 				break;
 		}
+	}
+
+	private void makeNewTabTab() {
+		this.addTab("+", this.blankPanel);
+		final int nTabs = this.getTabCount();
+		this.setTabComponentAt(nTabs - 1, addTabLabel);
+		this.setEnabledAt(nTabs - 1, false);
 	}
 
 	public void addTab(String tabName, TriviaMainPanel panel) {
@@ -281,20 +297,17 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		// Make sure the add button stays at the end
-		// this.closeMenu.setVisible(false);
 		final int nTabs = this.getTabCount();
 		final int addButtonIndex = this.indexOfComponent(this.blankPanel);
 		if (addButtonIndex > -1 && addButtonIndex != ( nTabs - 1 )) {
 			this.remove(addButtonIndex);
-			this.addTab("+", this.blankPanel);
-			// this.setEnabledAt(nTabs - 1, false);
+			this.makeNewTabTab();
 		}
 	}
 
 	void convertTab(TabTransferData a_data, int a_targetIndex) {
 
 		final DnDTabbedPane source = a_data.getTabbedPane();
-		// System.out.println("this=source? " + ( this == source ));
 		final int sourceIndex = a_data.getTabIndex();
 		if (sourceIndex < 0) return;
 		// Save the tab's component, title, and TabComponent.
@@ -442,7 +455,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	}
 
 	private void initGlassPane(Component c, Point tabPt, int a_tabIndex) {
-		// Point p = (Point) pt.clone();
 		this.getRootPane().setGlassPane(s_glassPane);
 		if (this.hasGhost()) {
 			final Rectangle rect = this.getBoundsAt(a_tabIndex);

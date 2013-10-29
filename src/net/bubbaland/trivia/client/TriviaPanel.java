@@ -74,6 +74,7 @@ public abstract class TriviaPanel extends JPanel {
 
 		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
 		pane.setBorder(BorderFactory.createEmptyBorder());
+		pane.setEnabled(false);
 		this.add(pane, constraints);
 		final QuestionPane textPane = new QuestionPane(new DefaultStyledDocument());
 		textPane.setContentType("text/html");
@@ -401,7 +402,7 @@ public abstract class TriviaPanel extends JPanel {
 	 */
 	protected static void setTextPaneProperties(JTextPane textPane, int width, int height, Color foreground,
 			Color background, float fontSize) {
-		textPane.setPreferredSize(new Dimension(width, height));
+		textPane.getParent().getParent().setPreferredSize(new Dimension(width, height));
 		textPane.setFont(textPane.getFont().deriveFont(fontSize));
 		textPane.setForeground(foreground);
 		textPane.setBackground(background);
@@ -436,7 +437,9 @@ public abstract class TriviaPanel extends JPanel {
 			final String pattern = "([Vv]isual )([Tt]rivia )?(#)?([0-9])+";
 			final String hQuestion = question.replaceFirst(pattern, "<a href=\"" + TriviaClient.VISUAL_URL
 					+ "$4\">Visual Trivia #$4</a>");
-			super.setText(hQuestion);
+			if (!hQuestion.equals(this.getText())) {
+				super.setText(hQuestion);
+			}
 		}
 	}
 
