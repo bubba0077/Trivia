@@ -13,7 +13,7 @@ import org.jfree.chart.JFreeChart;
  * @author Walter Kolczynski
  * 
  */
-public class CumulativePointsChartPanel extends TriviaPanel {
+public class CumulativePointsChartPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -6171512617495834445L;

@@ -1,12 +1,9 @@
 package net.bubbaland.trivia.client;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
 public class ViewQuestionDialog extends TriviaDialogPanel {
@@ -44,23 +41,15 @@ public class ViewQuestionDialog extends TriviaDialogPanel {
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
 		constraints.gridwidth = 2;
-		final JTextArea qTextArea = new JTextArea(qText, 4, 50);
+		final QuestionPane qTextArea = this.hyperlinkedTextPane(qText, constraints,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		qTextArea.setEditable(false);
-		qTextArea.setLineWrap(true);
-		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
-
-		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setPreferredSize(new Dimension(0, 200));
-		this.add(scrollPane, constraints);
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog(null, "View Question", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.DEFAULT_OPTION);
 		this.dialog.setModal(false);
 		this.dialog.setVisible(true);
-
-
 	}
 }

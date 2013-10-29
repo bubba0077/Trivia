@@ -8,7 +8,6 @@ import java.awt.event.FocusListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -22,7 +21,7 @@ import javax.swing.event.AncestorListener;
  * after the dialog is created.
  * 
  */
-public class TriviaDialogPanel extends JPanel implements AncestorListener, FocusListener {
+public class TriviaDialogPanel extends TriviaPanel implements AncestorListener, FocusListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -4127179718225373888L;
@@ -117,8 +116,6 @@ public class TriviaDialogPanel extends JPanel implements AncestorListener, Focus
 			});
 
 		}
-
-
 	}
 
 	public static void loadProperties() {

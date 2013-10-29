@@ -13,7 +13,7 @@ import org.jfree.chart.JFreeChart;
  * @author Walter Kolczynski
  * 
  */
-public class ScoreByRoundChartPanel extends TriviaPanel {
+public class ScoreByRoundChartPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -5408662436975410795L;

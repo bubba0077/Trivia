@@ -14,7 +14,7 @@ import org.jfree.chart.JFreeChart;
  * @author Walter Kolczynski
  * 
  */
-public class PlaceChartPanel extends TriviaPanel {
+public class PlaceChartPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
 	final private static long	serialVersionUID	= -4937894497657719097L;

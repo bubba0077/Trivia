@@ -48,6 +48,8 @@ public class TriviaClient implements WindowListener {
 	final static private String						TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
 	// URL for Wiki
 	final static protected String					WIKI_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
+	// URL base for Visual Trivia
+	final static protected String					VISUAL_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home/visual-trivia/visual-trivia-";
 	// URL for the IRC client
 	final static protected String					IRC_CLIENT_URL		= "http://webchat.freenode.net/";
 	// IRC channel to join on connection to IRC server
@@ -399,8 +401,8 @@ public class TriviaClient implements WindowListener {
 		return this.windowList.size();
 	}
 
-	public TriviaPanel getTab(TriviaFrame frame, String tabName) {
-		TriviaPanel panel = null;
+	public TriviaMainPanel getTab(TriviaFrame frame, String tabName) {
+		TriviaMainPanel panel = null;
 		switch (tabName) {
 			case "Workflow":
 				panel = new WorkflowPanel(frame, this);

@@ -21,7 +21,7 @@ import net.bubbaland.trivia.TriviaInterface;
  * 
  */
 @SuppressWarnings("unused")
-public class WorkflowPanel extends TriviaPanel {
+public class WorkflowPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long			serialVersionUID	= -5608314912146842278L;

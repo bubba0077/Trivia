@@ -28,8 +28,6 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 	/**
 	 * Creates a dialog box and prompt for response
 	 * 
-	 * @param server
-	 *            The remote trivia server
 	 * @param client
 	 *            The local trivia client
 	 * @param qNumber
@@ -114,7 +112,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		c.gridx = 1;
 		c.gridy = 4;
 		c.insets = new Insets(sliderPaddingBottom, sliderPaddingLeft, sliderPaddingRight, sliderPaddingTop);
-		final JSlider confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 3);
+		final JSlider confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 1);
 		confidenceSlider.setMajorTickSpacing(1);
 		final Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		labelTable.put(new Integer(1), new JLabel("Guess"));

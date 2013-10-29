@@ -25,7 +25,7 @@ import net.bubbaland.trivia.Trivia;
  * @author Walter Kolczynski
  * 
  */
-public class HistoryPanel extends TriviaPanel implements ItemListener {
+public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 
 	/** The Constant serialVersionUID. */
 	final private static long			serialVersionUID	= -5094201314926851039L;

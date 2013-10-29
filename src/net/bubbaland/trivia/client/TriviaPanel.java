@@ -2,11 +2,14 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.LayoutManager;
 import java.awt.event.MouseWheelEvent;
-import java.io.Serializable;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -14,30 +17,36 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.StyledDocument;
 
-/**
- * Super-class for most of the panels in the trivia GUI.
- * 
- * Provides methods for automatically making labels and text areas that fill their space by enclosing them in panels
- * 
- */
-public abstract class TriviaPanel extends JPanel implements Serializable {
+public class TriviaPanel extends JPanel {
 
-	/** The Constant serialVersionUID. */
-	private static final long	serialVersionUID	= 3713561221924406596L;
+	private static final long	serialVersionUID	= 7023089773420890665L;
 
-	/**
-	 * Instantiates a new Trivia Panel
-	 */
 	public TriviaPanel() {
-		super(new GridBagLayout());
+		super();
+	}
+
+	public TriviaPanel(LayoutManager layout) {
+		super(layout);
+	}
+
+	public TriviaPanel(boolean isDoubleBuffered) {
+		super(isDoubleBuffered);
+	}
+
+	public TriviaPanel(LayoutManager layout, boolean isDoubleBuffered) {
+		super(layout, isDoubleBuffered);
 	}
 
 	/**
@@ -156,7 +165,6 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 		panel.setPreferredSize(new Dimension(width, height));
 		panel.setMinimumSize(new Dimension(width, height));
 	}
-
 
 	protected static void setButtonProperties(Component button, int width, int height, float fontSize, Color foreground) {
 		if (!( button instanceof JButton || button instanceof JToggleButton )) {
@@ -291,17 +299,7 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 		// pane.setMinimumSize(new Dimension(width, height));
 		pane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(pane, constraints);
-		final JTextArea textArea = new JTextArea(string) {
-			private static final long	serialVersionUID	= 1L;
-
-			// public JToolTip createToolTip() {
-			// JMultiLineToolTip tip = new JMultiLineToolTip();
-			// tip.setComponent(this);
-			// // tip.setFixedWidth(300);
-			// tip.setColumns(50);
-			// return tip;
-			// }
-		};
+		final JTextArea textArea = new JTextArea(string);
 		textArea.setFont(textArea.getFont().deriveFont(fontSize));
 		textArea.setBackground(background);
 		textArea.setForeground(foreground);
@@ -316,14 +314,86 @@ public abstract class TriviaPanel extends JPanel implements Serializable {
 	}
 
 	/**
-	 * Requires all sub-classes to have a method that updates their contents.
+	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
+	 * so the text can be read/changed later.
+	 * 
+	 * @param string
+	 *            The initial string for the text area
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param horizontalScroll
+	 *            The horizontal scroll bar policy (JScrollPane constants)
+	 * @param verticalScroll
+	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * @return The text area inside the scroll pane
 	 */
-	public void update() {
-		this.update(false);
+	public QuestionPane hyperlinkedTextPane(String string, GridBagConstraints constraints, int horizontalScroll,
+			int verticalScroll) {
+
+		final JScrollPane pane = new JScrollPane(verticalScroll, horizontalScroll) {
+			private static final long	serialVersionUID	= 1L;
+
+			@Override
+			protected void processMouseWheelEvent(MouseWheelEvent e) {
+				boolean scrollUp = e.getWheelRotation() < 0;
+				if (scrollUp && this.verticalScrollBar.getValue() == this.verticalScrollBar.getMinimum()) {
+					if (getParent() != null) {
+						getParent().dispatchEvent(SwingUtilities.convertMouseEvent(this, e, getParent()));
+					}
+					return;
+				}
+				if (!scrollUp
+						&& this.verticalScrollBar.getValue() == this.verticalScrollBar.getMaximum() - this.getHeight()) {
+					if (getParent() != null)
+						getParent().dispatchEvent(SwingUtilities.convertMouseEvent(this, e, getParent()));
+					return;
+				}
+				super.processMouseWheelEvent(e);
+			}
+		};
+		pane.setBorder(BorderFactory.createEmptyBorder());
+		this.add(pane, constraints);
+		final QuestionPane textPane = new QuestionPane(new DefaultStyledDocument());
+		textPane.setContentType("text/html");
+		textPane.addHyperlinkListener(new HyperlinkListener() {
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					System.out.println(e.getURL());
+					try {
+						Desktop.getDesktop().browse(e.getURL().toURI());
+					} catch (IOException | URISyntaxException exception) {
+						// this.log("Couldn't open a browser window");
+					}
+				}
+			}
+		});
+		textPane.setText(string);
+		textPane.setBorder(BorderFactory.createEmptyBorder());
+		DefaultCaret caret = (DefaultCaret) textPane.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		pane.setViewportView(textPane);
+
+		return textPane;
 	}
 
-	public abstract void update(boolean forceUpdate);
+	public class QuestionPane extends JTextPane {
+		public QuestionPane() {
+			super();
+		}
 
-	protected abstract void loadProperties();
+		public QuestionPane(StyledDocument doc) {
+			super(doc);
+		}
+
+		private static final long	serialVersionUID	= -4043733624909281303L;
+
+		public void setText(String question) {
+			String pattern = "([Vv]isual )([Tt]rivia )?(#)?([0-9])+";
+			String hQuestion = question.replaceFirst(pattern, "<a href=\"" + TriviaClient.VISUAL_URL
+					+ "$4\">$1$2$3$4</a>");
+			super.setText(hQuestion);
+		}
+	}
 
 }

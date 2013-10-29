@@ -99,7 +99,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.setTitle(title);
 		this.setName(title);
 
-		final TriviaPanel panel = new TriviaPanel() {
+		final TriviaMainPanel panel = new TriviaMainPanel() {
 			private static final long	serialVersionUID	= -3431542881790392652L;
 
 			@Override
@@ -427,8 +427,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		for (String tabName : this.book.getTabNames()) {
 			int index = this.book.indexOfTab(tabName);
 			Component component = this.book.getComponentAt(index);
-			if (component instanceof TriviaPanel) {
-				( (TriviaPanel) this.book.getComponentAt(index) ).loadProperties();
+			if (component instanceof TriviaMainPanel) {
+				( (TriviaMainPanel) this.book.getComponentAt(index) ).loadProperties();
 			}
 		}
 	}
@@ -647,8 +647,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		for (String tabName : this.book.getTabNames()) {
 			int index = this.book.indexOfTab(tabName);
 			Component component = this.book.getComponentAt(index);
-			if (component instanceof TriviaPanel) {
-				( (TriviaPanel) this.book.getComponentAt(index) ).update(forceUpdate);
+			if (component instanceof TriviaMainPanel) {
+				( (TriviaMainPanel) this.book.getComponentAt(index) ).update(forceUpdate);
 			}
 		}
 	}

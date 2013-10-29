@@ -43,7 +43,7 @@ import net.bubbaland.trivia.client.TriviaFrame.QueueSort;
  * @author Walter Kolczynski
  * 
  */
-public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
+public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long			serialVersionUID	= 784049314825719490L;
@@ -273,7 +273,7 @@ public class AnswerQueuePanel extends TriviaPanel implements MouseListener {
 	/**
 	 * A panel that will show the current answer queue
 	 */
-	private class AnswerQueueSubPanel extends TriviaPanel implements ItemListener, ActionListener {
+	private class AnswerQueueSubPanel extends TriviaMainPanel implements ItemListener, ActionListener {
 
 		/** The Constant serialVersionUID */
 		private static final long					serialVersionUID	= -5462544756397828556L;

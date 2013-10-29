@@ -12,7 +12,7 @@ import java.awt.GridBagConstraints;
  * @author Walter Kolczynski
  * 
  */
-public class RoundPanel extends TriviaPanel {
+public class RoundPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long			serialVersionUID	= 9190017804155701978L;

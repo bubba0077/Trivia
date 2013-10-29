@@ -14,7 +14,7 @@ import org.jfree.chart.JFreeChart;
  * 
  */
 
-public class TeamComparisonPanel extends TriviaPanel {
+public class TeamComparisonPanel extends TriviaMainPanel {
 
 	private static final long	serialVersionUID	= 0xaa5a61f8f351d0b3L;
 

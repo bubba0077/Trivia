@@ -26,7 +26,7 @@ import net.bubbaland.trivia.UserList.Role;
  * @author Walter Kolczynski
  * 
  */
-public class UserListPanel extends TriviaPanel {
+public class UserListPanel extends TriviaMainPanel {
 
 	private static final long				serialVersionUID	= 4877267114050120590L;
 

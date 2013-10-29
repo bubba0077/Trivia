@@ -27,7 +27,7 @@ import net.bubbaland.trivia.Trivia;
  * @author Walter Kolczynski
  * 
  */
-public class ScoreByRoundPanel extends TriviaPanel {
+public class ScoreByRoundPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long			serialVersionUID	= -2047479093232798581L;
@@ -181,7 +181,7 @@ public class ScoreByRoundPanel extends TriviaPanel {
 	/**
 	 * Scroll panel that contains the score data for every round
 	 */
-	private class InternalScrollPanel extends TriviaPanel implements ActionListener {
+	private class InternalScrollPanel extends TriviaMainPanel implements ActionListener {
 
 		/** The Constant serialVersionUID. */
 		private static final long	serialVersionUID	= 7121481355244434308L;

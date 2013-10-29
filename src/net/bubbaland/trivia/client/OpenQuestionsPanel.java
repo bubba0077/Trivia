@@ -19,7 +19,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
@@ -31,7 +30,7 @@ import net.bubbaland.trivia.Trivia;
  * @author Walter Kolczynski
  * 
  */
-public class OpenQuestionsPanel extends TriviaPanel {
+public class OpenQuestionsPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long			serialVersionUID	= 6049067322505905668L;
@@ -117,27 +116,27 @@ public class OpenQuestionsPanel extends TriviaPanel {
 	/**
 	 * Panel which displays a list of the current open questions.
 	 */
-	private class OpenQuestionsSubPanel extends TriviaPanel implements ActionListener {
+	private class OpenQuestionsSubPanel extends TriviaMainPanel implements ActionListener {
 
 		/** The Constant serialVersionUID. */
-		private static final long	serialVersionUID	= 6049067322505905668L;
+		private static final long		serialVersionUID	= 6049067322505905668L;
 
 		// Maximum number of questions in a round
-		private final int			nQuestionsMax;
+		private final int				nQuestionsMax;
 
 		/**
 		 * GUI Elements that will need to be updated
 		 */
-		private final JLabel[]		qNumberLabels, qValueLabels;
-		private final JTextArea[]	qTextAreas;
-		private final JButton[]		answerButtons, closeButtons;
-		private final JPopupMenu	contextMenu;
-		private final JPanel		spacer;
+		private final JLabel[]			qNumberLabels, qValueLabels;
+		private final QuestionPane[]	qTextPanes;
+		private final JButton[]			answerButtons, closeButtons;
+		private final JPopupMenu		contextMenu;
+		private final JPanel			spacer;
 
 		/**
 		 * Data sources
 		 */
-		private final TriviaClient	client;
+		private final TriviaClient		client;
 
 		/**
 		 * Instantiates a new workflow q list sub panel.
@@ -197,7 +196,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 			 */
 			this.qNumberLabels = new JLabel[this.nQuestionsMax];
 			this.qValueLabels = new JLabel[this.nQuestionsMax];
-			this.qTextAreas = new JTextArea[this.nQuestionsMax];
+			this.qTextPanes = new QuestionPane[this.nQuestionsMax];
 			this.answerButtons = new JButton[this.nQuestionsMax];
 			this.closeButtons = new JButton[this.nQuestionsMax];
 
@@ -217,11 +216,11 @@ public class OpenQuestionsPanel extends TriviaPanel {
 				constraints.gridx = 2;
 				constraints.gridy = q;
 				constraints.weightx = 1.0;
-				this.qTextAreas[q] = this.scrollableTextArea("", constraints,
+				this.qTextPanes[q] = this.hyperlinkedTextPane("", constraints,
 						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-				this.qTextAreas[q].setEditable(false);
-				this.qTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
+				this.qTextPanes[q].setEditable(false);
+				this.qTextPanes[q].addMouseListener(new PopupListener(this.contextMenu));
 				constraints.weightx = 0.0;
 
 				constraints.gridx = 3;
@@ -359,7 +358,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 			boolean anyUpdate = false;
 			for (int q = 0; q < nOpen; q++) {
 				qUpdated[q] = !( this.qNumberLabels[q].getText().equals(openQuestionNumbers[q] + "")
-						&& this.qValueLabels[q].getText().equals(openQuestionValues[q] + "") && this.qTextAreas[q]
+						&& this.qValueLabels[q].getText().equals(openQuestionValues[q] + "") && this.qTextPanes[q]
 						.getText().equals(openQuestionText[q]) );
 				anyUpdate = anyUpdate || qUpdated[q];
 			}
@@ -369,7 +368,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 				if (qUpdated[q] || force) {
 					this.qNumberLabels[q].setText(openQuestionNumbers[q] + "");
 					this.qValueLabels[q].setText(openQuestionValues[q]);
-					this.qTextAreas[q].setText(openQuestionText[q]);
+					this.qTextPanes[q].setText(openQuestionText[q]);
 					// this.qTextAreas[q].setToolTipText(openQuestionText[q]);
 					this.answerButtons[q].setText("Answer");
 					this.answerButtons[q].setName(openQuestionNumbers[q] + "");
@@ -381,7 +380,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 
 					this.qNumberLabels[q].setName(openQuestionNumbers[q] + "");
 					this.qValueLabels[q].setName(openQuestionNumbers[q] + "");
-					this.qTextAreas[q].setName(openQuestionNumbers[q] + "");
+					this.qTextPanes[q].setName(openQuestionNumbers[q] + "");
 
 				}
 			}
@@ -390,7 +389,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 			for (int q = nOpen; q < this.nQuestionsMax; q++) {
 				this.qNumberLabels[q].setText("");
 				this.qValueLabels[q].setText("");
-				this.qTextAreas[q].setText("");
+				this.qTextPanes[q].setText("");
 				// this.qTextAreas[q].setToolTipText("");
 				this.answerButtons[q].setText("");
 				this.answerButtons[q].setName("");
@@ -405,7 +404,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 				}
 				this.qNumberLabels[q].setName("");
 				this.qValueLabels[q].setName("");
-				this.qTextAreas[q].setName("");
+				this.qTextPanes[q].setName("");
 			}
 
 			int nQuestionsShow;
@@ -419,13 +418,13 @@ public class OpenQuestionsPanel extends TriviaPanel {
 			for (int q = 0; q < nQuestionsShow; q++) {
 				this.qNumberLabels[q].setVisible(true);
 				this.qValueLabels[q].setVisible(true);
-				this.qTextAreas[q].setVisible(true);
+				this.qTextPanes[q].setVisible(true);
 
 				this.qNumberLabels[q].getParent().setVisible(true);
 				this.qValueLabels[q].getParent().setVisible(true);
-				this.qTextAreas[q].setVisible(true);
-				this.qTextAreas[q].getParent().setVisible(true);
-				this.qTextAreas[q].getParent().getParent().setVisible(true);
+				this.qTextPanes[q].setVisible(true);
+				this.qTextPanes[q].getParent().setVisible(true);
+				this.qTextPanes[q].getParent().getParent().setVisible(true);
 				this.answerButtons[q].getParent().setVisible(true);
 				this.closeButtons[q].getParent().setVisible(true);
 			}
@@ -434,13 +433,13 @@ public class OpenQuestionsPanel extends TriviaPanel {
 			for (int q = nQuestionsShow; q < this.nQuestionsMax; q++) {
 				this.qNumberLabels[q].setVisible(false);
 				this.qValueLabels[q].setVisible(false);
-				this.qTextAreas[q].setVisible(false);
+				this.qTextPanes[q].setVisible(false);
 
 				this.qNumberLabels[q].getParent().setVisible(false);
 				this.qValueLabels[q].getParent().setVisible(false);
-				this.qTextAreas[q].setVisible(false);
-				this.qTextAreas[q].getParent().setVisible(false);
-				this.qTextAreas[q].getParent().getParent().setVisible(false);
+				this.qTextPanes[q].setVisible(false);
+				this.qTextPanes[q].getParent().setVisible(false);
+				this.qTextPanes[q].getParent().getParent().setVisible(false);
 				this.answerButtons[q].getParent().setVisible(false);
 				this.closeButtons[q].getParent().setVisible(false);
 			}
@@ -540,7 +539,7 @@ public class OpenQuestionsPanel extends TriviaPanel {
 
 				setLabelProperties(this.qNumberLabels[q], qNumWidth, rowHeight, color, bColor, qNumFontSize);
 				setLabelProperties(this.qValueLabels[q], valueWidth, rowHeight, color, bColor, valueFontSize);
-				setTextAreaProperties(this.qTextAreas[q], questionWidth, rowHeight, color, bColor, questionFontSize);
+				setTextPaneProperties(this.qTextPanes[q], questionWidth, rowHeight, color, bColor, questionFontSize);
 				setPanelProperties((JPanel) this.answerButtons[q].getParent(), answerWidth, rowHeight, bColor);
 				setPanelProperties((JPanel) this.closeButtons[q].getParent(), closeWidth, rowHeight, bColor);
 				this.answerButtons[q].setPreferredSize(new Dimension(answerButtonWidth, answerButtonHeight));

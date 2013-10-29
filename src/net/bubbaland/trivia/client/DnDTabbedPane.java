@@ -413,7 +413,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		return m_hasGhost;
 	}
 
-	public void addTab(String tabName, TriviaPanel panel) {
+	public void addTab(String tabName, TriviaMainPanel panel) {
 		super.addTab(tabName, panel);
 		if (panel instanceof ChangeListener) {
 			this.addChangeListener((ChangeListener) panel);
