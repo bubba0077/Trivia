@@ -231,6 +231,12 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 				this.addChangeListener((ChangeListener) child);
 			}
 		}
+		int index = this.indexOfTab(tabName);
+		if (tabName.equals("+")) {
+			this.setToolTipTextAt(index, "Add a new tab");
+		} else {
+			this.setToolTipTextAt(index, TriviaClient.getTabDescription(tabName));
+		}
 	}
 
 	public TabAcceptor getAcceptor() {

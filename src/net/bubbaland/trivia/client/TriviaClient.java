@@ -137,7 +137,10 @@ public class TriviaClient implements WindowListener {
 		fetcher.execute();
 
 		// Create a prompt requesting the user name
-		new UserLoginDialog(this);
+		this.user = PROPERTIES.getProperty("UserName");
+		if (this.user == null) {
+			new UserLoginDialog(this);
+		}
 		this.setRole(Role.RESEARCHER);
 
 		// Create startup frames
@@ -277,7 +280,7 @@ public class TriviaClient implements WindowListener {
 	 *            The tab name
 	 * @return The description associated with the tab name
 	 */
-	public String getTabDescription(String tabName) {
+	public static String getTabDescription(String tabName) {
 		return TriviaClient.TAB_DESCRIPTION_HASH.get(tabName);
 	}
 
@@ -465,6 +468,7 @@ public class TriviaClient implements WindowListener {
 			this.windowList.get(f).saveProperties();
 			savePosition(this.windowList.get(f));
 		}
+		PROPERTIES.setProperty("UserName", this.user);
 		TriviaClient.savePropertyFile();
 		System.exit(0);
 	}

@@ -33,13 +33,8 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 	private final JComboBox<String>	tabSelector;
 	private final JTextArea			descriptionLabel;
 
-	// Data source
-	private final TriviaClient		client;
-
 	public AddTabDialog(TriviaFrame panel, TriviaClient client, DnDTabbedPane pane) {
 		super();
-
-		this.client = client;
 
 		// Get the list of tab names and sort them
 		final Set<String> tabNameSet = client.getTabNames();
@@ -67,7 +62,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		constraints.weighty = 1.0;
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		this.descriptionLabel = new JTextArea(this.client.getTabDescription(tabNames[0]));
+		this.descriptionLabel = new JTextArea(TriviaClient.getTabDescription(tabNames[0]));
 		this.descriptionLabel.setFont(this.descriptionLabel.getFont().deriveFont(textAreaFontSize));
 		this.descriptionLabel.setEditable(false);
 		this.descriptionLabel.setLineWrap(true);
@@ -75,7 +70,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		this.add(this.descriptionLabel, constraints);
 
 		// Options
-		final Object[] options = { "Add", "Add All", "Cancel" };
+		final String[] options = { "Add", "Add All", "Cancel" };
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog((Frame) SwingUtilities.getWindowAncestor(pane), "Add tab", this,
@@ -133,7 +128,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		final String tabName = (String) this.tabSelector.getSelectedItem();
-		final String description = this.client.getTabDescription(tabName);
+		final String description = TriviaClient.getTabDescription(tabName);
 		this.descriptionLabel.setText(description);
 	}
 
