@@ -730,7 +730,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 		private void checkForPopup(MouseEvent event) {
 			int clickedIndex = -1;
-			for (int i = 0; i < DnDTabbedPane.this.getTabCount(); i++) {
+			for (int i = 0; i < DnDTabbedPane.this.getTabCount() - 1; i++) {
 				if (DnDTabbedPane.this.getBoundsAt(i).contains(event.getPoint())) {
 					clickedIndex = i;
 					break;
