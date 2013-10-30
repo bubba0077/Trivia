@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigInteger;
 import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
@@ -167,10 +168,10 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 		/**
 		 * Colors
 		 */
-		final Color headerColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.Color"), 16));
-		final Color headerBackgroundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.BackgroundColor"), 16));
+		final Color headerColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.Color"), 16).intValue());
+		final Color headerBackgroundColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.BackgroundColor"), 16).intValue());
 		/**
 		 * Sizes
 		 */
@@ -572,16 +573,16 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 			/**
 			 * Colors
 			 */
-			final Color headerBackgroundColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.BackgroundColor"), 16));
-			final Color oddColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("RoundQuestions.OddRow.Color"), 16));
-			final Color evenColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("RoundQuestions.EvenRow.Color"), 16));
-			final Color oddBackgroundColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("RoundQuestions.OddRow.BackgroundColor"), 16));
-			final Color evenBackgroundColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("RoundQuestions.EvenRow.BackgroundColor"), 16));
+			final Color headerBackgroundColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.BackgroundColor"), 16).intValue());
+			final Color oddColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("RoundQuestions.OddRow.Color"), 16).intValue());
+			final Color evenColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("RoundQuestions.EvenRow.Color"), 16).intValue());
+			final Color oddBackgroundColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("RoundQuestions.OddRow.BackgroundColor"), 16).intValue());
+			final Color evenBackgroundColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("RoundQuestions.EvenRow.BackgroundColor"), 16).intValue());
 
 			/**
 			 * Sizes

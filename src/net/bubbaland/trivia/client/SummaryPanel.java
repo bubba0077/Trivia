@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigInteger;
 import java.rmi.RemoteException;
 
 import javax.swing.JButton;
@@ -290,17 +291,21 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		 * Colors
 		 */
 		backgroundColor = new Color(
-				Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.BackgroundColor"), 16));
-		final Color labelColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Label.Color"),
-				16));
-		final Color earnedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16));
-		final Color valueColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16));
-		final Color announcedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Announced.Color"),
-				16));
-		speedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Speed.Color"), 16));
-		final Color newRoundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("Summary.NewRound.Color"), 16));
-		conflictColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Conflict.Color"), 16));
+				new BigInteger(TriviaClient.PROPERTIES.getProperty("Summary.BackgroundColor"), 16).intValue());
+		final Color labelColor = new Color(new BigInteger(TriviaClient.PROPERTIES.getProperty("Summary.Label.Color"),
+				16).intValue());
+		final Color earnedColor = new Color(
+				new BigInteger(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16).intValue());
+		final Color valueColor = new Color(
+				new BigInteger(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16).intValue());
+		final Color announcedColor = new Color(new BigInteger(TriviaClient.PROPERTIES.getProperty("Announced.Color"),
+				16).intValue());
+		speedColor = new Color(
+				new BigInteger(TriviaClient.PROPERTIES.getProperty("Summary.Speed.Color"), 16).intValue());
+		final Color newRoundColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("Summary.NewRound.Color"), 16).intValue());
+		conflictColor = new Color(
+				new BigInteger(TriviaClient.PROPERTIES.getProperty("Summary.Conflict.Color"), 16).intValue());
 
 		/**
 		 * Sizes

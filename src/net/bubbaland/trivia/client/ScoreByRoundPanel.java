@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigInteger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -181,18 +182,20 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		/**
 		 * Colors
 		 */
-		final Color headerBackgroundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.BackgroundColor"), 16));
-		final Color roundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Color"), 16));
-		final Color earnedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16));
-		final Color valueColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16));
-		final Color percentColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Percent.Color"), 16));
-		final Color announcedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Announced.Color"),
-				16));
-		final Color discrepancyColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Discrepancy.Color"), 16));
+		final Color headerBackgroundColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
+		final Color roundColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Color"), 16).intValue());
+		final Color earnedColor = new Color(
+				new BigInteger(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16).intValue());
+		final Color valueColor = new Color(
+				new BigInteger(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16).intValue());
+		final Color percentColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Percent.Color"), 16).intValue());
+		final Color announcedColor = new Color(new BigInteger(TriviaClient.PROPERTIES.getProperty("Announced.Color"),
+				16).intValue());
+		final Color discrepancyColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Discrepancy.Color"), 16).intValue());
 
 		/**
 		 * Sizes
@@ -480,24 +483,25 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 			/**
 			 * Colors
 			 */
-			final Color headerBackgroundColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.BackgroundColor"), 16));
+			final Color headerBackgroundColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
 			System.out.println(TriviaClient.PROPERTIES.getProperty("ScoreByRound.BackgroundColor"));
-			final Color backgroundColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.BackgroundColor"), 16));
-			final Color altBackgroundColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.AltBackgroundColor"), 16));
-			final Color roundColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Color"), 16));
-			final Color earnedColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Earned.Color"),
-					16));
-			final Color valueColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16));
-			final Color percentColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Percent.Color"), 16));
-			final Color announcedColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("Announced.Color"), 16));
-			final Color discrepancyColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Discrepancy.Color"), 16));
+			final Color backgroundColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.BackgroundColor"), 16).intValue());
+			final Color altBackgroundColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.AltBackgroundColor"), 16).intValue());
+			final Color roundColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Color"), 16).intValue());
+			final Color earnedColor = new Color(
+					new BigInteger(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16).intValue());
+			final Color valueColor = new Color(
+					new BigInteger(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16).intValue());
+			final Color percentColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Percent.Color"), 16).intValue());
+			final Color announcedColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("Announced.Color"), 16).intValue());
+			final Color discrepancyColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Discrepancy.Color"), 16).intValue());
 
 			/**
 			 * Sizes

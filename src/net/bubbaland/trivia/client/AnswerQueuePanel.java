@@ -13,6 +13,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -279,10 +280,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 		/**
 		 * Colors
 		 */
-		final Color headerColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("AnswerQueue.Header.Color"), 16));
-		final Color headerBackgroundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("AnswerQueue.Header.BackgroundColor"), 16));
+		final Color headerColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("AnswerQueue.Header.Color"), 16).intValue());
+		final Color headerBackgroundColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("AnswerQueue.Header.BackgroundColor"), 16).intValue());
 
 		/**
 		 * Sizes
@@ -766,22 +767,22 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 			/**
 			 * Colors
 			 */
-			this.oddRowBackgroundColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.OddRow.BackgroundColor"), 16));
-			this.evenRowBackgroundColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.EvenRow.BackgroundColor"), 16));
-			this.duplicateColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Duplicate.Color"), 16));
-			this.notCalledInColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.NotCalledIn.Color"), 16));
-			this.callingColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Calling.Color"), 16));
-			this.incorrectColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Incorrect.Color"), 16));
-			this.partialColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Partial.Color"), 16));
-			this.correctColor = new Color(Integer.parseInt(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16));
+			this.oddRowBackgroundColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("AnswerQueue.OddRow.BackgroundColor"), 16).intValue());
+			this.evenRowBackgroundColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("AnswerQueue.EvenRow.BackgroundColor"), 16).intValue());
+			this.duplicateColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Duplicate.Color"), 16).intValue());
+			this.notCalledInColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("AnswerQueue.NotCalledIn.Color"), 16).intValue());
+			this.callingColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Calling.Color"), 16).intValue());
+			this.incorrectColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
+			this.partialColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Partial.Color"), 16).intValue());
+			this.correctColor = new Color(new BigInteger(
+					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
 
 			/**
 			 * Sizes

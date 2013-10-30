@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.math.BigInteger;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -123,7 +124,8 @@ public class TriviaDialogPanel extends TriviaPanel implements AncestorListener, 
 		/**
 		 * Warning Color
 		 */
-		warningColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Dialog.Warning.Color"), 16));
+		warningColor = new Color(
+				new BigInteger(TriviaClient.PROPERTIES.getProperty("Dialog.Warning.Color"), 16).intValue());
 
 		/**
 		 * Slider Paddings (used by AnswerEntryPanel)

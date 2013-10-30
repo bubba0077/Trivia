@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -580,12 +581,12 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.statusBar.setFont(this.statusBar.getFont().deriveFont(fontSize));
 
 		// Apply colors to role menu items
-		this.researcherMenuItem.setForeground(new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("UserList.Researcher.Color"), 16)));
-		this.callerMenuItem.setForeground(new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("UserList.Caller.Color"), 16)));
-		this.typistMenuItem.setForeground(new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("UserList.Typist.Color"), 16)));
+		this.researcherMenuItem.setForeground(new Color(new BigInteger(TriviaClient.PROPERTIES
+				.getProperty("UserList.Researcher.Color"), 16).intValue()));
+		this.callerMenuItem.setForeground(new Color(new BigInteger(TriviaClient.PROPERTIES
+				.getProperty("UserList.Caller.Color"), 16).intValue()));
+		this.typistMenuItem.setForeground(new Color(new BigInteger(TriviaClient.PROPERTIES
+				.getProperty("UserList.Typist.Color"), 16).intValue()));
 
 		// Tell all of the tabs to reload the properties
 		for (final String tabName : this.book.getTabNames()) {

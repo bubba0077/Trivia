@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -48,10 +49,10 @@ public class TriviaChartFactory {
 		/**
 		 * Colors
 		 */
-		backgroundColor = new Color(Integer.parseInt(properties.getProperty("Chart.BackgroundColor"), 16));
-		announcedColor = new Color(Integer.parseInt(properties.getProperty("Announced.Color"), 16));
-		valueColor = new Color(Integer.parseInt(properties.getProperty("Value.Color"), 16));
-		earnedColor = new Color(Integer.parseInt(properties.getProperty("Earned.Color"), 16));
+		backgroundColor = new Color(new BigInteger(properties.getProperty("Chart.BackgroundColor"), 16).intValue());
+		announcedColor = new Color(new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
+		valueColor = new Color(new BigInteger(properties.getProperty("Value.Color"), 16).intValue());
+		earnedColor = new Color(new BigInteger(properties.getProperty("Earned.Color"), 16).intValue());
 		maxPoints = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Chart.ByRound.MaxPoints"));
 	}
 

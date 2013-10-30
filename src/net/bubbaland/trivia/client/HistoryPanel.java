@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.math.BigInteger;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -189,17 +190,18 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		/**
 		 * Colors
 		 */
-		final Color headerBackgroundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("History.Header.BackgroundColor"), 16));
-		final Color selectorColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("History.Header.Selector.Color"), 16));
-		final Color selectorBackgroundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("History.Header.Selector.BackgroundColor"), 16));
-		final Color roundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("History.Header.Round.Color"), 16));
-		final Color totalColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("History.Header.Total.Color"), 16));
-		final Color placeColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Announced.Color"), 16));
+		final Color headerBackgroundColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("History.Header.BackgroundColor"), 16).intValue());
+		final Color selectorColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("History.Header.Selector.Color"), 16).intValue());
+		final Color selectorBackgroundColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("History.Header.Selector.BackgroundColor"), 16).intValue());
+		final Color roundColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("History.Header.Round.Color"), 16).intValue());
+		final Color totalColor = new Color(new BigInteger(
+				TriviaClient.PROPERTIES.getProperty("History.Header.Total.Color"), 16).intValue());
+		final Color placeColor = new Color(
+				new BigInteger(TriviaClient.PROPERTIES.getProperty("Announced.Color"), 16).intValue());
 
 		/**
 		 * Sizes

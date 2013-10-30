@@ -69,6 +69,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 	private final Color								m_lineColor			= new Color(0, 100, 255);
 	private TabAcceptor								m_acceptor			= null;
+	private boolean									m_hasGhost			= true;
 
 	private static final ArrayList<DnDTabbedPane>	tabbedPaneList		= new ArrayList<DnDTabbedPane>(0);
 	private static final ArrayList<ChangeListener>	tabbedPaneListeners	= new ArrayList<ChangeListener>(0);
@@ -82,7 +83,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 																				new ImageIcon(DnDTabbedPane.class
 																						.getResource("images/plus.png")));
 
-	private boolean									m_hasGhost			= true;
 
 	public DnDTabbedPane(TriviaFrame parent, TriviaClient client) {
 		super();
