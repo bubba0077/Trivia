@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.math.BigInteger;
+import java.util.Properties;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -147,7 +148,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		this.roundQuestionPanel = new RoundQuestionsPanel(client, false, 1);
 		this.add(this.roundQuestionPanel, constraints);
 
-		this.loadProperties();
+		this.loadProperties(TriviaClient.PROPERTIES);
 	}
 
 	/*
@@ -186,49 +187,41 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 	}
 
 	@Override
-	protected void loadProperties() {
+	protected void loadProperties(Properties properties) {
 		/**
 		 * Colors
 		 */
 		final Color headerBackgroundColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("History.Header.BackgroundColor"), 16).intValue());
-		final Color selectorColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("History.Header.Selector.Color"), 16).intValue());
+				properties.getProperty("History.Header.BackgroundColor"), 16).intValue());
+		final Color selectorColor = new Color(new BigInteger(properties.getProperty("History.Header.Selector.Color"),
+				16).intValue());
 		final Color selectorBackgroundColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("History.Header.Selector.BackgroundColor"), 16).intValue());
-		final Color roundColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("History.Header.Round.Color"), 16).intValue());
-		final Color totalColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("History.Header.Total.Color"), 16).intValue());
-		final Color placeColor = new Color(
-				new BigInteger(TriviaClient.PROPERTIES.getProperty("Announced.Color"), 16).intValue());
+				properties.getProperty("History.Header.Selector.BackgroundColor"), 16).intValue());
+		final Color roundColor = new Color(
+				new BigInteger(properties.getProperty("History.Header.Round.Color"), 16).intValue());
+		final Color totalColor = new Color(
+				new BigInteger(properties.getProperty("History.Header.Total.Color"), 16).intValue());
+		final Color placeColor = new Color(new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
 
 		/**
 		 * Sizes
 		 */
-		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("History.Header.Height"));
+		final int headerHeight = Integer.parseInt(properties.getProperty("History.Header.Height"));
 
-		final int roundLabelWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("History.Header.Round.Label.Width"));
-		final int roundScoreWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("History.Header.Round.Score.Width"));
-		final int totalLabelWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("History.Header.Total.Label.Width"));
-		final int totalScoreWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("History.Header.Total.Score.Width"));
-		final int placeLabelWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("History.Header.Place.Label.Width"));
-		final int placeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("History.Header.Place.Width"));
+		final int roundLabelWidth = Integer.parseInt(properties.getProperty("History.Header.Round.Label.Width"));
+		final int roundScoreWidth = Integer.parseInt(properties.getProperty("History.Header.Round.Score.Width"));
+		final int totalLabelWidth = Integer.parseInt(properties.getProperty("History.Header.Total.Label.Width"));
+		final int totalScoreWidth = Integer.parseInt(properties.getProperty("History.Header.Total.Score.Width"));
+		final int placeLabelWidth = Integer.parseInt(properties.getProperty("History.Header.Place.Label.Width"));
+		final int placeWidth = Integer.parseInt(properties.getProperty("History.Header.Place.Width"));
 
-		final int selectorHeight = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("History.Header.Selector.Height"));
-		final int selectorWidth = Integer
-				.parseInt(TriviaClient.PROPERTIES.getProperty("History.Header.Selector.Width"));
+		final int selectorHeight = Integer.parseInt(properties.getProperty("History.Header.Selector.Height"));
+		final int selectorWidth = Integer.parseInt(properties.getProperty("History.Header.Selector.Width"));
 
 		/**
 		 * Font sizes
 		 */
-		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("History.Header.FontSize"));
+		final float headerFontSize = Float.parseFloat(properties.getProperty("History.Header.FontSize"));
 
 		setLabelProperties(this.roundLabel, roundLabelWidth, headerHeight, roundColor, headerBackgroundColor,
 				headerFontSize);
@@ -248,7 +241,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		setComboBoxProperties(this.roundSelector, selectorWidth, selectorHeight, selectorColor,
 				selectorBackgroundColor, headerBackgroundColor, headerFontSize);
 
-		this.roundQuestionPanel.loadProperties();
+		this.roundQuestionPanel.loadProperties(properties);
 	}
 
 	private class RoundCellRenderer implements ListCellRenderer<String> {

@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.math.BigInteger;
+import java.util.Properties;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -30,10 +31,6 @@ public class TriviaDialogPanel extends TriviaPanel implements AncestorListener, 
 	protected static float		fontSize, textAreaFontSize;
 	protected static int		sliderPaddingBottom, sliderPaddingTop, sliderPaddingRight, sliderPaddingLeft;
 	protected static Color		warningColor;
-
-	static {
-		loadProperties();
-	}
 
 	protected TriviaDialog		dialog;
 
@@ -120,30 +117,25 @@ public class TriviaDialogPanel extends TriviaPanel implements AncestorListener, 
 		this.dialog.clickOK();
 	}
 
-	public static void loadProperties() {
+	public static void loadProperties(Properties properties) {
 		/**
 		 * Warning Color
 		 */
-		warningColor = new Color(
-				new BigInteger(TriviaClient.PROPERTIES.getProperty("Dialog.Warning.Color"), 16).intValue());
+		warningColor = new Color(new BigInteger(properties.getProperty("Dialog.Warning.Color"), 16).intValue());
 
 		/**
 		 * Slider Paddings (used by AnswerEntryPanel)
 		 */
-		sliderPaddingBottom = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("Dialog.AnswerEntry.Slider.Padding.Bottom"));
-		sliderPaddingTop = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("Dialog.AnswerEntry.Slider.Padding.Top"));
-		sliderPaddingLeft = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("Dialog.AnswerEntry.Slider.Padding.Left"));
-		sliderPaddingRight = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("Dialog.AnswerEntry.Slider.Padding.Right"));
+		sliderPaddingBottom = Integer.parseInt(properties.getProperty("Dialog.AnswerEntry.Slider.Padding.Bottom"));
+		sliderPaddingTop = Integer.parseInt(properties.getProperty("Dialog.AnswerEntry.Slider.Padding.Top"));
+		sliderPaddingLeft = Integer.parseInt(properties.getProperty("Dialog.AnswerEntry.Slider.Padding.Left"));
+		sliderPaddingRight = Integer.parseInt(properties.getProperty("Dialog.AnswerEntry.Slider.Padding.Right"));
 
 		/**
 		 * Font Sizes
 		 */
-		fontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("Dialog.FontSize"));
-		textAreaFontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("Dialog.TextArea.FontSize"));
+		fontSize = Float.parseFloat(properties.getProperty("Dialog.FontSize"));
+		textAreaFontSize = Float.parseFloat(properties.getProperty("Dialog.TextArea.FontSize"));
 
 	}
 

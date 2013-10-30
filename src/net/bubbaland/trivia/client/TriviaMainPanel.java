@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagLayout;
+import java.util.Properties;
 
 /**
  * Super-class for most of the panels in the trivia GUI.
@@ -28,7 +29,7 @@ public abstract class TriviaMainPanel extends TriviaPanel {
 
 	public abstract void update(boolean forceUpdate);
 
-	protected abstract void loadProperties();
+	protected abstract void loadProperties(Properties properties);
 
 
 }

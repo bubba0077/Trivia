@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
+import java.util.Properties;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaChartFactory;
@@ -63,7 +64,7 @@ public class TeamComparisonPanel extends TriviaMainPanel {
 	}
 
 	@Override
-	protected void loadProperties() {
+	protected void loadProperties(Properties properties) {
 	}
 
 }

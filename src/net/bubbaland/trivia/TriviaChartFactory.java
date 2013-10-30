@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 
-import net.bubbaland.trivia.client.TriviaClient;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -53,7 +51,7 @@ public class TriviaChartFactory {
 		announcedColor = new Color(new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
 		valueColor = new Color(new BigInteger(properties.getProperty("Value.Color"), 16).intValue());
 		earnedColor = new Color(new BigInteger(properties.getProperty("Earned.Color"), 16).intValue());
-		maxPoints = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Chart.ByRound.MaxPoints"));
+		maxPoints = Integer.parseInt(properties.getProperty("Chart.ByRound.MaxPoints"));
 	}
 
 

@@ -80,10 +80,6 @@ public class TriviaClient implements WindowListener {
 			System.out.println("Couldn't load properties file, may not exist yet.");
 		}
 
-		/**
-		 * Pass the properties to the chart factory (other classes will request the properties when needed).
-		 */
-		TriviaChartFactory.loadProperties(PROPERTIES);
 	}
 
 	// List of active windows
@@ -160,6 +156,8 @@ public class TriviaClient implements WindowListener {
 		final Timer refreshTimer = new Timer();
 		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0,
 				Integer.parseInt(PROPERTIES.getProperty("RefreshRate")));
+
+		loadProperties();
 
 		// Post welcome to status bar
 		this.log("Welcome " + this.user);
@@ -320,6 +318,8 @@ public class TriviaClient implements WindowListener {
 		for (final TriviaFrame frame : this.windowList) {
 			frame.loadProperties();
 		}
+		TriviaChartFactory.loadProperties(PROPERTIES);
+		TriviaDialogPanel.loadProperties(PROPERTIES);
 	}
 
 	/**

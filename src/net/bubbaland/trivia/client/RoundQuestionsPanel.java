@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -139,7 +140,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 		this.add(this.roundQlistPane, constraints);
 		constraints.weighty = 0.0;
 
-		this.loadProperties();
+		this.loadProperties(TriviaClient.PROPERTIES);
 	}
 
 	/**
@@ -164,32 +165,30 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 
 
 	@Override
-	protected void loadProperties() {
+	protected void loadProperties(Properties properties) {
 		/**
 		 * Colors
 		 */
-		final Color headerColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.Color"), 16).intValue());
+		final Color headerColor = new Color(
+				new BigInteger(properties.getProperty("RoundQuestions.Header.Color"), 16).intValue());
 		final Color headerBackgroundColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.BackgroundColor"), 16).intValue());
+				properties.getProperty("RoundQuestions.Header.BackgroundColor"), 16).intValue());
 		/**
 		 * Sizes
 		 */
-		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.Height"));
+		final int headerHeight = Integer.parseInt(properties.getProperty("RoundQuestions.Header.Height"));
 
-		final int qNumWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.QNumber.Width"));
-		final int earnedWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Earned.Width"));
-		final int valueWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Value.Width"));
-		final int questionWidth = Integer
-				.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Question.Width"));
-		final int answerWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Answer.Width"));
-		final int subOpWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.SubOp.Width"));
+		final int qNumWidth = Integer.parseInt(properties.getProperty("RoundQuestions.QNumber.Width"));
+		final int earnedWidth = Integer.parseInt(properties.getProperty("RoundQuestions.Earned.Width"));
+		final int valueWidth = Integer.parseInt(properties.getProperty("RoundQuestions.Value.Width"));
+		final int questionWidth = Integer.parseInt(properties.getProperty("RoundQuestions.Question.Width"));
+		final int answerWidth = Integer.parseInt(properties.getProperty("RoundQuestions.Answer.Width"));
+		final int subOpWidth = Integer.parseInt(properties.getProperty("RoundQuestions.SubOp.Width"));
 
 		/**
 		 * Font sizes
 		 */
-		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES
-				.getProperty("RoundQuestions.Header.FontSize"));
+		final float headerFontSize = Float.parseFloat(properties.getProperty("RoundQuestions.Header.FontSize"));
 
 		setLabelProperties(this.qNumberLabel, qNumWidth, headerHeight, headerColor, headerBackgroundColor,
 				headerFontSize);
@@ -211,7 +210,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 		}
 		setLabelProperties(this.blank, scrollBarWidth, headerHeight, headerColor, headerBackgroundColor, headerFontSize);
 
-		this.roundQuestionsSubPanel.loadProperties();
+		this.roundQuestionsSubPanel.loadProperties(properties);
 
 
 	}
@@ -569,42 +568,38 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 
 
 		@Override
-		protected void loadProperties() {
+		protected void loadProperties(Properties properties) {
 			/**
 			 * Colors
 			 */
 			final Color headerBackgroundColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("RoundQuestions.Header.BackgroundColor"), 16).intValue());
-			final Color oddColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("RoundQuestions.OddRow.Color"), 16).intValue());
-			final Color evenColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("RoundQuestions.EvenRow.Color"), 16).intValue());
+					properties.getProperty("RoundQuestions.Header.BackgroundColor"), 16).intValue());
+			final Color oddColor = new Color(
+					new BigInteger(properties.getProperty("RoundQuestions.OddRow.Color"), 16).intValue());
+			final Color evenColor = new Color(
+					new BigInteger(properties.getProperty("RoundQuestions.EvenRow.Color"), 16).intValue());
 			final Color oddBackgroundColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("RoundQuestions.OddRow.BackgroundColor"), 16).intValue());
+					properties.getProperty("RoundQuestions.OddRow.BackgroundColor"), 16).intValue());
 			final Color evenBackgroundColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("RoundQuestions.EvenRow.BackgroundColor"), 16).intValue());
+					properties.getProperty("RoundQuestions.EvenRow.BackgroundColor"), 16).intValue());
 
 			/**
 			 * Sizes
 			 */
-			final int rowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Row.Height"));
+			final int rowHeight = Integer.parseInt(properties.getProperty("RoundQuestions.Row.Height"));
 
-			final int qNumWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.QNumber.Width"));
-			final int earnedWidth = Integer
-					.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Earned.Width"));
-			final int valueWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Value.Width"));
-			final int questionWidth = Integer.parseInt(TriviaClient.PROPERTIES
-					.getProperty("RoundQuestions.Question.Width"));
-			final int answerWidth = Integer
-					.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.Answer.Width"));
-			final int subOpWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("RoundQuestions.SubOp.Width"));
+			final int qNumWidth = Integer.parseInt(properties.getProperty("RoundQuestions.QNumber.Width"));
+			final int earnedWidth = Integer.parseInt(properties.getProperty("RoundQuestions.Earned.Width"));
+			final int valueWidth = Integer.parseInt(properties.getProperty("RoundQuestions.Value.Width"));
+			final int questionWidth = Integer.parseInt(properties.getProperty("RoundQuestions.Question.Width"));
+			final int answerWidth = Integer.parseInt(properties.getProperty("RoundQuestions.Answer.Width"));
+			final int subOpWidth = Integer.parseInt(properties.getProperty("RoundQuestions.SubOp.Width"));
 
 			/**
 			 * Font sizes
 			 */
-			final float fontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("RoundQuestions.FontSize"));
-			final float largeFontSize = Float.parseFloat(TriviaClient.PROPERTIES
-					.getProperty("RoundQuestions.LargeFontSize"));
+			final float fontSize = Float.parseFloat(properties.getProperty("RoundQuestions.FontSize"));
+			final float largeFontSize = Float.parseFloat(properties.getProperty("RoundQuestions.LargeFontSize"));
 
 			for (int q = 0; q < this.maxQuestions; q++) {
 				// Set the color for this row

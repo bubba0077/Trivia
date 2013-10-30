@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -197,7 +198,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.userListPanel = new UserListPanel(client);
 		this.add(this.userListPanel, constraints);
 
-		this.loadProperties();
+		this.loadProperties(TriviaClient.PROPERTIES);
 
 	}
 
@@ -286,58 +287,47 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	}
 
 	@Override
-	public void loadProperties() {
+	public void loadProperties(Properties properties) {
 		/**
 		 * Colors
 		 */
-		backgroundColor = new Color(
-				new BigInteger(TriviaClient.PROPERTIES.getProperty("Summary.BackgroundColor"), 16).intValue());
-		final Color labelColor = new Color(new BigInteger(TriviaClient.PROPERTIES.getProperty("Summary.Label.Color"),
-				16).intValue());
-		final Color earnedColor = new Color(
-				new BigInteger(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16).intValue());
-		final Color valueColor = new Color(
-				new BigInteger(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16).intValue());
-		final Color announcedColor = new Color(new BigInteger(TriviaClient.PROPERTIES.getProperty("Announced.Color"),
-				16).intValue());
-		speedColor = new Color(
-				new BigInteger(TriviaClient.PROPERTIES.getProperty("Summary.Speed.Color"), 16).intValue());
-		final Color newRoundColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("Summary.NewRound.Color"), 16).intValue());
-		conflictColor = new Color(
-				new BigInteger(TriviaClient.PROPERTIES.getProperty("Summary.Conflict.Color"), 16).intValue());
+		backgroundColor = new Color(new BigInteger(properties.getProperty("Summary.BackgroundColor"), 16).intValue());
+		final Color labelColor = new Color(new BigInteger(properties.getProperty("Summary.Label.Color"), 16).intValue());
+		final Color earnedColor = new Color(new BigInteger(properties.getProperty("Earned.Color"), 16).intValue());
+		final Color valueColor = new Color(new BigInteger(properties.getProperty("Value.Color"), 16).intValue());
+		final Color announcedColor = new Color(new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
+		speedColor = new Color(new BigInteger(properties.getProperty("Summary.Speed.Color"), 16).intValue());
+		final Color newRoundColor = new Color(
+				new BigInteger(properties.getProperty("Summary.NewRound.Color"), 16).intValue());
+		conflictColor = new Color(new BigInteger(properties.getProperty("Summary.Conflict.Color"), 16).intValue());
 
 		/**
 		 * Sizes
 		 */
-		final int topRowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.TopRow.Height"));
-		final int middleRowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.MiddleRow.Height"));
-		final int bottomRowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.BottomRow.Height"));
+		final int topRowHeight = Integer.parseInt(properties.getProperty("Summary.TopRow.Height"));
+		final int middleRowHeight = Integer.parseInt(properties.getProperty("Summary.MiddleRow.Height"));
+		final int bottomRowHeight = Integer.parseInt(properties.getProperty("Summary.BottomRow.Height"));
 
-		final int col0width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Col0.Width"));
-		final int col1width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Col1.Width"));
-		final int col2width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Col2.Width"));
-		final int col3width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Col3.Width"));
-		final int col4width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Col4.Width"));
-		final int col5width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("Summary.Col5.Width"));
+		final int col0width = Integer.parseInt(properties.getProperty("Summary.Col0.Width"));
+		final int col1width = Integer.parseInt(properties.getProperty("Summary.Col1.Width"));
+		final int col2width = Integer.parseInt(properties.getProperty("Summary.Col2.Width"));
+		final int col3width = Integer.parseInt(properties.getProperty("Summary.Col3.Width"));
+		final int col4width = Integer.parseInt(properties.getProperty("Summary.Col4.Width"));
+		final int col5width = Integer.parseInt(properties.getProperty("Summary.Col5.Width"));
 
 		/**
 		 * Font sizes
 		 */
-		final float labelFontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("Summary.Label.FontSize"));
-		final float scoreFontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("Summary.Score.FontSize"));
+		final float labelFontSize = Float.parseFloat(properties.getProperty("Summary.Label.FontSize"));
+		final float scoreFontSize = Float.parseFloat(properties.getProperty("Summary.Score.FontSize"));
 
 		/**
 		 * Button sizes
 		 */
-		final int centerButtonWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("Summary.CenterButton.Width"));
-		final int centerButtonHeight = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("Summary.CenterButton.Height"));
-		final int conflictButtonWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("Summary.ConflictButton.Width"));
-		final int conflictButtonHeight = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("Summary.ConflictButton.Height"));
+		final int centerButtonWidth = Integer.parseInt(properties.getProperty("Summary.CenterButton.Width"));
+		final int centerButtonHeight = Integer.parseInt(properties.getProperty("Summary.CenterButton.Height"));
+		final int conflictButtonWidth = Integer.parseInt(properties.getProperty("Summary.ConflictButton.Width"));
+		final int conflictButtonHeight = Integer.parseInt(properties.getProperty("Summary.ConflictButton.Height"));
 
 		setPanelProperties(this.emptyPanel, col0width, topRowHeight, backgroundColor);
 		setLabelProperties(this.roundHeaderLabel, col1width, topRowHeight, labelColor, backgroundColor, labelFontSize);

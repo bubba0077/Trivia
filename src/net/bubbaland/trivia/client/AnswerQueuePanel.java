@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -180,7 +181,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 		this.spacer.setPreferredSize(new Dimension(0, 0));
 		scrollPanel.add(this.spacer, constraints);
 
-		this.loadProperties();
+		this.loadProperties(TriviaClient.PROPERTIES);
 	}
 
 	@Override
@@ -276,38 +277,36 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 	 * Load properties from the client and apply.
 	 */
 	@Override
-	protected void loadProperties() {
+	protected void loadProperties(Properties properties) {
 		/**
 		 * Colors
 		 */
-		final Color headerColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("AnswerQueue.Header.Color"), 16).intValue());
+		final Color headerColor = new Color(
+				new BigInteger(properties.getProperty("AnswerQueue.Header.Color"), 16).intValue());
 		final Color headerBackgroundColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("AnswerQueue.Header.BackgroundColor"), 16).intValue());
+				properties.getProperty("AnswerQueue.Header.BackgroundColor"), 16).intValue());
 
 		/**
 		 * Sizes
 		 */
-		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Header.Height"));
-		final int rowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Row.Height"));
+		final int headerHeight = Integer.parseInt(properties.getProperty("AnswerQueue.Header.Height"));
+		final int rowHeight = Integer.parseInt(properties.getProperty("AnswerQueue.Row.Height"));
 
-		final int timeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Timestamp.Width"));
-		final int qNumWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.QNumber.Width"));
-		final int answerWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Answer.Width"));
-		final int confidenceWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("AnswerQueue.Confidence.Width"));
-		final int subCallerWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.SubCaller.Width"));
-		final int operatorWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Operator.Width"));
-		final int statusWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Status.Width"));
+		final int timeWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Timestamp.Width"));
+		final int qNumWidth = Integer.parseInt(properties.getProperty("AnswerQueue.QNumber.Width"));
+		final int answerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Answer.Width"));
+		final int confidenceWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Confidence.Width"));
+		final int subCallerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.SubCaller.Width"));
+		final int operatorWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Operator.Width"));
+		final int statusWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Status.Width"));
 
 		/**
 		 * Font sizes
 		 */
-		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES
-				.getProperty("AnswerQueue.Header.FontSize"));
+		final float headerFontSize = Float.parseFloat(properties.getProperty("AnswerQueue.Header.FontSize"));
 
 		/** The number of open questions to show at one time */
-		final int answersShow = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.AnswersShow"));
+		final int answersShow = Integer.parseInt(properties.getProperty("AnswerQueue.AnswersShow"));
 
 		setLabelProperties(this.timestampLabel, timeWidth, headerHeight, headerColor, headerBackgroundColor,
 				headerFontSize);
@@ -338,7 +337,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 
 		this.spacer.setBackground(headerBackgroundColor);
 
-		this.answerQueueSubPanel.loadProperties();
+		this.answerQueueSubPanel.loadProperties(properties);
 	}
 
 	/**
@@ -763,46 +762,45 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 		 * Load properties from the client and apply.
 		 */
 		@Override
-		protected void loadProperties() {
+		protected void loadProperties(Properties properties) {
 			/**
 			 * Colors
 			 */
 			this.oddRowBackgroundColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.OddRow.BackgroundColor"), 16).intValue());
+					properties.getProperty("AnswerQueue.OddRow.BackgroundColor"), 16).intValue());
 			this.evenRowBackgroundColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.EvenRow.BackgroundColor"), 16).intValue());
-			this.duplicateColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Duplicate.Color"), 16).intValue());
-			this.notCalledInColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.NotCalledIn.Color"), 16).intValue());
-			this.callingColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Calling.Color"), 16).intValue());
-			this.incorrectColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
-			this.partialColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Partial.Color"), 16).intValue());
-			this.correctColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
+					properties.getProperty("AnswerQueue.EvenRow.BackgroundColor"), 16).intValue());
+			this.duplicateColor = new Color(
+					new BigInteger(properties.getProperty("AnswerQueue.Duplicate.Color"), 16).intValue());
+			this.notCalledInColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.NotCalledIn.Color"),
+					16).intValue());
+			this.callingColor = new Color(
+					new BigInteger(properties.getProperty("AnswerQueue.Calling.Color"), 16).intValue());
+			this.incorrectColor = new Color(
+					new BigInteger(properties.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
+			this.partialColor = new Color(
+					new BigInteger(properties.getProperty("AnswerQueue.Partial.Color"), 16).intValue());
+			this.correctColor = new Color(
+					new BigInteger(properties.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
 
 			/**
 			 * Sizes
 			 */
-			this.rowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Row.Height"));
+			this.rowHeight = Integer.parseInt(properties.getProperty("AnswerQueue.Row.Height"));
 
-			this.timeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Timestamp.Width"));
-			this.qNumWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.QNumber.Width"));
-			this.answerWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Answer.Width"));
-			this.confidenceWidth = Integer
-					.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Confidence.Width"));
-			this.subCallerWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.SubCaller.Width"));
-			this.operatorWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Operator.Width"));
-			this.statusWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("AnswerQueue.Status.Width"));
+			this.timeWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Timestamp.Width"));
+			this.qNumWidth = Integer.parseInt(properties.getProperty("AnswerQueue.QNumber.Width"));
+			this.answerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Answer.Width"));
+			this.confidenceWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Confidence.Width"));
+			this.subCallerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.SubCaller.Width"));
+			this.operatorWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Operator.Width"));
+			this.statusWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Status.Width"));
 
 			/**
 			 * Font sizes
 			 */
-			this.qNumFontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("AnswerQueue.QNumber.FontSize"));
-			this.fontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("AnswerQueue.FontSize"));
+			this.qNumFontSize = Float.parseFloat(properties.getProperty("AnswerQueue.QNumber.FontSize"));
+			this.fontSize = Float.parseFloat(properties.getProperty("AnswerQueue.FontSize"));
 
 			for (int a = 0; a < this.queuenumberLabels.size(); a++) {
 				setLabelProperties(this.queuenumberLabels.get(a), this.timeWidth, this.rowHeight / 2, null, null,

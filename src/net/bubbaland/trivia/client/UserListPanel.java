@@ -8,6 +8,7 @@ import java.awt.Insets;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -93,37 +94,35 @@ public class UserListPanel extends TriviaMainPanel {
 		pane.setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		this.add(pane, constraints);
 
-		this.loadProperties();
+		this.loadProperties(TriviaClient.PROPERTIES);
 	}
 
 	@Override
-	public void loadProperties() {
+	public void loadProperties(Properties properties) {
 		/**
 		 * Colors
 		 */
 		final Color headerBackgroundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("UserList.Header.BackgroundColor"), 16));
-		final Color headerColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("UserList.Header.Color"), 16));
-		final Color backgroundColor = new Color(Integer.parseInt(
-				TriviaClient.PROPERTIES.getProperty("UserList.BackgroundColor"), 16));
-		researcherColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Researcher.Color"),
-				16));
-		callerColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Caller.Color"), 16));
-		typistColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Typist.Color"), 16));
-		idleColor = new Color(Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Idle.Color"), 16));
+				properties.getProperty("UserList.Header.BackgroundColor"), 16));
+		final Color headerColor = new Color(Integer.parseInt(properties.getProperty("UserList.Header.Color"), 16));
+		final Color backgroundColor = new Color(
+				Integer.parseInt(properties.getProperty("UserList.BackgroundColor"), 16));
+		researcherColor = new Color(Integer.parseInt(properties.getProperty("UserList.Researcher.Color"), 16));
+		callerColor = new Color(Integer.parseInt(properties.getProperty("UserList.Caller.Color"), 16));
+		typistColor = new Color(Integer.parseInt(properties.getProperty("UserList.Typist.Color"), 16));
+		idleColor = new Color(Integer.parseInt(properties.getProperty("UserList.Idle.Color"), 16));
 
 		/**
 		 * Sizes
 		 */
-		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Header.Height"));
-		final int width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("UserList.Width"));
+		final int headerHeight = Integer.parseInt(properties.getProperty("UserList.Header.Height"));
+		final int width = Integer.parseInt(properties.getProperty("UserList.Width"));
 
 		/**
 		 * Font Sizes
 		 */
-		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("UserList.Header.FontSize"));
-		final float fontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("UserList.FontSize"));
+		final float headerFontSize = Float.parseFloat(properties.getProperty("UserList.Header.FontSize"));
+		final float fontSize = Float.parseFloat(properties.getProperty("UserList.FontSize"));
 
 		setLabelProperties(this.header, width, headerHeight, headerColor, headerBackgroundColor, headerFontSize);
 		this.userList.setBackground(backgroundColor);

@@ -4,6 +4,7 @@ package net.bubbaland.trivia.client;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.Properties;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -83,10 +84,10 @@ public class WorkflowPanel extends TriviaMainPanel {
 	}
 
 	@Override
-	public void loadProperties() {
-		this.workflowHeaderPanel.loadProperties();
-		this.workflowQlistPanel.loadProperties();
-		this.workflowQueuePanel.loadProperties();
+	public void loadProperties(Properties properties) {
+		this.workflowHeaderPanel.loadProperties(properties);
+		this.workflowQlistPanel.loadProperties(properties);
+		this.workflowQueuePanel.loadProperties(properties);
 	}
 
 	/*

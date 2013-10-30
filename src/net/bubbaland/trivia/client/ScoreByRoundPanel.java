@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigInteger;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -163,7 +164,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(scrollPane, constraints);
 
-		this.loadProperties();
+		this.loadProperties(TriviaClient.PROPERTIES);
 
 	}
 
@@ -178,53 +179,41 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 	}
 
 	@Override
-	protected void loadProperties() {
+	protected void loadProperties(Properties properties) {
 		/**
 		 * Colors
 		 */
 		final Color headerBackgroundColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
-		final Color roundColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Color"), 16).intValue());
-		final Color earnedColor = new Color(
-				new BigInteger(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16).intValue());
-		final Color valueColor = new Color(
-				new BigInteger(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16).intValue());
-		final Color percentColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Percent.Color"), 16).intValue());
-		final Color announcedColor = new Color(new BigInteger(TriviaClient.PROPERTIES.getProperty("Announced.Color"),
-				16).intValue());
+				properties.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
+		final Color roundColor = new Color(
+				new BigInteger(properties.getProperty("ScoreByRound.Round.Color"), 16).intValue());
+		final Color earnedColor = new Color(new BigInteger(properties.getProperty("Earned.Color"), 16).intValue());
+		final Color valueColor = new Color(new BigInteger(properties.getProperty("Value.Color"), 16).intValue());
+		final Color percentColor = new Color(
+				new BigInteger(properties.getProperty("ScoreByRound.Percent.Color"), 16).intValue());
+		final Color announcedColor = new Color(new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
 		final Color discrepancyColor = new Color(new BigInteger(
-				TriviaClient.PROPERTIES.getProperty("ScoreByRound.Discrepancy.Color"), 16).intValue());
+				properties.getProperty("ScoreByRound.Discrepancy.Color"), 16).intValue());
 
 		/**
 		 * Sizes
 		 */
-		final int headerHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.Height"));
+		final int headerHeight = Integer.parseInt(properties.getProperty("ScoreByRound.Header.Height"));
 
-		final int roundWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Width"));
-		final int roundEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Round.Earned.Width"));
-		final int roundValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Round.Value.Width"));
-		final int roundPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Round.Percent.Width"));
-		final int totalEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Total.Earned.Width"));
-		final int totalValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Total.Value.Width"));
-		final int totalPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Total.Percent.Width"));
-		final int announcedWidth = Integer
-				.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Announced.Width"));
-		final int placeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Place.Width"));
-		final int discrepancyWidth = Integer.parseInt(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Discrepancy.Width"));
+		final int roundWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Width"));
+		final int roundEarnedWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Earned.Width"));
+		final int roundValueWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Value.Width"));
+		final int roundPercentWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Percent.Width"));
+		final int totalEarnedWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Total.Earned.Width"));
+		final int totalValueWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Total.Value.Width"));
+		final int totalPercentWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Total.Percent.Width"));
+		final int announcedWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Announced.Width"));
+		final int placeWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Place.Width"));
+		final int discrepancyWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Discrepancy.Width"));
 		/**
 		 * Font sizes
 		 */
-		final float headerFontSize = Float.parseFloat(TriviaClient.PROPERTIES
-				.getProperty("ScoreByRound.Header.FontSize"));
+		final float headerFontSize = Float.parseFloat(properties.getProperty("ScoreByRound.Header.FontSize"));
 
 		setLabelProperties(this.roundLabel0, roundWidth, headerHeight / 2, roundColor, headerBackgroundColor,
 				headerFontSize);
@@ -267,7 +256,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		setLabelProperties(this.discrepancyLabel1, discrepancyWidth, headerHeight / 2, discrepancyColor,
 				headerBackgroundColor, headerFontSize);
 
-		this.internalScrollPanel.loadProperties();
+		this.internalScrollPanel.loadProperties(properties);
 
 	}
 
@@ -479,63 +468,52 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		}
 
 		@Override
-		protected void loadProperties() {
+		protected void loadProperties(Properties properties) {
 			/**
 			 * Colors
 			 */
 			final Color headerBackgroundColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
-			System.out.println(TriviaClient.PROPERTIES.getProperty("ScoreByRound.BackgroundColor"));
+					properties.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
+			System.out.println(properties.getProperty("ScoreByRound.BackgroundColor"));
 			final Color backgroundColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.BackgroundColor"), 16).intValue());
+					properties.getProperty("ScoreByRound.BackgroundColor"), 16).intValue());
 			final Color altBackgroundColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.AltBackgroundColor"), 16).intValue());
-			final Color roundColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Color"), 16).intValue());
-			final Color earnedColor = new Color(
-					new BigInteger(TriviaClient.PROPERTIES.getProperty("Earned.Color"), 16).intValue());
-			final Color valueColor = new Color(
-					new BigInteger(TriviaClient.PROPERTIES.getProperty("Value.Color"), 16).intValue());
-			final Color percentColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Percent.Color"), 16).intValue());
-			final Color announcedColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("Announced.Color"), 16).intValue());
+					properties.getProperty("ScoreByRound.AltBackgroundColor"), 16).intValue());
+			final Color roundColor = new Color(
+					new BigInteger(properties.getProperty("ScoreByRound.Round.Color"), 16).intValue());
+			final Color earnedColor = new Color(new BigInteger(properties.getProperty("Earned.Color"), 16).intValue());
+			final Color valueColor = new Color(new BigInteger(properties.getProperty("Value.Color"), 16).intValue());
+			final Color percentColor = new Color(new BigInteger(properties.getProperty("ScoreByRound.Percent.Color"),
+					16).intValue());
+			final Color announcedColor = new Color(
+					new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
 			final Color discrepancyColor = new Color(new BigInteger(
-					TriviaClient.PROPERTIES.getProperty("ScoreByRound.Discrepancy.Color"), 16).intValue());
+					properties.getProperty("ScoreByRound.Discrepancy.Color"), 16).intValue());
 
 			/**
 			 * Sizes
 			 */
-			final int rowHeight = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Row.Height"));
+			final int rowHeight = Integer.parseInt(properties.getProperty("ScoreByRound.Row.Height"));
 
-			final int roundWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Round.Width"));
-			final int roundEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
-					.getProperty("ScoreByRound.Round.Earned.Width"));
-			final int roundValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
-					.getProperty("ScoreByRound.Round.Value.Width"));
-			final int roundPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
-					.getProperty("ScoreByRound.Round.Percent.Width"));
-			final int totalEarnedWidth = Integer.parseInt(TriviaClient.PROPERTIES
-					.getProperty("ScoreByRound.Total.Earned.Width"));
-			final int totalValueWidth = Integer.parseInt(TriviaClient.PROPERTIES
-					.getProperty("ScoreByRound.Total.Value.Width"));
-			final int totalPercentWidth = Integer.parseInt(TriviaClient.PROPERTIES
-					.getProperty("ScoreByRound.Total.Percent.Width"));
-			final int announcedWidth = Integer.parseInt(TriviaClient.PROPERTIES
-					.getProperty("ScoreByRound.Announced.Width"));
-			final int placeWidth = Integer.parseInt(TriviaClient.PROPERTIES.getProperty("ScoreByRound.Place.Width"));
-			final int discrepancyWidth = Integer.parseInt(TriviaClient.PROPERTIES
-					.getProperty("ScoreByRound.Discrepancy.Width"));
+			final int roundWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Width"));
+			final int roundEarnedWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Earned.Width"));
+			final int roundValueWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Value.Width"));
+			final int roundPercentWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Percent.Width"));
+			final int totalEarnedWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Total.Earned.Width"));
+			final int totalValueWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Total.Value.Width"));
+			final int totalPercentWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Total.Percent.Width"));
+			final int announcedWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Announced.Width"));
+			final int placeWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Place.Width"));
+			final int discrepancyWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Discrepancy.Width"));
 			/**
 			 * Font sizes
 			 */
-			final float fontSize = Float.parseFloat(TriviaClient.PROPERTIES.getProperty("ScoreByRound.FontSize"));
-			final float discrepancyFontSize = Float.parseFloat(TriviaClient.PROPERTIES
+			final float fontSize = Float.parseFloat(properties.getProperty("ScoreByRound.FontSize"));
+			final float discrepancyFontSize = Float.parseFloat(properties
 					.getProperty("ScoreByRound.Discrepancy.FontSize"));
 
 			/** The number of open questions to show at one time */
-			final int altColorInterval = Integer.parseInt(TriviaClient.PROPERTIES
-					.getProperty("ScoreByRound.AltInterval"));
+			final int altColorInterval = Integer.parseInt(properties.getProperty("ScoreByRound.AltInterval"));
 
 			// Create the labels for each round
 			for (int r = 0; r < this.nRounds; r++) {

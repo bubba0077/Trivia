@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Properties;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -138,7 +139,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			}
 
 			@Override
-			protected void loadProperties() {
+			protected void loadProperties(Properties properties) {
 			}
 		};
 
@@ -593,7 +594,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			final int index = this.book.indexOfTab(tabName);
 			final Component component = this.book.getComponentAt(index);
 			if (component instanceof TriviaMainPanel) {
-				( (TriviaMainPanel) this.book.getComponentAt(index) ).loadProperties();
+				( (TriviaMainPanel) this.book.getComponentAt(index) ).loadProperties(TriviaClient.PROPERTIES);
 			}
 		}
 	}

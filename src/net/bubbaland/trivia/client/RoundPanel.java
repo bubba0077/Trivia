@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
+import java.util.Properties;
 
 /**
  * A panel for the current round data.
@@ -65,9 +66,9 @@ public class RoundPanel extends TriviaMainPanel {
 	}
 
 	@Override
-	protected void loadProperties() {
-		this.roundHeaderPanel.loadProperties();
-		this.roundQlistPanel.loadProperties();
+	protected void loadProperties(Properties properties) {
+		this.roundHeaderPanel.loadProperties(properties);
+		this.roundQlistPanel.loadProperties(properties);
 	}
 
 }
