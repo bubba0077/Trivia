@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.Image;
 import java.awt.Insets;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -13,6 +14,7 @@ import java.util.Properties;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
@@ -30,6 +32,11 @@ import net.bubbaland.trivia.UserList.Role;
 public class UserListPanel extends TriviaMainPanel {
 
 	private static final long				serialVersionUID	= 4877267114050120590L;
+
+	/**
+	 * Role Icons
+	 */
+	private static ImageIcon				callerIcon, pencilIcon;
 
 	/**
 	 * Colors
@@ -128,6 +135,14 @@ public class UserListPanel extends TriviaMainPanel {
 		this.userList.setBackground(backgroundColor);
 		this.userList.setFont(this.userList.getFont().deriveFont(fontSize));
 
+		final int fontSizeInt = new Float(fontSize).intValue();
+
+		callerIcon = new ImageIcon(new ImageIcon(AnswerQueuePanel.class.getResource("images/phone.png")).getImage()
+				.getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
+
+		pencilIcon = new ImageIcon(new ImageIcon(AnswerQueuePanel.class.getResource("images/pencil.png")).getImage()
+				.getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
+
 	}
 
 	/**
@@ -188,16 +203,20 @@ public class UserListPanel extends TriviaMainPanel {
 				boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			Color color = null;
+			ImageIcon icon = null;
 			this.setHorizontalAlignment(LEFT);
+			this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
 
 			// Determine color based on the user role
 			if (UserListPanel.this.activeUserHash.get(value) != null) {
 				switch (UserListPanel.this.activeUserHash.get(value)) {
 					case CALLER:
 						color = callerColor;
+						icon = callerIcon;
 						break;
 					case TYPIST:
 						color = typistColor;
+						icon = pencilIcon;
 						break;
 					case RESEARCHER:
 						color = researcherColor;
@@ -215,6 +234,7 @@ public class UserListPanel extends TriviaMainPanel {
 
 			// Set the color
 			this.setForeground(color);
+			this.setIcon(icon);
 			this.setOpaque(true); // otherwise, it's transparent
 
 			return this;

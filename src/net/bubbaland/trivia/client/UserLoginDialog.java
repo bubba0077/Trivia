@@ -42,9 +42,8 @@ public class UserLoginDialog extends TriviaDialogPanel {
 
 		c.gridx = 1;
 		c.gridy = 0;
-		final JTextField userTextField = new JTextField("", 10);
+		final JTextField userTextField = new JTextField("", 15);
 		userTextField.setFont(userTextField.getFont().deriveFont(fontSize));
-		userTextField.setToolTipText("This will be used for both flow tracking and IRC");
 		this.add(userTextField, c);
 		userTextField.addAncestorListener(this);
 
