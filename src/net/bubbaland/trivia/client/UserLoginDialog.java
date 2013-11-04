@@ -42,6 +42,7 @@ public class UserLoginDialog extends TriviaDialogPanel {
 
 		c.gridx = 1;
 		c.gridy = 0;
+		c.weightx = 1.0;
 		final JTextField userTextField = new JTextField("", 15);
 		userTextField.setFont(userTextField.getFont().deriveFont(fontSize));
 		this.add(userTextField, c);
