@@ -79,10 +79,9 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	private final TriviaFrame						parent;
 	private final JPanel							blankPanel;
 
-	private static final JLabel						addTabLabel			= new JLabel(
-																				new ImageIcon(DnDTabbedPane.class
-																						.getResource("images/plus.png")));
-
+	private static final ImageIcon					addTabIcon			= new ImageIcon(
+																				DnDTabbedPane.class
+																						.getResource("images/plus.png"));
 
 	public DnDTabbedPane(TriviaFrame parent, TriviaClient client) {
 		super();
@@ -216,7 +215,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	private void makeNewTabTab() {
 		this.addTab("+", this.blankPanel);
 		final int nTabs = this.getTabCount();
-		this.setTabComponentAt(nTabs - 1, addTabLabel);
+		this.setTabComponentAt(nTabs - 1, new JLabel(addTabIcon));
 		this.setEnabledAt(nTabs - 1, false);
 	}
 
@@ -306,6 +305,9 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		if (addButtonIndex > -1 && addButtonIndex != ( nTabs - 1 )) {
 			this.remove(addButtonIndex);
 			this.makeNewTabTab();
+		}
+		if (this.getSelectedIndex() == ( nTabs - 1 )) {
+			this.setSelectedIndex(nTabs - 2);
 		}
 	}
 

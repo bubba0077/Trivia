@@ -118,14 +118,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 		this.client = client;
 
-		// If this isn't the first pane, give it an iterative title
-		final int nWindows = client.getNTriviaWindows();
-		String title;
-		if (nWindows == 0) {
-			title = "Trivia";
-		} else {
-			title = "Trivia (" + ( nWindows ) + ")";
-		}
+		final String title = client.nextWindowName();
 
 		// Notify the client this frame exists
 		this.client.registerWindow(this);

@@ -338,6 +338,23 @@ public class TriviaClient implements WindowListener {
 	}
 
 	/**
+	 * Get the name for the next top-level frame.
+	 * 
+	 * @return The frame name
+	 */
+	public String nextWindowName() {
+		ArrayList<String> windowNames = new ArrayList<String>(0);
+		for (TriviaFrame frame : this.windowList) {
+			windowNames.add(frame.getTitle());
+		}
+		String name = "Trivia";
+		for (int i = 1; windowNames.contains(name); i++) {
+			name = "Trivia (" + i + ")";
+		}
+		return name;
+	}
+
+	/**
 	 * Register a window as a child of the client. New Trivia Frames do this so the client can track events from them.
 	 * 
 	 * @param frame
