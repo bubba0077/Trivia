@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.Point;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -75,10 +76,12 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * @param a_event
 	 *            The drag-drop event
 	 */
-	public TriviaFrame(TriviaClient client, DropTargetDropEvent a_event) {
+	public TriviaFrame(TriviaClient client, DropTargetDropEvent a_event, Point location) {
 		this(client, false);
 		this.book.convertTab(this.book.getTabTransferData(a_event), this.book.getTargetTabIndex(a_event.getLocation()));
-		TriviaClient.loadPosition(this);
+		this.pack();
+		this.setLocation(location);
+		// TriviaClient.loadPosition(this);
 		this.book.addChangeListener(this);
 	}
 
@@ -653,6 +656,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						if (!TriviaFrame.this.isVisible()) {
+							TriviaFrame.this.client.unregisterWindow(TriviaFrame.this);
 							TriviaFrame.this.dispose();
 						}
 					}
@@ -703,14 +707,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.Height", height + "");
 		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.FontSize", fontSize + "");
 		TriviaClient.PROPERTIES.setProperty(id + "." + "OpenTabs", this.book.getTabNames().toString());
-		// // Tell all of the tabs to reload the properties
-		// for (String tabName : this.book.getTabNames()) {
-		// int index = this.book.indexOfTab(tabName);
-		// Component component = this.book.getComponentAt(index);
-		// if (component instanceof TriviaMainPanel) {
-		// ( (TriviaMainPanel) this.book.getComponentAt(index) ).saveProperties();
-		// }
-		// }
 	}
 
 	/**

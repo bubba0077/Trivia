@@ -105,7 +105,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 			@Override
 			public void dragEnter(DragSourceDragEvent e) {
-				// System.out.println("dragEnter");
 				e.getDragSourceContext().setCursor(DragSource.DefaultMoveDrop);
 			}
 

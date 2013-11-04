@@ -86,13 +86,11 @@ public class TearAwayTab extends JWindow {
 	 *            The new window location
 	 */
 	private void center(Point location) {
-		// System.out.println(location);
 		final Point center = new Point();
 		center.setLocation(location.x - this.getWidth() / 2, location.y - this.getHeight() / 2);
 		TearAwayTab.this.setLocation(center);
 		for (final DnDTabbedPane pane : DnDTabbedPane.getTabbedPanes()) {
 			final Rectangle bounds = pane.getBounds();
-			// System.out.println(bounds);
 			if (bounds.contains(location)) {
 				this.detach();
 				return;
@@ -124,7 +122,7 @@ public class TearAwayTab extends JWindow {
 		@Override
 		public void drop(DropTargetDropEvent a_event) {
 			TearAwayTab.this.detach();
-			new TriviaFrame(TearAwayTab.this.client, a_event);
+			new TriviaFrame(TearAwayTab.this.client, a_event, TearAwayTab.this.getLocation());
 			a_event.dropComplete(true);
 		}
 

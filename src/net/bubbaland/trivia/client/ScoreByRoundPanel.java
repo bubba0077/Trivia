@@ -474,7 +474,6 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 			 */
 			final Color headerBackgroundColor = new Color(new BigInteger(
 					properties.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
-			System.out.println(properties.getProperty("ScoreByRound.BackgroundColor"));
 			final Color backgroundColor = new Color(new BigInteger(
 					properties.getProperty("ScoreByRound.BackgroundColor"), 16).intValue());
 			final Color altBackgroundColor = new Color(new BigInteger(

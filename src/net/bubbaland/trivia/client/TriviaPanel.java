@@ -82,7 +82,6 @@ public abstract class TriviaPanel extends JPanel {
 			@Override
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-					System.out.println(e.getURL());
 					try {
 						Desktop.getDesktop().browse(e.getURL().toURI());
 					} catch (IOException | URISyntaxException exception) {

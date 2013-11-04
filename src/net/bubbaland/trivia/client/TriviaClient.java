@@ -636,7 +636,6 @@ public class TriviaClient implements WindowListener {
 				System.out.println("Initial connection to server failed (try #" + tryNumber + ")");
 
 				if (tryNumber == Integer.parseInt(PROPERTIES.getProperty("MaxRetries"))) {
-					// Maximum retries reached, pop up disconnected dialog
 					final String message = "Could not connect to server.";
 
 					final Object[] options = { "Retry", "Exit" };
