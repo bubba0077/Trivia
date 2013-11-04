@@ -103,7 +103,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		for (final String tabName : initialTabs) {
 			this.book.addTab(tabName, client.getTab(this, tabName));
 		}
-		this.book.setSelectedIndex(this.book.indexOfTab(initialTabs[0]));
+		this.book.setSelectedIndex(0);
 		this.book.addChangeListener(this);
 		loadPosition();
 		setCursor(null);
@@ -646,6 +646,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						if (!TriviaFrame.this.isVisible()) {
+							DnDTabbedPane.unregisterTabbedPane(TriviaFrame.this.book);
 							TriviaFrame.this.client.unregisterWindow(TriviaFrame.this);
 							TriviaFrame.this.dispose();
 						}

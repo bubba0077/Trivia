@@ -100,6 +100,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 					s_glassPane.setVisible(false);
 					s_glassPane.setImage(null);
 				}
+				DnDTabbedPane.this.tearTab.detach();
 			}
 
 			@Override
@@ -109,7 +110,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 			@Override
 			public void dragExit(DragSourceEvent e) {
-				DnDTabbedPane.this.tearTab.attach(e.getLocation());
 				DnDTabbedPane.this.m_lineRect.setRect(0, 0, 0, 0);
 				DnDTabbedPane.this.m_isDrawRect = false;
 				s_glassPane.setPoint(new Point(-1000, -1000));
@@ -118,14 +118,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 			@Override
 			public void dragOver(DragSourceDragEvent e) {
-
-				final TabTransferData data = DnDTabbedPane.this.getTabTransferData(e);
-
-				if (data == null || e.getTargetActions() != DnDConstants.ACTION_MOVE) {
-					DnDTabbedPane.this.tearTab.attach(e.getLocation());
-				}
-
-				e.getDragSourceContext().setCursor(DragSource.DefaultMoveDrop);
 			}
 
 			@Override
@@ -141,6 +133,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 				if (dragTabIndex < 0 || dragTabIndex == DnDTabbedPane.this.indexOfTab("+")) return;
 
 				DnDTabbedPane.this.initGlassPane(e.getComponent(), e.getDragOrigin(), dragTabIndex);
+				DnDTabbedPane.this.tearTab.attach(DnDTabbedPane.this, dragTabIndex);
 				try {
 					e.startDrag(DragSource.DefaultMoveDrop, new TabTransferable(DnDTabbedPane.this, dragTabIndex), dsl);
 				} catch (final InvalidDnDOperationException idoe) {
@@ -234,6 +227,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 			this.setToolTipTextAt(index, "Add a new tab");
 		} else {
 			this.setToolTipTextAt(index, TriviaClient.getTabDescription(tabName));
+			this.setSelectedIndex(index);
 		}
 	}
 
@@ -440,15 +434,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		return retval;
 	}
 
-	private TabTransferData getTabTransferData(DragSourceDragEvent a_event) {
-		try {
-			return (TabTransferData) a_event.getDragSourceContext().getTransferable().getTransferData(this.FLAVOR);
-		} catch (final Exception e) {
-		}
-
-		return null;
-	}
-
 	private TabTransferData getTabTransferData(DropTargetDragEvent a_event) {
 		try {
 			final TabTransferData data = (TabTransferData) a_event.getTransferable().getTransferData(this.FLAVOR);
@@ -548,6 +533,14 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		}
 	}
 
+	public static void unregisterTabbedPane(DnDTabbedPane pane) {
+		DnDTabbedPane.tabbedPaneList.remove(pane);
+		for (final ChangeListener listener : DnDTabbedPane.tabbedPaneListeners) {
+			pane.removeChangeListener(listener);
+		}
+	}
+
+
 	public static void registerTabbedPaneListener(ChangeListener listener) {
 		DnDTabbedPane.tabbedPaneListeners.add(listener);
 		for (final DnDTabbedPane pane : DnDTabbedPane.tabbedPaneList) {
@@ -562,8 +555,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	class CDropTargetListener implements DropTargetListener {
 		@Override
 		public void dragEnter(DropTargetDragEvent e) {
-			// System.out.println("DropTarget.dragEnter: " + DnDTabbedPane.this);
-
 			if (this.isDragAcceptable(e)) {
 				e.acceptDrag(e.getDropAction());
 			} else {
@@ -573,7 +564,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 		@Override
 		public void dragExit(DropTargetEvent e) {
-			// System.out.println("DropTarget.dragExit: " + DnDTabbedPane.this);
 			DnDTabbedPane.this.m_isDrawRect = false;
 		}
 
@@ -597,8 +587,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 		@Override
 		public void drop(DropTargetDropEvent a_event) {
-			// System.out.println("DropTarget.drop: " + DnDTabbedPane.this);
-
 			if (this.isDropAcceptable(a_event)) {
 				DnDTabbedPane.this.convertTab(DnDTabbedPane.this.getTabTransferData(a_event),
 						DnDTabbedPane.this.getTargetTabIndex(a_event.getLocation()));
@@ -616,8 +604,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		}
 
 		public boolean isDragAcceptable(DropTargetDragEvent e) {
-			// System.out.println("DropTarget.isDragAcceptable: " + DnDTabbedPane.this);
-
 			final Transferable t = e.getTransferable();
 			if (t == null) return false;
 
@@ -637,8 +623,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		}
 
 		public boolean isDropAcceptable(DropTargetDropEvent e) {
-			// System.out.println("DropTarget.isDropAcceptable: " + DnDTabbedPane.this);
-
 			final Transferable t = e.getTransferable();
 			if (t == null) return false;
 
@@ -667,7 +651,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		@Override
 		public Object getTransferData(DataFlavor flavor) {
 			return this.m_data;
-			// return DnDTabbedPane.this;
 		}
 
 		@Override
@@ -736,14 +719,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		}
 
 		private void checkForPopup(MouseEvent event) {
-			int clickedIndex = -1;
-			for (int i = 0; i < DnDTabbedPane.this.getTabCount() - 1; i++) {
-				if (DnDTabbedPane.this.getBoundsAt(i).contains(event.getPoint())) {
-					clickedIndex = i;
-					break;
-				}
-			}
-			if (event.isPopupTrigger() && clickedIndex > -1) {
+			int clickedIndex = DnDTabbedPane.this.indexAtLocation(event.getX(), event.getY());
+			if (event.isPopupTrigger() && clickedIndex > -1 && clickedIndex != DnDTabbedPane.this.getTabCount() - 1) {
 				this.menu.setName(clickedIndex + "");
 				this.menu.show((Component) event.getSource(), event.getX(), event.getY());
 			}
@@ -752,6 +729,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	}
 
 }
+
 
 class GhostGlassPane extends JPanel {
 	public static final long		serialVersionUID	= 1L;

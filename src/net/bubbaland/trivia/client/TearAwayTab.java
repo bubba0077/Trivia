@@ -1,5 +1,8 @@
 package net.bubbaland.trivia.client;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -11,8 +14,8 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
-import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.Timer;
 
@@ -27,19 +30,22 @@ import javax.swing.Timer;
  * 
  */
 public class TearAwayTab extends JWindow {
-	private static final long	serialVersionUID	= -2723420566227526365L;
+	private static final long		serialVersionUID	= -2723420566227526365L;
 
 	// A timer to poll the mouse location and move the window around
-	private final Timer			mousePoller;
+	private final Timer				mousePoller;
+
+	private final GhostGlassPane	glassPane;
+
 	// The root client
-	private final TriviaClient	client;
+	private final TriviaClient		client;
 
 	public TearAwayTab(TriviaClient client) {
 		this.client = client;
-		this.add(new JLabel("New Window"));
-		this.pack();
+		this.glassPane = new GhostGlassPane();
+		this.add(this.glassPane);
 		// Create a timer to poll the mouse location and update the window location
-		this.mousePoller = new Timer(0, new ActionListener() {
+		this.mousePoller = new Timer(50, new ActionListener() {
 			private Point	lastPoint	= MouseInfo.getPointerInfo().getLocation();
 
 			@Override
@@ -53,6 +59,9 @@ public class TearAwayTab extends JWindow {
 		});
 		// Make this a valid drop target
 		new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, new EasyDropTarget(), true);
+		// Make frame transparent
+		this.setBackground(new Color(0, 255, 0, 0));
+		this.setOpacity(0.7f);
 		// Don't display this until needed
 		this.setVisible(false);
 	}
@@ -63,9 +72,32 @@ public class TearAwayTab extends JWindow {
 	 * @param location
 	 *            The location to start at
 	 */
-	public void attach(Point location) {
-		// System.out.println("attach");
-		this.center(location);
+	public void attach(DnDTabbedPane tabbedPane, int tabIndex) {
+		if (this.isVisible()) {
+			return;
+		}
+		// Get image of tab
+		final Rectangle rect = tabbedPane.getBoundsAt(tabIndex);
+		BufferedImage tabImage = new BufferedImage(tabbedPane.getWidth(), tabbedPane.getHeight(),
+				BufferedImage.TYPE_INT_ARGB);
+		final Graphics g = tabImage.getGraphics();
+		tabbedPane.paint(g);
+		tabImage = tabImage.getSubimage(rect.x, rect.y, rect.width, rect.height);
+		// Get image of panel
+		Component panel = tabbedPane.getComponentAt(tabIndex);
+		BufferedImage panelImage = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		final Graphics panelGraphics = panelImage.getGraphics();
+		panel.paint(panelGraphics);
+		int combinedHeight = tabImage.getHeight() + panelImage.getHeight();
+		// Combine images into single image
+		BufferedImage combinedImage = new BufferedImage(panelImage.getWidth(), combinedHeight,
+				BufferedImage.TYPE_INT_ARGB);
+		combinedImage.createGraphics().drawImage(tabImage, 0, 0, null);
+		combinedImage.createGraphics().drawImage(panelImage, 0, tabImage.getHeight(), null);
+		// Set image of pane
+		this.glassPane.setImage(combinedImage);
+		// Set size & location and start polling mouse
+		this.setSize(panel.getSize());
 		this.mousePoller.start();
 		this.setVisible(true);
 	}
@@ -74,7 +106,6 @@ public class TearAwayTab extends JWindow {
 	 * Stop displaying this window.
 	 */
 	public void detach() {
-		// System.out.println("detatch");
 		this.mousePoller.stop();
 		this.setVisible(false);
 	}
@@ -86,16 +117,18 @@ public class TearAwayTab extends JWindow {
 	 *            The new window location
 	 */
 	private void center(Point location) {
-		final Point center = new Point();
-		center.setLocation(location.x - this.getWidth() / 2, location.y - this.getHeight() / 2);
-		TearAwayTab.this.setLocation(center);
+		Point offsetLocation = location;
+		offsetLocation.setLocation(location.x - 10, location.y - 10);
+		TearAwayTab.this.setLocation(offsetLocation);
 		for (final DnDTabbedPane pane : DnDTabbedPane.getTabbedPanes()) {
-			final Rectangle bounds = pane.getBounds();
+			final Rectangle bounds = pane.getRootPane().getBounds();
+			bounds.setLocation(pane.getRootPane().getLocationOnScreen());
 			if (bounds.contains(location)) {
-				this.detach();
+				this.setVisible(false);
 				return;
 			}
 		}
+		this.setVisible(true);
 	}
 
 	/**
