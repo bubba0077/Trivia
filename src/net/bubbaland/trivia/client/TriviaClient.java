@@ -132,6 +132,8 @@ public class TriviaClient implements WindowListener {
 		final TriviaFetcher fetcher = new TriviaFetcher(server, this);
 		fetcher.execute();
 
+		loadProperties();
+
 		// Create a prompt requesting the user name
 		this.user = PROPERTIES.getProperty("UserName");
 		if (this.user == null) {
@@ -156,8 +158,6 @@ public class TriviaClient implements WindowListener {
 		final Timer refreshTimer = new Timer();
 		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0,
 				Integer.parseInt(PROPERTIES.getProperty("RefreshRate")));
-
-		loadProperties();
 
 		// Post welcome to status bar
 		this.log("Welcome " + this.user);
