@@ -250,7 +250,29 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 
 	@Override
 	public void windowOpened(WindowEvent e) {
-		TriviaClient.loadPosition(this);
+		loadPosition();
+	}
+
+	/**
+	 * Load the saved position and size of the window from file. If none found, use preferred size of components.
+	 * 
+	 */
+	protected void loadPosition() {
+		try {
+			final String frameID = this.getName();
+
+			final int x = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".X"));
+			final int y = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Y"));
+			final int width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Width"));
+			final int height = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Height"));
+
+			this.setBounds(x, y, width, height);
+
+		} catch (final NumberFormatException e) {
+			System.out.println("Couldn't load window position, may not exist yet.");
+			this.pack();
+			this.setLocationRelativeTo(null);
+		}
 	}
 
 }

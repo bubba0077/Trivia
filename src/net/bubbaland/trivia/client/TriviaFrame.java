@@ -2,6 +2,7 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -79,10 +80,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	public TriviaFrame(TriviaClient client, DropTargetDropEvent a_event, Point location) {
 		this(client, false);
 		this.book.convertTab(this.book.getTabTransferData(a_event), this.book.getTargetTabIndex(a_event.getLocation()));
+		this.book.setSelectedIndex(0);
 		this.pack();
 		this.setLocation(location);
-		// TriviaClient.loadPosition(this);
 		this.book.addChangeListener(this);
+		setCursor(null);
 	}
 
 	/**
@@ -97,12 +99,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 */
 	public TriviaFrame(TriviaClient client, String[] initialTabs, boolean showIRC) {
 		this(client, showIRC);
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		for (final String tabName : initialTabs) {
 			this.book.addTab(tabName, client.getTab(this, tabName));
 		}
 		this.book.setSelectedIndex(this.book.indexOfTab(initialTabs[0]));
-		TriviaClient.loadPosition(this);
 		this.book.addChangeListener(this);
+		loadPosition();
+		setCursor(null);
 	}
 
 	/**
@@ -115,16 +119,17 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 */
 	private TriviaFrame(TriviaClient client, boolean showIRC) {
 		super();
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 		this.client = client;
 
 		final String title = client.nextWindowName();
+		this.setTitle(title);
+		this.setName(title);
+		loadPosition();
 
 		// Notify the client this frame exists
 		this.client.registerWindow(this);
-
-		this.setTitle(title);
-		this.setName(title);
 
 		// Create a new panel to hold all GUI elements for the frame
 		final TriviaMainPanel panel = new TriviaMainPanel() {
@@ -527,14 +532,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	/**
-	 * Load the saved position and size of the window from file. If none found, use preferred size of components.
-	 * 
-	 */
-	public void loadPosition() {
-		TriviaClient.loadPosition(this);
-	}
-
-	/**
 	 * Load all of the properties from the client and apply them.
 	 */
 	public void loadProperties() {
@@ -720,6 +717,32 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	// Queue sort option
 	public static enum QueueSort {
 		TIMESTAMP_ASCENDING, QNUMBER_ASCENDING, STATUS_ASCENDING, TIMESTAMP_DESCENDING, QNUMBER_DESCENDING, STATUS_DESCENDING
+	}
+
+	/**
+	 * Load the saved position and size of the window from file. If none found, use preferred size of components.
+	 * 
+	 */
+	protected void loadPosition() {
+		try {
+			final String frameID = this.getName();
+
+			final int x = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".X"));
+			final int y = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Y"));
+			final int width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Width"));
+			final int height = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Height"));
+
+			this.setBounds(x, y, width, height);
+
+		} catch (final NumberFormatException e) {
+			System.out.println("Couldn't load window position, may not exist yet.");
+			if (this.book == null) {
+				this.setSize(600, 600);
+			} else {
+				this.pack();
+			}
+			this.setLocationRelativeTo(null);
+		}
 	}
 
 

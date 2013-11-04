@@ -154,6 +154,7 @@ public class TriviaClient implements WindowListener {
 			} catch (final InterruptedException exception) {
 			}
 		}
+
 		// Create timer that will poll server for changes
 		final Timer refreshTimer = new Timer();
 		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0,
@@ -531,30 +532,6 @@ public class TriviaClient implements WindowListener {
 		} catch (final IOException e) {
 			System.out.println("Couldn't load default properties file, aborting!");
 			System.exit(-1);
-		}
-	}
-
-	/**
-	 * Load the saved position and size of the window from file. If none found, use preferred size of components.
-	 * 
-	 * @param window
-	 *            The window whose position and size is to be loaded
-	 */
-	public static void loadPosition(Window window) {
-		try {
-			final String frameID = window.getName();
-
-			final int x = Integer.parseInt(PROPERTIES.getProperty(frameID + ".X"));
-			final int y = Integer.parseInt(PROPERTIES.getProperty(frameID + ".Y"));
-			final int width = Integer.parseInt(PROPERTIES.getProperty(frameID + ".Width"));
-			final int height = Integer.parseInt(PROPERTIES.getProperty(frameID + ".Height"));
-
-			window.setBounds(x, y, width, height);
-
-		} catch (final NumberFormatException e) {
-			System.out.println("Couldn't load window position, may not exist yet.");
-			window.pack();
-			window.setLocationRelativeTo(null);
 		}
 	}
 
