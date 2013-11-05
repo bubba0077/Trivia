@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 
 /**
  * Creates a dialog that allows the user to select a tab to be added to the tabbed pane.
@@ -68,12 +69,10 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		constraints.weighty = 1.0;
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		this.descriptionLabel = new JTextArea(TriviaClient.getTabDescription(tabNames[0]));
-		this.descriptionLabel.setFont(this.descriptionLabel.getFont().deriveFont(textAreaFontSize));
+		this.descriptionLabel = scrollableTextArea(TriviaClient.getTabDescription(tabNames[0]), 300, 200,
+				this.getForeground(), this.getBackground(), constraints, textAreaFontSize,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.descriptionLabel.setEditable(false);
-		this.descriptionLabel.setLineWrap(true);
-		this.descriptionLabel.setWrapStyleWord(true);
-		this.add(this.descriptionLabel, constraints);
 
 		// Options
 		final String[] options = { "Add", "Add All", "Cancel" };

@@ -736,7 +736,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.setBounds(x, y, width, height);
 
 		} catch (final NumberFormatException e) {
-			System.out.println("Couldn't load window position, may not exist yet.");
+			// System.out.println("Couldn't load window position, may not exist yet.");
 			if (this.book == null) {
 				this.setSize(600, 600);
 			} else {
