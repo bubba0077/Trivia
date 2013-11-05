@@ -332,9 +332,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				client.disconnected();
 				return;
 			}
-
 			client.log("Question #" + qNumber + " submitted.");
-
 		}
 	}
 
