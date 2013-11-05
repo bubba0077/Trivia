@@ -275,6 +275,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				JPanel panel = new JPanel(new GridBagLayout());
 				this.add(panel, constraints);
 				this.answerButtons[q] = new JButton("");
+				this.answerButtons[q].setBorder(BorderFactory.createEmptyBorder());
 				this.answerButtons[q].setMargin(new Insets(0, 0, 0, 0));
 				panel.add(this.answerButtons[q], buttonConstraints);
 				this.answerButtons[q].setActionCommand("Answer");
@@ -285,6 +286,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				panel = new JPanel(new GridBagLayout());
 				this.add(panel, constraints);
 				this.closeButtons[q] = new JButton("Open");
+				this.closeButtons[q].setBorder(BorderFactory.createEmptyBorder());
 				this.closeButtons[q].setMargin(new Insets(0, 0, 0, 0));
 				panel.add(this.closeButtons[q], buttonConstraints);
 				this.closeButtons[q].setActionCommand("Open");

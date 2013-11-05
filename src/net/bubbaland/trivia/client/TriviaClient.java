@@ -79,7 +79,6 @@ public class TriviaClient implements WindowListener {
 		} catch (final IOException e) {
 			System.out.println("Couldn't load properties file, may not exist yet.");
 		}
-
 	}
 
 	// List of active windows
