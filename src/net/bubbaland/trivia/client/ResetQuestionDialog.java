@@ -66,8 +66,8 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(scrollPane, constraints);
 
-		final TriviaDialog dialog = new TriviaDialog(null, "Confirm Question Reset " + qNumber, this,
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		this.dialog = new TriviaDialog(null, "Confirm Question Reset " + qNumber, this, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.OK_CANCEL_OPTION);
 		dialog.setVisible(true);
 	}
 

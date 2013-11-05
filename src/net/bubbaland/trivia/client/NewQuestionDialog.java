@@ -187,6 +187,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 				this.dialog = new TriviaDialog(null, "Confirm Question Number Change " + qNumberStart + " to "
 						+ qNumber, this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+				this.dialog.removeWindowListener(this);
+				this.dialog.setModal(true);
 				this.dialog.setVisible(true);
 
 				final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
@@ -300,6 +302,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 				this.dialog = new TriviaDialog(null, "Confirm Question Overwrite " + qNumber, this,
 						JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+				this.dialog.removeWindowListener(this);
+				this.dialog.setModal(true);
 				this.dialog.setVisible(true);
 
 				final int confirm = ( (Integer) this.dialog.getValue() ).intValue();

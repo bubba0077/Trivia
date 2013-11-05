@@ -123,7 +123,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		c.gridx = 1;
 		c.gridy = 4;
 		c.insets = new Insets(sliderPaddingBottom, sliderPaddingLeft, sliderPaddingRight, sliderPaddingTop);
-		this.confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 1);
+		this.confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 2);
 		this.confidenceSlider.setMajorTickSpacing(1);
 		final Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		labelTable.put(new Integer(1), new JLabel("Guess"));
