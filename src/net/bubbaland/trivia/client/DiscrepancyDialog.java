@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -12,6 +13,10 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 7708693892976942384L;
 
+	private final TriviaClient	client;
+	private final int			rNumber;
+	private final JTextField	discrepancyTextField;
+
 	/**
 	 * Instantiates a new user login.
 	 * 
@@ -20,6 +25,9 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 	 */
 	public DiscrepancyDialog(TriviaClient client, int rNumber) {
 		super();
+
+		this.client = client;
+		this.rNumber = rNumber;
 
 		final Trivia trivia = client.getTrivia();
 		final String oldText = trivia.getDiscrepancyText(rNumber);
@@ -40,7 +48,7 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		final JTextField discrepancyTextField = new JTextField(oldText, 10);
+		this.discrepancyTextField = new JTextField(oldText, 10);
 		discrepancyTextField.setFont(discrepancyTextField.getFont().deriveFont(fontSize));
 		this.add(discrepancyTextField, constraints);
 		discrepancyTextField.addAncestorListener(this);
@@ -49,7 +57,11 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 		this.dialog = new TriviaDialog(null, "Score Discrepancy", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
+	}
 
+	@Override
+	public void windowClosed(WindowEvent event) {
+		super.windowClosed(event);
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 
@@ -73,6 +85,5 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 
 			return;
 		}
-
 	}
 }

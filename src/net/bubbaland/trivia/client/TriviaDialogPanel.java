@@ -5,6 +5,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.math.BigInteger;
 import java.util.Properties;
 
@@ -23,7 +25,7 @@ import javax.swing.event.AncestorListener;
  * after the dialog is created.
  * 
  */
-public class TriviaDialogPanel extends TriviaPanel implements AncestorListener, FocusListener {
+public abstract class TriviaDialogPanel extends TriviaPanel implements AncestorListener, FocusListener, WindowListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= -4127179718225373888L;
@@ -110,6 +112,35 @@ public class TriviaDialogPanel extends TriviaPanel implements AncestorListener, 
 	public void focusLost(FocusEvent e) {
 	}
 
+	@Override
+	public void windowOpened(WindowEvent event) {
+	}
+
+	@Override
+	public void windowClosing(WindowEvent event) {
+	}
+
+	@Override
+	public void windowClosed(WindowEvent event) {
+		this.dialog.removeWindowListener(this);
+	}
+
+	@Override
+	public void windowIconified(WindowEvent event) {
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent event) {
+	}
+
+	@Override
+	public void windowActivated(WindowEvent event) {
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent event) {
+	}
+
 	/**
 	 * Tell the dialog to click the OK button on the option pane.
 	 */
@@ -136,7 +167,6 @@ public class TriviaDialogPanel extends TriviaPanel implements AncestorListener, 
 		 */
 		fontSize = Float.parseFloat(properties.getProperty("Dialog.FontSize"));
 		textAreaFontSize = Float.parseFloat(properties.getProperty("Dialog.TextArea.FontSize"));
-
 	}
 
 }

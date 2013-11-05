@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -17,6 +18,9 @@ public class UserLoginDialog extends TriviaDialogPanel {
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 7708693892976942384L;
 
+	private final TriviaClient	client;
+	private final JTextField	userTextField;
+
 	/**
 	 * Instantiates a new user login.
 	 * 
@@ -25,6 +29,8 @@ public class UserLoginDialog extends TriviaDialogPanel {
 	 */
 	public UserLoginDialog(TriviaClient client) {
 		super();
+
+		this.client = client;
 
 		// Set up layout constraints
 		final GridBagConstraints c = new GridBagConstraints();
@@ -43,7 +49,7 @@ public class UserLoginDialog extends TriviaDialogPanel {
 		c.gridx = 1;
 		c.gridy = 0;
 		c.weightx = 1.0;
-		final JTextField userTextField = new JTextField("", 15);
+		this.userTextField = new JTextField("", 15);
 		userTextField.setFont(userTextField.getFont().deriveFont(fontSize));
 		this.add(userTextField, c);
 		userTextField.addAncestorListener(this);
@@ -59,8 +65,36 @@ public class UserLoginDialog extends TriviaDialogPanel {
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog(null, "User Login", this, JOptionPane.PLAIN_MESSAGE, options);
-		this.dialog.setVisible(true);
+		if (userName == null) {
+			this.dialog.setModal(true);
+			this.dialog.removeWindowListener(this);
+			this.dialog.setVisible(true);
 
+			final String user = userTextField.getText();
+
+			// If the OK button was pressed, add the proposed answer to the queue
+			final int option = ( (Integer) this.dialog.getValue() ).intValue();
+
+			if (option != JOptionPane.CLOSED_OPTION) {
+				if (user.toCharArray().length != 0) {
+					client.setUser(user);
+				} else {
+					new UserLoginDialog(client);
+				}
+			} else {
+				if (client.getUser() == null) {
+					System.exit(0);
+				}
+			}
+
+		} else {
+			this.dialog.setVisible(true);
+		}
+	}
+
+	@Override
+	public void windowClosed(WindowEvent event) {
+		super.windowClosed(event);
 		// Set the user name to input value
 		final String user = userTextField.getText();
 

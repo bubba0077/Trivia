@@ -2,6 +2,7 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
@@ -16,7 +17,13 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 6166214835080640219L;
 
+	private final TriviaClient	client;
+	private final int			qNumber;
+
 	public ResetQuestionDialog(TriviaClient client, int qNumber, int qValue, String qText) {
+
+		this.client = client;
+		this.qNumber = qNumber;
 
 		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
@@ -62,7 +69,11 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 		final TriviaDialog dialog = new TriviaDialog(null, "Confirm Question Reset " + qNumber, this,
 				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 		dialog.setVisible(true);
+	}
 
+	@Override
+	public void windowClosed(WindowEvent event) {
+		super.windowClosed(event);
 		final int confirm = ( (Integer) dialog.getValue() ).intValue();
 		if (confirm == JOptionPane.OK_OPTION) {
 			// Reset the question on the server
@@ -88,8 +99,6 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 
 			return;
 		}
-
-
 	}
 
 }

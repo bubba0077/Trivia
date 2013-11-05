@@ -1,9 +1,9 @@
 package net.bubbaland.trivia.client;
 
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -13,7 +13,6 @@ import java.util.Set;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 
 /**
  * Creates a dialog that allows the user to select a tab to be added to the tabbed pane.
@@ -27,20 +26,27 @@ import javax.swing.SwingUtilities;
  */
 public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 
-	private static final long		serialVersionUID	= -6388311089354721920L;
+	private static final long			serialVersionUID	= -6388311089354721920L;
 
 	// GUI elements to monitor/update
-	private final JComboBox<String>	tabSelector;
-	private final JTextArea			descriptionLabel;
+	private final JComboBox<String>		tabSelector;
+	private final JTextArea				descriptionLabel;
+	private final TriviaFrame			frame;
+	private final TriviaClient			client;
 
-	public AddTabDialog(TriviaFrame panel, TriviaClient client, DnDTabbedPane pane) {
-		super();
-
-		// Get the list of tab names and sort them
-		final Set<String> tabNameSet = client.getTabNames();
-		final String[] tabNames = new String[tabNameSet.size()];
+	// Get the list of tab names and sort them
+	private static final Set<String>	tabNameSet			= TriviaClient.getTabNames();
+	private static final String[]		tabNames			= new String[tabNameSet.size()];
+	static {
 		tabNameSet.toArray(tabNames);
 		Arrays.sort(tabNames, new TabCompare());
+	}
+
+	public AddTabDialog(TriviaFrame frame, TriviaClient client) {
+		super();
+
+		this.client = client;
+		this.frame = frame;
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -73,53 +79,10 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		final String[] options = { "Add", "Add All", "Cancel" };
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog((Frame) SwingUtilities.getWindowAncestor(pane), "Add tab", this,
-				JOptionPane.PLAIN_MESSAGE, JOptionPane.YES_NO_CANCEL_OPTION, null, options);
+		this.dialog = new TriviaDialog(this.frame, "Add tab", this, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.YES_NO_CANCEL_OPTION, null, options);
 		this.dialog.setName("Add Tab");
 		this.dialog.setVisible(true);
-
-		// If a button was not pressed (option isn't a string), do nothing
-		if (!( this.dialog.getValue() instanceof String )) return;
-		final String option = (String) this.dialog.getValue();
-		// A list of tab names to add
-		final ArrayList<String> newTabs = new ArrayList<String>(0);
-		switch (option) {
-		// Add the selected tab to the list
-			case "Add": {
-				newTabs.add((String) this.tabSelector.getSelectedItem());
-				break;
-			}
-			// Add all tabs that don't start with a * and are not already in the tabbed pane
-			case "Add All":
-				for (final String tabName : tabNameSet) {
-					if (!tabName.startsWith("*") && pane.indexOfTab(tabName) == -1) {
-						newTabs.add(tabName);
-					}
-				}
-				break;
-			default:
-				return;
-		}
-		// Add all the tabs in the list to the tabbed pane
-		for (String tabName : newTabs) {
-			// Remove leading star now, since we don't want it in the tab name
-			if (tabName.startsWith("*")) {
-				tabName = tabName.replaceFirst("\\*", "");
-			}
-			// If there is already a copy of the tab, iterate the tab name
-			String altName = tabName;
-			int i = 1;
-			while (pane.indexOfTab(altName) > -1) {
-				altName = tabName + " (" + i + ")";
-				i++;
-			}
-			// Add the tab to the tabbed pane
-			pane.addTab(altName, client.getTab(panel, tabName));
-			// Make the new tab the selected one
-			final int tabLocation = pane.indexOfTab(altName);
-			pane.setSelectedIndex(tabLocation);
-		}
-
 	}
 
 	/**
@@ -160,5 +123,56 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 			return SORT_ORDER.get(o1).compareTo(SORT_ORDER.get(o2));
 		}
 	}
+
+	@Override
+	public void windowClosed(WindowEvent event) {
+		super.windowClosed(event);
+		DnDTabbedPane pane = this.frame.getTabbedPane();
+
+		// If a button was not pressed (option isn't a string), do nothing
+		if (!( this.dialog.getValue() instanceof String )) return;
+		final String option = (String) this.dialog.getValue();
+		// A list of tab names to add
+		final ArrayList<String> newTabs = new ArrayList<String>(0);
+		switch (option) {
+		// Add the selected tab to the list
+			case "Add": {
+				newTabs.add((String) this.tabSelector.getSelectedItem());
+				break;
+			}
+			// Add all tabs that don't start with a * and are not already in the tabbed pane
+			case "Add All":
+				for (final String tabName : tabNameSet) {
+					if (!tabName.startsWith("*") && pane.indexOfTab(tabName) == -1) {
+						newTabs.add(tabName);
+					}
+				}
+				break;
+			default:
+				return;
+		}
+		// Add all the tabs in the list to the tabbed pane
+		for (String tabName : newTabs) {
+			// Remove leading star now, since we don't want it in the tab name
+			if (tabName.startsWith("*")) {
+				tabName = tabName.replaceFirst("\\*", "");
+			}
+			// If there is already a copy of the tab, iterate the tab name
+			String altName = tabName;
+			int i = 1;
+			while (pane.indexOfTab(altName) > -1) {
+				altName = tabName + " (" + i + ")";
+				i++;
+			}
+			// Add the tab to the tabbed pane
+			this.frame.getTabbedPane().addTab(altName, this.client.getTab(frame, tabName));
+			// Make the new tab the selected one
+			final int tabLocation = pane.indexOfTab(altName);
+			pane.setSelectedIndex(tabLocation);
+		}
+
+
+	}
+
 
 }

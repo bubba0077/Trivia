@@ -2,7 +2,6 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -97,7 +96,5 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 				JOptionPane.DEFAULT_OPTION);
 		this.dialog.setModal(false);
 		this.dialog.setVisible(true);
-
-
 	}
 }

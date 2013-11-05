@@ -1,7 +1,6 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
@@ -103,6 +102,6 @@ public class ConflictDialog extends TriviaDialogPanel {
 
 		new TriviaDialog(null, "Score Conflict", this, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION)
 				.setVisible(true);
-
 	}
+
 }

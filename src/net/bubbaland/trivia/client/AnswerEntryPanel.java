@@ -3,6 +3,7 @@ package net.bubbaland.trivia.client;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 
@@ -25,6 +26,12 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= -5797789908178154492L;
 
+	private final String		user;
+	private final int			qNumber;
+	private final JTextArea		answerTextArea;
+	private final JSlider		confidenceSlider;
+	private final TriviaClient	client;
+
 	/**
 	 * Creates a dialog box and prompt for response
 	 * 
@@ -38,6 +45,10 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 	public AnswerEntryPanel(TriviaClient client, int qNumber, String user) {
 
 		super();
+
+		this.client = client;
+		this.qNumber = qNumber;
+		this.user = user;
 
 		// Retrieve current trivia data object
 		final Trivia trivia = client.getTrivia();
@@ -87,13 +98,13 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		c.gridy = 3;
 		c.weightx = 0.5;
 		c.weighty = 0.5;
-		final JTextArea answerTextArea = new JTextArea("", 4, 50);
-		answerTextArea.setLineWrap(true);
-		answerTextArea.setWrapStyleWord(true);
-		answerTextArea.setFont(answerTextArea.getFont().deriveFont(textAreaFontSize));
-		answerTextArea.addAncestorListener(this);
-		this.addEnterOverride(answerTextArea);
-		scrollPane = new JScrollPane(answerTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		this.answerTextArea = new JTextArea("", 4, 50);
+		this.answerTextArea.setLineWrap(true);
+		this.answerTextArea.setWrapStyleWord(true);
+		this.answerTextArea.setFont(this.answerTextArea.getFont().deriveFont(textAreaFontSize));
+		this.answerTextArea.addAncestorListener(this);
+		this.addEnterOverride(this.answerTextArea);
+		scrollPane = new JScrollPane(this.answerTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
 		this.add(scrollPane, c);
@@ -112,22 +123,26 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		c.gridx = 1;
 		c.gridy = 4;
 		c.insets = new Insets(sliderPaddingBottom, sliderPaddingLeft, sliderPaddingRight, sliderPaddingTop);
-		final JSlider confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 1);
-		confidenceSlider.setMajorTickSpacing(1);
+		this.confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 1);
+		this.confidenceSlider.setMajorTickSpacing(1);
 		final Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		labelTable.put(new Integer(1), new JLabel("Guess"));
 		labelTable.put(new Integer(5), new JLabel("Sure"));
-		confidenceSlider.setLabelTable(labelTable);
-		confidenceSlider.setPaintLabels(true);
-		confidenceSlider.setPaintTicks(true);
-		this.add(confidenceSlider, c);
+		this.confidenceSlider.setLabelTable(labelTable);
+		this.confidenceSlider.setPaintLabels(true);
+		this.confidenceSlider.setPaintTicks(true);
+		this.add(this.confidenceSlider, c);
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog(null, "Submit Answer for Question " + qNumber, this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setName("Answer Question");
 		this.dialog.setVisible(true);
+	}
 
+	@Override
+	public void windowClosed(WindowEvent event) {
+		super.windowClosed(event);
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
@@ -159,7 +174,6 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 			client.log("Submitted an answer for Question #" + qNumber);
 
 		}
-
 	}
 
 }

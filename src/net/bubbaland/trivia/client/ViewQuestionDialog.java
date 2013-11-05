@@ -1,7 +1,6 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneConstants;

@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
+import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 
 import javax.swing.JComboBox;
@@ -16,7 +17,13 @@ import javax.swing.JTextField;
 public class CorrectEntryDialog extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long	serialVersionUID	= -8974614016214193902L;
+	private static final long		serialVersionUID	= -8974614016214193902L;
+
+	private final TriviaClient		client;
+	private final String			caller;
+	private final int				queueIndex;
+	private final JComboBox<String>	statusComboBox;
+	private final JTextField		operatorTextField;
 
 	/**
 	 * Creates a new dialog box and prompts for response
@@ -32,6 +39,11 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 	 */
 	public CorrectEntryDialog(TriviaClient client, String caller, int queueIndex, JComboBox<String> statusComboBox) {
 		super();
+
+		this.client = client;
+		this.caller = caller;
+		this.queueIndex = queueIndex;
+		this.statusComboBox = statusComboBox;
 
 		// Set up layout constraints
 		final GridBagConstraints c = new GridBagConstraints();
@@ -49,7 +61,7 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 
 		c.gridx = 1;
 		c.gridy = 1;
-		final JTextField operatorTextField = new JTextField("", 15);
+		this.operatorTextField = new JTextField("", 15);
 		operatorTextField.setFont(operatorTextField.getFont().deriveFont(fontSize));
 		operatorTextField.addAncestorListener(this);
 		this.add(operatorTextField, c);
@@ -58,7 +70,11 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 		this.dialog = new TriviaDialog(null, "Mark question correct", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
+	}
 
+	@Override
+	public void windowClosed(WindowEvent event) {
+		super.windowClosed(event);
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			// If the OK button was pressed, mark the question as correct
@@ -83,5 +99,6 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 			// If the OK button wasn't pressed, reset the status box to the previous status
 			statusComboBox.setSelectedItem(client.getTrivia().getAnswerQueueStatus(queueIndex));
 		}
+
 	}
 }

@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
+import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 
 import javax.swing.JComboBox;
@@ -17,9 +18,14 @@ public class LoadStateDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= -3297076605620744620L;
 
+	private final TriviaClient	client;
+	private JComboBox<String>	chooser;
+
 	public LoadStateDialog(TriviaClient client) {
 
 		super();
+
+		this.client = client;
 
 		// Try to communicate with server
 		String[] saveList = null;
@@ -50,7 +56,6 @@ public class LoadStateDialog extends TriviaDialogPanel {
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
 
-
 		// Add warning
 		constraints.gridx = 0;
 		constraints.gridy = 0;
@@ -70,7 +75,7 @@ public class LoadStateDialog extends TriviaDialogPanel {
 
 		constraints.gridx = 1;
 		constraints.gridy = 1;
-		final JComboBox<String> chooser = new JComboBox<String>(saveList);
+		this.chooser = new JComboBox<String>(saveList);
 		chooser.addAncestorListener(this);
 		this.add(chooser, constraints);
 
@@ -78,7 +83,11 @@ public class LoadStateDialog extends TriviaDialogPanel {
 		this.dialog = new TriviaDialog(null, "Load saved state", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
+	}
 
+	@Override
+	public void windowClosed(WindowEvent event) {
+		super.windowClosed(event);
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 
@@ -86,8 +95,8 @@ public class LoadStateDialog extends TriviaDialogPanel {
 			final String saveFile = (String) chooser.getSelectedItem();
 
 			// Try to communicate with server
-			tryNumber = 0;
-			success = false;
+			int tryNumber = 0;
+			boolean success = false;
 			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {

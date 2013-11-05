@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 
 import javax.swing.JLabel;
@@ -29,10 +30,18 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 	 */
 	private final JToggleButton	correctButton;
 	private final JTextField	submitterTextField, operatorTextField;
+	private final TriviaClient	client;
+	private final int			rNumber, qNumber;
+	private final JTextArea		qTextArea, aTextArea;
+	private final JSpinner		qValueSpinner;
 
 	public EditQuestionDialog(TriviaClient client, int rNumber, int qNumber) {
 
 		super();
+
+		this.client = client;
+		this.rNumber = rNumber;
+		this.qNumber = qNumber;
 
 		// Get all of the current data for the question
 		final Trivia trivia = client.getTrivia();
@@ -78,7 +87,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		constraints.weightx = 0.5;
-		final JSpinner qValueSpinner = new JSpinner(new SpinnerNumberModel(existingValue, 10, 1000, 5));
+		this.qValueSpinner = new JSpinner(new SpinnerNumberModel(existingValue, 10, 1000, 5));
 		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(fontSize));
 		this.addEnterOverride(qValueSpinner);
 		this.add(qValueSpinner, constraints);
@@ -106,7 +115,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridy = 3;
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.6;
-		final JTextArea qTextArea = new JTextArea(existingQText, 4, 50);
+		this.qTextArea = new JTextArea(existingQText, 4, 50);
 		qTextArea.setLineWrap(true);
 		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
@@ -131,7 +140,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridy = 5;
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.4;
-		final JTextArea aTextArea = new JTextArea(existingAText, 4, 50);
+		this.aTextArea = new JTextArea(existingAText, 4, 50);
 		aTextArea.setLineWrap(true);
 		aTextArea.setWrapStyleWord(true);
 		aTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
@@ -191,7 +200,32 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		this.dialog = new TriviaDialog(null, "Edit Question", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
+	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(this.correctButton)) {
+			// If the correctness was changed, update GUI elements appropriately
+			if (this.correctButton.isSelected()) {
+				this.correctButton.setText("Correct");
+				this.submitterTextField.setEditable(true);
+				this.operatorTextField.setEditable(true);
+				this.submitterTextField.setBackground(Color.WHITE);
+				this.operatorTextField.setBackground(Color.WHITE);
+			} else {
+				this.correctButton.setText("Incorrect");
+				this.submitterTextField.setEditable(false);
+				this.operatorTextField.setEditable(false);
+				this.submitterTextField.setBackground(this.getBackground());
+				this.operatorTextField.setBackground(this.getBackground());
+			}
+		}
+
+	}
+
+	@Override
+	public void windowClosed(WindowEvent event) {
+		super.windowClosed(event);
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
@@ -224,26 +258,6 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 
 			client.log("Question #" + qNumber + " edited.");
 
-		}
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(this.correctButton)) {
-			// If the correctness was changed, update GUI elements appropriately
-			if (this.correctButton.isSelected()) {
-				this.correctButton.setText("Correct");
-				this.submitterTextField.setEditable(true);
-				this.operatorTextField.setEditable(true);
-				this.submitterTextField.setBackground(Color.WHITE);
-				this.operatorTextField.setBackground(Color.WHITE);
-			} else {
-				this.correctButton.setText("Incorrect");
-				this.submitterTextField.setEditable(false);
-				this.operatorTextField.setEditable(false);
-				this.submitterTextField.setBackground(this.getBackground());
-				this.operatorTextField.setBackground(this.getBackground());
-			}
 		}
 
 	}

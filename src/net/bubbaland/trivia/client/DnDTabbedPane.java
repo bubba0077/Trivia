@@ -252,7 +252,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	public void mouseClicked(MouseEvent event) {
 		final int addButtonIndex = this.indexOfComponent(this.blankPanel);
 		if (addButtonIndex > -1 && this.getBoundsAt(addButtonIndex).contains(event.getPoint())) {
-			new AddTabDialog(this.parent, this.client, this);
+			new AddTabDialog(this.parent, this.client);
 		}
 	}
 

@@ -288,7 +288,7 @@ public class TriviaClient implements WindowListener {
 	 * 
 	 * @return The available tab names
 	 */
-	public Set<String> getTabNames() {
+	public static Set<String> getTabNames() {
 		return TriviaClient.TAB_DESCRIPTION_HASH.keySet();
 	}
 

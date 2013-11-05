@@ -65,6 +65,8 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 		this.setContentPane(this.optionPane);
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setResizable(true);
+		this.setModal(false);
+		this.setAlwaysOnTop(false);
 	}
 
 	/**
@@ -74,11 +76,12 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 *            Parent frame for the dialog
 	 * @param title
 	 *            Title for the dialog
-	 * @param message
+	 * @param panel
 	 * @see JOptionPane
 	 */
-	public TriviaDialog(Frame frame, String title, Object message) {
-		this(frame, title, new JOptionPane(message));
+	public TriviaDialog(Frame frame, String title, TriviaDialogPanel panel) {
+		this(frame, title, new JOptionPane(panel));
+		this.addWindowListener(panel);
 	}
 
 	/**
@@ -93,8 +96,9 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 * @param messageType
 	 * @see JOptionPane
 	 */
-	public TriviaDialog(Frame frame, String title, Object message, int messageType) {
-		this(frame, title, new JOptionPane(message, messageType));
+	public TriviaDialog(Frame frame, String title, TriviaDialogPanel panel, int messageType) {
+		this(frame, title, new JOptionPane(panel, messageType));
+		this.addWindowListener(panel);
 	}
 
 	/**
@@ -111,8 +115,9 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 * @param optionType
 	 * @see JOptionPane
 	 */
-	public TriviaDialog(Frame frame, String title, Object message, int messageType, int optionType) {
-		this(frame, title, new JOptionPane(message, messageType, optionType));
+	public TriviaDialog(Frame frame, String title, TriviaDialogPanel panel, int messageType, int optionType) {
+		this(frame, title, new JOptionPane(panel, messageType, optionType));
+		this.addWindowListener(panel);
 	}
 
 	/**
@@ -131,8 +136,9 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 * @param icon
 	 * @see JOptionPane
 	 */
-	public TriviaDialog(Frame frame, String title, Object message, int messageType, int optionType, Icon icon) {
-		this(frame, title, new JOptionPane(message, messageType, optionType, icon));
+	public TriviaDialog(Frame frame, String title, TriviaDialogPanel panel, int messageType, int optionType, Icon icon) {
+		this(frame, title, new JOptionPane(panel, messageType, optionType, icon));
+		this.addWindowListener(panel);
 	}
 
 	/**
@@ -153,9 +159,10 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 * @param options
 	 * @see JOptionPane
 	 */
-	public TriviaDialog(Frame frame, String title, Object message, int messageType, int optionType, Icon icon,
+	public TriviaDialog(Frame frame, String title, TriviaDialogPanel panel, int messageType, int optionType, Icon icon,
 			Object[] options) {
-		this(frame, title, new JOptionPane(message, messageType, optionType, icon, options));
+		this(frame, title, new JOptionPane(panel, messageType, optionType, icon, options));
+		this.addWindowListener(panel);
 	}
 
 	/**
@@ -178,9 +185,10 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 * @param initialValue
 	 * @see JOptionPane
 	 */
-	public TriviaDialog(Frame frame, String title, Object message, int messageType, int optionType, Icon icon,
+	public TriviaDialog(Frame frame, String title, TriviaDialogPanel panel, int messageType, int optionType, Icon icon,
 			Object[] options, Object initialValue) {
-		this.optionPane = new JOptionPane(message, messageType, optionType, icon, options, initialValue);
+		this.optionPane = new JOptionPane(panel, messageType, optionType, icon, options, initialValue);
+		this.addWindowListener(panel);
 	}
 
 	/**

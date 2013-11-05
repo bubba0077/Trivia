@@ -2,6 +2,7 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
@@ -25,6 +26,13 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 8250659442772286086L;
+
+	private final TriviaClient	client;
+	private final int			nQuestions;
+	private final int			qNumberStart;
+	private final JSpinner		qNumberSpinner;
+	private final JSpinner		qValueSpinner;
+	private final JTextArea		qTextArea;
 
 	/**
 	 * Instantiates a new question entry window.
@@ -75,6 +83,9 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 		super();
 
+		this.client = client;
+		this.nQuestions = nQuestions;
+		this.qNumberStart = qNumberStart;
 		// Set up layout constraints
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
@@ -91,7 +102,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 		constraints.gridx = 1;
 		constraints.gridy = 0;
-		final JSpinner qNumberSpinner = new JSpinner(new SpinnerNumberModel(qNumberStart, 1, nQuestions, 1));
+		this.qNumberSpinner = new JSpinner(new SpinnerNumberModel(qNumberStart, 1, nQuestions, 1));
 		qNumberSpinner.setFont(qNumberSpinner.getFont().deriveFont(fontSize));
 		this.addEnterOverride(qNumberSpinner);
 		this.add(qNumberSpinner, constraints);
@@ -105,7 +116,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 		constraints.gridx = 1;
 		constraints.gridy = 1;
-		final JSpinner qValueSpinner = new JSpinner(new SpinnerNumberModel(qValueStart, 10, 1000, 5));
+		this.qValueSpinner = new JSpinner(new SpinnerNumberModel(qValueStart, 10, 1000, 5));
 		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(fontSize));
 		this.addEnterOverride(qValueSpinner);
 		this.add(qValueSpinner, constraints);
@@ -124,7 +135,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		constraints.gridwidth = 2;
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
-		final JTextArea qTextArea = new JTextArea(qTextStart, 4, 50);
+		this.qTextArea = new JTextArea(qTextStart, 4, 50);
 		qTextArea.setLineWrap(true);
 		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
@@ -143,7 +154,11 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		this.dialog = new TriviaDialog(null, "Open New Question", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
+	}
 
+	@Override
+	public void windowClosed(WindowEvent event) {
+		super.windowClosed(event);
 		// If the OK button was pressed, open the question
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
@@ -160,13 +175,13 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 				this.removeAll();
 
-				constraints = new GridBagConstraints();
+				GridBagConstraints constraints = new GridBagConstraints();
 				constraints.fill = GridBagConstraints.BOTH;
 				constraints.anchor = GridBagConstraints.CENTER;
 
 				constraints.gridx = 0;
 				constraints.gridy = 0;
-				label = new JLabel("Change question number from " + qNumberStart + " to " + qNumber + "?");
+				JLabel label = new JLabel("Change question number from " + qNumberStart + " to " + qNumber + "?");
 				label.setFont(label.getFont().deriveFont(fontSize));
 				this.add(label, constraints);
 
@@ -211,13 +226,13 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 				this.removeAll();
 
-				constraints = new GridBagConstraints();
+				GridBagConstraints constraints = new GridBagConstraints();
 				constraints.fill = GridBagConstraints.BOTH;
 				constraints.anchor = GridBagConstraints.CENTER;
 
 				constraints.gridx = 0;
 				constraints.gridy = 0;
-				label = new JLabel("Question alread open, overwrite?");
+				JLabel label = new JLabel("Question alread open, overwrite?");
 				label.setFont(label.getFont().deriveFont(fontSize));
 				this.add(label, constraints);
 
@@ -236,7 +251,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				textArea.setLineWrap(true);
 				textArea.setWrapStyleWord(true);
 				textArea.setEditable(false);
-				scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 				scrollPane.setPreferredSize(new Dimension(100, 100));
 				scrollPane.setViewportView(textArea);
@@ -317,7 +332,6 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			client.log("Question #" + qNumber + " submitted.");
 
 		}
-
 	}
 
 
