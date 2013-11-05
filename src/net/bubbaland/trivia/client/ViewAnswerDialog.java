@@ -1,7 +1,7 @@
 package net.bubbaland.trivia.client;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -15,6 +15,7 @@ import javax.swing.SwingConstants;
  * @author Walter Kolczynski
  * 
  */
+@SuppressWarnings("unused")
 public class ViewAnswerDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 8466638572342233271L;
@@ -56,18 +57,11 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		constraints.weighty = 0.5;
-		final JTextArea qTextArea = new JTextArea(qText, 4, 50);
+		final QuestionPane qTextArea = this.hyperlinkedTextPane(qText, constraints,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		qTextArea.setEditable(false);
-		qTextArea.setLineWrap(true);
-		qTextArea.setWrapStyleWord(true);
-		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
-
-		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setPreferredSize(new Dimension(0, 200));
-		this.add(scrollPane, constraints);
+		setTextPaneProperties(qTextArea, 300, 200, this.getForeground(), this.getBackground(), textAreaFontSize);
 		constraints.weighty = 0.0;
-
 
 		// Create the answer text area
 		constraints.gridx = 0;
@@ -79,20 +73,15 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 5;
 		constraints.weighty = 0.5;
-		final JTextArea aTextArea = new JTextArea(aText, 4, 50);
+		final JTextArea aTextArea = scrollableTextArea(aText, 300, 200, this.getForeground(), this.getBackground(),
+				constraints, textAreaFontSize, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		aTextArea.setEditable(false);
-		aTextArea.setLineWrap(true);
-		aTextArea.setWrapStyleWord(true);
 		aTextArea.setFont(aTextArea.getFont().deriveFont(textAreaFontSize));
-
-		scrollPane = new JScrollPane(aTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setPreferredSize(new Dimension(0, 200));
-		this.add(scrollPane, constraints);
 		constraints.weighty = 0.0;
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(null, "View Question", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, "View Proposed Answer", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.DEFAULT_OPTION);
 		this.dialog.setModal(false);
 		this.dialog.setVisible(true);

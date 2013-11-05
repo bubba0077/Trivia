@@ -50,7 +50,7 @@ public class ViewQuestionDialog extends TriviaDialogPanel {
 		final QuestionPane qTextArea = this.hyperlinkedTextPane(qText, constraints,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		qTextArea.setEditable(false);
-		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
+		setTextPaneProperties(qTextArea, 300, 200, this.getForeground(), this.getBackground(), textAreaFontSize);
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog(null, "View Question", this, JOptionPane.PLAIN_MESSAGE,
