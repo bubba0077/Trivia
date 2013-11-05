@@ -2,6 +2,7 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -85,9 +86,13 @@ public abstract class TriviaPanel extends JPanel {
 					try {
 						Desktop.getDesktop().browse(e.getURL().toURI());
 					} catch (IOException | URISyntaxException exception) {
-						// this.log("Couldn't open a browser window");
 					}
+				} else if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+					setCursor(new Cursor(Cursor.HAND_CURSOR));
+				} else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
+
 			}
 		});
 		textPane.setText(string);
