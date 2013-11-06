@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -17,6 +18,7 @@ import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
@@ -30,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -48,34 +51,46 @@ import net.bubbaland.trivia.client.TriviaFrame.QueueSort;
 public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 
 	/** The Constant serialVersionUID. */
-	private static final long			serialVersionUID	= 784049314825719490L;
+	private static final long				serialVersionUID	= 784049314825719490L;
 
 	/** Valid statuses for queue items */
-	private static final String[]		STATUSES			= { "Duplicate", "Not Called In", "Calling", "Incorrect",
-			"Partial", "Correct"							};
+	private static final String[]			STATUSES			= { "Duplicate", "Not Called In", "Calling",
+			"Incorrect", "Partial", "Correct"					};
 
 	/** Sort icons */
-	private static final ImageIcon		upArrow				= new ImageIcon(
-																	AnswerQueuePanel.class
-																			.getResource("images/upArrow.png"));
-	private static final ImageIcon		downArrow			= new ImageIcon(
-																	AnswerQueuePanel.class
-																			.getResource("images/downArrow.png"));
+	private static final ImageIcon			upArrow				= new ImageIcon(
+																		AnswerQueuePanel.class
+																				.getResource("images/upArrow.png"));
+	private static final ImageIcon			downArrow			= new ImageIcon(
+																		AnswerQueuePanel.class
+																				.getResource("images/downArrow.png"));
+
+	// Set up layout constraints
+	private static final GridBagConstraints	buttonConstraints	= new GridBagConstraints();
+	static {
+		buttonConstraints.fill = GridBagConstraints.BOTH;
+		buttonConstraints.anchor = GridBagConstraints.CENTER;
+		buttonConstraints.weightx = 1.0;
+		buttonConstraints.weighty = 1.0;
+		buttonConstraints.gridx = 0;
+		buttonConstraints.gridy = 0;
+		buttonConstraints.fill = GridBagConstraints.NONE;
+	}
 
 	/**
 	 * GUI elements that will be updated
 	 */
-	final private JLabel				timestampLabel, qNumberLabel, answerLabel, confidenceLabel, subCallerLabel,
+	final private JLabel					timestampLabel, qNumberLabel, answerLabel, confidenceLabel, subCallerLabel,
 			operatorLabel, statusLabel, queueSizeLabel;
-	final private JPanel				spacer;
-	final private JScrollPane			scrollPane;
+	final private JPanel					spacer;
+	final private JScrollPane				scrollPane;
 
 	/** The workflow queue sub panel */
-	final private AnswerQueueSubPanel	answerQueueSubPanel;
+	final private AnswerQueueSubPanel		answerQueueSubPanel;
 
 	/** The local client */
-	final private TriviaClient			client;
-	final private TriviaFrame			parent;
+	final private TriviaClient				client;
+	final private TriviaFrame				parent;
 
 	/**
 	 * Instantiates a new workflow queue panel.
@@ -358,11 +373,13 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 				confidenceLabels, submitterLabels, operatorLabels, callerLabels;
 		final private ArrayList<JComboBox<String>>	statusComboBoxes;
 		final private ArrayList<JTextArea>			answerTextAreas;
+		final private ArrayList<JToggleButton>		agreeButtons;
+		final private Hashtable<Integer, Boolean>	agreements;
 		private final JPopupMenu					contextMenu;
 
 		private Answer[]							answerQueue;
 		private Color								oddRowBackgroundColor, evenRowBackgroundColor, duplicateColor,
-				notCalledInColor, callingColor, incorrectColor, partialColor, correctColor;
+				notCalledInColor, callingColor, incorrectColor, partialColor, correctColor, agreeColor;
 		private int									rowHeight, timeWidth, qNumWidth, answerWidth, confidenceWidth,
 				subCallerWidth, operatorWidth, statusWidth;
 		private float								fontSize, qNumFontSize;
@@ -410,6 +427,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 			this.timestampLabels = new ArrayList<JLabel>(0);
 			this.qNumberLabels = new ArrayList<JLabel>(0);
 			this.confidenceLabels = new ArrayList<JLabel>(0);
+			this.agreeButtons = new ArrayList<JToggleButton>(0);
+			this.agreements = new Hashtable<Integer, Boolean>();
 			this.submitterLabels = new ArrayList<JLabel>(0);
 			this.operatorLabels = new ArrayList<JLabel>(0);
 			this.callerLabels = new ArrayList<JLabel>(0);
@@ -431,12 +450,65 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 			final String command = event.getActionCommand();
 			switch (command) {
 				case "View":
-					final int queueIndex = Integer.parseInt(this.contextMenu.getName());
+					int queueIndex = Integer.parseInt(this.contextMenu.getName());
 					final int qNumber = trivia.getAnswerQueueQNumber(queueIndex);
 					final int qValue = trivia.getValue(rNumber, qNumber);
 					final String qText = trivia.getQuestionText(rNumber, qNumber);
 					final String aText = trivia.getAnswerQueueAnswer(queueIndex);
 					new ViewAnswerDialog(this.client, qNumber, qValue, qText, aText);
+					break;
+				case "Agree":
+					JToggleButton source = ( (JToggleButton) event.getSource() );
+					queueIndex = Integer.parseInt(source.getName());
+					this.agreements.put(queueIndex, true);
+
+					// Update status on server
+					int tryNumber = 0;
+					boolean success = false;
+					while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
+							&& success == false) {
+						tryNumber++;
+						try {
+							this.client.getServer().agree(this.client.getUser(), queueIndex);
+							success = true;
+						} catch (final RemoteException e) {
+							this.client.log("Couldn't register agreement server (try #" + tryNumber + ").");
+						}
+					}
+
+					// Unable to update status on server, show disconnected dialog
+					if (!success) {
+						this.client.disconnected();
+						return;
+					}
+
+					this.client.log("Agreed with answer #" + ( queueIndex + 1 ));
+					break;
+				case "Disagree":
+					source = ( (JToggleButton) event.getSource() );
+					queueIndex = Integer.parseInt(source.getName());
+					this.agreements.put(queueIndex, false);
+					// Update status on server
+					tryNumber = 0;
+					success = false;
+					while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
+							&& success == false) {
+						tryNumber++;
+						try {
+							this.client.getServer().disagree(this.client.getUser(), queueIndex);
+							success = true;
+						} catch (final RemoteException e) {
+							this.client.log("Couldn't register disagreement on server (try #" + tryNumber + ").");
+						}
+					}
+
+					// Unable to update status on server, show disconnected dialog
+					if (!success) {
+						this.client.disconnected();
+						return;
+					}
+
+					this.client.log("Disagreed with answer #" + ( queueIndex + 1 ));
 					break;
 				default:
 					break;
@@ -572,6 +644,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 				final int newQNumber = this.answerQueue[a].getQNumber();
 				final String newAnswer = this.answerQueue[a].getAnswer();
 				final int newConfidence = this.answerQueue[a].getConfidence();
+				final int newAgreement = this.answerQueue[a].getAgreement();
 				final String newSubmitter = this.answerQueue[a].getSubmitter();
 				final String newOperator = this.answerQueue[a].getOperator();
 				final String newCaller = this.answerQueue[a].getCaller();
@@ -641,10 +714,25 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 					this.answerTextAreas.get(a).setBackground(bColor);
 					this.answerTextAreas.get(a).setName("" + ( newQueueNumber - 1 ));
 
-					this.confidenceLabels.get(a).setText(newConfidence + "");
+					String confidenceText = ( newAgreement == 0 ) ? newConfidence + "" : newConfidence + " (+"
+							+ newAgreement + ")";
+					this.confidenceLabels.get(a).setText(confidenceText);
 					this.confidenceLabels.get(a).setForeground(color);
 					this.confidenceLabels.get(a).getParent().setBackground(bColor);
 					this.confidenceLabels.get(a).setName("" + ( newQueueNumber - 1 ));
+
+					this.agreeButtons.get(a).getParent().setBackground(bColor);
+					this.agreeButtons.get(a).setName("" + ( newQueueNumber - 1 ));
+
+					if (this.agreements.get(newQueueNumber - 1)) {
+						this.agreeButtons.get(a).setSelected(true);
+						this.agreeButtons.get(a).setBackground(agreeColor);
+						this.agreeButtons.get(a).setActionCommand("Disagree");
+					} else {
+						this.agreeButtons.get(a).setSelected(false);
+						this.agreeButtons.get(a).setBackground(null);
+						this.agreeButtons.get(a).setActionCommand("Agree");
+					}
 
 					this.submitterLabels.get(a).setText(newSubmitter);
 					this.submitterLabels.get(a).setForeground(color);
@@ -686,6 +774,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 						this.answerTextAreas.get(a).getParent().setVisible(false);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(false);
 						this.confidenceLabels.get(a).setVisible(false);
+						this.agreeButtons.get(a).setVisible(false);
 						this.submitterLabels.get(a).setVisible(false);
 						this.operatorLabels.get(a).setVisible(false);
 						this.callerLabels.get(a).setVisible(false);
@@ -697,6 +786,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 						this.answerTextAreas.get(a).getParent().setVisible(false);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(false);
 						this.confidenceLabels.get(a).getParent().setVisible(false);
+						this.agreeButtons.get(a).getParent().setVisible(false);
 						this.submitterLabels.get(a).getParent().setVisible(false);
 						this.operatorLabels.get(a).getParent().setVisible(false);
 						this.callerLabels.get(a).getParent().setVisible(false);
@@ -710,6 +800,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 						this.answerTextAreas.get(a).getParent().setVisible(true);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(true);
 						this.confidenceLabels.get(a).setVisible(true);
+						this.agreeButtons.get(a).setVisible(true);
 						this.submitterLabels.get(a).setVisible(true);
 						this.operatorLabels.get(a).setVisible(true);
 						this.callerLabels.get(a).setVisible(true);
@@ -721,6 +812,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 						this.answerTextAreas.get(a).getParent().setVisible(true);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(true);
 						this.confidenceLabels.get(a).getParent().setVisible(true);
+						this.agreeButtons.get(a).getParent().setVisible(true);
 						this.submitterLabels.get(a).getParent().setVisible(true);
 						this.operatorLabels.get(a).getParent().setVisible(true);
 						this.callerLabels.get(a).getParent().setVisible(true);
@@ -782,6 +874,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 					new BigInteger(properties.getProperty("AnswerQueue.Partial.Color"), 16).intValue());
 			this.correctColor = new Color(
 					new BigInteger(properties.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
+			this.agreeColor = new Color(
+					new BigInteger(properties.getProperty("AnswerQueue.Agree.Color"), 16).intValue());
 
 			/**
 			 * Sizes
@@ -811,8 +905,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 						this.qNumFontSize);
 				setTextAreaProperties(this.answerTextAreas.get(a), this.answerWidth, this.rowHeight, null, null,
 						this.fontSize);
-				setLabelProperties(this.confidenceLabels.get(a), this.confidenceWidth, this.rowHeight, null, null,
+				setLabelProperties(this.confidenceLabels.get(a), this.confidenceWidth, this.rowHeight / 2, null, null,
 						this.fontSize);
+				setButtonProperties(this.agreeButtons.get(a), this.confidenceWidth, this.rowHeight / 2, null,
+						this.fontSize);
+				setPanelProperties((JPanel) this.agreeButtons.get(a).getParent(), this.confidenceWidth,
+						this.rowHeight / 2, null);
 				setLabelProperties(this.submitterLabels.get(a), this.subCallerWidth, this.rowHeight / 2, null, null,
 						this.fontSize);
 				setLabelProperties(this.operatorLabels.get(a), this.operatorWidth, this.rowHeight, null, null,
@@ -872,11 +970,31 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 			this.answerTextAreas.get(a).addMouseListener(new PopupListener(this.contextMenu));
 			constraints.weightx = 0.0;
 
+			constraints.gridheight = 1;
 			constraints.gridx = 3;
 			constraints.gridy = 2 * a;
-			this.confidenceLabels.add(this.enclosedLabel("", this.confidenceWidth, this.rowHeight, null, null,
+			this.confidenceLabels.add(this.enclosedLabel("", this.confidenceWidth, this.rowHeight / 2, null, null,
 					constraints, this.fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.confidenceLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
+
+			constraints.gridx = 3;
+			constraints.gridy = 2 * a + 1;
+			final JPanel buttonPanel = new JPanel(new GridBagLayout());
+			buttonPanel.setPreferredSize(new Dimension(this.confidenceWidth, this.rowHeight / 2));
+			buttonPanel.setMinimumSize(new Dimension(this.confidenceWidth, this.rowHeight / 2));
+			this.add(buttonPanel, constraints);
+			this.agreeButtons.add(new JToggleButton("+1"));
+			this.agreeButtons.get(a).setToolTipText("Concur with this answer");
+			this.agreeButtons.get(a).setPreferredSize(new Dimension(this.confidenceWidth, this.rowHeight / 2));
+			this.agreeButtons.get(a).setMinimumSize(new Dimension(this.confidenceWidth, this.rowHeight / 2));
+			this.agreeButtons.get(a).setBorder(BorderFactory.createEmptyBorder());
+			this.agreeButtons.get(a).setMargin(new Insets(0, 0, 0, 0));
+			this.agreeButtons.get(a).setVisible(true);
+			this.agreeButtons.get(a).setActionCommand("Agree");
+			this.agreeButtons.get(a).addActionListener(this);
+			buttonPanel.add(this.agreeButtons.get(a), buttonConstraints);
+			this.agreements.put(a, false);
+			constraints.gridheight = 2;
 
 			constraints.gridheight = 1;
 			constraints.gridx = 4;

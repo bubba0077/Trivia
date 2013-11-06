@@ -1152,4 +1152,16 @@ public class Trivia implements Serializable {
 		}
 	}
 
+	public void agree(int queueIndex) {
+		this.currentRound.agree(queueIndex);
+	}
+
+	public void disagree(int queueIndex) {
+		this.currentRound.disagree(queueIndex);
+	}
+
+	public int getAgreement(int queueIndex) {
+		return this.currentRound.getAgreement(queueIndex);
+	}
+
 }

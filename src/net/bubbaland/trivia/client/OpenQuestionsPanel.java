@@ -35,13 +35,26 @@ import net.bubbaland.trivia.Trivia;
 public class OpenQuestionsPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long			serialVersionUID	= 6049067322505905668L;
+	private static final long				serialVersionUID	= 6049067322505905668L;
 
-	private final JLabel				qNumberLabel, valueLabel, questionLabel, answerColumn, closeColumn;
-	private final JScrollPane			scrollPane;
+	private final JLabel					qNumberLabel, valueLabel, questionLabel, answerColumn, closeColumn;
+	private final JScrollPane				scrollPane;
+
+	// Set up layout constraints
+	private static final GridBagConstraints	buttonConstraints	= new GridBagConstraints();
+	static {
+		buttonConstraints.fill = GridBagConstraints.BOTH;
+		buttonConstraints.anchor = GridBagConstraints.CENTER;
+		buttonConstraints.weightx = 1.0;
+		buttonConstraints.weighty = 1.0;
+		buttonConstraints.gridx = 0;
+		buttonConstraints.gridy = 0;
+		buttonConstraints.fill = GridBagConstraints.NONE;
+	}
+
 
 	/** Sub-panel that will hold the open questions */
-	private final OpenQuestionsSubPanel	openQuestionsSubPanel;
+	private final OpenQuestionsSubPanel		openQuestionsSubPanel;
 
 	/**
 	 * Instantiates a new workflow question list panel.
@@ -222,15 +235,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 			this.add(this.contextMenu);
 
-			// Set up layout constraints
-			final GridBagConstraints buttonConstraints = new GridBagConstraints();
-			buttonConstraints.fill = GridBagConstraints.BOTH;
-			buttonConstraints.anchor = GridBagConstraints.CENTER;
-			buttonConstraints.weightx = 1.0;
-			buttonConstraints.weighty = 1.0;
-			buttonConstraints.gridx = 0;
-			buttonConstraints.gridy = 0;
-			buttonConstraints.fill = GridBagConstraints.NONE;
 
 			final GridBagConstraints constraints = new GridBagConstraints();
 			constraints.fill = GridBagConstraints.BOTH;

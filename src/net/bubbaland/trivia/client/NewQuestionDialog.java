@@ -86,6 +86,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		this.client = client;
 		this.nQuestions = nQuestions;
 		this.qNumberStart = qNumberStart;
+
 		// Set up layout constraints
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
@@ -139,7 +140,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		qTextArea.setLineWrap(true);
 		qTextArea.setWrapStyleWord(true);
 		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
-		// qTextArea.addAncestorListener(this);
+		qTextArea.setToolTipText("Visual Trivia will automatically be linked to appropriate page.");
 		this.addEnterOverride(qTextArea);
 
 		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,

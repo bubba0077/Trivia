@@ -30,6 +30,9 @@ public class Answer implements Serializable {
 	// The confidence in the answer
 	final private int			confidence;
 
+	// A counter for the number of +1's
+	private volatile int		agreement;
+
 	// The timestamp of when the answer was submitted
 	final private String		timestamp;
 
@@ -77,6 +80,7 @@ public class Answer implements Serializable {
 		this.answer = answer;
 		this.submitter = submitter;
 		this.confidence = confidence;
+		this.agreement = 0;
 		final Date time = new Date();
 		final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 		this.timestamp = timeFormat.format(time);
@@ -246,6 +250,18 @@ public class Answer implements Serializable {
 
 	public void setQNumber(int qNumber) {
 		this.qNumber = qNumber;
+	}
+
+	public void agree() {
+		this.agreement++;
+	}
+
+	public void disagree() {
+		this.agreement--;
+	}
+
+	public int getAgreement() {
+		return this.agreement;
 	}
 
 	public static class QNumberCompare implements Comparator<Answer> {

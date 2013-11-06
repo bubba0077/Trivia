@@ -833,6 +833,23 @@ public class Round implements Serializable {
 		this.version++;
 	}
 
+	public void agree(int queueIndex) {
+		final Answer answer = this.answerQueue.get(queueIndex);
+		answer.agree();
+		this.version++;
+	}
+
+	public void disagree(int queueIndex) {
+		final Answer answer = this.answerQueue.get(queueIndex);
+		answer.disagree();
+		this.version++;
+	}
+
+	public int getAgreement(int queueIndex) {
+		final Answer answer = this.answerQueue.get(queueIndex);
+		return answer.getAgreement();
+	}
+
 	/**
 	 * Get the number of correct answers in this round
 	 * 

@@ -905,9 +905,24 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
+	}
 
-		// server.test();
+	@Override
+	public void agree(String user, int queueIndex) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.trivia.agree(queueIndex);
+	}
 
+	@Override
+	public void disagree(String user, int queueIndex) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.trivia.disagree(queueIndex);
+	}
+
+	@Override
+	public int getAgreement(String user, int queueIndex) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		return this.trivia.getAgreement(queueIndex);
 	}
 
 }

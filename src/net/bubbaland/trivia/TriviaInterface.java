@@ -348,4 +348,10 @@ public interface TriviaInterface extends Remote {
 	 */
 	public void unsetSpeed(String user) throws RemoteException;
 
+	public void agree(String user, int queueIndex) throws RemoteException;
+
+	public void disagree(String user, int queueIndex) throws RemoteException;
+
+	public int getAgreement(String user, int queueIndex) throws RemoteException;
+
 }

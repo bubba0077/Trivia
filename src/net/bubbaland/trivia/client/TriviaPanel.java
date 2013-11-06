@@ -124,17 +124,7 @@ public abstract class TriviaPanel extends JPanel {
 		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
 		pane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(pane, constraints);
-		final JTextArea textArea = new JTextArea(string) {
-			private static final long	serialVersionUID	= 1L;
-
-			// public JToolTip createToolTip() {
-			// JMultiLineToolTip tip = new JMultiLineToolTip();
-			// tip.setComponent(this);
-			// // tip.setFixedWidth(300);
-			// tip.setColumns(50);
-			// return tip;
-			// }
-		};
+		final JTextArea textArea = new JTextArea(string);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 		textArea.setBorder(BorderFactory.createEmptyBorder());
@@ -174,7 +164,6 @@ public abstract class TriviaPanel extends JPanel {
 
 		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
 		pane.setPreferredSize(new Dimension(width, height));
-		// pane.setMinimumSize(new Dimension(width, height));
 		pane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(pane, constraints);
 		final JTextArea textArea = new JTextArea(string);

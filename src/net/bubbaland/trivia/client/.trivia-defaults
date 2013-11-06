@@ -65,6 +65,7 @@ AnswerQueue.Calling.Color=00FFFF
 AnswerQueue.Incorrect.Color=FF0000
 AnswerQueue.Partial.Color=FFA500
 AnswerQueue.Correct.Color=00FF00
+AnswerQueue.Agree.Color=006400
 AnswerQueue.Header.Height=20
 AnswerQueue.Row.Height=40
 AnswerQueue.Timestamp.Width=60
