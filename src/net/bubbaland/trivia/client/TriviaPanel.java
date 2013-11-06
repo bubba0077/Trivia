@@ -105,6 +105,37 @@ public abstract class TriviaPanel extends JPanel {
 	}
 
 	/**
+	 * Adds a word-wrapping text pane inside of a scrollable pane to the panel that can process hyperlink clicks. A
+	 * reference to the text pane is returned so the text can be read/changed later.
+	 * 
+	 * @param string
+	 *            The initial string for the text pane
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param horizontalScroll
+	 *            The horizontal scroll bar policy (JScrollPane constants)
+	 * @param verticalScroll
+	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * @return The text pane inside the scroll pane
+	 */
+	public JTextPane scrollableTextPane(String string, GridBagConstraints constraints, int horizontalScroll,
+			int verticalScroll) {
+
+		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
+		pane.setBorder(BorderFactory.createEmptyBorder());
+		pane.setEnabled(false);
+		this.add(pane, constraints);
+		final JTextPane textPane = new QuestionPane(new DefaultStyledDocument());
+		textPane.setText(string);
+		textPane.setBorder(BorderFactory.createEmptyBorder());
+		final DefaultCaret caret = (DefaultCaret) textPane.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		pane.setViewportView(textPane);
+
+		return textPane;
+	}
+
+	/**
 	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
 	 * so the text can be read/changed later.
 	 * 
@@ -395,7 +426,9 @@ public abstract class TriviaPanel extends JPanel {
 	 */
 	protected static void setTextPaneProperties(JTextPane textPane, int width, int height, Color foreground,
 			Color background, float fontSize) {
+		// Scroll pane is two levels up
 		textPane.getParent().getParent().setPreferredSize(new Dimension(width, height));
+		textPane.getParent().getParent().setMinimumSize(new Dimension(width, height));
 		textPane.setFont(textPane.getFont().deriveFont(fontSize));
 		textPane.setForeground(foreground);
 		textPane.setBackground(background);

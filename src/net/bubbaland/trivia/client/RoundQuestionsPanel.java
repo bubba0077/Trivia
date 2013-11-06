@@ -25,8 +25,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.text.DefaultCaret;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
@@ -362,30 +360,29 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 				constraints.gridheight = 1;
 				constraints.gridx = 6;
 				constraints.gridy = 2 * q;
-				StyledDocument document = new DefaultStyledDocument();
-				Style defaultStyle = document.getStyle(StyleContext.DEFAULT_STYLE);
-				StyleConstants.setAlignment(defaultStyle, StyleConstants.ALIGN_CENTER);
-				this.submitterTextPanes[q] = new JTextPane(document);
+				this.submitterTextPanes[q] = scrollableTextPane("", constraints,
+						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				StyleConstants.setAlignment(( (StyledDocument) this.submitterTextPanes[q].getDocument() )
+						.getStyle(StyleContext.DEFAULT_STYLE), StyleConstants.ALIGN_CENTER);
 				DefaultCaret caret = (DefaultCaret) this.submitterTextPanes[q].getCaret();
 				caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 				this.submitterTextPanes[q].setEditable(false);
 				this.submitterTextPanes[q].setName(( q + 1 ) + "");
 				this.submitterTextPanes[q].addMouseListener(new PopupListener(this.contextMenu));
 
-				this.add(this.submitterTextPanes[q], constraints);
-
 				constraints.gridx = 6;
 				constraints.gridy = 2 * q + 1;
-				document = new DefaultStyledDocument();
-				defaultStyle = document.getStyle(StyleContext.DEFAULT_STYLE);
-				StyleConstants.setAlignment(defaultStyle, StyleConstants.ALIGN_CENTER);
-				this.operatorTextPanes[q] = new JTextPane(document);
+				this.operatorTextPanes[q] = scrollableTextPane("", constraints,
+						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				StyleConstants.setAlignment(( (StyledDocument) this.operatorTextPanes[q].getDocument() )
+						.getStyle(StyleContext.DEFAULT_STYLE), StyleConstants.ALIGN_CENTER);
 				caret = (DefaultCaret) this.operatorTextPanes[q].getCaret();
 				caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 				this.operatorTextPanes[q].setEditable(false);
 				this.operatorTextPanes[q].setName(( q + 1 ) + "");
 				this.operatorTextPanes[q].addMouseListener(new PopupListener(this.contextMenu));
-				this.add(this.operatorTextPanes[q], constraints);
 
 			}
 
@@ -547,7 +544,9 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 					this.questionTextPane[q].getParent().getParent().setVisible(true);
 					this.answerTextAreas[q].getParent().getParent().setVisible(true);
 					this.submitterTextPanes[q].setVisible(true);
+					this.submitterTextPanes[q].getParent().getParent().setVisible(true);
 					this.operatorTextPanes[q].setVisible(true);
+					this.operatorTextPanes[q].getParent().getParent().setVisible(true);
 				}
 			}
 
@@ -562,7 +561,9 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 				this.questionTextPane[q].getParent().getParent().setVisible(false);
 				this.answerTextAreas[q].getParent().getParent().setVisible(false);
 				this.submitterTextPanes[q].setVisible(false);
+				this.submitterTextPanes[q].getParent().getParent().setVisible(false);
 				this.operatorTextPanes[q].setVisible(false);
+				this.operatorTextPanes[q].getParent().getParent().setVisible(false);
 			}
 		}
 
@@ -663,15 +664,6 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 			}
 
 		}
-
-		// @Override
-		// public void windowGainedFocus(WindowEvent e) {
-		// }
-		//
-		// @Override
-		// public void windowLostFocus(WindowEvent e) {
-		// this.contextMenu.setVisible(false);
-		// }
 	}
 
 }
