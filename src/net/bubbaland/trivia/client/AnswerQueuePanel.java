@@ -77,6 +77,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 		buttonConstraints.fill = GridBagConstraints.NONE;
 	}
 
+	private static Color					oddRowBackgroundColor, evenRowBackgroundColor, duplicateColor,
+			notCalledInColor, callingColor, incorrectColor, partialColor, correctColor, agreeColor;
+	private static int						rowHeight, timeWidth, qNumWidth, answerWidth, confidenceWidth,
+			subCallerWidth, operatorWidth, statusWidth;
+	private static float					fontSize, qNumFontSize;
+
 	/**
 	 * GUI elements that will be updated
 	 */
@@ -224,7 +230,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 		}
 	}
 
-
 	@Override
 	public void mouseEntered(MouseEvent event) {
 	}
@@ -300,25 +305,39 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 				new BigInteger(properties.getProperty("AnswerQueue.Header.Color"), 16).intValue());
 		final Color headerBackgroundColor = new Color(new BigInteger(
 				properties.getProperty("AnswerQueue.Header.BackgroundColor"), 16).intValue());
+		oddRowBackgroundColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.OddRow.BackgroundColor"),
+				16).intValue());
+		evenRowBackgroundColor = new Color(new BigInteger(
+				properties.getProperty("AnswerQueue.EvenRow.BackgroundColor"), 16).intValue());
+		duplicateColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Duplicate.Color"), 16).intValue());
+		notCalledInColor = new Color(
+				new BigInteger(properties.getProperty("AnswerQueue.NotCalledIn.Color"), 16).intValue());
+		callingColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Calling.Color"), 16).intValue());
+		incorrectColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
+		partialColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Partial.Color"), 16).intValue());
+		correctColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
+		agreeColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Agree.Color"), 16).intValue());
 
 		/**
 		 * Sizes
 		 */
 		final int headerHeight = Integer.parseInt(properties.getProperty("AnswerQueue.Header.Height"));
-		final int rowHeight = Integer.parseInt(properties.getProperty("AnswerQueue.Row.Height"));
+		rowHeight = Integer.parseInt(properties.getProperty("AnswerQueue.Row.Height"));
 
-		final int timeWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Timestamp.Width"));
-		final int qNumWidth = Integer.parseInt(properties.getProperty("AnswerQueue.QNumber.Width"));
-		final int answerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Answer.Width"));
-		final int confidenceWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Confidence.Width"));
-		final int subCallerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.SubCaller.Width"));
-		final int operatorWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Operator.Width"));
-		final int statusWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Status.Width"));
+		timeWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Timestamp.Width"));
+		qNumWidth = Integer.parseInt(properties.getProperty("AnswerQueue.QNumber.Width"));
+		answerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Answer.Width"));
+		confidenceWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Confidence.Width"));
+		subCallerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.SubCaller.Width"));
+		operatorWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Operator.Width"));
+		statusWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Status.Width"));
 
 		/**
 		 * Font sizes
 		 */
 		final float headerFontSize = Float.parseFloat(properties.getProperty("AnswerQueue.Header.FontSize"));
+		qNumFontSize = Float.parseFloat(properties.getProperty("AnswerQueue.QNumber.FontSize"));
+		fontSize = Float.parseFloat(properties.getProperty("AnswerQueue.FontSize"));
 
 		/** The number of open questions to show at one time */
 		final int answersShow = Integer.parseInt(properties.getProperty("AnswerQueue.AnswersShow"));
@@ -377,12 +396,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 		final private Hashtable<Integer, Boolean>	agreements;
 		private final JPopupMenu					contextMenu;
 
+		/**
+		 * Data
+		 */
 		private Answer[]							answerQueue;
-		private Color								oddRowBackgroundColor, evenRowBackgroundColor, duplicateColor,
-				notCalledInColor, callingColor, incorrectColor, partialColor, correctColor, agreeColor;
-		private int									rowHeight, timeWidth, qNumWidth, answerWidth, confidenceWidth,
-				subCallerWidth, operatorWidth, statusWidth;
-		private float								fontSize, qNumFontSize;
 
 		/**
 		 * Data sources
@@ -659,38 +676,38 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 
 				if (qUpdated[a] || force) {
 					// If the status has changed, update the labels and color
-					Color color = this.notCalledInColor;
+					Color color = notCalledInColor;
 					final int statusIndex = Arrays.asList(STATUSES).indexOf(newStatus);
 					switch (newStatus) {
 						case "Duplicate":
-							color = this.duplicateColor;
+							color = duplicateColor;
 							break;
 						case "Not Called In":
-							color = this.notCalledInColor;
+							color = notCalledInColor;
 							break;
 						case "Calling":
-							color = this.callingColor;
+							color = callingColor;
 							break;
 						case "Incorrect":
-							color = this.incorrectColor;
+							color = incorrectColor;
 							break;
 						case "Partial":
-							color = this.partialColor;
+							color = partialColor;
 							break;
 						case "Correct":
-							color = this.correctColor;
+							color = correctColor;
 							break;
 						default:
-							color = this.notCalledInColor;
+							color = notCalledInColor;
 							break;
 					}
 
 					// Alternate background color based on rows shown
 					Color bColor;
 					if (shownRows % 2 == 1) {
-						bColor = this.oddRowBackgroundColor;
+						bColor = oddRowBackgroundColor;
 					} else {
-						bColor = this.evenRowBackgroundColor;
+						bColor = evenRowBackgroundColor;
 					}
 
 					this.queuenumberLabels.get(a).setText("#" + newQueueNumber);
@@ -721,6 +738,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 					this.confidenceLabels.get(a).getParent().setBackground(bColor);
 					this.confidenceLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
+					this.agreeButtons.get(a).setForeground(color);
 					this.agreeButtons.get(a).getParent().setBackground(bColor);
 					this.agreeButtons.get(a).setName("" + ( newQueueNumber - 1 ));
 
@@ -855,74 +873,22 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 		 */
 		@Override
 		protected void loadProperties(Properties properties) {
-			/**
-			 * Colors
-			 */
-			this.oddRowBackgroundColor = new Color(new BigInteger(
-					properties.getProperty("AnswerQueue.OddRow.BackgroundColor"), 16).intValue());
-			this.evenRowBackgroundColor = new Color(new BigInteger(
-					properties.getProperty("AnswerQueue.EvenRow.BackgroundColor"), 16).intValue());
-			this.duplicateColor = new Color(
-					new BigInteger(properties.getProperty("AnswerQueue.Duplicate.Color"), 16).intValue());
-			this.notCalledInColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.NotCalledIn.Color"),
-					16).intValue());
-			this.callingColor = new Color(
-					new BigInteger(properties.getProperty("AnswerQueue.Calling.Color"), 16).intValue());
-			this.incorrectColor = new Color(
-					new BigInteger(properties.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
-			this.partialColor = new Color(
-					new BigInteger(properties.getProperty("AnswerQueue.Partial.Color"), 16).intValue());
-			this.correctColor = new Color(
-					new BigInteger(properties.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
-			this.agreeColor = new Color(
-					new BigInteger(properties.getProperty("AnswerQueue.Agree.Color"), 16).intValue());
-
-			/**
-			 * Sizes
-			 */
-			this.rowHeight = Integer.parseInt(properties.getProperty("AnswerQueue.Row.Height"));
-
-			this.timeWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Timestamp.Width"));
-			this.qNumWidth = Integer.parseInt(properties.getProperty("AnswerQueue.QNumber.Width"));
-			this.answerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Answer.Width"));
-			this.confidenceWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Confidence.Width"));
-			this.subCallerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.SubCaller.Width"));
-			this.operatorWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Operator.Width"));
-			this.statusWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Status.Width"));
-
-			/**
-			 * Font sizes
-			 */
-			this.qNumFontSize = Float.parseFloat(properties.getProperty("AnswerQueue.QNumber.FontSize"));
-			this.fontSize = Float.parseFloat(properties.getProperty("AnswerQueue.FontSize"));
 
 			for (int a = 0; a < this.queuenumberLabels.size(); a++) {
-				setLabelProperties(this.queuenumberLabels.get(a), this.timeWidth, this.rowHeight / 2, null, null,
-						this.fontSize);
-				setLabelProperties(this.timestampLabels.get(a), this.timeWidth, this.rowHeight / 2, null, null,
-						this.fontSize);
-				setLabelProperties(this.qNumberLabels.get(a), this.qNumWidth, this.rowHeight, null, null,
-						this.qNumFontSize);
-				setTextAreaProperties(this.answerTextAreas.get(a), this.answerWidth, this.rowHeight, null, null,
-						this.fontSize);
-				setLabelProperties(this.confidenceLabels.get(a), this.confidenceWidth, this.rowHeight / 2, null, null,
-						this.fontSize);
-				setButtonProperties(this.agreeButtons.get(a), this.confidenceWidth, this.rowHeight / 2, null,
-						this.fontSize);
-				setPanelProperties((JPanel) this.agreeButtons.get(a).getParent(), this.confidenceWidth,
-						this.rowHeight / 2, null);
-				setLabelProperties(this.submitterLabels.get(a), this.subCallerWidth, this.rowHeight / 2, null, null,
-						this.fontSize);
-				setLabelProperties(this.operatorLabels.get(a), this.operatorWidth, this.rowHeight, null, null,
-						this.fontSize);
-				setLabelProperties(this.callerLabels.get(a), this.subCallerWidth, this.rowHeight / 2, null, null,
-						this.fontSize);
+				setLabelProperties(this.queuenumberLabels.get(a), timeWidth, rowHeight / 2, null, null, fontSize);
+				setLabelProperties(this.timestampLabels.get(a), timeWidth, rowHeight / 2, null, null, fontSize);
+				setLabelProperties(this.qNumberLabels.get(a), qNumWidth, rowHeight, null, null, qNumFontSize);
+				setTextAreaProperties(this.answerTextAreas.get(a), answerWidth, rowHeight, null, null, fontSize);
+				setLabelProperties(this.confidenceLabels.get(a), confidenceWidth, rowHeight / 2, null, null, fontSize);
+				setButtonProperties(this.agreeButtons.get(a), confidenceWidth, rowHeight / 2, null, fontSize);
+				setPanelProperties((JPanel) this.agreeButtons.get(a).getParent(), confidenceWidth, rowHeight / 2, null);
+				setLabelProperties(this.submitterLabels.get(a), subCallerWidth, rowHeight / 2, null, null, fontSize);
+				setLabelProperties(this.operatorLabels.get(a), operatorWidth, rowHeight, null, null, fontSize);
+				setLabelProperties(this.callerLabels.get(a), subCallerWidth, rowHeight / 2, null, null, fontSize);
 
-				setPanelProperties((JPanel) this.statusComboBoxes.get(a).getParent(), this.statusWidth, this.rowHeight,
-						null);
-				this.statusComboBoxes.get(a).setFont(this.statusComboBoxes.get(a).getFont().deriveFont(this.fontSize));
+				setPanelProperties((JPanel) this.statusComboBoxes.get(a).getParent(), statusWidth, rowHeight, null);
+				this.statusComboBoxes.get(a).setFont(this.statusComboBoxes.get(a).getFont().deriveFont(fontSize));
 			}
-
 
 		}
 
@@ -943,28 +909,28 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 			constraints.gridheight = 1;
 			constraints.gridx = 0;
 			constraints.gridy = 2 * a;
-			this.queuenumberLabels.add(this.enclosedLabel("", this.timeWidth, this.rowHeight / 2, null, null,
-					constraints, this.fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.queuenumberLabels.add(this.enclosedLabel("", timeWidth, rowHeight / 2, null, null, constraints,
+					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.queuenumberLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 0;
 			constraints.gridy = 2 * a + 1;
-			this.timestampLabels.add(this.enclosedLabel("", this.timeWidth, this.rowHeight / 2, null, null,
-					constraints, this.fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.timestampLabels.add(this.enclosedLabel("", timeWidth, rowHeight / 2, null, null, constraints,
+					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.timestampLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridheight = 2;
 			constraints.gridx = 1;
 			constraints.gridy = 2 * a;
-			this.qNumberLabels.add(this.enclosedLabel("", this.qNumWidth, this.rowHeight, null, null, constraints,
-					this.qNumFontSize, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.qNumberLabels.add(this.enclosedLabel("", qNumWidth, rowHeight, null, null, constraints, qNumFontSize,
+					SwingConstants.CENTER, SwingConstants.CENTER));
 			this.qNumberLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 2;
 			constraints.gridy = 2 * a;
 			constraints.weightx = 1.0;
-			this.answerTextAreas.add(this.scrollableTextArea("", this.answerWidth, this.rowHeight, null, null,
-					constraints, this.fontSize, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+			this.answerTextAreas.add(this.scrollableTextArea("", answerWidth, rowHeight, null, null, constraints,
+					fontSize, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED));
 			this.answerTextAreas.get(a).setEditable(false);
 			this.answerTextAreas.get(a).addMouseListener(new PopupListener(this.contextMenu));
@@ -973,20 +939,20 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 			constraints.gridheight = 1;
 			constraints.gridx = 3;
 			constraints.gridy = 2 * a;
-			this.confidenceLabels.add(this.enclosedLabel("", this.confidenceWidth, this.rowHeight / 2, null, null,
-					constraints, this.fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.confidenceLabels.add(this.enclosedLabel("", confidenceWidth, rowHeight / 2, null, null, constraints,
+					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.confidenceLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 3;
 			constraints.gridy = 2 * a + 1;
 			final JPanel buttonPanel = new JPanel(new GridBagLayout());
-			buttonPanel.setPreferredSize(new Dimension(this.confidenceWidth, this.rowHeight / 2));
-			buttonPanel.setMinimumSize(new Dimension(this.confidenceWidth, this.rowHeight / 2));
+			buttonPanel.setPreferredSize(new Dimension(confidenceWidth, rowHeight / 2));
+			buttonPanel.setMinimumSize(new Dimension(confidenceWidth, rowHeight / 2));
 			this.add(buttonPanel, constraints);
 			this.agreeButtons.add(new JToggleButton("+1"));
 			this.agreeButtons.get(a).setToolTipText("Concur with this answer");
-			this.agreeButtons.get(a).setPreferredSize(new Dimension(this.confidenceWidth, this.rowHeight / 2));
-			this.agreeButtons.get(a).setMinimumSize(new Dimension(this.confidenceWidth, this.rowHeight / 2));
+			this.agreeButtons.get(a).setPreferredSize(new Dimension(confidenceWidth, rowHeight / 2));
+			this.agreeButtons.get(a).setMinimumSize(new Dimension(confidenceWidth, rowHeight / 2));
 			this.agreeButtons.get(a).setBorder(BorderFactory.createEmptyBorder());
 			this.agreeButtons.get(a).setMargin(new Insets(0, 0, 0, 0));
 			this.agreeButtons.get(a).setVisible(true);
@@ -999,27 +965,27 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 			constraints.gridheight = 1;
 			constraints.gridx = 4;
 			constraints.gridy = 2 * a;
-			this.submitterLabels.add(this.enclosedLabel("", this.subCallerWidth, this.rowHeight / 2, null, null,
-					constraints, this.fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.submitterLabels.add(this.enclosedLabel("", subCallerWidth, rowHeight / 2, null, null, constraints,
+					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.submitterLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 4;
 			constraints.gridy = 2 * a + 1;
-			this.callerLabels.add(this.enclosedLabel("", this.subCallerWidth, this.rowHeight / 2, null, null,
-					constraints, this.fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.callerLabels.add(this.enclosedLabel("", subCallerWidth, rowHeight / 2, null, null, constraints,
+					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.callerLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 			constraints.gridheight = 2;
 
 			constraints.gridx = 5;
 			constraints.gridy = 2 * a;
-			this.operatorLabels.add(this.enclosedLabel("", this.operatorWidth, this.rowHeight, null, null, constraints,
-					this.fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.operatorLabels.add(this.enclosedLabel("", operatorWidth, rowHeight, null, null, constraints, fontSize,
+					SwingConstants.CENTER, SwingConstants.CENTER));
 			this.operatorLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 6;
 			constraints.gridy = 2 * a;
 			final JPanel panel = new JPanel(new GridBagLayout());
-			panel.setPreferredSize(new Dimension(this.statusWidth, this.rowHeight));
+			panel.setPreferredSize(new Dimension(statusWidth, rowHeight));
 			this.add(panel, constraints);
 			this.statusComboBoxes.add(new JComboBox<String>(STATUSES));
 			this.statusComboBoxes.get(a).setName(a + "");
@@ -1054,28 +1020,28 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 				final Component renderer = this.wrapped.getListCellRendererComponent(list, displayName, index,
 						isSelected, cellHasFocus);
 				if (renderer instanceof JLabel) {
-					Color color = AnswerQueueSubPanel.this.notCalledInColor;
+					Color color = notCalledInColor;
 					switch (value) {
 						case "Duplicate":
-							color = AnswerQueueSubPanel.this.duplicateColor;
+							color = duplicateColor;
 							break;
 						case "Not Called In":
-							color = AnswerQueueSubPanel.this.notCalledInColor;
+							color = notCalledInColor;
 							break;
 						case "Calling":
-							color = AnswerQueueSubPanel.this.callingColor;
+							color = callingColor;
 							break;
 						case "Incorrect":
-							color = AnswerQueueSubPanel.this.incorrectColor;
+							color = incorrectColor;
 							break;
 						case "Partial":
-							color = AnswerQueueSubPanel.this.partialColor;
+							color = partialColor;
 							break;
 						case "Correct":
-							color = AnswerQueueSubPanel.this.correctColor;
+							color = correctColor;
 							break;
 						default:
-							color = AnswerQueueSubPanel.this.notCalledInColor;
+							color = notCalledInColor;
 							break;
 					}
 					if (isSelected) {
