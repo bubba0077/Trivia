@@ -347,8 +347,8 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 				constraints.gridx = 3;
 				constraints.gridy = r;
-				this.percentLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
-						SwingConstants.CENTER);
+				this.percentLabels[r] = this
+						.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 				constraints.gridx = 4;
 				constraints.gridy = r;
@@ -362,7 +362,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 				constraints.gridx = 6;
 				constraints.gridy = r;
-				this.percentTotalLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
+				this.percentTotalLabels[r] = this.enclosedLabel("", constraints, SwingConstants.RIGHT,
 						SwingConstants.CENTER);
 
 				constraints.gridx = 7;

@@ -1,5 +1,7 @@
 package net.bubbaland.trivia.client;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
@@ -27,8 +29,11 @@ import java.util.TimerTask;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
@@ -54,6 +59,8 @@ public class TriviaClient implements WindowListener {
 	final static protected String					IRC_CLIENT_URL		= "http://webchat.freenode.net/";
 	// IRC channel to join on connection to IRC server
 	final static protected String					IRC_CHANNEL			= "%23kneedeeptrivia";
+	// File name of font
+	final static private String						FONT_FILENAME		= "fonts/ARIAL.TTF";
 	// File name to store window positions
 	final static private String						DEFAULTS_FILENAME	= ".trivia-defaults";
 	// File name to store window positions
@@ -64,6 +71,37 @@ public class TriviaClient implements WindowListener {
 	 */
 	final static public Properties					PROPERTIES			= new Properties();
 	static {
+		/**
+		 * Load Nimbus
+		 */
+		for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+			if ("Nimbus".equals(info.getName())) {
+				try {
+					UIManager.setLookAndFeel(new NimbusLookAndFeel() {
+						private static final long	serialVersionUID	= -4162111942682867066L;
+
+						@Override
+						public UIDefaults getDefaults() {
+							UIDefaults ret = super.getDefaults();
+							Font font;
+							try {
+								font = Font.createFont(Font.TRUETYPE_FONT,
+										TriviaClient.class.getResourceAsStream(FONT_FILENAME));
+								ret.put("defaultFont", font.deriveFont(12f));
+							} catch (FontFormatException | IOException exception) {
+								exception.printStackTrace();
+							}
+							return ret;
+						}
+
+					});
+				} catch (UnsupportedLookAndFeelException exception) {
+					// TODO Auto-generated catch block
+					exception.printStackTrace();
+				}
+			}
+		}
+
 		/**
 		 * Default properties
 		 */
@@ -602,15 +640,27 @@ public class TriviaClient implements WindowListener {
 	 * Create and show the GUI.
 	 */
 	private static void createAndShowGUI(boolean useFX) {
-		try {
-			for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					UIManager.setLookAndFeel(info.getClassName());
-				}
-			}
-		} catch (final Exception e) {
-
-		}
+		// try {
+		// for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		// if ("Nimbus".equals(info.getName())) {
+		// UIManager.setLookAndFeel(info.getClassName());
+		// System.out.println(UIManager.get("defaultFont"));
+		// UIManager.setLookAndFeel(new NimbusLookAndFeel() {
+		//
+		// @Override
+		// public UIDefaults getDefaults() {
+		// UIDefaults ret = super.getDefaults();
+		// ret.put("defaultFont", new Font("Arial", Font.PLAIN, 12));
+		// return ret;
+		// }
+		//
+		// });
+		// // UIManager.put("defaultFont", new Font("Lucida Sans", Font.PLAIN, 12 ));
+		// }
+		// }
+		// } catch (final Exception e) {
+		//
+		// }
 
 		// Initialize server variable
 		TriviaInterface triviaServer = null;

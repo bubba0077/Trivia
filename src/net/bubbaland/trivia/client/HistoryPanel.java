@@ -258,6 +258,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 			final Component renderer = this.wrapped.getListCellRendererComponent(list, displayName, index, isSelected,
 					cellHasFocus);
 			if (renderer instanceof JLabel) {
+				( (JLabel) renderer ).setHorizontalAlignment(JLabel.RIGHT);
 				if (isSelected) {
 					( (JLabel) renderer ).setForeground(HistoryPanel.this.roundSelector.getBackground());
 					( (JLabel) renderer ).setBackground(HistoryPanel.this.roundSelector.getForeground());
