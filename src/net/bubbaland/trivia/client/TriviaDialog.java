@@ -54,7 +54,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 *            Option pane to use
 	 */
 	public TriviaDialog(Frame frame, String title, final JOptionPane optionPane) {
-		super(frame, title, true);
+		super(frame, title, JDialog.ModalityType.TOOLKIT_MODAL);
 		this.optionPane = optionPane;
 		this.setName(title);
 		this.addWindowListener(this);
