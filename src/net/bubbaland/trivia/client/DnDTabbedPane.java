@@ -439,7 +439,6 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 			final TabTransferData data = (TabTransferData) a_event.getTransferable().getTransferData(this.FLAVOR);
 			return data;
 		} catch (final Exception e) {
-			e.printStackTrace();
 		}
 
 		return null;

@@ -60,7 +60,7 @@ public class TriviaClient implements WindowListener {
 	// IRC channel to join on connection to IRC server
 	final static protected String					IRC_CHANNEL			= "%23kneedeeptrivia";
 	// File name of font
-	final static private String						FONT_FILENAME		= "fonts/ARIAL.TTF";
+	final static private String						FONT_FILENAME		= "fonts/tahoma.ttf";
 	// File name to store window positions
 	final static private String						DEFAULTS_FILENAME	= ".trivia-defaults";
 	// File name to store window positions
