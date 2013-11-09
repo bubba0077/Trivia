@@ -848,6 +848,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 				this.qNumberLabels.get(a).setVisible(false);
 				this.answerTextAreas.get(a).setVisible(false);
 				this.confidenceLabels.get(a).setVisible(false);
+				this.agreeButtons.get(a).setVisible(false);
 				this.submitterLabels.get(a).setVisible(false);
 				this.operatorLabels.get(a).setVisible(false);
 				this.callerLabels.get(a).setVisible(false);
@@ -859,6 +860,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 				this.answerTextAreas.get(a).getParent().setVisible(false);
 				this.answerTextAreas.get(a).getParent().getParent().setVisible(false);
 				this.confidenceLabels.get(a).getParent().setVisible(false);
+				this.agreeButtons.get(a).getParent().setVisible(false);
 				this.submitterLabels.get(a).getParent().setVisible(false);
 				this.operatorLabels.get(a).getParent().setVisible(false);
 				this.callerLabels.get(a).getParent().setVisible(false);
