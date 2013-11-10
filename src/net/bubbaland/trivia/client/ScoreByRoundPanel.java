@@ -425,15 +425,34 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 				cumulativeEarned += earned;
 				cumulativeValue += value;
 
-				final boolean updated = !( this.earnedLabels[r].getText().equals(earned + "")
-						&& this.valueLabels[r].getText().equals(value + "")
-						&& this.cumulativeEarnedLabels[r].getText().equals(cumulativeEarned + "")
-						&& this.cumulativeValueLabels[r].getText().equals(cumulativeValue + "")
-						&& ( this.announcedScoreLabels[r].getText().equals(announced + "") || !isAnnounced )
-						&& ( this.placeLabels[r].getText().equals(TriviaClient.ordinalize(place)) || !isAnnounced ) && this.discrepancyLabels[r]
-						.getText().equals(discrepancy) ) || force;
+				final boolean updated;
+				if (value == 0) {
+					updated = !( this.earnedLabels[r].getText().equals("") && this.valueLabels[r].getText().equals("")
+							&& this.cumulativeEarnedLabels[r].getText().equals("")
+							&& this.cumulativeValueLabels[r].getText().equals("")
+							&& ( this.announcedScoreLabels[r].getText().equals("") )
+							&& ( this.placeLabels[r].getText().equals("") ) && this.discrepancyLabels[r].getText()
+							.equals(discrepancy) );
+				} else if (!isAnnounced) {
+					updated = !( this.earnedLabels[r].getText().equals(earned + "")
+							&& this.valueLabels[r].getText().equals(value + "")
+							&& this.cumulativeEarnedLabels[r].getText().equals(cumulativeEarned + "")
+							&& this.cumulativeValueLabels[r].getText().equals(cumulativeValue + "")
+							&& this.announcedScoreLabels[r].getText().equals("")
+							&& this.placeLabels[r].getText().equals("") && this.discrepancyLabels[r].getText().equals(
+							discrepancy) );
+				} else {
+					updated = !( this.earnedLabels[r].getText().equals(earned + "")
+							&& this.valueLabels[r].getText().equals(value + "")
+							&& this.cumulativeEarnedLabels[r].getText().equals(cumulativeEarned + "")
+							&& this.cumulativeValueLabels[r].getText().equals(cumulativeValue + "")
+							&& this.announcedScoreLabels[r].getText().equals(announced + "")
+							&& this.placeLabels[r].getText().equals(TriviaClient.ordinalize(place)) && this.discrepancyLabels[r]
+							.getText().equals(discrepancy) );
+				}
 
-				if (updated) {
+
+				if (updated || force) {
 					if (value != 0) {
 						// If the round has started, update all of the labels for the round
 						final String percent = String.format("%04.1f", ( earned * 100.0 / value )) + "%";
