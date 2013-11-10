@@ -119,7 +119,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		this.parent = parent;
 		this.client = client;
 		this.maxQuestions = client.getTrivia().getMaxQuestions();
-		resetFilter();
 
 		/**
 		 * Build context menu
@@ -229,6 +228,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		this.spacer.setPreferredSize(new Dimension(0, 0));
 		scrollPanel.add(this.spacer, constraints);
 
+		resetFilter();
 		this.loadProperties(TriviaClient.PROPERTIES);
 	}
 
@@ -237,6 +237,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		for (int i = 0; i < this.maxQuestions; i++) {
 			this.qNumberFilter.add(i + 1);
 		}
+		this.qNumberLabel.setText("Q#");
 	}
 
 	private class PopupListener extends MouseAdapter {
@@ -1234,9 +1235,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			final int option = ( (Integer) this.dialog.getValue() ).intValue();
 			if (option == JOptionPane.OK_OPTION) {
 				AnswerQueuePanel.this.qNumberFilter = new ArrayList<Integer>(0);
+				AnswerQueuePanel.this.qNumberLabel.setText("Q#");
 				for (JCheckBox checkbox : this.checkboxes) {
 					if (checkbox.isSelected()) {
 						AnswerQueuePanel.this.qNumberFilter.add(Integer.parseInt(checkbox.getName()));
+					} else {
+						AnswerQueuePanel.this.qNumberLabel.setText("Q#*");
 					}
 				}
 				AnswerQueuePanel.this.answerQueueSubPanel.update(true);
