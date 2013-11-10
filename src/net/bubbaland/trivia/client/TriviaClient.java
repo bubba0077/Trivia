@@ -640,28 +640,6 @@ public class TriviaClient implements WindowListener {
 	 * Create and show the GUI.
 	 */
 	private static void createAndShowGUI(boolean useFX) {
-		// try {
-		// for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-		// if ("Nimbus".equals(info.getName())) {
-		// UIManager.setLookAndFeel(info.getClassName());
-		// System.out.println(UIManager.get("defaultFont"));
-		// UIManager.setLookAndFeel(new NimbusLookAndFeel() {
-		//
-		// @Override
-		// public UIDefaults getDefaults() {
-		// UIDefaults ret = super.getDefaults();
-		// ret.put("defaultFont", new Font("Arial", Font.PLAIN, 12));
-		// return ret;
-		// }
-		//
-		// });
-		// // UIManager.put("defaultFont", new Font("Lucida Sans", Font.PLAIN, 12 ));
-		// }
-		// }
-		// } catch (final Exception e) {
-		//
-		// }
-
 		// Initialize server variable
 		TriviaInterface triviaServer = null;
 

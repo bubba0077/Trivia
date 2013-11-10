@@ -30,18 +30,19 @@ import org.jfree.data.xy.XYSeriesCollection;
 public class TriviaChartFactory {
 
 	/** Font Size */
-	final private static float	AXIS_FONT_SIZE	= 16.0f;
+	private static float	axisFontSize;
 
 	/**
 	 * Colors
 	 */
-	private static Color		backgroundColor;
-	private static Color		announcedColor;
-	private static Color		valueColor;
-	private static Color		earnedColor;
+	private static Color	backgroundColor;
+	private static Color	announcedColor;
+	private static Color	valueColor;
+	private static Color	earnedColor;
+	private static Color	labelColor;
 
 	/** The upper bound of the vertical axis */
-	private static int			maxPoints;
+	private static int		maxPoints;
 
 	public static void loadProperties(Properties properties) {
 		/**
@@ -51,7 +52,10 @@ public class TriviaChartFactory {
 		announcedColor = new Color(new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
 		valueColor = new Color(new BigInteger(properties.getProperty("Value.Color"), 16).intValue());
 		earnedColor = new Color(new BigInteger(properties.getProperty("Earned.Color"), 16).intValue());
+		labelColor = new Color(new BigInteger(properties.getProperty("Chart.Label.Color"), 16).intValue());
+
 		maxPoints = Integer.parseInt(properties.getProperty("Chart.ByRound.MaxPoints"));
+		axisFontSize = Float.parseFloat(properties.getProperty("Chart.Axis.FontSize"));
 	}
 
 
@@ -121,7 +125,6 @@ public class TriviaChartFactory {
 
 		// Set the background color
 		final XYPlot plot = chart.getXYPlot();
-		plot.setBackgroundPaint(backgroundColor);
 
 		// Set axis properties
 		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
@@ -130,12 +133,29 @@ public class TriviaChartFactory {
 		xAxis.setAutoRange(false);
 		xAxis.setTickUnit(new NumberTickUnit(5));
 		xAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(axisFontSize));
+		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(axisFontSize));
 		yAxis.setLowerBound(0);
 		yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(axisFontSize));
+		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(axisFontSize));
+
+		plot.setBackgroundPaint(backgroundColor);
+		chart.setBackgroundPaint(backgroundColor);
+		chart.getLegend().setBackgroundPaint(backgroundColor);
+
+		plot.setDomainGridlinePaint(labelColor);
+		plot.setRangeGridlinePaint(labelColor);
+		chart.getTitle().setPaint(labelColor);
+		chart.getLegend().setItemPaint(labelColor);
+		xAxis.setAxisLinePaint(labelColor);
+		xAxis.setTickLabelPaint(labelColor);
+		xAxis.setTickMarkPaint(labelColor);
+		xAxis.setLabelPaint(labelColor);
+		yAxis.setAxisLinePaint(labelColor);
+		yAxis.setTickLabelPaint(labelColor);
+		yAxis.setTickMarkPaint(labelColor);
+		yAxis.setLabelPaint(labelColor);
 
 		return chart;
 	}
@@ -180,7 +200,6 @@ public class TriviaChartFactory {
 
 		// Set the background color
 		final XYPlot plot = chart.getXYPlot();
-		plot.setBackgroundPaint(backgroundColor);
 
 		// Set the line color and thickness, and turn on data points
 		final XYLineAndShapeRenderer rend = (XYLineAndShapeRenderer) plot.getRenderer();
@@ -196,15 +215,30 @@ public class TriviaChartFactory {
 		xAxis.setAutoRange(false);
 		xAxis.setTickUnit(new NumberTickUnit(5));
 		xAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(axisFontSize));
+		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(axisFontSize));
 		yAxis.setInverted(true);
 		yAxis.setRange(0.5, nTeams + 0.5);
 		yAxis.setAutoRange(false);
 		yAxis.setTickUnit(new NumberTickUnit(5));
 		yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(axisFontSize));
+		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(axisFontSize));
+
+		plot.setBackgroundPaint(backgroundColor);
+		chart.setBackgroundPaint(backgroundColor);
+
+		plot.setDomainGridlinePaint(labelColor);
+		plot.setRangeGridlinePaint(labelColor);
+		chart.getTitle().setPaint(labelColor);
+		xAxis.setAxisLinePaint(labelColor);
+		xAxis.setTickLabelPaint(labelColor);
+		xAxis.setTickMarkPaint(labelColor);
+		xAxis.setLabelPaint(labelColor);
+		yAxis.setAxisLinePaint(labelColor);
+		yAxis.setTickLabelPaint(labelColor);
+		yAxis.setTickMarkPaint(labelColor);
+		yAxis.setLabelPaint(labelColor);
 
 		return chart;
 	}
@@ -262,9 +296,6 @@ public class TriviaChartFactory {
 		final XYPlot plot = chart.getXYPlot();
 		plot.setRenderer(renderer);
 
-		// Set the background color
-		plot.setBackgroundPaint(backgroundColor);
-
 		// Specify the axis parameters
 		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
 		final NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
@@ -272,12 +303,29 @@ public class TriviaChartFactory {
 		xAxis.setAutoRange(false);
 		xAxis.setTickUnit(new NumberTickUnit(5));
 		xAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(axisFontSize));
+		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(axisFontSize));
 		yAxis.setRange(0, maxPoints);
 		yAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(axisFontSize));
+		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(axisFontSize));
+
+		plot.setBackgroundPaint(backgroundColor);
+		chart.setBackgroundPaint(backgroundColor);
+		chart.getLegend().setBackgroundPaint(backgroundColor);
+
+		plot.setDomainGridlinePaint(labelColor);
+		plot.setRangeGridlinePaint(labelColor);
+		chart.getTitle().setPaint(labelColor);
+		chart.getLegend().setItemPaint(labelColor);
+		xAxis.setAxisLinePaint(labelColor);
+		xAxis.setTickLabelPaint(labelColor);
+		xAxis.setTickMarkPaint(labelColor);
+		xAxis.setLabelPaint(labelColor);
+		yAxis.setAxisLinePaint(labelColor);
+		yAxis.setTickLabelPaint(labelColor);
+		yAxis.setTickMarkPaint(labelColor);
+		yAxis.setLabelPaint(labelColor);
 
 		return chart;
 
@@ -344,20 +392,36 @@ public class TriviaChartFactory {
 				.getIntegerInstance(), NumberFormat.getIntegerInstance()));
 		// Set the background color and axes
 		final XYPlot plot = chart.getXYPlot();
-		plot.setBackgroundPaint(backgroundColor);
+
 		final NumberAxis xAxis = (NumberAxis) plot.getDomainAxis();
 		final NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
 		xAxis.setRange(0.5D, nRounds + 0.5D);
 		xAxis.setAutoRange(false);
 		xAxis.setTickUnit(new NumberTickUnit(5D));
 		xAxis.setNumberFormatOverride(NumberFormat.getIntegerInstance());
-		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+		xAxis.setLabelFont(xAxis.getLabelFont().deriveFont(axisFontSize));
+		xAxis.setTickLabelFont(xAxis.getTickLabelFont().deriveFont(axisFontSize));
 		final DecimalFormat format = new DecimalFormat();
 		format.setPositivePrefix("+");
 		yAxis.setNumberFormatOverride(format);
-		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(AXIS_FONT_SIZE));
-		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(AXIS_FONT_SIZE));
+		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(axisFontSize));
+		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(axisFontSize));
+
+		plot.setBackgroundPaint(backgroundColor);
+		chart.setBackgroundPaint(backgroundColor);
+
+		plot.setDomainGridlinePaint(labelColor);
+		plot.setRangeGridlinePaint(labelColor);
+		chart.getTitle().setPaint(labelColor);
+		xAxis.setAxisLinePaint(labelColor);
+		xAxis.setTickLabelPaint(labelColor);
+		xAxis.setTickMarkPaint(labelColor);
+		xAxis.setLabelPaint(labelColor);
+		yAxis.setAxisLinePaint(labelColor);
+		yAxis.setTickLabelPaint(labelColor);
+		yAxis.setTickMarkPaint(labelColor);
+		yAxis.setLabelPaint(labelColor);
+
 
 		return chart;
 
