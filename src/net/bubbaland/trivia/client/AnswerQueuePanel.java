@@ -14,6 +14,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -23,11 +24,13 @@ import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -48,7 +51,7 @@ import net.bubbaland.trivia.client.TriviaFrame.QueueSort;
  * @author Walter Kolczynski
  * 
  */
-public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
+public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, ActionListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long				serialVersionUID	= 784049314825719490L;
@@ -82,6 +85,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 	private static int						rowHeight, timeWidth, qNumWidth, answerWidth, confidenceWidth,
 			subCallerWidth, operatorWidth, statusWidth;
 	private static float					fontSize, qNumFontSize;
+	private int								maxQuestions;
+	private ArrayList<Integer>				qNumberFilter;
 
 	/**
 	 * GUI elements that will be updated
@@ -90,6 +95,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 			operatorLabel, statusLabel, queueSizeLabel;
 	final private JPanel					spacer;
 	final private JScrollPane				scrollPane;
+	private final JPopupMenu				contextMenu;
 
 	/** The workflow queue sub panel */
 	final private AnswerQueueSubPanel		answerQueueSubPanel;
@@ -112,6 +118,26 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 
 		this.parent = parent;
 		this.client = client;
+		this.maxQuestions = client.getTrivia().getMaxQuestions();
+		resetFilter();
+
+		/**
+		 * Build context menu
+		 */
+		this.contextMenu = new JPopupMenu();
+
+		final JMenuItem viewItem = new JMenuItem("Filter");
+		viewItem.setActionCommand("Filter");
+		viewItem.addActionListener(this);
+		this.contextMenu.add(viewItem);
+
+		final JMenuItem editItem = new JMenuItem("Clear Filters");
+		editItem.setActionCommand("Clear Filters");
+		editItem.addActionListener(this);
+		this.contextMenu.add(editItem);
+
+		this.add(this.contextMenu);
+
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -134,6 +160,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 		this.qNumberLabel = this.enclosedLabel("Q#", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		this.qNumberLabel.setHorizontalTextPosition(SwingConstants.LEFT);
 		this.qNumberLabel.addMouseListener(this);
+		this.qNumberLabel.addMouseListener(new PopupListener(this.contextMenu));
 
 		constraints.gridx = 2;
 		constraints.gridy = 0;
@@ -203,6 +230,66 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 		scrollPanel.add(this.spacer, constraints);
 
 		this.loadProperties(TriviaClient.PROPERTIES);
+	}
+
+	private void resetFilter() {
+		this.qNumberFilter = new ArrayList<Integer>(0);
+		for (int i = 0; i < this.maxQuestions; i++) {
+			this.qNumberFilter.add(i + 1);
+		}
+	}
+
+	private class PopupListener extends MouseAdapter {
+
+		private final JPopupMenu	menu;
+
+		public PopupListener(JPopupMenu menu) {
+			this.menu = menu;
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			this.checkForPopup(e);
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			this.checkForPopup(e);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			this.checkForPopup(e);
+		}
+
+		private void checkForPopup(MouseEvent event) {
+			final JComponent source = (JComponent) event.getSource();
+			if (event.isPopupTrigger()) {
+				this.menu.show(source, event.getX(), event.getY());
+			}
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	@Override
+	public synchronized void actionPerformed(ActionEvent event) {
+		final String command = event.getActionCommand();
+		switch (command) {
+			case "Filter":
+				new AnswerFilterDialog();
+				break;
+			case "Clear Filters":
+				resetFilter();
+				this.answerQueueSubPanel.update(true);
+				break;
+			default:
+				break;
+		}
 	}
 
 	@Override
@@ -669,6 +756,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 
 				this.lastStatus.set(a, newStatus);
 				final boolean closed = !trivia.isOpen(newQNumber);
+				final boolean filtered = !qNumberFilter.contains(newQNumber);
 
 				if (!( hideClosed && closed ) && !( hideDuplicates && newStatus.equals("Duplicate") )) {
 					shownRows++;
@@ -783,7 +871,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 						this.statusComboBoxes.get(a).addItemListener(listener);
 					}
 
-					if (( hideClosed && closed ) || ( hideDuplicates && newStatus.equals("Duplicate") )) {
+					if (( hideClosed && closed ) || ( hideDuplicates && newStatus.equals("Duplicate") ) || filtered) {
 						// Hide this row
 						this.queuenumberLabels.get(a).setVisible(false);
 						this.timestampLabels.get(a).setVisible(false);
@@ -1096,6 +1184,63 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener {
 				}
 			}
 
+		}
+	}
+
+	private class AnswerFilterDialog extends TriviaDialogPanel {
+
+		private static final long	serialVersionUID	= -3726819964211373465L;
+
+		final private JCheckBox[]	checkboxes;
+		final private static int	nPerColumn			= 5;
+
+		public AnswerFilterDialog() {
+			super();
+
+			final GridBagConstraints constraints = new GridBagConstraints();
+			constraints.fill = GridBagConstraints.BOTH;
+			constraints.anchor = GridBagConstraints.CENTER;
+			constraints.weightx = 1.0;
+			constraints.weighty = 1.0;
+
+			JLabel label = new JLabel("Select Questions to Show", JLabel.CENTER);
+			constraints.gridwidth = (int) Math.ceil(( AnswerQueuePanel.this.maxQuestions + 0.0 ) / nPerColumn);
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			this.add(label, constraints);
+			constraints.gridwidth = 1;
+
+			checkboxes = new JCheckBox[AnswerQueuePanel.this.maxQuestions];
+			for (int i = 0; i < checkboxes.length; i++) {
+				checkboxes[i] = new JCheckBox("Q" + ( i + 1 ));
+				checkboxes[i].setName(( i + 1 ) + "");
+				checkboxes[i].setSelected(AnswerQueuePanel.this.qNumberFilter.contains(i + 1));
+				constraints.gridx = i / nPerColumn;
+				constraints.gridy = 1 + i % nPerColumn;
+				this.add(checkboxes[i], constraints);
+			}
+
+			// Display the dialog box
+			this.dialog = new TriviaDialog(null, "Set Answer Filter", this, JOptionPane.PLAIN_MESSAGE,
+					JOptionPane.OK_CANCEL_OPTION);
+			this.dialog.setName("Answer Filter");
+			this.dialog.setVisible(true);
+		}
+
+		@Override
+		public void windowClosed(WindowEvent event) {
+			super.windowClosed(event);
+			// If the OK button was pressed, add the proposed answer to the queue
+			final int option = ( (Integer) this.dialog.getValue() ).intValue();
+			if (option == JOptionPane.OK_OPTION) {
+				AnswerQueuePanel.this.qNumberFilter = new ArrayList<Integer>(0);
+				for (JCheckBox checkbox : this.checkboxes) {
+					if (checkbox.isSelected()) {
+						AnswerQueuePanel.this.qNumberFilter.add(Integer.parseInt(checkbox.getName()));
+					}
+				}
+				AnswerQueuePanel.this.answerQueueSubPanel.update(true);
+			}
 		}
 	}
 }

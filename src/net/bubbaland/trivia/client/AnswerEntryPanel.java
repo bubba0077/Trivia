@@ -57,24 +57,24 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		final String qText = trivia.getQuestionText(qNumber);
 
 		// Set up layout constraints
-		final GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.anchor = GridBagConstraints.CENTER;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		final GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.anchor = GridBagConstraints.CENTER;
+		constraints.weightx = 0.0;
+		constraints.weighty = 0.0;
 
 		// Display question text
-		c.gridwidth = 2;
-		c.gridx = 0;
-		c.gridy = 0;
+		constraints.gridwidth = 2;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
 		JLabel label = new JLabel("Question:");
 		label.setFont(label.getFont().deriveFont(fontSize));
-		this.add(label, c);
+		this.add(label, constraints);
 
-		c.gridx = 0;
-		c.gridy = 1;
-		c.weightx = 0.5;
-		c.weighty = 0.5;
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		constraints.weightx = 0.5;
+		constraints.weighty = 0.5;
 		final JTextArea textArea = new JTextArea(qText);
 		textArea.setFont(textArea.getFont().deriveFont(textAreaFontSize));
 		textArea.setEditable(false);
@@ -83,21 +83,21 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		JScrollPane scrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
-		this.add(scrollPane, c);
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		this.add(scrollPane, constraints);
+		constraints.weightx = 0.0;
+		constraints.weighty = 0.0;
 
 		// Create answer text box for input
-		c.gridx = 0;
-		c.gridy = 2;
+		constraints.gridx = 0;
+		constraints.gridy = 2;
 		label = new JLabel("Answer: ");
 		label.setFont(label.getFont().deriveFont(fontSize));
-		this.add(label, c);
+		this.add(label, constraints);
 
-		c.gridx = 0;
-		c.gridy = 3;
-		c.weightx = 0.5;
-		c.weighty = 0.5;
+		constraints.gridx = 0;
+		constraints.gridy = 3;
+		constraints.weightx = 0.5;
+		constraints.weighty = 0.5;
 		this.answerTextArea = new JTextArea("", 4, 50);
 		this.answerTextArea.setLineWrap(true);
 		this.answerTextArea.setWrapStyleWord(true);
@@ -107,22 +107,22 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		scrollPane = new JScrollPane(this.answerTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
-		this.add(scrollPane, c);
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		this.add(scrollPane, constraints);
+		constraints.weightx = 0.0;
+		constraints.weighty = 0.0;
 
 		// Create confidence slider
-		c.gridwidth = 1;
-		c.gridx = 0;
-		c.gridy = 4;
+		constraints.gridwidth = 1;
+		constraints.gridx = 0;
+		constraints.gridy = 4;
 		label = new JLabel("Confidence", SwingConstants.RIGHT);
 		label.setVerticalAlignment(SwingConstants.CENTER);
 		label.setFont(label.getFont().deriveFont(fontSize));
-		this.add(label, c);
+		this.add(label, constraints);
 
-		c.gridx = 1;
-		c.gridy = 4;
-		c.insets = new Insets(sliderPaddingBottom, sliderPaddingLeft, sliderPaddingRight, sliderPaddingTop);
+		constraints.gridx = 1;
+		constraints.gridy = 4;
+		constraints.insets = new Insets(sliderPaddingBottom, sliderPaddingLeft, sliderPaddingRight, sliderPaddingTop);
 		this.confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 2);
 		this.confidenceSlider.setMajorTickSpacing(1);
 		final Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
@@ -131,7 +131,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		this.confidenceSlider.setLabelTable(labelTable);
 		this.confidenceSlider.setPaintLabels(true);
 		this.confidenceSlider.setPaintTicks(true);
-		this.add(this.confidenceSlider, c);
+		this.add(this.confidenceSlider, constraints);
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog(null, "Submit Answer for Question " + qNumber, this, JOptionPane.PLAIN_MESSAGE,
