@@ -414,6 +414,14 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		} else {
 			this.announcedLabel.setText("");
 			this.placeLabel.setText("");
+			this.announcedBannerLabel.getParent().setBackground(backgroundColor);
+			this.scoreTextLabel.getParent().setBackground(backgroundColor);
+			this.placeTextLabel.getParent().setBackground(backgroundColor);
+			this.announcedLabel.getParent().setBackground(backgroundColor);
+			this.placeLabel.getParent().setBackground(backgroundColor);
+
+			this.announcedBannerLabel.setVisible(true);
+			this.conflictButton.setVisible(false);
 		}
 
 		// If the round is over, hide speed round button and show new round button

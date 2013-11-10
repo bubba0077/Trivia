@@ -483,18 +483,18 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 			// Determine which questions have been updated
 			final boolean[] qUpdated = new boolean[nQuestions];
 			for (int q = 0; q < nQuestions; q++) {
-				if (( beenOpens[q] || !this.valueLabels[q].getText().equals(values[q] + "") )) {
+				if (( beenOpens[q] || !this.valueLabels[q].getText().equals("") )) {
 					if (beenOpens[q] && !opens[q]) {
 						qUpdated[q] = !( this.speed == newSpeed && this.valueLabels[q].getText().equals(values[q] + "")
 								&& this.earnedLabels[q].getText().equals(earneds[q] + "")
-								&& this.questionTextPane[q].getText().equals(questions[q])
+								&& this.questionTextPane[q].textEquals(questions[q])
 								&& this.answerTextAreas[q].getText().equals(answers[q])
 								&& this.submitterTextPanes[q].getText().equals(submitters[q]) && this.operatorTextPanes[q]
 								.getText().equals(operators[q]) );
 					} else {
 						qUpdated[q] = !( this.speed == newSpeed && this.valueLabels[q].getText().equals(values[q] + "")
 								&& this.earnedLabels[q].getText().equals("")
-								&& this.questionTextPane[q].getText().equals(questions[q])
+								&& this.questionTextPane[q].textEquals(questions[q])
 								&& this.answerTextAreas[q].getText().equals(answers[q])
 								&& this.submitterTextPanes[q].getText().equals(submitters[q]) && this.operatorTextPanes[q]
 								.getText().equals(operators[q]) );

@@ -383,7 +383,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			for (int q = 0; q < nOpen; q++) {
 				qUpdated[q] = !( this.qNumberLabels[q].getText().equals(openQuestionNumbers[q] + "")
 						&& this.qValueLabels[q].getText().equals(openQuestionValues[q] + "") && this.qTextPanes[q]
-						.getText().equals(openQuestionText[q]) );
+						.textEquals(openQuestionText[q]) );
 				anyUpdate = anyUpdate || qUpdated[q];
 			}
 

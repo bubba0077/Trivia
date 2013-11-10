@@ -450,6 +450,9 @@ public abstract class TriviaPanel extends JPanel {
 	public class QuestionPane extends JTextPane {
 		private static final long	serialVersionUID	= -4043733624909281303L;
 
+		private String				pattern				= "([Vv]isual )([Tt]rivia )?(#)?([0-9]+)";
+		private String				simpleString;
+
 		public QuestionPane() {
 			super();
 		}
@@ -460,13 +463,20 @@ public abstract class TriviaPanel extends JPanel {
 
 		@Override
 		public void setText(String question) {
-			final String pattern = "([Vv]isual )([Tt]rivia )?(#)?([0-9])+";
 			final String hQuestion = question.replaceFirst(pattern, "<a href=\"" + TriviaClient.VISUAL_URL
 					+ "$4\">Visual Trivia #$4</a>");
-			if (!hQuestion.equals(this.getText())) {
+			if (!hQuestion.equals(this.simpleString)) {
 				super.setText(hQuestion);
+				this.simpleString = hQuestion;
 			}
 		}
+
+		public boolean textEquals(String string) {
+			string = string
+					.replaceFirst(pattern, "<a href=\"" + TriviaClient.VISUAL_URL + "$4\">Visual Trivia #$4</a>");
+			return this.simpleString.equals(string);
+		}
+
 	}
 
 	/**
