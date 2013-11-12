@@ -38,9 +38,11 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 	 * GUI Elements to update
 	 */
 	final private JLabel				roundLabel0, roundEarnedLabel0, roundValueLabel0, roundPercentLabel0,
-			totalEarnedLabel0, totalValueLabel0, totalPercentLabel0, announcedLabel0, placeLabel0, discrepancyLabel0;
+			totalEarnedLabel0, totalValueLabel0, totalPercentLabel0, announcedLabel0, placeLabel0, spacerLabel0,
+			discrepancyLabel0;
 	final private JLabel				roundLabel1, roundEarnedLabel1, roundValueLabel1, roundPercentLabel1,
-			totalEarnedLabel1, totalValueLabel1, totalPercentLabel1, announcedLabel1, placeLabel1, discrepancyLabel1;
+			totalEarnedLabel1, totalValueLabel1, totalPercentLabel1, announcedLabel1, placeLabel1, spacerLabel1,
+			discrepancyLabel1;
 
 	/** The scroll panel that will hold the round data */
 	final private InternalScrollPanel	internalScrollPanel;
@@ -139,11 +141,18 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		constraints.gridy = 1;
 		this.placeLabel1 = this.enclosedLabel("Place", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
-		constraints.weightx = 1.0;
 		constraints.gridx = 9;
 		constraints.gridy = 0;
-		this.discrepancyLabel0 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.spacerLabel0 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.gridx = 9;
+		constraints.gridy = 1;
+		this.spacerLabel1 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+
+		constraints.weightx = 1.0;
+		constraints.gridx = 10;
+		constraints.gridy = 0;
+		this.discrepancyLabel0 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		constraints.gridx = 10;
 		constraints.gridy = 1;
 		this.discrepancyLabel1 = this.enclosedLabel("Discrepancy Notes", constraints, SwingConstants.CENTER,
 				SwingConstants.CENTER);
@@ -251,6 +260,10 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 				headerFontSize);
 		setLabelProperties(this.placeLabel1, placeWidth, headerHeight / 2, announcedColor, headerBackgroundColor,
 				headerFontSize);
+		setLabelProperties(this.spacerLabel0, 5, headerHeight / 2, headerBackgroundColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.spacerLabel1, 5, headerHeight / 2, headerBackgroundColor, headerBackgroundColor,
+				headerFontSize);
 		setLabelProperties(this.discrepancyLabel0, discrepancyWidth, headerHeight / 2, discrepancyColor,
 				headerBackgroundColor, headerFontSize);
 		setLabelProperties(this.discrepancyLabel1, discrepancyWidth, headerHeight / 2, discrepancyColor,
@@ -272,7 +285,8 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		 * GUI elements that update
 		 */
 		final private JLabel[]		roundLabels, earnedLabels, valueLabels, percentLabels, cumulativeEarnedLabels,
-				cumulativeValueLabels, percentTotalLabels, announcedScoreLabels, placeLabels, discrepancyLabels;
+				cumulativeValueLabels, percentTotalLabels, announcedScoreLabels, placeLabels, spacerLabels,
+				discrepancyLabels;
 		private final JMenuItem		editItem;
 		private final JPopupMenu	contextMenu;
 		private final JPanel		spacer;
@@ -323,6 +337,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 			this.percentTotalLabels = new JLabel[this.nRounds];
 			this.announcedScoreLabels = new JLabel[this.nRounds];
 			this.placeLabels = new JLabel[this.nRounds];
+			this.spacerLabels = new JLabel[this.nRounds];
 			this.discrepancyLabels = new JLabel[this.nRounds];
 
 			// Create the labels for each round
@@ -374,8 +389,13 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 				constraints.gridy = r;
 				this.placeLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
-				constraints.weightx = 1.0;
 				constraints.gridx = 9;
+				constraints.gridy = r;
+				this.spacerLabels[r] = this
+						.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+
+				constraints.weightx = 1.0;
+				constraints.gridx = 10;
 				constraints.gridy = r;
 
 				this.discrepancyLabels[r] = this.enclosedLabel("", constraints, SwingConstants.LEFT,
@@ -549,6 +569,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 				setLabelProperties(this.announcedScoreLabels[r], announcedWidth, rowHeight, announcedColor, bColor,
 						fontSize);
 				setLabelProperties(this.placeLabels[r], placeWidth, rowHeight, announcedColor, bColor, fontSize);
+				setLabelProperties(this.spacerLabels[r], 5, rowHeight, bColor, bColor, fontSize);
 				setLabelProperties(this.discrepancyLabels[r], discrepancyWidth, rowHeight, discrepancyColor, bColor,
 						discrepancyFontSize);
 			}
