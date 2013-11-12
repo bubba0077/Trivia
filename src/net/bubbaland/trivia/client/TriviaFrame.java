@@ -17,6 +17,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -386,6 +387,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			// Put the tabbed pane and browser panel in an adjustable vertical split pane
 			final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.book, browser);
 			splitPane.setResizeWeight(1.0);
+			splitPane.setBorder(BorderFactory.createEmptyBorder());
 			panel.add(splitPane, constraints);
 		} else {
 			// Add the tabbed pane to the panel

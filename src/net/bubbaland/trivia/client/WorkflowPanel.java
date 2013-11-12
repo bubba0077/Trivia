@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.util.Properties;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
@@ -65,6 +66,7 @@ public class WorkflowPanel extends TriviaMainPanel {
 		final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.workflowQlistPanel,
 				this.workflowQueuePanel);
 		splitPane.setResizeWeight(0.0);
+		splitPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(splitPane, constraints);
 
 		// Assign CTRL+O to open a new question
