@@ -123,7 +123,8 @@ public class TriviaClient implements WindowListener {
 		 * If the version doesn't match, reload defaults
 		 */
 		final String version = PROPERTIES.getProperty("SettingsVersion");
-		if (version == null || version != SETTINGS_VERSION) {
+		if (version == null || !version.equals(SETTINGS_VERSION)) {
+			System.out.println("using defaults");
 			loadDefaults();
 			PROPERTIES.setProperty("SettingsVersion", SETTINGS_VERSION);
 		}
