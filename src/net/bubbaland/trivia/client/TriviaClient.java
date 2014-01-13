@@ -65,6 +65,8 @@ public class TriviaClient implements WindowListener {
 	final static private String						DEFAULTS_FILENAME	= ".trivia-defaults";
 	// File name to store window positions
 	final static private String						SETTINGS_FILENAME	= ".trivia-settings";
+	// Settings version to force reloading defaults
+	final static private String						SETTINGS_VERSION	= "1";
 
 	/**
 	 * Setup properties
@@ -96,7 +98,6 @@ public class TriviaClient implements WindowListener {
 
 					});
 				} catch (UnsupportedLookAndFeelException exception) {
-					// TODO Auto-generated catch block
 					exception.printStackTrace();
 				}
 			}
@@ -117,6 +118,16 @@ public class TriviaClient implements WindowListener {
 		} catch (final IOException e) {
 			System.out.println("Couldn't load properties file, may not exist yet.");
 		}
+
+		/**
+		 * If the version doesn't match, reload defaults
+		 */
+		final String version = PROPERTIES.getProperty("SettingsVersion");
+		if (version == null || version != SETTINGS_VERSION) {
+			loadDefaults();
+			PROPERTIES.setProperty("SettingsVersion", SETTINGS_VERSION);
+		}
+
 	}
 
 	// List of active windows
