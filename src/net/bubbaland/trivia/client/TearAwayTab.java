@@ -3,6 +3,7 @@ package net.bubbaland.trivia.client;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -18,6 +19,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JWindow;
 import javax.swing.Timer;
+
+import static java.awt.GraphicsDevice.WindowTranslucency.*;
 
 /**
  * A class that allows tabs to be dragged off of a frame.
@@ -61,7 +64,12 @@ public class TearAwayTab extends JWindow {
 		new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, new EasyDropTarget(), true);
 		// Make frame transparent
 		this.setBackground(new Color(0, 255, 0, 0));
-		this.setOpacity(0.7f);
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		if (ge.getDefaultScreenDevice().isWindowTranslucencySupported(TRANSLUCENT)) {
+			this.setOpacity(0.7f);
+		} else {
+			this.setOpacity(1.0f);
+		}
 		// Don't display this until needed
 		this.setVisible(false);
 	}
