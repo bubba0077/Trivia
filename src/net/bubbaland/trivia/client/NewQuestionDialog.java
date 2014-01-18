@@ -33,6 +33,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	private final JSpinner		qNumberSpinner;
 	private final JSpinner		qValueSpinner;
 	private final JTextArea		qTextArea;
+	private boolean				temporaryOpen;
 
 	/**
 	 * Instantiates a new question entry window.
@@ -80,12 +81,12 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	 */
 	public NewQuestionDialog(final TriviaClient client, int nQuestions, int qNumberStart, int qValueStart,
 			String qTextStart) {
-
 		super();
 
 		this.client = client;
 		this.nQuestions = nQuestions;
 		this.qNumberStart = qNumberStart;
+		this.temporaryOpen = false;
 
 		// Set up layout constraints
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -151,6 +152,28 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		constraints.weighty = 0.0;
 		constraints.gridwidth = 1;
 
+		if (!client.getTrivia().isOpen(qNumberStart)) {
+			// Open the question on the server temporarily
+			this.temporaryOpen = true;
+			int tryNumber = 0;
+			boolean success = false;
+			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+				tryNumber++;
+				try {
+					client.getServer().open(client.getUser(), qNumberStart, 0,
+							client.getUser() + " is typing the question...");
+					success = true;
+				} catch (final RemoteException e) {
+					client.log("Couldn't open question on server (try #" + tryNumber + ").");
+				}
+			}
+
+			if (!success) {
+				client.disconnected();
+				return;
+			}
+		}
+
 		// Display the dialog box
 		this.dialog = new TriviaDialog(null, "Open New Question", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
@@ -162,18 +185,21 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		super.windowClosed(event);
 		// If the OK button was pressed, open the question
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
+		// Get the current Trivia data object
+		final Trivia trivia = client.getTrivia();
+		final int currentRound = trivia.getCurrentRoundNumber();
+
 		if (option == JOptionPane.OK_OPTION) {
 			// Get the input data
 			final int qNumber = (int) qNumberSpinner.getValue();
 			final int qValue = (int) qValueSpinner.getValue();
 			String qText = qTextArea.getText();
 
-			// Get the current Trivia data object
-			final Trivia trivia = client.getTrivia();
-			final int currentRound = trivia.getCurrentRoundNumber();
+			// Get the existing question data
+			final int existingQValue = trivia.getValue(currentRound, qNumber);
+			final String existingQText = trivia.getQuestionText(currentRound, qNumber);
 
 			if (qNumberStart != qNumber && trivia.isOpen(qNumberStart) && !trivia.beenOpen(currentRound, qNumber)) {
-
 				this.removeAll();
 
 				GridBagConstraints constraints = new GridBagConstraints();
@@ -220,13 +246,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				client.log("Question #" + qNumberStart + " changed to " + qNumber);
 			}
 
-			if (trivia.beenOpen(currentRound, qNumber)) {
+			if (trivia.beenOpen(currentRound, qNumber) && existingQValue != 0) {
 				// If the question has already been open, confirm that we want to overwrite
-
-				// Get the existing question data
-				final int existingQValue = trivia.getValue(currentRound, qNumber);
-				final String existingQText = trivia.getQuestionText(currentRound, qNumber);
-
 				this.removeAll();
 
 				GridBagConstraints constraints = new GridBagConstraints();
@@ -314,6 +335,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				}
 
 				qText = textArea.getText();
+				resetTemporaryOpen();
 			}
 
 			// Open the question on the server
@@ -334,8 +356,27 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				return;
 			}
 			client.log("Question #" + qNumber + " submitted.");
+		} else if (this.temporaryOpen) {
+			resetTemporaryOpen();
 		}
 	}
 
+	private void resetTemporaryOpen() {
+		int tryNumber = 0;
+		boolean success = false;
+		while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			tryNumber++;
+			try {
+				client.getServer().resetQuestion(this.client.getUser(), this.qNumberStart);
+				success = true;
+			} catch (final RemoteException e) {
+				client.log("Couldn't open question on server (try #" + tryNumber + ").");
+			}
+		}
+		if (!success) {
+			client.disconnected();
+			return;
+		}
+	}
 
 }
