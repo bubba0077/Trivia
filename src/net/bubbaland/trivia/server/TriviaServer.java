@@ -40,6 +40,7 @@ import net.bubbaland.trivia.UserList;
 import net.bubbaland.trivia.UserList.Role;
 
 import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -783,7 +784,67 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 		if (this.trivia.isAnnounced(1)) {
 			// Save place chart
-			filename = CHART_DIR + "/" + roundString + "_placeChart.png";
+			try {
+				final JFreeChart chart = TriviaChartFactory.makePlaceChart(this.trivia);
+				filename = CHART_DIR + "/" + roundString + "_placeChart.png";
+				File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
+				this.log("Saved place chart to " + filename);
+				filename = CHART_DIR + "/latest_placeChart.png";
+				file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
+				this.log("Saved place chart to " + filename);
+			} catch (final IOException exception) {
+				System.out.println("Couldn't save place chart to file " + filename);
+			}
+
+			// Save score by round chart
+			try {
+				final JFreeChart chart = TriviaChartFactory.makeScoreByRoundChart(this.trivia);
+				filename = CHART_DIR + "/" + roundString + "_scoreByRoundChart.png";
+				File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
+				this.log("Saved place chart to " + filename);
+				filename = CHART_DIR + "/latest_scoreByRoundChart.png";
+				file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
+				this.log("Saved score by round chart to " + filename);
+			} catch (final IOException exception) {
+				System.out.println("Couldn't save score by round chart to file " + filename);
+			}
+
+			// Save cumulative score chart
+			try {
+				final JFreeChart chart = TriviaChartFactory.makeCumulativePointChart(this.trivia);
+				filename = CHART_DIR + "/" + roundString + "_cumulativeScoreChart.png";
+				File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
+				this.log("Saved cumulative score chart to " + filename);
+				filename = CHART_DIR + "/latest_cumulativeScoreChart.png";
+				file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
+				this.log("Saved cumulative score chart to " + filename);
+			} catch (final IOException exception) {
+				System.out.println("Couldn't save cumulative score chart to file " + filename);
+			}
+
+			// Save team comparison chart
+			try {
+				final JFreeChart chart = TriviaChartFactory.makeTeamComparisonChart(this.trivia);
+				filename = CHART_DIR + "/" + roundString + "_teamComparisonChart.png";
+				File file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
+				this.log("Saved team comparison chart to " + filename);
+				filename = CHART_DIR + "/latest_teamComparisonChart.png";
+				file = new File(filename);
+				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
+				this.log("Saved team comparison chart to " + filename);
+			} catch (final IOException exception) {
+				System.out.println("Couldn't save team comparison chart to file " + filename);
+			}
+
+			// Save place chart
+			filename = CHART_DIR + "/latest_placeChart.png";
 			try {
 				final File file = new File(filename);
 				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makePlaceChart(this.trivia), CHART_WIDTH,
@@ -794,7 +855,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			}
 
 			// Save score by round chart
-			filename = CHART_DIR + "/" + roundString + "_scoreByRoundChart.png";
+			filename = CHART_DIR + "/latest_scoreByRoundChart.png";
 			try {
 				final File file = new File(filename);
 				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeScoreByRoundChart(this.trivia), CHART_WIDTH,
@@ -805,7 +866,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			}
 
 			// Save cumulative score chart
-			filename = CHART_DIR + "/" + roundString + "_cumulativeScoreChart.png";
+			filename = CHART_DIR + "/latest_cumulativeScoreChart.png";
 			try {
 				final File file = new File(filename);
 				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeCumulativePointChart(this.trivia),
@@ -816,7 +877,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			}
 
 			// Save team comparison chart
-			filename = CHART_DIR + "/" + roundString + "_teamComparisonChart.png";
+			filename = CHART_DIR + "/latest_teamComparisonChart.png";
 			try {
 				final File file = new File(filename);
 				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeTeamComparisonChart(this.trivia),
@@ -825,6 +886,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			} catch (final IOException exception) {
 				System.out.println("Couldn't save team comparison chart to file " + filename);
 			}
+
+
 		}
 
 	}

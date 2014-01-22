@@ -341,7 +341,7 @@ public class TriviaServerSetup {
 		/**
 		 * Default properties
 		 */
-		final InputStream defaults = TriviaServer.class.getResourceAsStream(SETTINGS_FILENAME);
+		final InputStream defaults = TriviaServerSetup.class.getResourceAsStream(SETTINGS_FILENAME);
 		try {
 			properties.load(defaults);
 		} catch (final IOException e) {
