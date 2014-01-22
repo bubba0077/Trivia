@@ -50,7 +50,7 @@ import net.bubbaland.trivia.UserList.Role;
 public class TriviaClient implements WindowListener {
 
 	// URL for RMI server
-	final static private String						TRIVIA_SERVER_URL	= "rmi://www.bubbaland.net:1099/TriviaInterface";
+	// final private String TRIVIA_SERVER_URL;
 	// URL for Wiki
 	final static protected String					WIKI_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
 	// URL base for Visual Trivia Pages
@@ -128,7 +128,6 @@ public class TriviaClient implements WindowListener {
 			loadDefaults();
 			PROPERTIES.setProperty("SettingsVersion", SETTINGS_VERSION);
 		}
-
 	}
 
 	// List of active windows
@@ -595,10 +594,11 @@ public class TriviaClient implements WindowListener {
 	public static void main(String[] args) {
 		boolean useFX = false;
 		// Schedule a job to create and show the GUI
-		if (args.length > 0 && args[0].equals("useFX")) {
+		final String serverURL = args[0];
+		if (args.length > 1 && args[1].equals("useFX")) {
 			useFX = true;
 		}
-		SwingUtilities.invokeLater(new TriviaRunnable(useFX));
+		SwingUtilities.invokeLater(new TriviaRunnable(serverURL, useFX));
 	}
 
 	/**
@@ -650,8 +650,10 @@ public class TriviaClient implements WindowListener {
 
 	/**
 	 * Create and show the GUI.
+	 * 
+	 * @param serverURL
 	 */
-	private static void createAndShowGUI(boolean useFX) {
+	private static void createAndShowGUI(String serverURL, boolean useFX) {
 		// Initialize server variable
 		TriviaInterface triviaServer = null;
 
@@ -662,7 +664,7 @@ public class TriviaClient implements WindowListener {
 			tryNumber++;
 			try {
 				// Connect to RMI server
-				triviaServer = (TriviaInterface) Naming.lookup(TRIVIA_SERVER_URL);
+				triviaServer = (TriviaInterface) Naming.lookup(serverURL);
 				success = true;
 			} catch (MalformedURLException | NotBoundException | RemoteException e) {
 				// Connection failed
@@ -686,7 +688,7 @@ public class TriviaClient implements WindowListener {
 			}
 		}
 
-		System.out.println("Connected to trivia server (" + TRIVIA_SERVER_URL + ").");
+		System.out.println("Connected to trivia server (" + serverURL + ").");
 
 		new TriviaClient(triviaServer, useFX);
 	}
@@ -810,14 +812,16 @@ public class TriviaClient implements WindowListener {
 	 */
 	private static class TriviaRunnable implements Runnable {
 		private final boolean	useFX;
+		private final String	serverURL;
 
-		public TriviaRunnable(boolean useFX) {
+		public TriviaRunnable(String serverURL, boolean useFX) {
+			this.serverURL = serverURL;
 			this.useFX = useFX;
 		}
 
 		@Override
 		public void run() {
-			createAndShowGUI(this.useFX);
+			createAndShowGUI(this.serverURL, this.useFX);
 		}
 	}
 

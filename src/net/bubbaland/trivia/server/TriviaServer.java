@@ -84,9 +84,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	// The server URL
 	private static String					SERVER_URL;
 
-	// Port to use for the registry (must be open to internet)
-	private static int						SERVER_REGISTRYPORT;
-
 	// Port to use for the server (must be open to internet)
 	private static int						SERVER_PORT;
 
@@ -149,7 +146,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		N_QUESTIONS_SPEED = Integer.parseInt(PROPERTIES.getProperty("nQuestionsSpeed"));
 		TEAM_NAME = PROPERTIES.getProperty("TeamName");
 		SERVER_URL = PROPERTIES.getProperty("ServerURL");
-		SERVER_REGISTRYPORT = Integer.parseInt(PROPERTIES.getProperty("Server.RegistryPort"));
 		SERVER_PORT = Integer.parseInt(PROPERTIES.getProperty("Server.Port"));
 		SAVE_FREQUENCY = Integer.parseInt(PROPERTIES.getProperty("SaveFrequency"));
 		SAVE_DIR = PROPERTIES.getProperty("SaveDir");
@@ -901,7 +897,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		System.setProperty("java.rmi.server.hostname", SERVER_URL);
 
 		// Create a registry on assigned port
-		final Registry registry = LocateRegistry.createRegistry(SERVER_REGISTRYPORT);
+		final Registry registry = LocateRegistry.createRegistry(SERVER_PORT);
 
 		// Create a new server
 		final TriviaServer server = new TriviaServer();
