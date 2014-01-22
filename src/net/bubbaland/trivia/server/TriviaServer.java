@@ -2,7 +2,9 @@ package net.bubbaland.trivia.server;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
@@ -61,45 +63,51 @@ import org.xml.sax.SAXException;
 @WebService
 public class TriviaServer implements TriviaInterface, ActionListener {
 
-	// File name to store window positions
-	final static private String				SETTINGS_FILENAME	= ".trivia-settings";
+	// File name holding the server settings
+	final static private String				SETTINGS_FILENAME	= ".trivia-server-settings";
 
 	// The number of rounds
-	private static final int				N_ROUNDS			= 50;
+	private static int						N_ROUNDS;
 
 	// The number of questions in a normal round
-	private static final int				N_QUESTIONS_NORMAL	= 9;
+	private static int						N_QUESTIONS_NORMAL;
 
 	// The number of questions in a speed round
-	private static final int				N_QUESTIONS_SPEED	= 18;
+	private static int						N_QUESTIONS_SPEED;
 
 	// The team name
-	private static final String				TEAM_NAME			= "Knee Deep in Theses";
+	private static String					TEAM_NAME;
+
+	// Base URL for hourly standings
+	public static String					STANDINGS_BASE_URL;
 
 	// The server URL
-	private static final String				SERVER_URL			= "www.bubbaland.net";
+	private static String					SERVER_URL;
+
+	// Port to use for the registry (must be open to internet)
+	private static int						SERVER_REGISTRYPORT;
+
+	// Port to use for the server (must be open to internet)
+	private static int						SERVER_PORT;
 
 	// Frequency of backups (milliseconds)
-	private static final int				SAVE_FREQUENCY		= 5 * 60000;
+	private static int						SAVE_FREQUENCY;
 
-	// Directory to hold backups
-	private static final String				SAVE_DIR			= "saves";
+	// Directory to hold backups (must exist)
+	private static String					SAVE_DIR;
 
-	// Directory to hold charts for publishing
-	private static final String				CHART_DIR			= "charts";
+	// Directory to hold charts for publishing (must exist)
+	private static String					CHART_DIR;
 
 	// Size of chart for web
-	private static final int				CHART_WIDTH			= 800;
-	private static final int				CHART_HEIGHT		= 600;
+	private static int						CHART_WIDTH;
+	private static int						CHART_HEIGHT;
 
 	// Date format to use for backup file names
 	private static final SimpleDateFormat	fileDateFormat		= new SimpleDateFormat("yyyy_MMM_dd_HHmm");
 
 	// Date format to use inside backup files
 	private static final SimpleDateFormat	stringDateFormat	= new SimpleDateFormat("yyyy MMM dd HH:mm:ss");
-
-	// Base URL for hourly standings
-	final public static String				baseURL				= "http://www.kvsc.org/trivia/points/hour";
 
 	// A user list to track last contact
 	final private UserList					userList;
@@ -122,7 +130,33 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			System.out.println("Couldn't load default properties file, aborting!");
 			System.exit(-1);
 		}
+
+		/**
+		 * Load saved properties from file
+		 */
+		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
+		try {
+			final BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
+			PROPERTIES.load(fileBuffer);
+		} catch (final IOException e) {
+			System.out.println("Couldn't load local properties file, may not exist.");
+		}
+
 		TriviaChartFactory.loadProperties(PROPERTIES);
+
+		N_ROUNDS = Integer.parseInt(PROPERTIES.getProperty("nRounds"));
+		N_QUESTIONS_NORMAL = Integer.parseInt(PROPERTIES.getProperty("nQuestionsNormal"));
+		N_QUESTIONS_SPEED = Integer.parseInt(PROPERTIES.getProperty("nQuestionsSpeed"));
+		TEAM_NAME = PROPERTIES.getProperty("TeamName");
+		SERVER_URL = PROPERTIES.getProperty("ServerURL");
+		SERVER_REGISTRYPORT = Integer.parseInt(PROPERTIES.getProperty("Server.RegistryPort"));
+		SERVER_PORT = Integer.parseInt(PROPERTIES.getProperty("Server.Port"));
+		SAVE_FREQUENCY = Integer.parseInt(PROPERTIES.getProperty("SaveFrequency"));
+		SAVE_DIR = PROPERTIES.getProperty("SaveDir");
+		CHART_DIR = PROPERTIES.getProperty("ChartDir");
+		CHART_WIDTH = Integer.parseInt(PROPERTIES.getProperty("Chart.Width"));
+		CHART_HEIGHT = Integer.parseInt(PROPERTIES.getProperty("Chart.Height"));
+		STANDINGS_BASE_URL = PROPERTIES.getProperty("StandingsURL");
 	}
 
 	/**
@@ -132,6 +166,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 *             A remote exception
 	 */
 	public TriviaServer() throws RemoteException {
+
 		this.trivia = new Trivia(TEAM_NAME, N_ROUNDS, N_QUESTIONS_NORMAL, N_QUESTIONS_SPEED);
 		this.userList = new UserList();
 
@@ -451,33 +486,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		this.log("New round starting...");
 		this.trivia.newRound();
 	}
-
-	// /**
-	// * Test.
-	// */
-	// public void test() {
-	// try {
-	// String[] timestamps = getAnswerQueueTimestamps();
-	// for ( int i = 0; i < timestamps.length; i++ ) {
-	// System.out.println( timestamps[i] );
-	// }
-	// } catch ( Exception e ) {
-	// e.getStackTrace();
-	// }
-	//
-	// }
-
-	// /*
-	// * (non-Javadoc)
-	// *
-	// * @see net.bubbaland.trivia.server.TriviaInterface#setAnnounced(int, int, int)
-	// */
-	// @Override
-	// public void setAnnounced(int rNumber, int score, int place) throws RemoteException {
-	// this.trivia.setAnnounced(rNumber, score, place);
-	// this.log("Announced for round " + rNumber + ":");
-	// this.log("Score: " + score + "  Place: " + place);
-	// }
 
 	/*
 	 * (non-Javadoc)
@@ -837,7 +845,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		final ArrayList<ScoreEntry> standingsList = new ArrayList<ScoreEntry>(0);
 
 		// The URL where the file is hosted
-		final String urlString = baseURL + String.format("%02d", rNumber) + ".htm";
+		final String urlString = STANDINGS_BASE_URL + String.format("%02d", rNumber) + ".htm";
 		try {
 			// Try to read the URL
 			final org.jsoup.nodes.Document htmlDoc = Jsoup.connect(urlString).get();
@@ -892,15 +900,15 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		// Replace the local IP with the real hostname
 		System.setProperty("java.rmi.server.hostname", SERVER_URL);
 
-		// Create a registry on port 1099
-		final Registry registry = LocateRegistry.createRegistry(1099);
+		// Create a registry on assigned port
+		final Registry registry = LocateRegistry.createRegistry(SERVER_REGISTRYPORT);
 
 		// Create a new server
 		final TriviaServer server = new TriviaServer();
 
-		// Attach the server to port 1100
+		// Attach the server to assigned port
 		try {
-			registry.bind("TriviaInterface", UnicastRemoteObject.exportObject(server, 1100));
+			registry.bind("TriviaInterface", UnicastRemoteObject.exportObject(server, SERVER_PORT));
 			System.out.println("Trivia Server is Ready");
 		} catch (final Exception e) {
 			e.printStackTrace();
