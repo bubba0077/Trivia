@@ -49,8 +49,6 @@ import net.bubbaland.trivia.UserList.Role;
  */
 public class TriviaClient implements WindowListener {
 
-	// URL for RMI server
-	// final private String TRIVIA_SERVER_URL;
 	// URL for Wiki
 	final static protected String					WIKI_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
 	// URL base for Visual Trivia Pages
@@ -736,10 +734,10 @@ public class TriviaClient implements WindowListener {
 			while (tryNumber < Integer.parseInt(PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					newRounds = this.client.server.getChangedRounds(this.client.getUser(), oldVersions);
-					currentRound = this.client.server.getCurrentRound();
 					this.client.activeUserHash = this.client.server.getActiveUsers(userListWindow, userListTimeout);
 					this.client.passiveUserHash = this.client.server.getIdleUsers(userListWindow, userListTimeout);
+					newRounds = this.client.server.getChangedRounds(this.client.getUser(), oldVersions);
+					currentRound = this.client.server.getCurrentRound();
 					success = true;
 				} catch (final RemoteException e) {
 					this.client.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");

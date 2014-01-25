@@ -102,6 +102,24 @@ public class UserLoginDialog extends TriviaDialogPanel {
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 
 		if (option != JOptionPane.CLOSED_OPTION) {
+			// Check if name is already being used
+			while (client.getPassiveUserHash() == null) {
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException exception) {
+					// Nothing to do
+				}
+			}
+			if (client.getPassiveUserHash().containsKey(user)) {
+				int confirm = (int) JOptionPane.showConfirmDialog(null, "The name \"" + user
+						+ "\" has been connected recently. Do you still want to use this name?", "Name Conflict",
+						JOptionPane.YES_NO_OPTION);
+				if (confirm == JOptionPane.NO_OPTION) {
+					new UserLoginDialog(client);
+					return;
+				}
+			}
+
 			if (user.toCharArray().length != 0) {
 				client.setUser(user);
 			} else {
