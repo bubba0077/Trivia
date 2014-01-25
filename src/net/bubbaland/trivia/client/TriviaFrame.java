@@ -323,7 +323,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			// Make Info Menu
 			final JMenu infoMenu = new JMenu("Info");
 			infoMenu.setMnemonic(KeyEvent.VK_I);
-			menuItem = new JMenuItem("Open Wiki (broswer)", KeyEvent.VK_W);
+			menuItem = new JMenuItem("Open Wiki (browser)", KeyEvent.VK_W);
 			menuItem.setActionCommand("Open wiki");
 			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
 			menuItem.addActionListener(this);
