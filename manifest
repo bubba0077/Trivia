@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Sealed: true
+Main-Class: net.bubbaland.trivia.client.TriviaClient
+Permissions: all-permissions
+Application-Name: Trivia Client
+
