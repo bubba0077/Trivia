@@ -182,7 +182,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 			// For each past round, try to get announced standings if we don't have them
 			if (!this.trivia.isAnnounced(r)) {
 				final ScoreEntry[] standings = getStandings(r);
-				this.trivia.setStandings(r, standings);
+				if (standings != null) {
+					this.trivia.setStandings(r, standings);
+				}
 			}
 		}
 		this.saveState();
