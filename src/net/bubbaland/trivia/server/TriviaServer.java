@@ -970,7 +970,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		// Attach the server to assigned port
 		try {
 			registry.bind("TriviaInterface", UnicastRemoteObject.exportObject(server, SERVER_PORT));
-			System.out.println("Trivia Server is Ready");
+			System.out.println("Trivia Server is ready on port " + SERVER_PORT);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}

@@ -490,7 +490,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			 * Sizes
 			 */
 			final int rowHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Row.Height"));
-
 			final int qNumWidth = Integer.parseInt(properties.getProperty("OpenQuestions.QNumber.Width"));
 			final int questionWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Question.Width"));
 			final int valueWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Value.Width"));

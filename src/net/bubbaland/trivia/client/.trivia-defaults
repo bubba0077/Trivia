@@ -3,6 +3,7 @@
 MaxRetries=10
 RefreshRate=250
 QueueSort=Sort Timestamp Ascending
+TimestampFormat=[yyyy MMM dd HH:mm:ss]
 HideClosed=true
 HideDuplicates=true
 StatusBar.Height=14

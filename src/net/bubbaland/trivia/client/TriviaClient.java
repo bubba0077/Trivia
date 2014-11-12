@@ -41,6 +41,10 @@ import net.bubbaland.trivia.TriviaChartFactory;
 import net.bubbaland.trivia.TriviaInterface;
 import net.bubbaland.trivia.UserList.Role;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+
 /**
  * Provides the root functionality for connecting to the trivia server and creating the associated GUI.
  * 
@@ -64,7 +68,11 @@ public class TriviaClient implements WindowListener {
 	// File name to store window positions
 	final static private String						SETTINGS_FILENAME	= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String						SETTINGS_VERSION	= "1";
+	final static private String						SETTINGS_VERSION	= "2";
+	// Calendar to track date
+	final static private Calendar					TIME				= Calendar.getInstance();
+	// Format for log timestamps
+	static private SimpleDateFormat					TIMESTAMP_FORMAT;
 
 	/**
 	 * Setup properties
@@ -99,6 +107,8 @@ public class TriviaClient implements WindowListener {
 					exception.printStackTrace();
 				}
 			}
+
+
 		}
 
 		/**
@@ -126,6 +136,9 @@ public class TriviaClient implements WindowListener {
 			loadDefaults();
 			PROPERTIES.setProperty("SettingsVersion", SETTINGS_VERSION);
 		}
+
+		// Set timestamp format
+		TIMESTAMP_FORMAT = new SimpleDateFormat(PROPERTIES.getProperty("TimestampFormat"));
 	}
 
 	// List of active windows
@@ -376,12 +389,13 @@ public class TriviaClient implements WindowListener {
 	 *            Message to log
 	 */
 	public void log(String message) {
+		String timestamp = TIMESTAMP_FORMAT.format(TIME.getTime());
 		for (final TriviaFrame panel : this.windowList) {
 			// Display message in status bar
-			panel.log(message);
+			panel.log(timestamp + " " + message);
 		}
 		// Print message to console
-		System.out.println("LOG: " + message);
+		System.out.println(timestamp + " " + message);
 	}
 
 	/**
