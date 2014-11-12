@@ -118,7 +118,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 		constraints.gridx = 1;
 		constraints.gridy = 1;
-		this.qValueSpinner = new JSpinner(new SpinnerNumberModel(qValueStart, 10, 1000, 5));
+		this.qValueSpinner = new JSpinner(new SpinnerNumberModel(qValueStart, 0, 1000, 5));
 		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(fontSize));
 		this.addEnterOverride(qValueSpinner);
 		this.add(qValueSpinner, constraints);
