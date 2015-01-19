@@ -171,7 +171,6 @@ public class Trivia implements Serializable {
 			this.rounds[rNumber - 1].markCorrect(qNumber, aText, submitter, operator);
 		} else {
 			this.rounds[rNumber - 1].markIncorrect(qNumber);
-			this.rounds[rNumber - 1].close(qNumber, aText);
 		}
 	}
 
