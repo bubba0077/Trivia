@@ -422,9 +422,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 							&& success == false) {
 						tryNumber++;
 						try {
-							this.client.getServer().open(this.client.getUser(), qNumber,
-									trivia.getValue(this.rNumber, qNumber),
-									trivia.getQuestionText(this.rNumber, qNumber));
+							this.client.getServer().reopen(this.client.getUser(), qNumber);
 							success = true;
 						} catch (final RemoteException e) {
 							this.client.log("Couldn't reopen question on server (try #" + tryNumber + ").");

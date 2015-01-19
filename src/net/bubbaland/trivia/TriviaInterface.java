@@ -265,7 +265,9 @@ public interface TriviaInterface extends Remote {
 	 * @throws RemoteException
 	 *             A remote exception
 	 */
-	public void open(String user, int qNumber, int qValue, String question) throws RemoteException;
+	public void open(String user, int qNumber) throws RemoteException;
+
+	public void reopen(String user, int qNumber) throws RemoteException;
 
 	/**
 	 * Propose an answer.
@@ -353,5 +355,9 @@ public interface TriviaInterface extends Remote {
 	public void disagree(String user, int queueIndex) throws RemoteException;
 
 	public int getAgreement(String user, int queueIndex) throws RemoteException;
+
+	public void setQuestionText(String user, int rNumber, int qNumber, String qText) throws RemoteException;
+
+	public void setQuestionValue(String user, int rNumber, int qNumber, int value) throws RemoteException;
 
 }

@@ -160,8 +160,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					client.getServer().open(client.getUser(), qNumberStart, 0,
-							client.getUser() + " is typing the question...");
+					client.getServer().open(client.getUser(), qNumberStart);
 					success = true;
 				} catch (final RemoteException e) {
 					client.log("Couldn't open question on server (try #" + tryNumber + ").");
@@ -344,7 +343,9 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
-					client.getServer().open(client.getUser(), qNumber, qValue, qText);
+					client.getServer().open(client.getUser(), qNumber);
+					client.getServer().setQuestionText(client.getUser(), currentRound, qNumber, qText);
+					client.getServer().setQuestionValue(client.getUser(), currentRound, qNumber, qValue);
 					success = true;
 				} catch (final RemoteException e) {
 					client.log("Couldn't open question on server (try #" + tryNumber + ").");

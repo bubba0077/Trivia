@@ -919,9 +919,7 @@ public class Round implements Serializable {
 	 * @param question
 	 *            The text of the question
 	 */
-	public void open(int qNumber, int value, String question) {
-		this.questions[qNumber - 1].setValue(value);
-		this.questions[qNumber - 1].setQuestionText(question);
+	public void open(int qNumber) {
 		this.questions[qNumber - 1].open();
 		this.version++;
 	}

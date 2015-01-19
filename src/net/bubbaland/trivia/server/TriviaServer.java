@@ -220,6 +220,16 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 				+ this.trivia.getValue(this.trivia.getCurrentRoundNumber(), qNumber) + " points earned.");
 	}
 
+	public void setQuestionText(String user, int rNumber, int qNumber, String qText) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.trivia.setQuestionText(rNumber, qNumber, qText);
+	}
+
+	public void setQuestionValue(String user, int rNumber, int qNumber, int value) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.trivia.setQuestionValue(rNumber, qNumber, value);
+	}
+
 	@Override
 	public void editQuestion(String user, int rNumber, int qNumber, int value, String qText, String aText,
 			boolean isCorrect, String submitter, String operator) throws RemoteException {
@@ -349,7 +359,9 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 					final String operator = questionElement.getElementsByTagName("Operator").item(0).getTextContent();
 
 					if (beenOpen) {
-						this.trivia.open(rNumber, qNumber, value, question);
+						this.trivia.open("From file", rNumber, qNumber);
+						this.trivia.setQuestionValue(rNumber, qNumber, value);
+						this.trivia.setQuestionText(rNumber, qNumber, question);
 
 						if (isCorrect) {
 							this.trivia.markCorrect(rNumber, qNumber, answer, submitter, operator);
@@ -491,11 +503,17 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 * 
 	 * @see net.bubbaland.trivia.server.TriviaInterface#open(int, int, java.lang.String)
 	 */
-	@Override
-	public void open(String user, int qNumber, int qValue, String question) throws RemoteException {
+	public void open(String user, int qNumber) throws RemoteException {
 		this.userList.updateUserActivity(user);
-		this.trivia.open(qNumber, qValue, question);
-		this.log("Question " + qNumber + " opened for " + qValue + " Points:\n" + question);
+		this.trivia.open(qNumber);
+		this.trivia.setQuestionText(qNumber, user + " is typing the question...");
+		this.log("Question " + qNumber + " opened by " + user);
+	}
+
+	public void reopen(String user, int qNumber) throws RemoteException {
+		this.userList.updateUserActivity(user);
+		this.trivia.open(qNumber);
+		this.log("Question " + qNumber + " re-opened by " + user);
 	}
 
 	// /*

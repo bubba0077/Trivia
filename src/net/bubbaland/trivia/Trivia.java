@@ -967,8 +967,8 @@ public class Trivia implements Serializable {
 	 * @param question
 	 *            The question text
 	 */
-	public void open(int rNumber, int qNumber, int qValue, String question) {
-		this.rounds[rNumber - 1].open(qNumber, qValue, question);
+	public void open(String user, int rNumber, int qNumber) {
+		this.rounds[rNumber - 1].open(qNumber);
 	}
 
 	/**
@@ -981,8 +981,8 @@ public class Trivia implements Serializable {
 	 * @param question
 	 *            The question text
 	 */
-	public void open(int qNumber, int qValue, String question) {
-		this.currentRound.open(qNumber, qValue, question);
+	public void open(int qNumber) {
+		this.currentRound.open(qNumber);
 	}
 
 	/**
@@ -1085,6 +1085,22 @@ public class Trivia implements Serializable {
 	 */
 	public void setNTeams(int nTeams) {
 		this.nTeams = nTeams;
+	}
+
+	public void setQuestionText(int qNumber, String qText) {
+		this.currentRound.setQuestionText(qNumber, qText);
+	}
+
+	public void setQuestionValue(int qNumber, int value) {
+		this.currentRound.setValue(qNumber, value);
+	}
+
+	public void setQuestionText(int rNumber, int qNumber, String qText) {
+		this.rounds[rNumber - 1].setQuestionText(qNumber, qText);
+	}
+
+	public void setQuestionValue(int rNumber, int qNumber, int value) {
+		this.rounds[rNumber - 1].setValue(qNumber, value);
 	}
 
 	/**
