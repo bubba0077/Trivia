@@ -174,6 +174,10 @@ public class Answer implements Serializable {
 		}
 	}
 
+	public Status getStatus() {
+		return this.status;
+	}
+
 	/**
 	 * Gets the submitter's user name
 	 * 

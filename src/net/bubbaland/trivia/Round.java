@@ -796,9 +796,12 @@ public class Round implements Serializable {
 	 */
 	public void markIncorrect(int queueIndex, String caller) {
 		final Answer answer = this.answerQueue.get(queueIndex);
+		final Answer.Status oldStatus = answer.getStatus();
 		answer.markIncorrect(caller);
 		final int qNumber = answer.getQNumber();
-		this.questions[qNumber - 1].markIncorrect();
+		if (oldStatus == Answer.Status.CORRECT) {
+			this.questions[qNumber - 1].markIncorrect();
+		}
 		this.version++;
 	}
 
