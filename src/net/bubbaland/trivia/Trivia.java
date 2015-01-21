@@ -931,7 +931,8 @@ public class Trivia implements Serializable {
 	 */
 	public void newRound() {
 		int currentRoundNumber = this.getCurrentRoundNumber();
-		if (currentRoundNumber++ <= this.nRounds) {
+		if (this.currentRound.nOpen() == 0 && this.currentRound.nUnopened() == 0
+				&& currentRoundNumber++ <= this.nRounds) {
 			this.currentRound = this.rounds[currentRoundNumber - 1];
 		}
 	}
