@@ -17,7 +17,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -27,7 +26,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
@@ -79,7 +77,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 *            The drag-drop event
 	 */
 	public TriviaFrame(TriviaClient client, DropTargetDropEvent a_event, Point location) {
-		this(client, false);
+		this(client);
 		this.book.convertTab(this.book.getTabTransferData(a_event), this.book.getTargetTabIndex(a_event.getLocation()));
 		this.book.setSelectedIndex(0);
 		this.pack();
@@ -95,11 +93,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 *            The root client
 	 * @param initialTabs
 	 *            Tabs to open initially
-	 * @param showIRC
-	 *            Whether the frame should include a browser pane for the web IRC client
 	 */
-	public TriviaFrame(TriviaClient client, String[] initialTabs, boolean showIRC) {
-		this(client, showIRC);
+	public TriviaFrame(TriviaClient client, String[] initialTabs) {
+		this(client);
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		for (final String tabName : initialTabs) {
 			this.book.addTab(tabName, client.getTab(this, tabName));
@@ -115,10 +111,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * 
 	 * @param client
 	 *            The root client
-	 * @param showIRC
-	 *            Whether the frame should include a browser pane for the web IRC client
 	 */
-	private TriviaFrame(TriviaClient client, boolean showIRC) {
+	private TriviaFrame(TriviaClient client) {
 		super();
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
@@ -371,28 +365,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
 
-		if (showIRC) {
-			/**
-			 * Create browser pane for IRC web client
-			 */
-			// Create panel that contains web browser for IRC
-			final String url = TriviaClient.IRC_CLIENT_URL + "?nick=" + client.getUser() + "&channels="
-					+ TriviaClient.IRC_CHANNEL;
-			final BrowserPanel browser = new BrowserPanel(url);
-			browser.setPreferredSize(new Dimension(0, 204));
-
-			/**
-			 * Create the split pane separating the tabbed pane and the broswer pane
-			 */
-			// Put the tabbed pane and browser panel in an adjustable vertical split pane
-			final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.book, browser);
-			splitPane.setResizeWeight(1.0);
-			splitPane.setBorder(BorderFactory.createEmptyBorder());
-			panel.add(splitPane, constraints);
-		} else {
-			// Add the tabbed pane to the panel
-			panel.add(this.book, constraints);
-		}
+		// Add the tabbed pane to the panel
+		panel.add(this.book, constraints);
 
 		// Add the panel to the frame and display the frame
 		this.add(panel);

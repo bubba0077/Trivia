@@ -202,7 +202,7 @@ public class TriviaClient implements WindowListener {
 
 		// Create startup frames
 		for (int f = 0; PROPERTIES.getProperty("Window" + f) != null; f++) {
-			new TriviaFrame(this, PROPERTIES.getProperty("Window" + f).replaceAll("[\\[\\]]", "").split(", "), useFX);
+			new TriviaFrame(this, PROPERTIES.getProperty("Window" + f).replaceAll("[\\[\\]]", "").split(", "));
 			useFX = false; // Only put IRC in one window
 		}
 
