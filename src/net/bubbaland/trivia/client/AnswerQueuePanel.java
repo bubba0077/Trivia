@@ -732,6 +732,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				}
 			}
 
+			if (this.answerQueue.length != newAnswerQueue.length) {
+				this.client.playNewAnswerSound();
+			}
+
 			this.answerQueue = newAnswerQueue;
 
 			// We need to track how many rows have been shown to do alternating background colors correctly

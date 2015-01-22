@@ -35,6 +35,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
+import javazoom.jl.player.Player;
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaChartFactory;
@@ -54,30 +55,39 @@ import java.util.Calendar;
 public class TriviaClient implements WindowListener {
 
 	// URL for Wiki
-	final static protected String					WIKI_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
+	final static protected String					WIKI_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
 	// URL base for Visual Trivia Pages
-	final static protected String					VISUAL_URL			= "https://sites.google.com/a/kneedeepintheses.org/information/Home/visual-trivia/visual-trivia-";
+	final static protected String					VISUAL_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/Home/visual-trivia/visual-trivia-";
 	// URL for the IRC client
-	final static protected String					IRC_CLIENT_URL		= "http://webchat.freenode.net/";
+	final static protected String					IRC_CLIENT_URL				= "http://webchat.freenode.net/";
 	// IRC channel to join on connection to IRC server
-	final static protected String					IRC_CHANNEL			= "%23kneedeeptrivia";
+	final static protected String					IRC_CHANNEL					= "%23kneedeeptrivia";
 	// File name of font
-	final static private String						FONT_FILENAME		= "fonts/tahoma.ttf";
+	final static private String						FONT_FILENAME				= "fonts/tahoma.ttf";
 	// File name to store window positions
-	final static private String						DEFAULTS_FILENAME	= ".trivia-defaults";
+	final static private String						DEFAULTS_FILENAME			= ".trivia-defaults";
 	// File name to store window positions
-	final static private String						SETTINGS_FILENAME	= ".trivia-settings";
+	final static private String						SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String						SETTINGS_VERSION	= "2";
+	final static private String						SETTINGS_VERSION			= "2";
 	// Calendar to track date
-	final static private Calendar					TIME				= Calendar.getInstance();
+	final static private Calendar					TIME						= Calendar.getInstance();
 	// Format for log timestamps
 	static private SimpleDateFormat					TIMESTAMP_FORMAT;
+
+	//
+	final static private String						NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
+
+	// static Player newAnswerPlayer NEW_ANSWER_PLAYER;
+	//
+	// static {
+	//
+	// }
 
 	/**
 	 * Setup properties
 	 */
-	final static public Properties					PROPERTIES			= new Properties();
+	final static public Properties					PROPERTIES					= new Properties();
 	static {
 		/**
 		 * Load Nimbus
@@ -160,6 +170,8 @@ public class TriviaClient implements WindowListener {
 		TAB_DESCRIPTION_HASH.put("*Answer Queue", "The proposed answer queue for the current round.");
 	}
 
+	private final TriviaAudio						newAnswerPlayer;
+
 	// The user's name
 	private volatile String							user;
 	// The user's role
@@ -218,6 +230,8 @@ public class TriviaClient implements WindowListener {
 		final Timer refreshTimer = new Timer();
 		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0,
 				Integer.parseInt(PROPERTIES.getProperty("RefreshRate")));
+
+		this.newAnswerPlayer = new TriviaAudio(NEW_ANSWER_SOUND_FILENAME);
 
 		// Post welcome to status bar
 		this.log("Welcome " + this.user);
@@ -413,6 +427,11 @@ public class TriviaClient implements WindowListener {
 			name = "Trivia (" + i + ")";
 		}
 		return name;
+	}
+
+
+	public void playNewAnswerSound() {
+		this.newAnswerPlayer.play();
 	}
 
 	/**
@@ -817,6 +836,36 @@ public class TriviaClient implements WindowListener {
 		}
 
 	}
+
+
+	private class TriviaAudio {
+		private String	filename;
+
+		public TriviaAudio(String filename) {
+			this.filename = filename;
+		}
+
+		public void play() {
+			try {
+				final Player player = new Player(TriviaClient.class.getResourceAsStream(filename));
+				new Thread() {
+					public void run() {
+						try {
+							player.play();
+						} catch (Exception e) {
+
+						} finally {
+							player.close();
+						}
+					}
+				}.start();
+			} catch (Exception e) {
+				System.out.println("Couldn't open audio file");
+				e.printStackTrace();
+			}
+		}
+	}
+
 
 	/**
 	 * Custom Runnable class to allow passing of command line argument into invokeLater.
