@@ -57,7 +57,7 @@ public class TriviaClient implements WindowListener {
 	// URL for Wiki
 	final static protected String					WIKI_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
 	// URL base for Visual Trivia Pages
-	final static protected String					VISUAL_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/Home/visual-trivia/visual-trivia-";
+	final static protected String					VISUAL_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/visual-trivia/visual-trivia-";
 	// URL for the IRC client
 	final static protected String					IRC_CLIENT_URL				= "http://webchat.freenode.net/";
 	// IRC channel to join on connection to IRC server
