@@ -315,14 +315,26 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menu.add(sortMenu);
 
 			// Make Info Menu
-			final JMenu infoMenu = new JMenu("Info");
+			final JMenu infoMenu = new JMenu("External");
 			infoMenu.setMnemonic(KeyEvent.VK_I);
-			menuItem = new JMenuItem("Open Wiki (browser)", KeyEvent.VK_W);
+			menuItem = new JMenuItem("KVSC");
+			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, ActionEvent.CTRL_MASK));
+			menuItem.setActionCommand("Open KVSC");
+			menuItem.addActionListener(this);
+			infoMenu.add(menuItem);
+
+			menuItem = new JMenuItem("Wiki", KeyEvent.VK_W);
 			menuItem.setActionCommand("Open wiki");
 			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
 			menuItem.addActionListener(this);
-
 			infoMenu.add(menuItem);
+
+			menuItem = new JMenuItem("Bugs/Requests", KeyEvent.VK_I);
+			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
+			menuItem.setActionCommand("Open issues");
+			menuItem.addActionListener(this);
+			infoMenu.add(menuItem);
+
 			menuBar.add(infoMenu);
 
 			// Make Admin Menu pinned to the right
@@ -451,6 +463,22 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				// Triggered by Open wiki menu item
 				try {
 					Desktop.getDesktop().browse(new URI(TriviaClient.WIKI_URL));
+				} catch (IOException | URISyntaxException exception) {
+					this.log("Couldn't open a browser window");
+				}
+				break;
+			case "Open KVSC":
+				// Triggered by Open wiki menu item
+				try {
+					Desktop.getDesktop().browse(new URI(TriviaClient.KVSC_URL));
+				} catch (IOException | URISyntaxException exception) {
+					this.log("Couldn't open a browser window");
+				}
+				break;
+			case "Open issues":
+				// Triggered by Open wiki menu item
+				try {
+					Desktop.getDesktop().browse(new URI(TriviaClient.ISSUES_URL));
 				} catch (IOException | URISyntaxException exception) {
 					this.log("Couldn't open a browser window");
 				}

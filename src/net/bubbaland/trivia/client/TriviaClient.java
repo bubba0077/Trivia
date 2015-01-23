@@ -56,6 +56,10 @@ public class TriviaClient implements WindowListener {
 
 	// URL for Wiki
 	final static protected String					WIKI_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
+	// URL for Issues
+	final static protected String					ISSUES_URL					= "https://github.com/bubba0077/Trivia/issues";
+	// URL for KVSC
+	final static protected String					KVSC_URL					= "http://www.kvsc.org/trivia_news.php";
 	// URL base for Visual Trivia Pages
 	final static protected String					VISUAL_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/visual-trivia/visual-trivia-";
 	// URL for the IRC client

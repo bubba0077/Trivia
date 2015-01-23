@@ -387,6 +387,14 @@ public class TriviaChartFactory {
 			dataset.addSeries(series);
 		}
 
+		// Add total possible envelope
+		XYSeries series = new XYSeries("Perfect", true, false);
+		for (int r = 0; r < lastAnnounced; r++) {
+			final int ourScore = trivia.getAnnouncedPoints(r + 1);
+			series.add(r + 1, trivia.getValue(r + 1) - ourScore);
+		}
+		dataset.addSeries(series);
+
 		// Change the format of the tooltip
 		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}", NumberFormat
 				.getIntegerInstance(), NumberFormat.getIntegerInstance()));
