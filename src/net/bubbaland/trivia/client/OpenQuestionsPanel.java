@@ -411,9 +411,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 			// Blank unused lines and hide buttons (except one Open button)
 			for (int q = nOpen; q < this.nQuestionsMax; q++) {
-				this.qNumberLabels[q].setText("");
 				this.qValueLabels[q].setText("");
-				this.qTextPanes[q].setText("");
 				// this.qTextAreas[q].setToolTipText("");
 				this.answerButtons[q].setText("");
 				this.answerButtons[q].setName("");
@@ -422,8 +420,12 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				this.closeButtons[q].setActionCommand("Open");
 				this.closeButtons[q].setName("");
 				if (q == nOpen && trivia.nUnopened() > 0) {
+					this.qNumberLabels[q].setText(trivia.nextToOpen() + "");
+					this.qTextPanes[q].setText("Next to open");
 					this.closeButtons[q].setVisible(true);
 				} else {
+					this.qNumberLabels[q].setText("");
+					this.qTextPanes[q].setText("");
 					this.closeButtons[q].setVisible(false);
 				}
 				this.qNumberLabels[q].setName("");

@@ -837,7 +837,6 @@ public class TriviaClient implements WindowListener {
 
 	}
 
-
 	private class TriviaAudio {
 		private String	filename;
 
