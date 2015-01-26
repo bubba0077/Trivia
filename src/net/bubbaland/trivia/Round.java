@@ -108,9 +108,12 @@ public class Round implements Serializable {
 	 */
 	public void callIn(int queueIndex, String caller) {
 		final Answer answer = this.answerQueue.get(queueIndex);
+		final Answer.Status oldStatus = answer.getStatus();
 		answer.callIn(caller);
 		final int qNumber = answer.getQNumber();
-		this.questions[qNumber - 1].markIncorrect();
+		if (oldStatus == Answer.Status.CORRECT) {
+			this.questions[qNumber - 1].markIncorrect();
+		}
 		this.version++;
 	}
 
@@ -815,9 +818,12 @@ public class Round implements Serializable {
 	 */
 	public void markPartial(int queueIndex, String caller) {
 		final Answer answer = this.answerQueue.get(queueIndex);
+		final Answer.Status oldStatus = answer.getStatus();
 		answer.markPartial(caller);
 		final int qNumber = answer.getQNumber();
-		this.questions[qNumber - 1].markIncorrect();
+		if (oldStatus == Answer.Status.CORRECT) {
+			this.questions[qNumber - 1].markIncorrect();
+		}
 		this.version++;
 	}
 
@@ -830,9 +836,12 @@ public class Round implements Serializable {
 	 */
 	public void markUncalled(int queueIndex) {
 		final Answer answer = this.answerQueue.get(queueIndex);
+		final Answer.Status oldStatus = answer.getStatus();
 		answer.markUncalled();
 		final int qNumber = answer.getQNumber();
-		this.questions[qNumber - 1].markIncorrect();
+		if (oldStatus == Answer.Status.CORRECT) {
+			this.questions[qNumber - 1].markIncorrect();
+		}
 		this.version++;
 	}
 
