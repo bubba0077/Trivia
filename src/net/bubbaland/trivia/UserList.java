@@ -20,6 +20,9 @@ public class UserList {
 	// List of user roles
 	private final Hashtable<String, Role>	roleList;
 
+	// List of user idleness
+	// private final Hashtable<String, Boolean> idleList;
+
 	/**
 	 * Create a new empty user list.
 	 */
@@ -27,6 +30,7 @@ public class UserList {
 		this.activeUserList = new Hashtable<String, Date>(0);
 		this.passiveUserList = new Hashtable<String, Date>(0);
 		this.roleList = new Hashtable<String, Role>(0);
+		// this.idleList = new Hashtable<String, Boolean>(0);
 	}
 
 	/**

@@ -32,6 +32,7 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import javazoom.jl.player.Player;
 import net.bubbaland.trivia.UserList.Role;
 
 /**
@@ -42,10 +43,10 @@ import net.bubbaland.trivia.UserList.Role;
  */
 public class TriviaFrame extends JFrame implements ChangeListener, ActionListener {
 
-	private static final long	serialVersionUID	= -3639363131235278472L;
+	private static final long			serialVersionUID	= -3639363131235278472L;
 
 	// The Hide Closed menu item
-	private volatile boolean	hideClosed, hideDuplicates;
+	private volatile boolean			hideClosed, hideDuplicates, mute;
 
 	// Sort menu items
 	final private JRadioButtonMenuItem	researcherMenuItem, callerMenuItem, typistMenuItem;
@@ -58,12 +59,15 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final private JMenuItem				sortQNumberDescendingMenuItem;
 	final private JMenuItem				sortStatusAscendingMenuItem;
 	final private JMenuItem				sortStatusDescendingMenuItem;
+	final private JMenuItem				muteMenuItem;
 	// The status bar at the bottom
 	final private JLabel				statusBar;
 
 	final private TriviaClient			client;
 
-	private final DnDTabbedPane			book;
+	final static private TriviaAudio	NEW_ANSWER_PLAYER	= new TriviaAudio(TriviaClient.NEW_ANSWER_SOUND_FILENAME);
+
+	final private DnDTabbedPane			book;
 	// Sort method for the queue
 	private volatile QueueSort			queueSort;
 
@@ -138,7 +142,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			protected void loadProperties(Properties properties) {
 			}
 		};
-
 
 		/**
 		 * Setup the menus
@@ -223,6 +226,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.hideDuplicatesMenuItem.setActionCommand("Hide Duplicates");
 			this.hideDuplicatesMenuItem.addActionListener(this);
 			menu.add(this.hideDuplicatesMenuItem);
+
+			this.muteMenuItem = new JCheckBoxMenuItem("Mute new answer notification");
+			this.muteMenuItem.setMnemonic(KeyEvent.VK_M);
+			this.muteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, ActionEvent.CTRL_MASK));
+			this.muteMenuItem.setSelected(this.mute);
+			this.muteMenuItem.setActionCommand("Mute");
+			this.muteMenuItem.addActionListener(this);
+			menu.add(this.muteMenuItem);
 
 			final JMenu sortMenu = new JMenu("Sort by...");
 			sortMenu.setMnemonic(KeyEvent.VK_S);
@@ -413,6 +424,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				this.hideDuplicates = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
 				this.update(true);
 				break;
+			case "Mute":
+				this.mute = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
+				this.update(true);
+				break;
 			case "Sort Timestamp Ascending":
 				// Triggered by Timestamp Sort menu item
 				this.setSort(QueueSort.TIMESTAMP_ASCENDING);
@@ -546,6 +561,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.hideClosedMenuItem.setSelected(this.hideClosed);
 		this.hideDuplicates = Boolean.parseBoolean(this.loadProperty(id, "HideDuplicates"));
 		this.hideDuplicatesMenuItem.setSelected(this.hideClosed);
+		this.mute = Boolean.parseBoolean(this.loadProperty(id, "Mute"));
+		this.muteMenuItem.setSelected(this.mute);
 
 		// Load queue sort method
 		switch (this.loadProperty(id, "QueueSort")) {
@@ -664,6 +681,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 	}
 
+	public void playNewAnswerSound() {
+		System.out.println(this.getTitle() + ": " + this.mute);
+		if (!this.mute) {
+			NEW_ANSWER_PLAYER.play();
+		}
+	}
+
 	public void update(boolean forceUpdate) {
 		// Update role
 		final Role role = this.client.getRole();
@@ -747,6 +771,34 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				this.pack();
 			}
 			this.setLocationRelativeTo(null);
+		}
+	}
+
+	private static class TriviaAudio {
+		private String	filename;
+
+		public TriviaAudio(String filename) {
+			this.filename = filename;
+		}
+
+		public void play() {
+			try {
+				final Player player = new Player(TriviaClient.class.getResourceAsStream(filename));
+				new Thread() {
+					public void run() {
+						try {
+							player.play();
+						} catch (Exception e) {
+
+						} finally {
+							player.close();
+						}
+					}
+				}.start();
+			} catch (Exception e) {
+				System.out.println("Couldn't open audio file");
+				e.printStackTrace();
+			}
 		}
 	}
 

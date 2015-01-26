@@ -6,6 +6,7 @@ QueueSort=Sort Timestamp Ascending
 TimestampFormat=[yyyy MMM dd HH:mm:ss]
 HideClosed=true
 HideDuplicates=true
+Mute=False
 StatusBar.Height=14
 StatusBar.FontSize=12.0
 Window0=[Workflow, Current, History]

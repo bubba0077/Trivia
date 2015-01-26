@@ -35,7 +35,6 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
-import javazoom.jl.player.Player;
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaChartFactory;
@@ -80,7 +79,7 @@ public class TriviaClient implements WindowListener {
 	static private SimpleDateFormat					TIMESTAMP_FORMAT;
 
 	//
-	final static private String						NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
+	final static protected String					NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
 
 	// static Player newAnswerPlayer NEW_ANSWER_PLAYER;
 	//
@@ -174,8 +173,6 @@ public class TriviaClient implements WindowListener {
 		TAB_DESCRIPTION_HASH.put("*Answer Queue", "The proposed answer queue for the current round.");
 	}
 
-	private final TriviaAudio						newAnswerPlayer;
-
 	// The user's name
 	private volatile String							user;
 	// The user's role
@@ -235,7 +232,6 @@ public class TriviaClient implements WindowListener {
 		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0,
 				Integer.parseInt(PROPERTIES.getProperty("RefreshRate")));
 
-		this.newAnswerPlayer = new TriviaAudio(NEW_ANSWER_SOUND_FILENAME);
 
 		// Post welcome to status bar
 		this.log("Welcome " + this.user);
@@ -433,10 +429,6 @@ public class TriviaClient implements WindowListener {
 		return name;
 	}
 
-
-	public void playNewAnswerSound() {
-		this.newAnswerPlayer.play();
-	}
 
 	/**
 	 * Register a window as a child of the client. New Trivia Frames do this so the client can track events from them.
@@ -839,34 +831,6 @@ public class TriviaClient implements WindowListener {
 
 		}
 
-	}
-
-	private class TriviaAudio {
-		private String	filename;
-
-		public TriviaAudio(String filename) {
-			this.filename = filename;
-		}
-
-		public void play() {
-			try {
-				final Player player = new Player(TriviaClient.class.getResourceAsStream(filename));
-				new Thread() {
-					public void run() {
-						try {
-							player.play();
-						} catch (Exception e) {
-
-						} finally {
-							player.close();
-						}
-					}
-				}.start();
-			} catch (Exception e) {
-				System.out.println("Couldn't open audio file");
-				e.printStackTrace();
-			}
-		}
 	}
 
 
