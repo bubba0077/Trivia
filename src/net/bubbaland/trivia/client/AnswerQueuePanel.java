@@ -98,6 +98,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	final private JPanel					spacer;
 	final private JScrollPane				scrollPane;
 	private final JPopupMenu				contextMenu;
+	private int								rNumber;
+	private boolean							isLive;
 
 	/** The workflow queue sub panel */
 	final private AnswerQueueSubPanel		answerQueueSubPanel;
@@ -105,6 +107,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	/** The local client */
 	// final private TriviaClient client;
 	// final private TriviaFrame parent;
+
+	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame, int rNumber) {
+		this(client, frame);
+		this.rNumber = rNumber;
+		this.isLive = false;
+	}
 
 	/**
 	 * Instantiates a new workflow queue panel.
@@ -117,6 +125,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame) {
 
 		super(client, frame);
+		this.isLive = true;
+		this.rNumber = client.getTrivia().getCurrentRoundNumber();
 
 		this.maxQuestions = client.getTrivia().getMaxQuestions();
 
@@ -230,6 +240,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		resetFilter();
 		this.loadProperties(TriviaClient.PROPERTIES);
+	}
+
+	public void setRoundNumber(int newRoundNumber) {
+		if (!this.isLive) {
+			this.rNumber = newRoundNumber;
+		}
 	}
 
 	private void resetFilter() {
@@ -547,14 +563,16 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		@Override
 		public synchronized void actionPerformed(ActionEvent event) {
 			final Trivia trivia = this.client.getTrivia();
-			final int rNumber = trivia.getCurrentRoundNumber();
+			if (AnswerQueuePanel.this.isLive) {
+				AnswerQueuePanel.this.rNumber = trivia.getCurrentRoundNumber();
+			}
 			final String command = event.getActionCommand();
 			switch (command) {
 				case "View":
 					int queueIndex = Integer.parseInt(this.contextMenu.getName());
 					final int qNumber = trivia.getAnswerQueueQNumber(queueIndex);
-					final int qValue = trivia.getValue(rNumber, qNumber);
-					final String qText = trivia.getQuestionText(rNumber, qNumber);
+					final int qValue = trivia.getValue(AnswerQueuePanel.this.rNumber, qNumber);
+					final String qText = trivia.getQuestionText(AnswerQueuePanel.this.rNumber, qNumber);
 					final String aText = trivia.getAnswerQueueAnswer(queueIndex);
 					new ViewAnswerDialog(this.client, qNumber, qValue, qText, aText);
 					break;
