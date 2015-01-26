@@ -27,9 +27,6 @@ public class CumulativePointsChartPanel extends TriviaMainPanel {
 	final private int			nRounds;
 	private int[]				values, earneds;
 
-	/** The client */
-	final private TriviaClient	client;
-
 	/**
 	 * Instantiates a new chart panel
 	 * 
@@ -37,10 +34,9 @@ public class CumulativePointsChartPanel extends TriviaMainPanel {
 	 *            The local trivia client
 	 * 
 	 */
-	public CumulativePointsChartPanel(TriviaClient client) {
-		super();
+	public CumulativePointsChartPanel(TriviaClient client, TriviaFrame frame) {
+		super(client, frame);
 
-		this.client = client;
 		this.nRounds = client.getTrivia().getNRounds();
 
 		this.values = new int[this.nRounds];

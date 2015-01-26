@@ -43,7 +43,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		Arrays.sort(tabNames, new TabCompare());
 	}
 
-	public AddTabDialog(TriviaFrame frame, TriviaClient client) {
+	public AddTabDialog(TriviaClient client, TriviaFrame frame) {
 		super();
 
 		this.client = client;

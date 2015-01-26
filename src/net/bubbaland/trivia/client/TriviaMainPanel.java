@@ -11,13 +11,28 @@ import java.util.Properties;
  */
 public abstract class TriviaMainPanel extends TriviaPanel {
 
-	private static final long	serialVersionUID	= -5381727804575779591L;
+	private static final long		serialVersionUID	= -5381727804575779591L;
+
+	final protected TriviaClient	client;
+	protected TriviaFrame			frame;
 
 	/**
 	 * Instantiates a new Trivia Panel
+	 * 
+	 * @param client
+	 *            TODO
+	 * @param frame
+	 *            TODO
 	 */
-	public TriviaMainPanel() {
+	public TriviaMainPanel(TriviaClient client, TriviaFrame frame) {
 		super(new GridBagLayout());
+		this.client = client;
+		this.frame = frame;
+	}
+
+	public void changeFrame(TriviaFrame newFrame) {
+		System.out.println("Frame changed, new frame " + newFrame.getTitle());
+		this.frame = newFrame;
 	}
 
 	/**

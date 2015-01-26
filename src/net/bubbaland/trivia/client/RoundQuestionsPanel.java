@@ -60,8 +60,8 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 	 * @param client
 	 *            the client
 	 */
-	public RoundQuestionsPanel(TriviaClient client) {
-		this(client, true, 0);
+	public RoundQuestionsPanel(TriviaClient client, TriviaFrame parent) {
+		this(client, parent, true, 0);
 	}
 
 	/**
@@ -74,9 +74,9 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 	 * @param rNumber
 	 *            the round number
 	 */
-	public RoundQuestionsPanel(TriviaClient client, boolean live, int rNumber) {
+	public RoundQuestionsPanel(TriviaClient client, TriviaFrame parent, boolean live, int rNumber) {
 
-		super();
+		super(client, parent);
 
 		// Set up the layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -130,7 +130,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 		constraints.gridy = 1;
 		constraints.gridwidth = 7;
 		constraints.weighty = 1.0;
-		this.roundQuestionsSubPanel = new RoundQuestionsSubPanel(client, live, rNumber);
+		this.roundQuestionsSubPanel = new RoundQuestionsSubPanel(client, parent, live, rNumber);
 		this.roundQlistPane = new JScrollPane(this.roundQuestionsSubPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.roundQlistPane.setBorder(BorderFactory.createEmptyBorder());
@@ -255,8 +255,8 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 		 * @param rNumber
 		 *            the round number
 		 */
-		public RoundQuestionsSubPanel(TriviaClient client, boolean live, int rNumber) {
-			super();
+		public RoundQuestionsSubPanel(TriviaClient client, TriviaFrame parent, boolean live, int rNumber) {
+			super(client, parent);
 
 			this.client = client;
 			this.speed = false;

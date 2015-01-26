@@ -101,23 +101,21 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	final private AnswerQueueSubPanel		answerQueueSubPanel;
 
 	/** The local client */
-	final private TriviaClient				client;
-	final private TriviaFrame				parent;
+	// final private TriviaClient client;
+	// final private TriviaFrame parent;
 
 	/**
 	 * Instantiates a new workflow queue panel.
 	 * 
-	 * @param parent
-	 *            The parent top-level frame
 	 * @param client
 	 *            The local trivia client
+	 * @param frame
+	 *            The parent top-level frame
 	 */
-	public AnswerQueuePanel(TriviaFrame parent, TriviaClient client) {
+	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame) {
 
-		super();
+		super(client, frame);
 
-		this.parent = parent;
-		this.client = client;
 		this.maxQuestions = client.getTrivia().getMaxQuestions();
 
 		/**
@@ -207,7 +205,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.0;
 
-		this.answerQueueSubPanel = new AnswerQueueSubPanel(client);
+		this.answerQueueSubPanel = new AnswerQueueSubPanel();
 		scrollPanel.add(this.answerQueueSubPanel, constraints);
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
@@ -296,24 +294,24 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	@Override
 	public void mouseClicked(MouseEvent event) {
 		final JComponent source = (JComponent) event.getSource();
-		final QueueSort sortMethod = this.parent.getQueueSort();
+		final QueueSort sortMethod = this.frame.getQueueSort();
 		if (source.equals(this.timestampLabel)) {
 			if (sortMethod.equals(QueueSort.TIMESTAMP_ASCENDING)) {
-				this.parent.setSort(QueueSort.TIMESTAMP_DESCENDING);
+				this.frame.setSort(QueueSort.TIMESTAMP_DESCENDING);
 			} else {
-				this.parent.setSort(QueueSort.TIMESTAMP_ASCENDING);
+				this.frame.setSort(QueueSort.TIMESTAMP_ASCENDING);
 			}
 		} else if (source.equals(this.qNumberLabel)) {
 			if (sortMethod.equals(QueueSort.QNUMBER_ASCENDING)) {
-				this.parent.setSort(QueueSort.QNUMBER_DESCENDING);
+				this.frame.setSort(QueueSort.QNUMBER_DESCENDING);
 			} else {
-				this.parent.setSort(QueueSort.QNUMBER_ASCENDING);
+				this.frame.setSort(QueueSort.QNUMBER_ASCENDING);
 			}
 		} else if (source.equals(this.statusLabel)) {
 			if (sortMethod.equals(QueueSort.STATUS_ASCENDING)) {
-				this.parent.setSort(QueueSort.STATUS_DESCENDING);
+				this.frame.setSort(QueueSort.STATUS_DESCENDING);
 			} else {
-				this.parent.setSort(QueueSort.STATUS_ASCENDING);
+				this.frame.setSort(QueueSort.STATUS_ASCENDING);
 			}
 		}
 	}
@@ -345,7 +343,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		final int queueSize = this.client.getTrivia().getAnswerQueueSize();
 		this.queueSizeLabel.setText(queueSize + "");
 		this.answerQueueSubPanel.update(force);
-		final QueueSort sortMethod = this.parent.getQueueSort();
+		final QueueSort sortMethod = this.frame.getQueueSort();
 
 		switch (sortMethod) {
 			case TIMESTAMP_ASCENDING:
@@ -490,12 +488,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		private Answer[]							answerQueue;
 
 		/**
-		 * Data sources
-		 */
-		final private TriviaClient					client;
-
-
-		/**
 		 * Instantiates a new workflow queue sub panel.
 		 * 
 		 * @param server
@@ -503,11 +495,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		 * @param client
 		 *            the client
 		 */
-		public AnswerQueueSubPanel(TriviaClient client) {
+		public AnswerQueueSubPanel() {
 
-			super();
+			super(AnswerQueuePanel.this.client, AnswerQueuePanel.this.frame);
 
-			this.client = client;
 			this.answerQueue = new Answer[0];
 
 			/**
@@ -692,9 +683,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			// Get the current Trivia data object
 			final Trivia trivia = this.client.getTrivia();
 
-			final boolean hideClosed = AnswerQueuePanel.this.parent.hideClosed();
-			final boolean hideDuplicates = AnswerQueuePanel.this.parent.hideDuplicates();
-			final QueueSort sortMethod = AnswerQueuePanel.this.parent.getQueueSort();
+			final boolean hideClosed = AnswerQueuePanel.this.frame.hideClosed();
+			final boolean hideDuplicates = AnswerQueuePanel.this.frame.hideDuplicates();
+			final QueueSort sortMethod = AnswerQueuePanel.this.frame.getQueueSort();
 
 			// Get the queue data from the server
 			final Answer[] newAnswerQueue = trivia.getAnswerQueue();
@@ -733,8 +724,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			}
 
 			if (this.answerQueue.length != newAnswerQueue.length) {
-				System.out.println(AnswerQueuePanel.this.parent.getTitle());
-				AnswerQueuePanel.this.parent.playNewAnswerSound();
+				System.out.println(AnswerQueuePanel.this.frame.getTitle());
+				AnswerQueuePanel.this.frame.playNewAnswerSound();
 			}
 
 			this.answerQueue = newAnswerQueue;

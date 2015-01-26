@@ -193,7 +193,7 @@ public class TriviaClient implements WindowListener {
 	 * @param server
 	 *            The RMI Server
 	 */
-	private TriviaClient(TriviaInterface server, boolean useFX) {
+	private TriviaClient(TriviaInterface server) {
 
 		this.server = server;
 
@@ -216,7 +216,6 @@ public class TriviaClient implements WindowListener {
 		// Create startup frames
 		for (int f = 0; PROPERTIES.getProperty("Window" + f) != null; f++) {
 			new TriviaFrame(this, PROPERTIES.getProperty("Window" + f).replaceAll("[\\[\\]]", "").split(", "));
-			useFX = false; // Only put IRC in one window
 		}
 
 		// Wait for trivia object to finish downloading
@@ -312,34 +311,34 @@ public class TriviaClient implements WindowListener {
 		TriviaMainPanel panel = null;
 		switch (tabName) {
 			case "Workflow":
-				panel = new WorkflowPanel(frame, this);
+				panel = new WorkflowPanel(this, frame);
 				break;
 			case "Current":
-				panel = new RoundPanel(this);
+				panel = new RoundPanel(this, frame);
 				break;
 			case "History":
-				panel = new HistoryPanel(this);
+				panel = new HistoryPanel(this, frame);
 				break;
 			case "By Round":
-				panel = new ScoreByRoundPanel(this);
+				panel = new ScoreByRoundPanel(this, frame);
 				break;
 			case "Place Chart":
-				panel = new PlaceChartPanel(this);
+				panel = new PlaceChartPanel(this, frame);
 				break;
 			case "Score Chart":
-				panel = new ScoreByRoundChartPanel(this);
+				panel = new ScoreByRoundChartPanel(this, frame);
 				break;
 			case "Cumul. Score Chart":
-				panel = new CumulativePointsChartPanel(this);
+				panel = new CumulativePointsChartPanel(this, frame);
 				break;
 			case "Team Comparison":
-				panel = new TeamComparisonPanel(this);
+				panel = new TeamComparisonPanel(this, frame);
 				break;
 			case "Open Questions":
-				panel = new OpenQuestionsPanel(this);
+				panel = new OpenQuestionsPanel(this, frame);
 				break;
 			case "Answer Queue":
-				panel = new AnswerQueuePanel(frame, this);
+				panel = new AnswerQueuePanel(this, frame);
 				break;
 		}
 		return panel;
@@ -519,6 +518,7 @@ public class TriviaClient implements WindowListener {
 		savePosition(window);
 		if (window instanceof TriviaFrame) {
 			( (TriviaFrame) window ).saveProperties();
+			DnDTabbedPane.unregisterTabbedPane(( (TriviaFrame) window ).getTabbedPane());
 
 			if (this.windowList.size() == 1) {
 				// This is the last window, go through exit procedures
@@ -717,7 +717,7 @@ public class TriviaClient implements WindowListener {
 
 		System.out.println("Connected to trivia server (" + serverURL + ").");
 
-		new TriviaClient(triviaServer, useFX);
+		new TriviaClient(triviaServer);
 	}
 
 	/**

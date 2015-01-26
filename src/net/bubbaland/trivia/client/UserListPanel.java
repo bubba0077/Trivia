@@ -57,13 +57,9 @@ public class UserListPanel extends TriviaMainPanel {
 	private Hashtable<String, Role>			activeUserHash;
 	private Hashtable<String, Role>			idleUserHash;
 
-	/** Data sources */
-	private final TriviaClient				client;
+	public UserListPanel(TriviaClient client, TriviaFrame parent) {
 
-	public UserListPanel(TriviaClient client) {
-
-		super();
-		this.client = client;
+		super(client, parent);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();

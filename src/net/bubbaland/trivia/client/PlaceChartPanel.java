@@ -27,9 +27,6 @@ public class PlaceChartPanel extends TriviaMainPanel {
 	/** The chart panel */
 	private ChartPanel			chartPanel;
 
-	/** The local client */
-	final private TriviaClient	client;
-
 	/**
 	 * Instantiates a new place chart
 	 * 
@@ -37,11 +34,9 @@ public class PlaceChartPanel extends TriviaMainPanel {
 	 *            The local trivia client
 	 * 
 	 */
-	public PlaceChartPanel(TriviaClient client) {
+	public PlaceChartPanel(TriviaClient client, TriviaFrame parent) {
 
-		super();
-
-		this.client = client;
+		super(client, parent);
 
 		this.places = new int[this.client.getTrivia().getNRounds()];
 

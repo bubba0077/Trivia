@@ -47,22 +47,16 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 	private final int					nRounds;
 
 	/**
-	 * Data sources
-	 */
-	TriviaClient						client;
-
-	/**
 	 * Instantiates a new history panel.
 	 * 
 	 * @param client
 	 *            The local trivia client
 	 */
 	@SuppressWarnings("unchecked")
-	public HistoryPanel(TriviaClient client) {
+	public HistoryPanel(TriviaClient client, TriviaFrame parent) {
 
-		super();
+		super(client, parent);
 
-		this.client = client;
 		this.nRounds = client.getTrivia().getNRounds();
 
 		// Set up layout constraints
@@ -145,7 +139,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		constraints.gridwidth = 9;
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
-		this.roundQuestionPanel = new RoundQuestionsPanel(client, false, 1);
+		this.roundQuestionPanel = new RoundQuestionsPanel(client, parent, false, 1);
 		this.add(this.roundQuestionPanel, constraints);
 
 		this.loadProperties(TriviaClient.PROPERTIES);
@@ -242,6 +236,11 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 				selectorBackgroundColor, headerBackgroundColor, headerFontSize);
 
 		this.roundQuestionPanel.loadProperties(properties);
+	}
+
+	public void changeFrame(TriviaFrame newFrame) {
+		super.changeFrame(newFrame);
+		this.roundQuestionPanel.changeFrame(newFrame);
 	}
 
 	private class RoundCellRenderer implements ListCellRenderer<String> {

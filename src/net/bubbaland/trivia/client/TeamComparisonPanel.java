@@ -24,12 +24,8 @@ public class TeamComparisonPanel extends TriviaMainPanel {
 	private int					lastAnnounced;
 	private ChartPanel			chartPanel;
 
-	/** Trivia client */
-	private final TriviaClient	client;
-
-	public TeamComparisonPanel(TriviaClient client) {
-		super();
-		this.client = client;
+	public TeamComparisonPanel(TriviaClient client, TriviaFrame parent) {
+		super(client, parent);
 		this.lastAnnounced = 0;
 		this.chartPanel = null;
 	}

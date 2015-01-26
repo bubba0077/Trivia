@@ -16,7 +16,6 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
-
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -102,7 +101,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this(client);
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		for (final String tabName : initialTabs) {
-			this.book.addTab(tabName, client.getTab(this, tabName));
+			this.book.addTab(tabName, client.getTab(this, tabName.replaceFirst(" \\([0-9]*\\)", "")));
 		}
 		this.book.setSelectedIndex(0);
 		this.book.addChangeListener(this);
@@ -131,7 +130,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.client.registerWindow(this);
 
 		// Create a new panel to hold all GUI elements for the frame
-		final TriviaMainPanel panel = new TriviaMainPanel() {
+		final TriviaMainPanel panel = new TriviaMainPanel(client, this) {
 			private static final long	serialVersionUID	= -3431542881790392652L;
 
 			@Override
@@ -380,7 +379,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				SwingConstants.LEFT, SwingConstants.CENTER);
 
 		// Create drag & drop tabbed pane
-		this.book = new DnDTabbedPane(this, client);
+		this.book = new DnDTabbedPane(client, this);
 
 		// Setup layout constraints
 		constraints.gridx = 0;
@@ -682,7 +681,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	public void playNewAnswerSound() {
-		System.out.println(this.getTitle() + ": " + this.mute);
 		if (!this.mute) {
 			NEW_ANSWER_PLAYER.play();
 		}

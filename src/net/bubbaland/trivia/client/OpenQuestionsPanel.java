@@ -62,9 +62,9 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public OpenQuestionsPanel(TriviaClient client) {
+	public OpenQuestionsPanel(TriviaClient client, TriviaFrame parent) {
 
-		super();
+		super(client, parent);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -107,7 +107,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		/**
 		 * Create the subpanel that will hold the actual questions and put it in a scroll pane
 		 */
-		this.openQuestionsSubPanel = new OpenQuestionsSubPanel(client);
+		this.openQuestionsSubPanel = new OpenQuestionsSubPanel(client, parent);
 		this.scrollPane = new JScrollPane(this.openQuestionsSubPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -206,9 +206,9 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		 * @param client
 		 *            the client
 		 */
-		public OpenQuestionsSubPanel(TriviaClient client) {
+		public OpenQuestionsSubPanel(TriviaClient client, TriviaFrame parent) {
 
-			super();
+			super(client, parent);
 
 			this.client = client;
 			this.nQuestionsMax = client.getTrivia().getMaxQuestions();

@@ -28,19 +28,15 @@ public class ScoreByRoundChartPanel extends TriviaMainPanel {
 	/** The chart panel. */
 	private ChartPanel			chartPanel;
 
-	/** The local client */
-	private final TriviaClient	client;
-
 	/**
 	 * Instantiates a new score by round chart panel.
 	 * 
 	 * @param client
 	 *            the client application
 	 */
-	public ScoreByRoundChartPanel(TriviaClient client) {
-		super();
+	public ScoreByRoundChartPanel(TriviaClient client, TriviaFrame parent) {
+		super(client, parent);
 
-		this.client = client;
 		this.nRounds = client.getTrivia().getNRounds();
 
 		this.values = new int[this.nRounds];

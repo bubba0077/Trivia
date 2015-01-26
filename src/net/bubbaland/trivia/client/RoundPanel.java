@@ -28,13 +28,13 @@ public class RoundPanel extends TriviaMainPanel {
 	 * @param client
 	 *            The local trivia client
 	 */
-	public RoundPanel(TriviaClient client) {
+	public RoundPanel(TriviaClient client, TriviaFrame parent) {
 
-		super();
+		super(client, parent);
 
 		// Create the sub-panels
-		this.roundHeaderPanel = new SummaryPanel(client);
-		this.roundQlistPanel = new RoundQuestionsPanel(client);
+		this.roundHeaderPanel = new SummaryPanel(client, parent);
+		this.roundQlistPanel = new RoundQuestionsPanel(client, parent);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();

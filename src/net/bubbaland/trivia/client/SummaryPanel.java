@@ -56,21 +56,14 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	private final UserListPanel	userListPanel;
 
 	/**
-	 * Data sources
-	 */
-	private final TriviaClient	client;
-
-	/**
 	 * Instantiates a new header panel.
 	 * 
 	 * @param client
 	 *            The local trivia client
 	 */
-	public SummaryPanel(TriviaClient client) {
+	public SummaryPanel(TriviaClient client, TriviaFrame parent) {
 
-		super();
-
-		this.client = client;
+		super(client, parent);
 
 		// Set up layout constraints
 		final GridBagConstraints buttonConstraints = new GridBagConstraints();
@@ -196,7 +189,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		constraints.gridx = 7;
 		constraints.gridy = 0;
 		constraints.gridheight = 3;
-		this.userListPanel = new UserListPanel(client);
+		this.userListPanel = new UserListPanel(client, parent);
 		this.add(this.userListPanel, constraints);
 
 		constraints.gridx = 2;

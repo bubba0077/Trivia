@@ -54,9 +54,9 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 	 *            The local trivia client
 	 * 
 	 */
-	public ScoreByRoundPanel(TriviaClient client) {
+	public ScoreByRoundPanel(TriviaClient client, TriviaFrame parent) {
 
-		super();
+		super(client, parent);
 
 		// Set up the layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -166,7 +166,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		constraints.gridwidth = 11;
-		this.internalScrollPanel = new InternalScrollPanel(client);
+		this.internalScrollPanel = new InternalScrollPanel(client, parent);
 		final JScrollPane scrollPane = new JScrollPane(this.internalScrollPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
@@ -294,9 +294,6 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		/** The nunber of rounds */
 		final private int			nRounds;
 
-		/** Data sources */
-		final private TriviaClient	client;
-
 		/**
 		 * Instantiates a new internal scroll panel.
 		 * 
@@ -305,10 +302,8 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		 * @param client
 		 *            the client application
 		 */
-		public InternalScrollPanel(TriviaClient client) {
-			super();
-
-			this.client = client;
+		public InternalScrollPanel(TriviaClient client, TriviaFrame parent) {
+			super(client, parent);
 
 			this.nRounds = client.getTrivia().getNRounds();
 

@@ -76,16 +76,16 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	private final TriviaClient						client;
 	private final JPopupMenu						closeMenu;
 
-	private final TriviaFrame						parent;
+	private final TriviaFrame						frame;
 	private final JPanel							blankPanel;
 
 	private static final ImageIcon					addTabIcon			= new ImageIcon(
 																				DnDTabbedPane.class
 																						.getResource("images/plus.png"));
 
-	public DnDTabbedPane(TriviaFrame parent, TriviaClient client) {
+	public DnDTabbedPane(TriviaClient client, TriviaFrame frame) {
 		super();
-		this.parent = parent;
+		this.frame = frame;
 		this.client = client;
 		this.tearTab = new TearAwayTab(client);
 		this.blankPanel = new JPanel();
@@ -252,7 +252,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	public void mouseClicked(MouseEvent event) {
 		final int addButtonIndex = this.indexOfComponent(this.blankPanel);
 		if (addButtonIndex > -1 && this.getBoundsAt(addButtonIndex).contains(event.getPoint())) {
-			new AddTabDialog(this.parent, this.client);
+			new AddTabDialog(this.client, this.frame);
 		}
 	}
 
@@ -317,6 +317,9 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 		if (this != source) {
 			source.remove(sourceIndex);
+			if (cmp instanceof TriviaMainPanel) {
+				( (TriviaMainPanel) cmp ).changeFrame(this.frame);
+			}
 
 			if (a_targetIndex == this.getTabCount()) {
 				this.addTab(str, cmp);
@@ -324,15 +327,14 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 			} else {
 				if (a_targetIndex < 0) {
 					a_targetIndex = 0;
-				} // if
+				}
 
 				this.insertTab(str, null, cmp, null, a_targetIndex);
 				this.setTabComponentAt(a_targetIndex, tcmp);
-			} // if
-
+			}
 			this.setSelectedComponent(cmp);
 			return;
-		} // if
+		}
 		if (a_targetIndex < 0 || sourceIndex == a_targetIndex) return;
 		if (a_targetIndex == this.getTabCount()) {
 			source.remove(sourceIndex);
