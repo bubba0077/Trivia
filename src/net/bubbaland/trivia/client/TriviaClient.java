@@ -61,10 +61,6 @@ public class TriviaClient implements WindowListener {
 	final static protected String					KVSC_URL					= "http://www.kvsc.org/trivia_news.php";
 	// URL base for Visual Trivia Pages
 	final static protected String					VISUAL_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/visual-trivia/visual-trivia-";
-	// URL for the IRC client
-	final static protected String					IRC_CLIENT_URL				= "http://webchat.freenode.net/";
-	// IRC channel to join on connection to IRC server
-	final static protected String					IRC_CHANNEL					= "%23kneedeeptrivia";
 	// File name of font
 	final static private String						FONT_FILENAME				= "fonts/tahoma.ttf";
 	// File name to store window positions

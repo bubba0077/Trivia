@@ -949,8 +949,16 @@ public class Round implements Serializable {
 	 *            The confidence in the answer
 	 */
 	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) {
-		this.answerQueue.add(new Answer(this.answerQueue.size() + 1, qNumber, answer, submitter, confidence));
+		final int queueIndex = this.answerQueue.size();
+		this.answerQueue.add(new Answer(queueIndex + 1, qNumber, answer, submitter, confidence));
 		this.version++;
+		for (Answer answerCheck : this.answerQueue) {
+			if (answerCheck.getQueueLocation() != queueIndex + 1 && answerCheck.getQNumber() == qNumber
+					&& answerCheck.getAnswer().replaceAll("\\s+", "").equalsIgnoreCase(answer.replaceAll("\\s+", ""))) {
+				this.markDuplicate(queueIndex);
+				System.out.println("Automatically marked answer #" + ( queueIndex + 1 ) + " as duplicate.");
+			}
+		}
 	}
 
 	public void remapQuestion(int oldQNumber, int newQNumber) {
