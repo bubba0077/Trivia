@@ -7,6 +7,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +17,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
+
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -211,7 +213,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 			this.hideClosedMenuItem = new JCheckBoxMenuItem("Hide answers to closed questions");
 			this.hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
-			this.hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+			this.hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, Toolkit.getDefaultToolkit()
+					.getMenuShortcutKeyMask()));
 			this.hideClosedMenuItem.setSelected(this.hideClosed);
 			this.hideClosedMenuItem.setActionCommand("Hide Closed");
 			this.hideClosedMenuItem.addActionListener(this);
@@ -220,7 +223,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.hideDuplicatesMenuItem = new JCheckBoxMenuItem("Hide duplicate answers");
 			this.hideDuplicatesMenuItem.setMnemonic(KeyEvent.VK_D);
 			this.hideDuplicatesMenuItem.setDisplayedMnemonicIndex(5);
-			this.hideDuplicatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+			this.hideDuplicatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit
+					.getDefaultToolkit().getMenuShortcutKeyMask()));
 			this.hideDuplicatesMenuItem.setSelected(this.hideDuplicates);
 			this.hideDuplicatesMenuItem.setActionCommand("Hide Duplicates");
 			this.hideDuplicatesMenuItem.addActionListener(this);
@@ -228,7 +232,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 			this.muteMenuItem = new JCheckBoxMenuItem("Mute new answer notification");
 			this.muteMenuItem.setMnemonic(KeyEvent.VK_M);
-			this.muteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, ActionEvent.CTRL_MASK));
+			this.muteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, Toolkit.getDefaultToolkit()
+					.getMenuShortcutKeyMask()));
 			this.muteMenuItem.setSelected(this.mute);
 			this.muteMenuItem.setActionCommand("Mute");
 			this.muteMenuItem.addActionListener(this);
@@ -243,8 +248,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 			final ButtonGroup sortOptions = new ButtonGroup();
 			this.sortTimestampAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
-			this.sortTimestampAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
-					ActionEvent.CTRL_MASK));
+			this.sortTimestampAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit
+					.getDefaultToolkit().getMenuShortcutKeyMask()));
 			this.sortTimestampAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
 			this.sortTimestampAscendingMenuItem.setActionCommand("Sort Timestamp Ascending");
 			this.sortTimestampAscendingMenuItem.addActionListener(this);
@@ -255,8 +260,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			timestampSort.add(this.sortTimestampAscendingMenuItem);
 
 			this.sortTimestampDescendingMenuItem = new JRadioButtonMenuItem("Descending");
-			this.sortTimestampDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
-					ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+			this.sortTimestampDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit
+					.getDefaultToolkit().getMenuShortcutKeyMask() + ActionEvent.SHIFT_MASK));
 			this.sortTimestampDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
 			this.sortTimestampDescendingMenuItem.setActionCommand("Sort Timestamp Descending");
 			this.sortTimestampDescendingMenuItem.addActionListener(this);
@@ -271,8 +276,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			sortMenu.add(qNumberSort);
 
 			this.sortQNumberAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
-			this.sortQNumberAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
-					ActionEvent.CTRL_MASK));
+			this.sortQNumberAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit
+					.getDefaultToolkit().getMenuShortcutKeyMask()));
 			this.sortQNumberAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
 			this.sortQNumberAscendingMenuItem.setActionCommand("Sort Question Number Ascending");
 			this.sortQNumberAscendingMenuItem.addActionListener(this);
@@ -283,8 +288,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			qNumberSort.add(this.sortQNumberAscendingMenuItem);
 
 			this.sortQNumberDescendingMenuItem = new JRadioButtonMenuItem("Descending");
-			this.sortQNumberDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
-					ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+			this.sortQNumberDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit
+					.getDefaultToolkit().getMenuShortcutKeyMask() + ActionEvent.SHIFT_MASK));
 			this.sortQNumberDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
 			this.sortQNumberDescendingMenuItem.setActionCommand("Sort Question Number Descending");
 			this.sortQNumberDescendingMenuItem.addActionListener(this);
@@ -299,8 +304,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			sortMenu.add(statusSort);
 
 			this.sortStatusAscendingMenuItem = new JRadioButtonMenuItem("Ascending");
-			this.sortStatusAscendingMenuItem.setAccelerator(KeyStroke
-					.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+			this.sortStatusAscendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit
+					.getDefaultToolkit().getMenuShortcutKeyMask()));
 			this.sortStatusAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
 			this.sortStatusAscendingMenuItem.setActionCommand("Sort Status Ascending");
 			this.sortStatusAscendingMenuItem.addActionListener(this);
@@ -311,8 +316,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			statusSort.add(this.sortStatusAscendingMenuItem);
 
 			this.sortStatusDescendingMenuItem = new JRadioButtonMenuItem("Descending");
-			this.sortStatusDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-					ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
+			this.sortStatusDescendingMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit
+					.getDefaultToolkit().getMenuShortcutKeyMask() + ActionEvent.SHIFT_MASK));
 			this.sortStatusDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
 			this.sortStatusDescendingMenuItem.setActionCommand("Sort Status Descending");
 			this.sortStatusDescendingMenuItem.addActionListener(this);
@@ -328,19 +333,22 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			final JMenu infoMenu = new JMenu("External");
 			infoMenu.setMnemonic(KeyEvent.VK_I);
 			menuItem = new JMenuItem("KVSC");
-			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, ActionEvent.CTRL_MASK));
+			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit()
+					.getMenuShortcutKeyMask()));
 			menuItem.setActionCommand("Open KVSC");
 			menuItem.addActionListener(this);
 			infoMenu.add(menuItem);
 
 			menuItem = new JMenuItem("Wiki", KeyEvent.VK_W);
 			menuItem.setActionCommand("Open wiki");
-			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit()
+					.getMenuShortcutKeyMask()));
 			menuItem.addActionListener(this);
 			infoMenu.add(menuItem);
 
 			menuItem = new JMenuItem("Bugs/Requests", KeyEvent.VK_I);
-			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
+			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit()
+					.getMenuShortcutKeyMask()));
 			menuItem.setActionCommand("Open issues");
 			menuItem.addActionListener(this);
 			infoMenu.add(menuItem);
