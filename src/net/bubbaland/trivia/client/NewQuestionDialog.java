@@ -198,7 +198,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			final int existingQValue = trivia.getValue(currentRound, qNumber);
 			final String existingQText = trivia.getQuestionText(currentRound, qNumber);
 
-			if (qNumberStart != qNumber && trivia.isOpen(qNumberStart) && !trivia.beenOpen(currentRound, qNumber)) {
+			if (qNumberStart != qNumber && trivia.getValue(currentRound, qNumberStart) != 0
+					&& !trivia.beenOpen(currentRound, qNumber)) {
 				this.removeAll();
 
 				GridBagConstraints constraints = new GridBagConstraints();
