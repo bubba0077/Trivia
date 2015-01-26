@@ -223,6 +223,20 @@ public class UserListPanel extends TriviaMainPanel {
 				}
 			} else {
 				color = idleColor;
+				if (UserListPanel.this.idleUserHash.get(value) != null) {
+					switch (UserListPanel.this.idleUserHash.get(value)) {
+						case CALLER:
+							icon = callerIcon;
+							break;
+						case TYPIST:
+							icon = pencilIcon;
+							break;
+						case RESEARCHER:
+							break;
+						default:
+							break;
+					}
+				}
 				if (index == UserListPanel.this.activeUserHash.size()) {
 					this.setHorizontalAlignment(CENTER);
 				}

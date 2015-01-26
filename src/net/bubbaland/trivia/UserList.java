@@ -14,14 +14,10 @@ public class UserList {
 	/** Data */
 	// User list that is tracks when the user makes a change
 	private final Hashtable<String, Date>	activeUserList;
-
 	// User list that is tracks when a data refresh is requested
 	private final Hashtable<String, Date>	passiveUserList;
 	// List of user roles
 	private final Hashtable<String, Role>	roleList;
-
-	// List of user idleness
-	// private final Hashtable<String, Boolean> idleList;
 
 	/**
 	 * Create a new empty user list.
@@ -30,7 +26,6 @@ public class UserList {
 		this.activeUserList = new Hashtable<String, Date>(0);
 		this.passiveUserList = new Hashtable<String, Date>(0);
 		this.roleList = new Hashtable<String, Role>(0);
-		// this.idleList = new Hashtable<String, Boolean>(0);
 	}
 
 	/**
@@ -99,7 +94,7 @@ public class UserList {
 			final Date lastDate = this.passiveUserList.get(user);
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
 			if (diff < timeout) {
-				userHash.put(user, Role.IDLE);
+				userHash.put(user, this.roleList.get(user));
 			}
 		}
 
@@ -157,7 +152,7 @@ public class UserList {
 	}
 
 	public enum Role {
-		TYPIST, CALLER, RESEARCHER, IDLE
+		TYPIST, CALLER, RESEARCHER
 	}
 
 
