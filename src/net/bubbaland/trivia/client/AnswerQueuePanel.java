@@ -40,6 +40,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import net.bubbaland.trivia.Answer;
 import net.bubbaland.trivia.Trivia;
@@ -463,7 +465,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	/**
 	 * A panel that will show the current answer queue
 	 */
-	private class AnswerQueueSubPanel extends TriviaMainPanel implements ItemListener, ActionListener {
+	private class AnswerQueueSubPanel extends TriviaMainPanel implements ItemListener, ActionListener,
+			PopupMenuListener {
 
 		/** The Constant serialVersionUID */
 		private static final long					serialVersionUID	= -5462544756397828556L;
@@ -481,6 +484,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		final private ArrayList<JToggleButton>		agreeButtons;
 		final private Hashtable<Integer, Boolean>	agreements;
 		private final JPopupMenu					contextMenu;
+		private String								activeComboBox;
 
 		/**
 		 * Data
@@ -532,6 +536,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.answerTextAreas = new ArrayList<JTextArea>(0);
 			this.lastStatus = new ArrayList<String>(0);
 
+			this.activeComboBox = null;
 		}
 
 		/*
@@ -623,7 +628,13 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			if (source instanceof JComboBox<?> && event.getStateChange() == ItemEvent.SELECTED) {
 				// Event was a change to the status combo box
 				final String newStatus = (String) ( ( (JComboBox<String>) source ).getSelectedItem() );
-				final int queueIndex = Integer.parseInt(( (JComboBox<String>) source ).getName());
+				String comboBoxName = null;
+				if (this.activeComboBox != null) {
+					comboBoxName = this.activeComboBox;
+				} else {
+					comboBoxName = ( (JComboBox<String>) source ).getName();
+				}
+				final int queueIndex = Integer.parseInt(comboBoxName);
 
 				// Update status on server
 				int tryNumber = 0;
@@ -1077,6 +1088,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.statusComboBoxes.add(new JComboBox<String>(STATUSES));
 			this.statusComboBoxes.get(a).setName(a + "");
 			this.statusComboBoxes.get(a).addItemListener(this);
+			this.statusComboBoxes.get(a).addPopupMenuListener(this);
 			this.statusComboBoxes.get(a).setRenderer(
 					new StatusCellRenderer((ListCellRenderer<String>) this.statusComboBoxes.get(a).getRenderer(),
 							this.statusComboBoxes.get(a)));
@@ -1181,6 +1193,21 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				}
 			}
 
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+			this.activeComboBox = ( (JComboBox<String>) e.getSource() ).getName();
+		}
+
+		@Override
+		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+			this.activeComboBox = null;
+		}
+
+		@Override
+		public void popupMenuCanceled(PopupMenuEvent e) {
 		}
 	}
 
