@@ -31,18 +31,17 @@ public abstract class TriviaMainPanel extends TriviaPanel {
 	}
 
 	public void changeFrame(TriviaFrame newFrame) {
-		System.out.println("Frame changed, new frame " + newFrame.getTitle());
 		this.frame = newFrame;
 	}
 
 	/**
 	 * Requires all sub-classes to have a method that updates their contents.
 	 */
-	public void update() {
-		this.update(false);
+	public void updateGUI() {
+		this.updateGUI(false);
 	}
 
-	public abstract void update(boolean forceUpdate);
+	public abstract void updateGUI(boolean forceUpdate);
 
 	protected abstract void loadProperties(Properties properties);
 

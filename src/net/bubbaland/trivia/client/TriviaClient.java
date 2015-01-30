@@ -18,14 +18,12 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -38,6 +36,7 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaChartFactory;
+import net.bubbaland.trivia.TriviaClientInterface;
 import net.bubbaland.trivia.TriviaInterface;
 import net.bubbaland.trivia.UserList.Role;
 
@@ -51,7 +50,12 @@ import java.util.Calendar;
  * @author Walter Kolczynski
  * 
  */
-public class TriviaClient implements WindowListener {
+public class TriviaClient extends UnicastRemoteObject implements TriviaClientInterface, WindowListener {
+
+	/**
+	 * 
+	 */
+	private static final long						serialVersionUID			= 1L;
 
 	// URL for Wiki
 	final static protected String					WIKI_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
@@ -76,12 +80,6 @@ public class TriviaClient implements WindowListener {
 
 	//
 	final static protected String					NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
-
-	// static Player newAnswerPlayer NEW_ANSWER_PLAYER;
-	//
-	// static {
-	//
-	// }
 
 	/**
 	 * Setup properties
@@ -173,10 +171,12 @@ public class TriviaClient implements WindowListener {
 	private volatile String							user;
 	// The user's role
 	private volatile Role							role;
+
+
 	// Hashtable of active users and roles
 	private volatile Hashtable<String, Role>		activeUserHash;
 	// Hashtable of idle users and roles
-	private volatile Hashtable<String, Role>		passiveUserHash;
+	private volatile Hashtable<String, Role>		idleUserHash;
 
 	// The remote server
 	private final TriviaInterface					server;
@@ -189,12 +189,14 @@ public class TriviaClient implements WindowListener {
 	 * @param server
 	 *            The RMI Server
 	 */
-	private TriviaClient(TriviaInterface server) {
+	private TriviaClient(TriviaInterface server) throws RemoteException {
 
 		this.server = server;
 
 		// Initialize list to hold open windows
 		this.windowList = new ArrayList<TriviaFrame>(0);
+		this.activeUserHash = new Hashtable<String, Role>(0);
+		this.idleUserHash = new Hashtable<String, Role>(0);
 
 		// Grab a copy of the current Trivia data structure from the server in the background
 		final TriviaFetcher fetcher = new TriviaFetcher(server, this);
@@ -216,20 +218,43 @@ public class TriviaClient implements WindowListener {
 
 		// Wait for trivia object to finish downloading
 		while (this.trivia == null) {
+			System.out.println("Awaiting trivia object from server...");
 			try {
 				Thread.sleep(10);
 			} catch (final InterruptedException exception) {
 			}
 		}
 
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				TriviaClient.this.updateGUI();
+			}
+		});
+
+		try {
+			this.server.connect(this);
+			this.log("Successfully connected to server");
+		} catch (RemoteException exception1) {
+			this.disconnected();
+		}
+
 		// Create timer that will poll server for changes
-		final Timer refreshTimer = new Timer();
-		refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0,
-				Integer.parseInt(PROPERTIES.getProperty("RefreshRate")));
+		// final Timer refreshTimer = new Timer();
+		// refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0,
+		// Integer.parseInt(PROPERTIES.getProperty("RefreshRate")));
 
 
 		// Post welcome to status bar
 		this.log("Welcome " + this.user);
+	}
+
+	public int[] getVersions() {
+		return this.trivia.getVersions();
+	}
+
+	public int getCurrentRoundNumber() {
+		return this.trivia.getCurrentRoundNumber();
 	}
 
 	/**
@@ -272,8 +297,8 @@ public class TriviaClient implements WindowListener {
 	 * 
 	 * @return The hashtable of users and roles
 	 */
-	public Hashtable<String, Role> getPassiveUserHash() {
-		return this.passiveUserHash;
+	public Hashtable<String, Role> getIdleUserHash() {
+		return this.idleUserHash;
 	}
 
 	/**
@@ -457,7 +482,7 @@ public class TriviaClient implements WindowListener {
 			tryNumber++;
 			try {
 				if (this.user == null) {
-					this.server.login(user);
+					// this.server.login(user);
 				} else {
 					this.server.changeUser(this.user, user);
 				}
@@ -489,9 +514,11 @@ public class TriviaClient implements WindowListener {
 	/**
 	 * Update all of the child windows.
 	 */
-	public void update() {
+	public void updateGUI() {
+		System.out.println("Updating GUI");
+		System.out.println(Arrays.toString(this.trivia.getVersions()));
 		for (final TriviaFrame frame : this.windowList) {
-			frame.update(false);
+			frame.updateGUI(false);
 		}
 	}
 
@@ -709,7 +736,11 @@ public class TriviaClient implements WindowListener {
 
 		System.out.println("Connected to trivia server (" + serverURL + ").");
 
-		new TriviaClient(triviaServer);
+		try {
+			new TriviaClient(triviaServer);
+		} catch (RemoteException exception) {
+
+		}
 	}
 
 	/**
@@ -726,60 +757,48 @@ public class TriviaClient implements WindowListener {
 		}
 	}
 
-	/**
-	 * Task to run in the background and periodically update trivia data from the server.
-	 * 
-	 * @author Walter Kolczynski
-	 * 
-	 */
-	private static class RefreshTask extends TimerTask {
-
-		final TriviaClient	client;
-
-		public RefreshTask(TriviaClient client) {
-			this.client = client;
-		}
-
-		@Override
-		public void run() {
-			Round[] newRounds = null;
-			final int[] oldVersions = this.client.trivia.getVersions();
-			int currentRound = 0;
-
-			final int userListWindow = Integer.parseInt(PROPERTIES.getProperty("UserList.ActiveWindow"));
-			final int userListTimeout = Integer.parseInt(PROPERTIES.getProperty("UserList.Timeout"));
-
-			// Synchronize the local Trivia data to match the server
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					this.client.activeUserHash = this.client.server.getActiveUsers(userListWindow, userListTimeout);
-					this.client.passiveUserHash = this.client.server.getIdleUsers(userListWindow, userListTimeout);
-					newRounds = this.client.server.getChangedRounds(this.client.getUser(), oldVersions);
-					currentRound = this.client.server.getCurrentRound();
-					success = true;
-				} catch (final RemoteException e) {
-					this.client.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
-				}
+	public synchronized void updateRound(int currentRound) {
+		this.trivia.setCurrentRound(currentRound);
+		log("Received round change");
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				TriviaClient.this.updateGUI();
 			}
+		});
+	}
 
-			if (!success) {
-				this.client.disconnected();
-				return;
+	public synchronized void updateTrivia(Round[] newRounds) {
+		this.trivia.updateRounds(newRounds);
+		log("Received data change");
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				TriviaClient.this.updateGUI();
 			}
+		});
+	}
 
-			this.client.trivia.updateRounds(newRounds);
-			this.client.trivia.setCurrentRound(currentRound);
+	public synchronized void updateActiveUsers(Hashtable<String, Role> newActiveUserList) {
+		this.activeUserHash = newActiveUserList;
+		log("Received active user change");
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				TriviaClient.this.updateGUI();
+			}
+		});
+	}
 
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					RefreshTask.this.client.update();
-				}
-			});
-		}
+	public synchronized void updateIdleUsers(Hashtable<String, Role> newIdleUserList) {
+		this.idleUserHash = newIdleUserList;
+		log("Received idle user change");
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				TriviaClient.this.updateGUI();
+			}
+		});
 	}
 
 	/**

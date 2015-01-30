@@ -136,7 +136,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			private static final long	serialVersionUID	= -3431542881790392652L;
 
 			@Override
-			public void update(boolean forceUpdate) {
+			public void updateGUI(boolean forceUpdate) {
 			}
 
 			@Override
@@ -424,46 +424,46 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			case "Hide Closed":
 				// Triggered by change to Hide Closed menu item
 				this.hideClosed = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
-				this.update(true);
+				this.updateGUI(true);
 				break;
 			case "Hide Duplicates":
 				// Triggered by change to Hide Closed menu item
 				this.hideDuplicates = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
-				this.update(true);
+				this.updateGUI(true);
 				break;
 			case "Mute":
 				this.mute = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
-				this.update(true);
+				this.updateGUI(true);
 				break;
 			case "Sort Timestamp Ascending":
 				// Triggered by Timestamp Sort menu item
 				this.setSort(QueueSort.TIMESTAMP_ASCENDING);
-				this.update(true);
+				this.updateGUI(true);
 				break;
 			case "Sort Question Number Ascending":
 				// Triggered by Question Number Sort menu item
 				this.setSort(QueueSort.QNUMBER_ASCENDING);
-				this.update(true);
+				this.updateGUI(true);
 				break;
 			case "Sort Status Ascending":
 				// Triggered by Status Sort menu item
 				this.setSort(QueueSort.STATUS_ASCENDING);
-				this.update(true);
+				this.updateGUI(true);
 				break;
 			case "Sort Timestamp Descending":
 				// Triggered by Timestamp Sort menu item
 				this.setSort(QueueSort.TIMESTAMP_DESCENDING);
-				this.update(true);
+				this.updateGUI(true);
 				break;
 			case "Sort Question Number Descending":
 				// Triggered by Question Number Sort menu item
 				this.setSort(QueueSort.QNUMBER_DESCENDING);
-				this.update(true);
+				this.updateGUI(true);
 				break;
 			case "Sort Status Descending":
 				// Triggered by Status Sort menu item
 				this.setSort(QueueSort.STATUS_DESCENDING);
-				this.update(true);
+				this.updateGUI(true);
 				break;
 			case "Caller":
 				// Triggered by Caller Role menu item
@@ -694,7 +694,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 	}
 
-	public void update(boolean forceUpdate) {
+	public void updateGUI(boolean forceUpdate) {
 		// Update role
 		final Role role = this.client.getRole();
 		switch (role) {
@@ -715,7 +715,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			final int index = this.book.indexOfTab(tabName);
 			final Component component = this.book.getComponentAt(index);
 			if (component instanceof TriviaMainPanel) {
-				( (TriviaMainPanel) this.book.getComponentAt(index) ).update(forceUpdate);
+				( (TriviaMainPanel) this.book.getComponentAt(index) ).updateGUI(forceUpdate);
 			}
 		}
 	}

@@ -31,7 +31,8 @@ public class Trivia implements Serializable {
 	private int					nTeams;
 
 	// The current round
-	private volatile Round		currentRound;
+	// private volatile Round currentRound;
+	private volatile int		rNumber;
 
 	// Array of all the rounds in the contest
 	private volatile Round[]	rounds;
@@ -55,7 +56,8 @@ public class Trivia implements Serializable {
 		for (int r = 0; r < nRounds; r++) {
 			this.rounds[r] = new Round(teamName, r + 1, nQuestionsSpeed, nQuestions);
 		}
-		this.currentRound = this.rounds[0];
+		// this.getCurrentRound() = this.rounds[0];
+		this.rNumber = 1;
 		this.nTeams = 100;
 	}
 
@@ -81,7 +83,7 @@ public class Trivia implements Serializable {
 	 *            The caller's name
 	 */
 	public void callIn(int queueIndex, String caller) {
-		this.currentRound.callIn(queueIndex, caller);
+		this.getCurrentRound().callIn(queueIndex, caller);
 	}
 
 	/**
@@ -107,7 +109,7 @@ public class Trivia implements Serializable {
 	 *            TODO
 	 */
 	public void close(int qNumber, String answer) {
-		this.currentRound.close(qNumber, answer);
+		this.getCurrentRound().close(qNumber, answer);
 	}
 
 	/**
@@ -204,7 +206,7 @@ public class Trivia implements Serializable {
 	 * @return The Answers
 	 */
 	public Answer[] getAnswerQueue() {
-		return this.currentRound.getAnswerQueue();
+		return this.getCurrentRound().getAnswerQueue();
 	}
 
 
@@ -225,7 +227,7 @@ public class Trivia implements Serializable {
 	 * @return The answer text
 	 */
 	public String getAnswerQueueAnswer(int queueIndex) {
-		return this.currentRound.getAnswerQueueAnswer(queueIndex);
+		return this.getCurrentRound().getAnswerQueueAnswer(queueIndex);
 	}
 
 	/**
@@ -234,7 +236,7 @@ public class Trivia implements Serializable {
 	 * @return Array of answers
 	 */
 	public String[] getAnswerQueueAnswers() {
-		return this.currentRound.getAnswerQueueAnswers();
+		return this.getCurrentRound().getAnswerQueueAnswers();
 	}
 
 	/**
@@ -245,7 +247,7 @@ public class Trivia implements Serializable {
 	 * @return The caller's name
 	 */
 	public String getAnswerQueueCaller(int queueIndex) {
-		return this.currentRound.getAnswerQueueCaller(queueIndex);
+		return this.getCurrentRound().getAnswerQueueCaller(queueIndex);
 	}
 
 	/**
@@ -254,7 +256,7 @@ public class Trivia implements Serializable {
 	 * @return Array of caller names
 	 */
 	public String[] getAnswerQueueCallers() {
-		return this.currentRound.getAnswerQueueCallers();
+		return this.getCurrentRound().getAnswerQueueCallers();
 	}
 
 	/**
@@ -265,7 +267,7 @@ public class Trivia implements Serializable {
 	 * @return The confidence
 	 */
 	public int getAnswerQueueConfidence(int queueIndex) {
-		return this.currentRound.getAnswerQueueConfidence(queueIndex);
+		return this.getCurrentRound().getAnswerQueueConfidence(queueIndex);
 	}
 
 	/**
@@ -274,7 +276,7 @@ public class Trivia implements Serializable {
 	 * @return Array of confidences
 	 */
 	public int[] getAnswerQueueConfidences() {
-		return this.currentRound.getAnswerQueueConfidences();
+		return this.getCurrentRound().getAnswerQueueConfidences();
 	}
 
 	/**
@@ -285,7 +287,7 @@ public class Trivia implements Serializable {
 	 * @return The operator
 	 */
 	public String getAnswerQueueOperator(int queueIndex) {
-		return this.currentRound.getAnswerQueueOperator(queueIndex);
+		return this.getCurrentRound().getAnswerQueueOperator(queueIndex);
 	}
 
 	/**
@@ -294,7 +296,7 @@ public class Trivia implements Serializable {
 	 * @return Array of operators
 	 */
 	public String[] getAnswerQueueOperators() {
-		return this.currentRound.getAnswerQueueOperators();
+		return this.getCurrentRound().getAnswerQueueOperators();
 	}
 
 	/**
@@ -305,7 +307,7 @@ public class Trivia implements Serializable {
 	 * @return The question number
 	 */
 	public int getAnswerQueueQNumber(int queueIndex) {
-		return this.currentRound.getAnswerQueueQNumber(queueIndex);
+		return this.getCurrentRound().getAnswerQueueQNumber(queueIndex);
 	}
 
 	/**
@@ -314,7 +316,7 @@ public class Trivia implements Serializable {
 	 * @return Array of question numbers
 	 */
 	public int[] getAnswerQueueQNumbers() {
-		return this.currentRound.getAnswerQueueQNumbers();
+		return this.getCurrentRound().getAnswerQueueQNumbers();
 	}
 
 	/**
@@ -323,7 +325,7 @@ public class Trivia implements Serializable {
 	 * @return The answer queue size
 	 */
 	public int getAnswerQueueSize() {
-		return this.currentRound.getAnswerQueueSize();
+		return this.getCurrentRound().getAnswerQueueSize();
 	}
 
 	/**
@@ -334,7 +336,7 @@ public class Trivia implements Serializable {
 	 * @return The answer status
 	 */
 	public String getAnswerQueueStatus(int queueIndex) {
-		return this.currentRound.getAnswerQueueStatus(queueIndex);
+		return this.getCurrentRound().getAnswerQueueStatus(queueIndex);
 	}
 
 	/**
@@ -343,7 +345,7 @@ public class Trivia implements Serializable {
 	 * @return Array of statuses
 	 */
 	public String[] getAnswerQueueStatuses() {
-		return this.currentRound.getAnswerQueueStatus();
+		return this.getCurrentRound().getAnswerQueueStatus();
 	}
 
 	/**
@@ -354,7 +356,7 @@ public class Trivia implements Serializable {
 	 * @return The submitter's name
 	 */
 	public String getAnswerQueueSubmitter(int queueIndex) {
-		return this.currentRound.getAnswerQueueSubmitter(queueIndex);
+		return this.getCurrentRound().getAnswerQueueSubmitter(queueIndex);
 	}
 
 	/**
@@ -363,7 +365,7 @@ public class Trivia implements Serializable {
 	 * @return Array of submitters' names
 	 */
 	public String[] getAnswerQueueSubmitters() {
-		return this.currentRound.getAnswerQueueSubmitters();
+		return this.getCurrentRound().getAnswerQueueSubmitters();
 	}
 
 	/**
@@ -374,7 +376,7 @@ public class Trivia implements Serializable {
 	 * @return The timestamp of the proposed answer
 	 */
 	public String getAnswerQueueTimestamp(int queueIndex) {
-		return this.currentRound.getAnswerQueueTimestamp(queueIndex);
+		return this.getCurrentRound().getAnswerQueueTimestamp(queueIndex);
 	}
 
 	/**
@@ -383,7 +385,7 @@ public class Trivia implements Serializable {
 	 * @return Array of timestamps
 	 */
 	public String[] getAnswerQueueTimestamps() {
-		return this.currentRound.getAnswerQueueTimestamps();
+		return this.getCurrentRound().getAnswerQueueTimestamps();
 	}
 
 	/**
@@ -455,7 +457,7 @@ public class Trivia implements Serializable {
 	 * @return The points earned
 	 */
 	public int getCurrentRoundEarned() {
-		return this.currentRound.getEarned();
+		return this.getCurrentRound().getEarned();
 	}
 
 	/**
@@ -464,7 +466,11 @@ public class Trivia implements Serializable {
 	 * @return The current round number
 	 */
 	public int getCurrentRoundNumber() {
-		return this.currentRound.getRoundNumber();
+		return this.rNumber;
+	}
+
+	private Round getCurrentRound() {
+		return this.rounds[this.rNumber - 1];
 	}
 
 	/**
@@ -473,7 +479,7 @@ public class Trivia implements Serializable {
 	 * @return The value
 	 */
 	public int getCurrentRoundValue() {
-		return this.currentRound.getValue();
+		return this.getCurrentRound().getValue();
 	}
 
 	/**
@@ -606,7 +612,7 @@ public class Trivia implements Serializable {
 	 * @return The number of questions
 	 */
 	public int getNQuestions() {
-		return this.currentRound.getNQuestions();
+		return this.getCurrentRound().getNQuestions();
 	}
 
 	/**
@@ -644,7 +650,7 @@ public class Trivia implements Serializable {
 	 * @return Array of question numbers
 	 */
 	public int[] getOpenQuestionNumbers() {
-		return this.currentRound.getOpenQuestionNumbers();
+		return this.getCurrentRound().getOpenQuestionNumbers();
 	}
 
 	/**
@@ -653,7 +659,7 @@ public class Trivia implements Serializable {
 	 * @return Array of questions
 	 */
 	public String[] getOpenQuestionText() {
-		return this.currentRound.getOpenQuestionText();
+		return this.getCurrentRound().getOpenQuestionText();
 	}
 
 	/**
@@ -662,7 +668,7 @@ public class Trivia implements Serializable {
 	 * @return Array of question values
 	 */
 	public String[] getOpenQuestionValues() {
-		return this.currentRound.getOpenQuestionValues();
+		return this.getCurrentRound().getOpenQuestionValues();
 	}
 
 	/**
@@ -686,7 +692,7 @@ public class Trivia implements Serializable {
 	 * @return The question text
 	 */
 	public String getQuestionText(int qNumber) {
-		return this.currentRound.getQuestionText(qNumber);
+		return this.getCurrentRound().getQuestionText(qNumber);
 	}
 
 	/**
@@ -812,7 +818,7 @@ public class Trivia implements Serializable {
 	 * @return true, if the round is a speed round
 	 */
 	public boolean isCurrentSpeed() {
-		return this.currentRound.isSpeed();
+		return this.getCurrentRound().isSpeed();
 	}
 
 	/**
@@ -823,7 +829,7 @@ public class Trivia implements Serializable {
 	 * @return true, if the question is open
 	 */
 	public boolean isOpen(int qNumber) {
-		return this.currentRound.isOpen(qNumber);
+		return this.getCurrentRound().isOpen(qNumber);
 	}
 
 	/**
@@ -879,7 +885,7 @@ public class Trivia implements Serializable {
 	 *            The operator who accepted the answer
 	 */
 	public void markCorrect(int queueIndex, String caller, String operator) {
-		this.currentRound.markCorrect(queueIndex, caller, operator);
+		this.getCurrentRound().markCorrect(queueIndex, caller, operator);
 	}
 
 	/**
@@ -889,7 +895,7 @@ public class Trivia implements Serializable {
 	 *            The location of the answer in the queue
 	 */
 	public void markDuplicate(int queueIndex) {
-		this.currentRound.markDuplicate(queueIndex);
+		this.getCurrentRound().markDuplicate(queueIndex);
 	}
 
 	/**
@@ -901,7 +907,7 @@ public class Trivia implements Serializable {
 	 *            The caller's name
 	 */
 	public void markIncorrect(int queueIndex, String caller) {
-		this.currentRound.markIncorrect(queueIndex, caller);
+		this.getCurrentRound().markIncorrect(queueIndex, caller);
 	}
 
 	/**
@@ -913,7 +919,7 @@ public class Trivia implements Serializable {
 	 *            The caller's name
 	 */
 	public void markPartial(int queueIndex, String caller) {
-		this.currentRound.markPartial(queueIndex, caller);
+		this.getCurrentRound().markPartial(queueIndex, caller);
 	}
 
 	/**
@@ -923,17 +929,16 @@ public class Trivia implements Serializable {
 	 *            The location of the answer in the queue
 	 */
 	public void markUncalled(int queueIndex) {
-		this.currentRound.markUncalled(queueIndex);
+		this.getCurrentRound().markUncalled(queueIndex);
 	}
 
 	/**
 	 * Start a new round.
 	 */
 	public void newRound() {
-		int currentRoundNumber = this.getCurrentRoundNumber();
-		if (this.currentRound.nOpen() == 0 && this.currentRound.nUnopened() == 0
-				&& currentRoundNumber++ <= this.nRounds) {
-			this.currentRound = this.rounds[currentRoundNumber - 1];
+		if (this.getCurrentRound().nOpen() == 0 && this.getCurrentRound().nUnopened() == 0
+				&& this.rNumber + 1 <= this.nRounds) {
+			this.rNumber++;
 		}
 	}
 
@@ -943,7 +948,7 @@ public class Trivia implements Serializable {
 	 * @return The question number
 	 */
 	public int nextToOpen() {
-		return this.currentRound.nextToOpen();
+		return this.getCurrentRound().nextToOpen();
 	}
 
 	/**
@@ -952,7 +957,7 @@ public class Trivia implements Serializable {
 	 * @return Number of questions not yet opened
 	 */
 	public int nUnopened() {
-		return this.currentRound.nUnopened();
+		return this.getCurrentRound().nUnopened();
 	}
 
 	/**
@@ -982,7 +987,7 @@ public class Trivia implements Serializable {
 	 *            The question text
 	 */
 	public void open(int qNumber) {
-		this.currentRound.open(qNumber);
+		this.getCurrentRound().open(qNumber);
 	}
 
 	/**
@@ -998,11 +1003,11 @@ public class Trivia implements Serializable {
 	 *            The confidence in the answer
 	 */
 	public void proposeAnswer(int qNumber, String answer, String user, int confidence) {
-		this.currentRound.proposeAnswer(qNumber, answer, user, confidence);
+		this.getCurrentRound().proposeAnswer(qNumber, answer, user, confidence);
 	}
 
 	public void remapQuestion(int oldQNumber, int newQNumber) {
-		this.currentRound.remapQuestion(oldQNumber, newQNumber);
+		this.getCurrentRound().remapQuestion(oldQNumber, newQNumber);
 	}
 
 	/**
@@ -1021,7 +1026,7 @@ public class Trivia implements Serializable {
 	 *            The question number
 	 */
 	public void resetQuestion(int qNumber) {
-		this.currentRound.resetQuestion(qNumber);
+		this.getCurrentRound().resetQuestion(qNumber);
 	}
 
 	/**
@@ -1030,7 +1035,7 @@ public class Trivia implements Serializable {
 	 * @return true, if the round is over
 	 */
 	public boolean roundOver() {
-		return this.currentRound.roundOver();
+		return this.getCurrentRound().roundOver();
 	}
 
 	/**
@@ -1052,7 +1057,7 @@ public class Trivia implements Serializable {
 
 	public void setAnswer(int qNumber, String answer, String submitter, int confidence, String status, String caller,
 			String operator) {
-		this.currentRound.setAnswer(qNumber, answer, submitter, confidence, status, caller, operator);
+		this.getCurrentRound().setAnswer(qNumber, answer, submitter, confidence, status, caller, operator);
 	}
 
 	/**
@@ -1062,7 +1067,7 @@ public class Trivia implements Serializable {
 	 *            The new current round number
 	 */
 	public void setCurrentRound(int rNumber) {
-		this.currentRound = this.rounds[rNumber - 1];
+		this.rNumber = rNumber;
 	}
 
 	/**
@@ -1088,11 +1093,11 @@ public class Trivia implements Serializable {
 	}
 
 	public void setQuestionText(int qNumber, String qText) {
-		this.currentRound.setQuestionText(qNumber, qText);
+		this.getCurrentRound().setQuestionText(qNumber, qText);
 	}
 
 	public void setQuestionValue(int qNumber, int value) {
-		this.currentRound.setValue(qNumber, value);
+		this.getCurrentRound().setValue(qNumber, value);
 	}
 
 	public void setQuestionText(int rNumber, int qNumber, String qText) {
@@ -1107,7 +1112,7 @@ public class Trivia implements Serializable {
 	 * Makes the current round a speed round.
 	 */
 	public void setSpeed() {
-		this.currentRound.setSpeed();
+		this.getCurrentRound().setSpeed();
 	}
 
 	/**
@@ -1137,7 +1142,7 @@ public class Trivia implements Serializable {
 	 * Make the current round a normal round.
 	 */
 	public void unsetSpeed() {
-		this.currentRound.unsetSpeed();
+		this.getCurrentRound().unsetSpeed();
 	}
 
 	/**
@@ -1156,7 +1161,7 @@ public class Trivia implements Serializable {
 	 * @param newRounds
 	 *            The rounds with updated versions
 	 */
-	public void updateRounds(Round[] newRounds) {
+	public synchronized void updateRounds(Round[] newRounds) {
 		final int nNew = newRounds.length;
 		for (int r = 0; r < nNew; r++) {
 			final Round newRound = newRounds[r];
@@ -1169,15 +1174,15 @@ public class Trivia implements Serializable {
 	}
 
 	public void agree(int queueIndex) {
-		this.currentRound.agree(queueIndex);
+		this.getCurrentRound().agree(queueIndex);
 	}
 
 	public void disagree(int queueIndex) {
-		this.currentRound.disagree(queueIndex);
+		this.getCurrentRound().disagree(queueIndex);
 	}
 
 	public int getAgreement(int queueIndex) {
-		return this.currentRound.getAgreement(queueIndex);
+		return this.getCurrentRound().getAgreement(queueIndex);
 	}
 
 }

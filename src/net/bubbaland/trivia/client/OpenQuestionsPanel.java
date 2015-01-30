@@ -122,8 +122,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update(boolean force) {
-		this.openQuestionsSubPanel.update(force);
+	public synchronized void updateGUI(boolean force) {
+		this.openQuestionsSubPanel.updateGUI(force);
 	}
 
 	@Override
@@ -365,7 +365,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
-		public synchronized void update(boolean force) {
+		public synchronized void updateGUI(boolean force) {
 
 			// Get the local copy of the Trivia data
 			final Trivia trivia = this.client.getTrivia();

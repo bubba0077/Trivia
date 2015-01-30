@@ -145,14 +145,14 @@ public class UserListPanel extends TriviaMainPanel {
 	 * Update GUI elements
 	 */
 	@Override
-	public void update(boolean force) {
+	public void updateGUI(boolean force) {
 		this.activeUserHash = this.client.getActiveUserHash();
 		final String[] users = new String[this.activeUserHash.size()];
 		this.activeUserHash.keySet().toArray(users);
 		Arrays.sort(users, new CompareRoles());
 		this.header.setText("Active (" + users.length + ")");
 
-		this.idleUserHash = this.client.getPassiveUserHash();
+		this.idleUserHash = this.client.getIdleUserHash();
 		final String[] idleUsers = new String[this.idleUserHash.size()];
 		this.idleUserHash.keySet().toArray(idleUsers);
 		Arrays.sort(idleUsers);

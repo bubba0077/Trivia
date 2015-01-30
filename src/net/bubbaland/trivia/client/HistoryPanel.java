@@ -164,7 +164,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update(boolean force) {
+	public synchronized void updateGUI(boolean force) {
 		final Trivia trivia = this.client.getTrivia();
 		final int rNumber = Integer.parseInt((String) this.roundSelector.getSelectedItem());
 
@@ -177,7 +177,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 			this.placeScoreLabel.setText("-- / " + trivia.getNTeams() + " ");
 		}
 
-		this.roundQuestionPanel.update(force);
+		this.roundQuestionPanel.updateGUI(force);
 	}
 
 	@Override

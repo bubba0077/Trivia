@@ -35,6 +35,7 @@ import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.ScoreEntry;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaChartFactory;
+import net.bubbaland.trivia.TriviaClientInterface;
 import net.bubbaland.trivia.TriviaInterface;
 import net.bubbaland.trivia.UserList;
 import net.bubbaland.trivia.UserList.Role;
@@ -117,6 +118,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 * Setup properties
 	 */
 	final static public Properties			PROPERTIES			= new Properties();
+
 	static {
 		/**
 		 * Default properties
@@ -166,6 +168,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 		this.trivia = new Trivia(TEAM_NAME, N_ROUNDS, N_QUESTIONS_NORMAL, N_QUESTIONS_SPEED);
 		this.userList = new UserList();
+		// this.clientList = new ArrayList<TriviaClientInterface>();
 
 		// Create timer that will make save files
 		final Timer backupTimer = new Timer(SAVE_FREQUENCY, this);
@@ -237,25 +240,21 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		this.trivia.editQuestion(rNumber, qNumber, value, qText, aText, isCorrect, submitter, operator);
 	}
 
-	@Override
-	public Hashtable<String, Role> getActiveUsers(int window, int timeout) throws RemoteException {
-		return this.userList.getActive(window, timeout);
+	private Hashtable<String, Role> getActiveUsers(int timeToIdle) {
+		return this.userList.getActive(timeToIdle);
 	}
 
-	@Override
-	public Round[] getChangedRounds(String user, int[] oldVersions) throws RemoteException {
-		this.userList.userHandshake(user);
+	public Round[] getChangedRounds(int[] oldVersions) {
+		// this.userList.userHandshake(user);
 		return this.trivia.getChangedRounds(oldVersions);
 	}
 
-	@Override
-	public int getCurrentRound() throws RemoteException {
+	public int getCurrentRound() {
 		return this.trivia.getCurrentRoundNumber();
 	}
 
-	@Override
-	public Hashtable<String, Role> getIdleUsers(int window, int timeout) throws RemoteException {
-		return this.userList.getIdle(window, timeout);
+	private Hashtable<String, Role> getIdleUsers(int timeToIdle) {
+		return this.userList.getIdle(timeToIdle);
 	}
 
 	/*
@@ -416,10 +415,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 	}
 
-	@Override
-	public void login(String user) throws RemoteException {
-		this.userList.updateUserActivity(user);
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -1011,5 +1006,114 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		this.userList.updateUserActivity(user);
 		return this.trivia.getAgreement(queueIndex);
 	}
+
+	private int[] getVersions() {
+		return this.trivia.getVersions();
+	}
+
+	public void connect(TriviaClientInterface client) {
+		String userName = "";
+		try {
+			userName = client.getUser();
+		} catch (RemoteException exception) {
+			// TODO Auto-generated catch block
+			exception.printStackTrace();
+		}
+		log(userName + " connected");
+		ClientThread thread = new ClientThread(this, client, this.trivia.getNRounds());
+		thread.start();
+		System.out.println("Returning");
+		return;
+	}
+
+	private class ClientThread extends Thread {
+		TriviaServer			server;
+		TriviaClientInterface	client;
+		int[]					lastVersions;
+		int						lastCurrentRound, timeToIdle;
+		Hashtable<String, Role>	lastActiveUserList, lastIdleUserList;
+		String					userName;
+
+		boolean					connected;
+
+		public ClientThread(TriviaServer server, TriviaClientInterface client, int nRounds) {
+			this.server = server;
+			this.client = client;
+			try {
+				this.userName = client.getUser();
+				this.lastVersions = client.getVersions();
+				this.lastCurrentRound = client.getCurrentRoundNumber();
+				this.lastActiveUserList = client.getActiveUserHash();
+				this.lastIdleUserList = client.getIdleUserHash();
+			} catch (RemoteException exception) {
+				// TODO Auto-generated catch block
+				exception.printStackTrace();
+				connected = false;
+			}
+			this.connected = true;
+		}
+
+		public void run() {
+			while (connected) {
+				int currentRound = server.getCurrentRound();
+				int[] currentVersions = server.getVersions();
+				Hashtable<String, Role> currentActiveUserList = server.getActiveUsers(timeToIdle);
+				Hashtable<String, Role> currentIdleUserList = server.getIdleUsers(timeToIdle);
+
+				if (lastCurrentRound != currentRound) {
+					log("Sending new round to " + this.userName);
+					try {
+						client.updateRound(currentRound);
+						this.lastCurrentRound = currentRound;
+					} catch (RemoteException exception1) {
+						log("Client disconnected");
+						connected = false;
+					}
+				}
+				if (!Arrays.equals(currentVersions, lastVersions)) {
+					log("Sending new data to " + this.userName);
+					try {
+						client.updateTrivia(server.getChangedRounds(lastVersions));
+						this.lastVersions = currentVersions;
+					} catch (RemoteException exception1) {
+						log(this.userName + " disconnected");
+						connected = false;
+					}
+				}
+
+				if (!this.lastActiveUserList.equals(currentActiveUserList)) {
+					log("Sending new active user list to " + this.userName);
+					try {
+						client.updateActiveUsers(currentActiveUserList);
+						this.lastActiveUserList = currentActiveUserList;
+					} catch (RemoteException exception1) {
+						log(this.userName + " disconnected");
+						connected = false;
+					}
+				}
+
+				if (!this.lastIdleUserList.equals(currentIdleUserList)) {
+					log("Sending new idle user list to " + this.userName);
+					try {
+						client.updateActiveUsers(currentIdleUserList);
+						this.lastIdleUserList = currentIdleUserList;
+					} catch (RemoteException exception1) {
+						log(this.userName + " disconnected");
+						connected = false;
+					}
+				}
+
+				try {
+					Thread.sleep(5);
+				} catch (InterruptedException exception) {
+					exception.printStackTrace();
+					connected = false;
+				}
+			}
+
+
+		}
+	}
+
 
 }

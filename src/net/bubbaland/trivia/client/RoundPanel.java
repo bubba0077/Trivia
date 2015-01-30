@@ -60,9 +60,9 @@ public class RoundPanel extends TriviaMainPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update(boolean force) {
-		this.roundHeaderPanel.update(force);
-		this.roundQlistPanel.update(force);
+	public synchronized void updateGUI(boolean force) {
+		this.roundHeaderPanel.updateGUI(force);
+		this.roundQlistPanel.updateGUI(force);
 	}
 
 	@Override

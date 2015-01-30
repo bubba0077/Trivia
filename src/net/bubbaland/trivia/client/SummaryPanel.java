@@ -372,7 +372,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update(boolean force) {
+	public synchronized void updateGUI(boolean force) {
 		// Get the current Trivia object from the client
 		final Trivia trivia = this.client.getTrivia();
 
@@ -442,7 +442,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				this.speedButton.setForeground(Color.BLACK);
 			}
 		}
-		this.userListPanel.update(force);
+		this.userListPanel.updateGUI(force);
 
 	}
 

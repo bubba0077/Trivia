@@ -2,8 +2,6 @@ package net.bubbaland.trivia;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Hashtable;
-
 import net.bubbaland.trivia.UserList.Role;
 
 /**
@@ -78,48 +76,13 @@ public interface TriviaInterface extends Remote {
 			boolean isCorrect, String submitter, String operator) throws RemoteException;
 
 	/**
-	 * Get the users and roles that have been active. Active means having changed something on the server.
-	 * 
-	 * @param window
-	 *            Number of seconds without making a change before becoming idle
-	 * @return The user names and roles of users who have been active within the activity window
-	 * @throws RemoteException
-	 */
-	public Hashtable<String, Role> getActiveUsers(int window, int timeout) throws RemoteException;
-
-	/**
-	 * Get rounds that have changed. This is the primary method for retrieving updated data from the server.
-	 * 
-	 * @param user
-	 *            The user requesting data
-	 * @param oldVersions
-	 *            The round version numbers the user has.
-	 * @return An array of all the rounds that have newer versions.
-	 * @throws RemoteException
-	 */
-	public Round[] getChangedRounds(String user, int[] oldVersions) throws RemoteException;
-
-	/**
 	 * Get the current round number
 	 * 
 	 * @return The current round number
 	 * @throws RemoteException
 	 */
-	public int getCurrentRound() throws RemoteException;
+	// public int getCurrentRound() throws RemoteException;
 
-	/**
-	 * Get the users and roles that are idle. Idle means they are still contacting the server for updates, but haven't
-	 * made any changes.
-	 * 
-	 * @param window
-	 *            Number of seconds without making a change before becoming idle
-	 * @param timeout
-	 *            Number of second before a disconnected user should be considered timed out
-	 * @return The user names and roles of users who have not been active but have still received an update within the
-	 *         timeout window
-	 * @throws RemoteException
-	 */
-	public Hashtable<String, Role> getIdleUsers(int window, int timeout) throws RemoteException;
 
 	/**
 	 * Get the full trivia data structure. This is used primarily when a client starts to initialize their local trivia
@@ -160,7 +123,7 @@ public interface TriviaInterface extends Remote {
 	 *            The user's name
 	 * @throws RemoteException
 	 */
-	public void login(String user) throws RemoteException;
+	// public void login(String user) throws RemoteException;
 
 	/**
 	 * Mark a question correct.
@@ -359,5 +322,7 @@ public interface TriviaInterface extends Remote {
 	public void setQuestionText(String user, int rNumber, int qNumber, String qText) throws RemoteException;
 
 	public void setQuestionValue(String user, int rNumber, int qNumber, int value) throws RemoteException;
+
+	public void connect(TriviaClientInterface client) throws RemoteException;
 
 }

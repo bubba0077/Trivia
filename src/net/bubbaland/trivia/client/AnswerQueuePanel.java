@@ -302,7 +302,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				break;
 			case "Clear Filters":
 				resetFilter();
-				this.answerQueueSubPanel.update(true);
+				this.answerQueueSubPanel.updateGUI(true);
 				break;
 			default:
 				break;
@@ -356,11 +356,11 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update(boolean force) {
+	public synchronized void updateGUI(boolean force) {
 		// Update the queue size
 		final int queueSize = this.client.getTrivia().getAnswerQueueSize();
 		this.queueSizeLabel.setText(queueSize + "");
-		this.answerQueueSubPanel.update(force);
+		this.answerQueueSubPanel.updateGUI(force);
 		final QueueSort sortMethod = this.frame.getQueueSort();
 
 		switch (sortMethod) {
@@ -708,7 +708,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
-		public synchronized void update(boolean force) {
+		public synchronized void updateGUI(boolean force) {
 			// Get the current Trivia data object
 			final Trivia trivia = this.client.getTrivia();
 
@@ -753,7 +753,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			}
 
 			if (this.answerQueue.length != newAnswerQueue.length) {
-				System.out.println(AnswerQueuePanel.this.frame.getTitle());
 				AnswerQueuePanel.this.frame.playNewAnswerSound();
 			}
 
@@ -1284,7 +1283,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						AnswerQueuePanel.this.qNumberLabel.setText("Q#*");
 					}
 				}
-				AnswerQueuePanel.this.answerQueueSubPanel.update(true);
+				AnswerQueuePanel.this.answerQueueSubPanel.updateGUI(true);
 			}
 		}
 	}

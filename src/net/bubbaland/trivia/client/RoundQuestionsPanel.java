@@ -157,8 +157,8 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
-	public synchronized void update(boolean force) {
-		this.roundQuestionsSubPanel.update(force);
+	public synchronized void updateGUI(boolean force) {
+		this.roundQuestionsSubPanel.updateGUI(force);
 	}
 
 
@@ -457,7 +457,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
-		public synchronized void update(boolean force) {
+		public synchronized void updateGUI(boolean force) {
 
 			// Get the current Trivia data structure
 			final Trivia trivia = this.client.getTrivia();

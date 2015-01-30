@@ -13,9 +13,7 @@ public class UserList {
 
 	/** Data */
 	// User list that is tracks when the user makes a change
-	private final Hashtable<String, Date>	activeUserList;
-	// User list that is tracks when a data refresh is requested
-	private final Hashtable<String, Date>	passiveUserList;
+	private final Hashtable<String, Date>	userList;
 	// List of user roles
 	private final Hashtable<String, Role>	roleList;
 
@@ -23,8 +21,7 @@ public class UserList {
 	 * Create a new empty user list.
 	 */
 	public UserList() {
-		this.activeUserList = new Hashtable<String, Date>(0);
-		this.passiveUserList = new Hashtable<String, Date>(0);
+		this.userList = new Hashtable<String, Date>(0);
 		this.roleList = new Hashtable<String, Role>(0);
 	}
 
@@ -38,8 +35,7 @@ public class UserList {
 	 */
 	public void changeUser(String oldUser, String newUser) {
 		final Role role = this.roleList.get(oldUser);
-		this.activeUserList.remove(oldUser);
-		this.passiveUserList.remove(oldUser);
+		this.userList.remove(oldUser);
 		this.roleList.remove(oldUser);
 		this.updateRole(newUser, role);
 	};
@@ -51,24 +47,16 @@ public class UserList {
 	 *            Number of seconds without making a change before becoming idle
 	 * @return The user names and roles of users who have been active within the activity window
 	 */
-	public Hashtable<String, Role> getActive(int window, int timeout) {
+	public Hashtable<String, Role> getActive(int timeToIdle) {
 		final Date currentDate = new Date();
 		final Hashtable<String, Role> userHash = new Hashtable<String, Role>(0);
 
 		// Build a list of users who are active
-		for (final String user : this.activeUserList.keySet()) {
-			final Date lastDate = this.activeUserList.get(user);
+		for (final String user : this.userList.keySet()) {
+			final Date lastDate = this.userList.get(user);
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
-			if (diff < window) {
+			if (diff < timeToIdle) {
 				userHash.put(user, this.roleList.get(user));
-			}
-		}
-		// Remove users who have timed out
-		for (final String user : this.passiveUserList.keySet()) {
-			final Date lastDate = this.passiveUserList.get(user);
-			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
-			if (diff > timeout) {
-				userHash.remove(user);
 			}
 		}
 		return userHash;
@@ -85,25 +73,16 @@ public class UserList {
 	 * @return The user names and roles of users who have not been active but have still received an update within the
 	 *         timeout window
 	 */
-	public Hashtable<String, Role> getIdle(int window, int timeout) {
+	public Hashtable<String, Role> getIdle(int timeToIdle) {
 		final Date currentDate = new Date();
 		final Hashtable<String, Role> userHash = new Hashtable<String, Role>(0);
 
-		// Build a list of users getting updates
-		for (final String user : this.passiveUserList.keySet()) {
-			final Date lastDate = this.passiveUserList.get(user);
+		// Build a list of users who are active
+		for (final String user : this.userList.keySet()) {
+			final Date lastDate = this.userList.get(user);
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
-			if (diff < timeout) {
+			if (diff >= timeToIdle) {
 				userHash.put(user, this.roleList.get(user));
-			}
-		}
-
-		// Remove active users
-		for (final String user : this.activeUserList.keySet()) {
-			final Date lastDate = this.activeUserList.get(user);
-			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
-			if (diff < window) {
-				userHash.remove(user);
 			}
 		}
 		return userHash;
@@ -119,9 +98,7 @@ public class UserList {
 	 */
 	public void updateRole(String user, Role role) {
 		// Update last activity time
-		this.activeUserList.put(user, new Date());
-		// Update last activity time
-		this.passiveUserList.put(user, new Date());
+		this.userList.put(user, new Date());
 		// Change role
 		this.roleList.put(user, role);
 	}
@@ -134,22 +111,26 @@ public class UserList {
 	 *            The user's name
 	 */
 	public void updateUserActivity(String user) {
-		this.activeUserList.put(user, new Date());
-		this.passiveUserList.put(user, new Date());
+		this.userList.put(user, new Date());
 		if (!this.roleList.containsKey(user)) {
 			this.roleList.put(user, Role.RESEARCHER);
 		}
 	}
 
-	/**
-	 * Update user's last contact time.
-	 * 
-	 * @param user
-	 *            The user's name
-	 */
-	public void userHandshake(String user) {
-		this.passiveUserList.put(user, new Date());
+	public void removeUser(String user) {
+		this.userList.remove(user);
+		this.roleList.remove(user);
 	}
+
+	// /**
+	// * Update user's last contact time.
+	// *
+	// * @param user
+	// * The user's name
+	// */
+	// public void userHandshake(String user) {
+	// this.passiveUserList.put(user, new Date());
+	// }
 
 	public enum Role {
 		TYPIST, CALLER, RESEARCHER
