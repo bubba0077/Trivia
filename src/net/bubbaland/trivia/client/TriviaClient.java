@@ -615,13 +615,9 @@ public class TriviaClient implements WindowListener {
 	 * 
 	 */
 	public static void main(String[] args) {
-		boolean useFX = false;
 		// Schedule a job to create and show the GUI
 		final String serverURL = args[0];
-		if (args.length > 1 && args[1].equals("useFX")) {
-			useFX = true;
-		}
-		SwingUtilities.invokeLater(new TriviaRunnable(serverURL, useFX));
+		SwingUtilities.invokeLater(new TriviaRunnable(serverURL));
 	}
 
 	/**
@@ -676,7 +672,7 @@ public class TriviaClient implements WindowListener {
 	 * 
 	 * @param serverURL
 	 */
-	private static void createAndShowGUI(String serverURL, boolean useFX) {
+	private static void createAndShowGUI(String serverURL) {
 		// Initialize server variable
 		TriviaInterface triviaServer = null;
 
@@ -835,17 +831,15 @@ public class TriviaClient implements WindowListener {
 	 * 
 	 */
 	private static class TriviaRunnable implements Runnable {
-		private final boolean	useFX;
 		private final String	serverURL;
 
-		public TriviaRunnable(String serverURL, boolean useFX) {
+		public TriviaRunnable(String serverURL) {
 			this.serverURL = serverURL;
-			this.useFX = useFX;
 		}
 
 		@Override
 		public void run() {
-			createAndShowGUI(this.serverURL, this.useFX);
+			createAndShowGUI(this.serverURL);
 		}
 	}
 
