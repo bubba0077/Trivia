@@ -26,6 +26,7 @@ public class UserLoginDialog extends TriviaDialogPanel {
 	 * 
 	 * @param client
 	 *            the client
+	 * @param role
 	 */
 	public UserLoginDialog(TriviaClient client) {
 		super();

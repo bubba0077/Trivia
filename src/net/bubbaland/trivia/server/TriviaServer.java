@@ -168,7 +168,6 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 
 		this.trivia = new Trivia(TEAM_NAME, N_ROUNDS, N_QUESTIONS_NORMAL, N_QUESTIONS_SPEED);
 		this.userList = new UserList();
-		// this.clientList = new ArrayList<TriviaClientInterface>();
 
 		// Create timer that will make save files
 		final Timer backupTimer = new Timer(SAVE_FREQUENCY, this);
@@ -264,6 +263,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	 */
 	@Override
 	public Trivia getTrivia() throws RemoteException {
+		log("A new user is connecting");
 		return this.trivia;
 	}
 
@@ -1012,18 +1012,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	}
 
 	public void connect(TriviaClientInterface client) {
-		String userName = "";
-		try {
-			userName = client.getUser();
-		} catch (RemoteException exception) {
-			// TODO Auto-generated catch block
-			exception.printStackTrace();
-		}
-		log(userName + " connected");
 		ClientThread thread = new ClientThread(this, client, this.trivia.getNRounds());
 		thread.start();
-		System.out.println("Returning");
-		return;
 	}
 
 	private class ClientThread extends Thread {
@@ -1054,6 +1044,21 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 		}
 
 		public void run() {
+			while (this.connected && this.userName == null) {
+				try {
+					this.userName = this.client.getUser();
+				} catch (RemoteException exception) {
+					this.connected = false;
+				}
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException exception) {
+					this.connected = false;
+				}
+			}
+
+			log(userName + " connected");
+
 			while (connected) {
 				int currentRound = server.getCurrentRound();
 				int[] currentVersions = server.getVersions();
@@ -1065,8 +1070,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 					try {
 						client.updateRound(currentRound);
 						this.lastCurrentRound = currentRound;
+						this.userName = client.getUser();
 					} catch (RemoteException exception1) {
-						log("Client disconnected");
 						connected = false;
 					}
 				}
@@ -1075,8 +1080,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 					try {
 						client.updateTrivia(server.getChangedRounds(lastVersions));
 						this.lastVersions = currentVersions;
+						this.userName = client.getUser();
 					} catch (RemoteException exception1) {
-						log(this.userName + " disconnected");
 						connected = false;
 					}
 				}
@@ -1086,8 +1091,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 					try {
 						client.updateActiveUsers(currentActiveUserList);
 						this.lastActiveUserList = currentActiveUserList;
+						this.userName = client.getUser();
 					} catch (RemoteException exception1) {
-						log(this.userName + " disconnected");
 						connected = false;
 					}
 				}
@@ -1097,8 +1102,8 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 					try {
 						client.updateActiveUsers(currentIdleUserList);
 						this.lastIdleUserList = currentIdleUserList;
+						this.userName = client.getUser();
 					} catch (RemoteException exception1) {
-						log(this.userName + " disconnected");
 						connected = false;
 					}
 				}
@@ -1111,7 +1116,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 				}
 			}
 
-
+			log(this.userName + " disconnected");
 		}
 	}
 

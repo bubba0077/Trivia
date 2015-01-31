@@ -109,7 +109,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					client.getServer().close(client.getUser(), qNumber, answer);

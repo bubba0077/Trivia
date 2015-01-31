@@ -239,7 +239,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		scrollPanel.add(this.spacer, constraints);
 
 		resetFilter();
-		this.loadProperties(TriviaClient.PROPERTIES);
+		this.loadProperties(TriviaGUI.PROPERTIES);
 	}
 
 	public void setRoundNumber(int newRoundNumber) {
@@ -584,7 +584,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					// Update status on server
 					int tryNumber = 0;
 					boolean success = false;
-					while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
+					while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries"))
 							&& success == false) {
 						tryNumber++;
 						try {
@@ -610,7 +610,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					// Update status on server
 					tryNumber = 0;
 					success = false;
-					while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
+					while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries"))
 							&& success == false) {
 						tryNumber++;
 						try {
@@ -657,8 +657,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				// Update status on server
 				int tryNumber = 0;
 				boolean success = false;
-				while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
-						&& success == false) {
+				while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 					tryNumber++;
 					try {
 						switch (newStatus) {

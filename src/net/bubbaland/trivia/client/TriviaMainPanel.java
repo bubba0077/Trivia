@@ -19,14 +19,14 @@ public abstract class TriviaMainPanel extends TriviaPanel {
 	/**
 	 * Instantiates a new Trivia Panel
 	 * 
-	 * @param client
+	 * @param triviaGUI
 	 *            TODO
 	 * @param frame
 	 *            TODO
 	 */
-	public TriviaMainPanel(TriviaClient client, TriviaFrame frame) {
+	public TriviaMainPanel(TriviaClient triviaGUI, TriviaFrame frame) {
 		super(new GridBagLayout());
-		this.client = client;
+		this.client = triviaGUI;
 		this.frame = frame;
 	}
 

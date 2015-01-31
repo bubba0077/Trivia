@@ -156,7 +156,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					client.getServer().proposeAnswer(qNumber, answer, user, confidence);

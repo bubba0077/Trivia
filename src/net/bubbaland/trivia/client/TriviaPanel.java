@@ -463,7 +463,7 @@ public abstract class TriviaPanel extends JPanel {
 
 		@Override
 		public void setText(String question) {
-			final String hQuestion = question.replaceFirst(pattern, "<a href=\"" + TriviaClient.VISUAL_URL
+			final String hQuestion = question.replaceFirst(pattern, "<a href=\"" + TriviaGUI.VISUAL_URL
 					+ "$4\">Visual Trivia #$4</a>");
 			if (!hQuestion.equals(this.simpleString)) {
 				super.setText(hQuestion);
@@ -472,8 +472,7 @@ public abstract class TriviaPanel extends JPanel {
 		}
 
 		public boolean textEquals(String string) {
-			string = string
-					.replaceFirst(pattern, "<a href=\"" + TriviaClient.VISUAL_URL + "$4\">Visual Trivia #$4</a>");
+			string = string.replaceFirst(pattern, "<a href=\"" + TriviaGUI.VISUAL_URL + "$4\">Visual Trivia #$4</a>");
 			return this.simpleString.equals(string);
 		}
 

@@ -80,7 +80,7 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 			// If the OK button was pressed, mark the question as correct
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					client.getServer().markCorrect(queueIndex, caller, operatorTextField.getText());

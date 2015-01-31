@@ -198,7 +198,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.emptyPanel2.setPreferredSize(new Dimension(10, 0));
 		this.add(this.emptyPanel2, constraints);
 
-		this.loadProperties(TriviaClient.PROPERTIES);
+		this.loadProperties(TriviaGUI.PROPERTIES);
 
 	}
 
@@ -216,8 +216,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				// Speed button now pressed, tell server
 				int tryNumber = 0;
 				boolean success = false;
-				while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
-						&& success == false) {
+				while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 					tryNumber++;
 					try {
 						this.client.getServer().setSpeed(this.client.getUser());
@@ -238,8 +237,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				// Speed button now not pressed, tell server
 				int tryNumber = 0;
 				boolean success = false;
-				while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
-						&& success == false) {
+				while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 					tryNumber++;
 					try {
 						this.client.getServer().unsetSpeed(this.client.getUser());
@@ -262,7 +260,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 			// New round button pressed, tell server
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					this.client.getServer().newRound(this.client.getUser());

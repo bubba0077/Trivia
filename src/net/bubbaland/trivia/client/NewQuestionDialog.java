@@ -157,7 +157,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			this.temporaryOpen = true;
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					client.getServer().open(client.getUser(), qNumberStart);
@@ -227,8 +227,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				// Open the question on the server
 				int tryNumber = 0;
 				boolean success = false;
-				while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
-						&& success == false) {
+				while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 					tryNumber++;
 					try {
 						client.getServer().remapQuestion(qNumberStart, qNumber);
@@ -341,7 +340,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			// Open the question on the server
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					client.getServer().open(client.getUser(), qNumber);
@@ -366,7 +365,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	private void resetTemporaryOpen() {
 		int tryNumber = 0;
 		boolean success = false;
-		while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+		while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 			tryNumber++;
 			try {
 				client.getServer().resetQuestion(this.client.getUser(), this.qNumberStart);

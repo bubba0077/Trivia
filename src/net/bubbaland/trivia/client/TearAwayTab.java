@@ -42,9 +42,11 @@ public class TearAwayTab extends JWindow {
 
 	// The root client
 	private final TriviaClient		client;
+	private final TriviaGUI			gui;
 
-	public TearAwayTab(TriviaClient client) {
+	public TearAwayTab(TriviaClient client, TriviaGUI gui) {
 		this.client = client;
+		this.gui = gui;
 		this.glassPane = new GhostGlassPane();
 		this.add(this.glassPane);
 		// Create a timer to poll the mouse location and update the window location
@@ -163,7 +165,7 @@ public class TearAwayTab extends JWindow {
 		@Override
 		public void drop(DropTargetDropEvent a_event) {
 			TearAwayTab.this.detach();
-			new TriviaFrame(TearAwayTab.this.client, a_event, TearAwayTab.this.getLocation());
+			new TriviaFrame(TearAwayTab.this.client, TearAwayTab.this.gui, a_event, TearAwayTab.this.getLocation());
 			a_event.dropComplete(true);
 		}
 

@@ -65,8 +65,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final private JLabel				statusBar;
 
 	final private TriviaClient			client;
+	final private TriviaGUI				gui;
 
-	final static private TriviaAudio	NEW_ANSWER_PLAYER	= new TriviaAudio(TriviaClient.NEW_ANSWER_SOUND_FILENAME);
+	final static private TriviaAudio	NEW_ANSWER_PLAYER	= new TriviaAudio(TriviaGUI.NEW_ANSWER_SOUND_FILENAME);
 
 	final private DnDTabbedPane			book;
 	// Sort method for the queue
@@ -81,8 +82,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * @param a_event
 	 *            The drag-drop event
 	 */
-	public TriviaFrame(TriviaClient client, DropTargetDropEvent a_event, Point location) {
-		this(client);
+	public TriviaFrame(TriviaClient client, TriviaGUI gui, DropTargetDropEvent a_event, Point location) {
+		this(client, gui);
 		this.book.convertTab(this.book.getTabTransferData(a_event), this.book.getTargetTabIndex(a_event.getLocation()));
 		this.book.setSelectedIndex(0);
 		this.pack();
@@ -99,11 +100,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * @param initialTabs
 	 *            Tabs to open initially
 	 */
-	public TriviaFrame(TriviaClient client, String[] initialTabs) {
-		this(client);
+	public TriviaFrame(TriviaClient client, TriviaGUI gui, String[] initialTabs) {
+		this(client, gui);
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		for (final String tabName : initialTabs) {
-			this.book.addTab(tabName, client.getTab(this, tabName.replaceFirst(" \\([0-9]*\\)", "")));
+			this.book.addTab(tabName, gui.getTab(this, tabName.replaceFirst(" \\([0-9]*\\)", "")));
 		}
 		this.book.setSelectedIndex(0);
 		this.book.addChangeListener(this);
@@ -117,22 +118,23 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * @param client
 	 *            The root client
 	 */
-	private TriviaFrame(TriviaClient client) {
+	private TriviaFrame(TriviaClient client, TriviaGUI gui) {
 		super();
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 		this.client = client;
+		this.gui = gui;
 
-		final String title = client.nextWindowName();
+		final String title = this.gui.nextWindowName();
 		this.setTitle(title);
 		this.setName(title);
 		loadPosition();
 
 		// Notify the client this frame exists
-		this.client.registerWindow(this);
+		this.gui.registerWindow(this);
 
 		// Create a new panel to hold all GUI elements for the frame
-		final TriviaMainPanel panel = new TriviaMainPanel(client, this) {
+		final TriviaMainPanel panel = new TriviaMainPanel(this.client, this) {
 			private static final long	serialVersionUID	= -3431542881790392652L;
 
 			@Override
@@ -387,7 +389,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				SwingConstants.LEFT, SwingConstants.CENTER);
 
 		// Create drag & drop tabbed pane
-		this.book = new DnDTabbedPane(client, this);
+		this.book = new DnDTabbedPane(this.client, this.gui, this);
 
 		// Setup layout constraints
 		constraints.gridx = 0;
@@ -479,12 +481,12 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 			case "Load Default Settings":
 				// Triggered by Reset window positions menu item
-				this.client.resetProperties();
+				this.gui.resetProperties();
 				break;
 			case "Open wiki":
 				// Triggered by Open wiki menu item
 				try {
-					Desktop.getDesktop().browse(new URI(TriviaClient.WIKI_URL));
+					Desktop.getDesktop().browse(new URI(TriviaGUI.WIKI_URL));
 				} catch (IOException | URISyntaxException exception) {
 					this.log("Couldn't open a browser window");
 				}
@@ -492,7 +494,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			case "Open KVSC":
 				// Triggered by Open wiki menu item
 				try {
-					Desktop.getDesktop().browse(new URI(TriviaClient.KVSC_URL));
+					Desktop.getDesktop().browse(new URI(TriviaGUI.KVSC_URL));
 				} catch (IOException | URISyntaxException exception) {
 					this.log("Couldn't open a browser window");
 				}
@@ -500,14 +502,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			case "Open issues":
 				// Triggered by Open wiki menu item
 				try {
-					Desktop.getDesktop().browse(new URI(TriviaClient.ISSUES_URL));
+					Desktop.getDesktop().browse(new URI(TriviaGUI.ISSUES_URL));
 				} catch (IOException | URISyntaxException exception) {
 					this.log("Couldn't open a browser window");
 				}
 				break;
 			case "Exit":
 				// Tell client to exit the program
-				this.client.endProgram();
+				this.gui.endProgram();
 				break;
 		}
 	}
@@ -517,9 +519,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * 
 	 * @return The root client
 	 */
-	public TriviaClient getClient() {
-		return this.client;
-	}
+	// public TriviaClient getClient() {
+	// return this.client;
+	// }
 
 	/**
 	 * Get the answer queue sort method.
@@ -603,11 +605,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this.statusBar.setFont(this.statusBar.getFont().deriveFont(fontSize));
 
 		// Apply colors to role menu items
-		this.researcherMenuItem.setForeground(new Color(new BigInteger(TriviaClient.PROPERTIES
+		this.researcherMenuItem.setForeground(new Color(new BigInteger(TriviaGUI.PROPERTIES
 				.getProperty("UserList.Researcher.Color"), 16).intValue()));
-		this.callerMenuItem.setForeground(new Color(new BigInteger(TriviaClient.PROPERTIES
+		this.callerMenuItem.setForeground(new Color(new BigInteger(TriviaGUI.PROPERTIES
 				.getProperty("UserList.Caller.Color"), 16).intValue()));
-		this.typistMenuItem.setForeground(new Color(new BigInteger(TriviaClient.PROPERTIES
+		this.typistMenuItem.setForeground(new Color(new BigInteger(TriviaGUI.PROPERTIES
 				.getProperty("UserList.Typist.Color"), 16).intValue()));
 
 		// Tell all of the tabs to reload the properties
@@ -615,7 +617,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			final int index = this.book.indexOfTab(tabName);
 			final Component component = this.book.getComponentAt(index);
 			if (component instanceof TriviaMainPanel) {
-				( (TriviaMainPanel) this.book.getComponentAt(index) ).loadProperties(TriviaClient.PROPERTIES);
+				( (TriviaMainPanel) this.book.getComponentAt(index) ).loadProperties(TriviaGUI.PROPERTIES);
 			}
 		}
 	}
@@ -675,7 +677,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 					public void actionPerformed(ActionEvent e) {
 						if (!TriviaFrame.this.isVisible()) {
 							DnDTabbedPane.unregisterTabbedPane(TriviaFrame.this.book);
-							TriviaFrame.this.client.unregisterWindow(TriviaFrame.this);
+							TriviaFrame.this.gui.unregisterWindow(TriviaFrame.this);
 							TriviaFrame.this.dispose();
 						}
 					}
@@ -725,13 +727,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 */
 	protected void saveProperties() {
 		final String id = this.getTitle();
-		TriviaClient.PROPERTIES.setProperty(id + "." + "HideClosed", this.hideClosed + "");
-		TriviaClient.PROPERTIES.setProperty(id + "." + "HideDuplicates", this.hideDuplicates + "");
+		TriviaGUI.PROPERTIES.setProperty(id + "." + "HideClosed", this.hideClosed + "");
+		TriviaGUI.PROPERTIES.setProperty(id + "." + "HideDuplicates", this.hideDuplicates + "");
 		final int height = this.statusBar.getPreferredSize().getSize().height;
 		final float fontSize = this.statusBar.getFont().getSize2D();
-		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.Height", height + "");
-		TriviaClient.PROPERTIES.setProperty(id + "." + "StatusBar.FontSize", fontSize + "");
-		TriviaClient.PROPERTIES.setProperty(id + "." + "OpenTabs", this.book.getTabNames().toString());
+		TriviaGUI.PROPERTIES.setProperty(id + "." + "StatusBar.Height", height + "");
+		TriviaGUI.PROPERTIES.setProperty(id + "." + "StatusBar.FontSize", fontSize + "");
+		TriviaGUI.PROPERTIES.setProperty(id + "." + "OpenTabs", this.book.getTabNames().toString());
 	}
 
 	/**
@@ -745,8 +747,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * @return The property requested
 	 */
 	private String loadProperty(String id, String propertyName) {
-		return TriviaClient.PROPERTIES.getProperty(id + "." + propertyName,
-				TriviaClient.PROPERTIES.getProperty(propertyName));
+		return TriviaGUI.PROPERTIES
+				.getProperty(id + "." + propertyName, TriviaGUI.PROPERTIES.getProperty(propertyName));
 	}
 
 	// Queue sort option
@@ -762,10 +764,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		try {
 			final String frameID = this.getName();
 
-			final int x = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".X"));
-			final int y = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Y"));
-			final int width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Width"));
-			final int height = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Height"));
+			final int x = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty(frameID + ".X"));
+			final int y = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty(frameID + ".Y"));
+			final int width = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty(frameID + ".Width"));
+			final int height = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty(frameID + ".Height"));
 
 			this.setBounds(x, y, width, height);
 
@@ -789,7 +791,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 		public void play() {
 			try {
-				final Player player = new Player(TriviaClient.class.getResourceAsStream(filename));
+				final Player player = new Player(TriviaGUI.class.getResourceAsStream(filename));
 				new Thread() {
 					public void run() {
 						try {

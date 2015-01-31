@@ -142,7 +142,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		this.roundQuestionPanel = new RoundQuestionsPanel(client, parent, false, 1);
 		this.add(this.roundQuestionPanel, constraints);
 
-		this.loadProperties(TriviaClient.PROPERTIES);
+		this.loadProperties(TriviaGUI.PROPERTIES);
 	}
 
 	/*

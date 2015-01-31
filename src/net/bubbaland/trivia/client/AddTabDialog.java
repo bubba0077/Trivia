@@ -33,17 +33,17 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 	private final JComboBox<String>		tabSelector;
 	private final JTextArea				descriptionLabel;
 	private final TriviaFrame			frame;
-	private final TriviaClient			client;
+	private final TriviaGUI				client;
 
 	// Get the list of tab names and sort them
-	private static final Set<String>	tabNameSet			= TriviaClient.getTabNames();
+	private static final Set<String>	tabNameSet			= TriviaGUI.getTabNames();
 	private static final String[]		tabNames			= new String[tabNameSet.size()];
 	static {
 		tabNameSet.toArray(tabNames);
 		Arrays.sort(tabNames, new TabCompare());
 	}
 
-	public AddTabDialog(TriviaClient client, TriviaFrame frame) {
+	public AddTabDialog(TriviaGUI client, TriviaFrame frame) {
 		super();
 
 		this.client = client;
@@ -69,7 +69,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		constraints.weighty = 1.0;
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		this.descriptionLabel = scrollableTextArea(TriviaClient.getTabDescription(tabNames[0]), 300, 200,
+		this.descriptionLabel = scrollableTextArea(TriviaGUI.getTabDescription(tabNames[0]), 300, 200,
 				this.getForeground(), this.getBackground(), constraints, textAreaFontSize,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.descriptionLabel.setEditable(false);
@@ -90,7 +90,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		final String tabName = (String) this.tabSelector.getSelectedItem();
-		final String description = TriviaClient.getTabDescription(tabName);
+		final String description = TriviaGUI.getTabDescription(tabName);
 		this.descriptionLabel.setText(description);
 	}
 

@@ -31,7 +31,7 @@ public class LoadStateDialog extends TriviaDialogPanel {
 		String[] saveList = null;
 		int tryNumber = 0;
 		boolean success = false;
-		while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+		while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 			tryNumber++;
 			try {
 				// Set the announced values
@@ -97,7 +97,7 @@ public class LoadStateDialog extends TriviaDialogPanel {
 			// Try to communicate with server
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					// Set the announced values

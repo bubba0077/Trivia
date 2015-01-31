@@ -113,7 +113,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(this.scrollPane, constraints);
 
-		this.loadProperties(TriviaClient.PROPERTIES);
+		this.loadProperties(TriviaGUI.PROPERTIES);
 	}
 
 	/*

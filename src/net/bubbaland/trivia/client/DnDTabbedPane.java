@@ -73,7 +73,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 	private static final ArrayList<DnDTabbedPane>	tabbedPaneList		= new ArrayList<DnDTabbedPane>(0);
 	private static final ArrayList<ChangeListener>	tabbedPaneListeners	= new ArrayList<ChangeListener>(0);
-	private final TriviaClient						client;
+	private final TriviaGUI							gui;
 	private final JPopupMenu						closeMenu;
 
 	private final TriviaFrame						frame;
@@ -83,11 +83,11 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 																				DnDTabbedPane.class
 																						.getResource("images/plus.png"));
 
-	public DnDTabbedPane(TriviaClient client, TriviaFrame frame) {
+	public DnDTabbedPane(TriviaClient client, TriviaGUI gui, TriviaFrame frame) {
 		super();
 		this.frame = frame;
-		this.client = client;
-		this.tearTab = new TearAwayTab(client);
+		this.gui = gui;
+		this.tearTab = new TearAwayTab(client, gui);
 		this.blankPanel = new JPanel();
 		registerTabbedPane(this);
 		final DragSourceListener dsl = new DragSourceListener() {
@@ -226,7 +226,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		if (tabName.equals("+")) {
 			this.setToolTipTextAt(index, "Add a new tab");
 		} else {
-			this.setToolTipTextAt(index, TriviaClient.getTabDescription(tabName));
+			this.setToolTipTextAt(index, TriviaGUI.getTabDescription(tabName));
 			this.setSelectedIndex(index);
 		}
 	}
@@ -252,7 +252,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	public void mouseClicked(MouseEvent event) {
 		final int addButtonIndex = this.indexOfComponent(this.blankPanel);
 		if (addButtonIndex > -1 && this.getBoundsAt(addButtonIndex).contains(event.getPoint())) {
-			new AddTabDialog(this.client, this.frame);
+			new AddTabDialog(this.gui, this.frame);
 		}
 	}
 

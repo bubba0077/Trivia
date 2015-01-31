@@ -203,7 +203,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 */
 	@Override
 	public void dispose() {
-		TriviaClient.savePosition(this);
+		TriviaGUI.savePosition(this);
 		super.dispose();
 	}
 
@@ -269,10 +269,10 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 		try {
 			final String frameID = this.getName();
 
-			final int x = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".X"));
-			final int y = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Y"));
-			final int width = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Width"));
-			final int height = Integer.parseInt(TriviaClient.PROPERTIES.getProperty(frameID + ".Height"));
+			final int x = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty(frameID + ".X"));
+			final int y = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty(frameID + ".Y"));
+			final int width = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty(frameID + ".Width"));
+			final int height = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty(frameID + ".Height"));
 
 			this.setBounds(x, y, width, height);
 

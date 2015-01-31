@@ -138,7 +138,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 		this.add(this.roundQlistPane, constraints);
 		constraints.weighty = 0.0;
 
-		this.loadProperties(TriviaClient.PROPERTIES);
+		this.loadProperties(TriviaGUI.PROPERTIES);
 	}
 
 	/**
@@ -418,7 +418,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 					// Repen the question on the server
 					int tryNumber = 0;
 					boolean success = false;
-					while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries"))
+					while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries"))
 							&& success == false) {
 						tryNumber++;
 						try {

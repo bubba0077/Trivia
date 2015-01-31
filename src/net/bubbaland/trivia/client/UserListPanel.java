@@ -97,7 +97,7 @@ public class UserListPanel extends TriviaMainPanel {
 		pane.setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		this.add(pane, constraints);
 
-		this.loadProperties(TriviaClient.PROPERTIES);
+		this.loadProperties(TriviaGUI.PROPERTIES);
 	}
 
 	@Override

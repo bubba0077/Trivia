@@ -68,7 +68,7 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 		if (option == JOptionPane.OK_OPTION) {
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					client.getServer().setDiscrepancyText(client.getUser(), rNumber, discrepancyTextField.getText());

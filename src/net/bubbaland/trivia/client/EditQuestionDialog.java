@@ -240,7 +240,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 			// Edit the question on the server
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					client.getServer().editQuestion(client.getUser(), rNumber, qNumber, qValue, qText, aText,

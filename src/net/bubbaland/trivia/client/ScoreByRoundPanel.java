@@ -173,7 +173,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(scrollPane, constraints);
 
-		this.loadProperties(TriviaClient.PROPERTIES);
+		this.loadProperties(TriviaGUI.PROPERTIES);
 
 	}
 

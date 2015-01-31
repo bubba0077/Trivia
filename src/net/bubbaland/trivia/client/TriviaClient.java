@@ -1,47 +1,16 @@
 package net.bubbaland.trivia.client;
 
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Rectangle;
-import java.awt.Window;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 // imports for RMI
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.Properties;
-import java.util.Set;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
+import javax.swing.JOptionPane;
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaChartFactory;
 import net.bubbaland.trivia.TriviaClientInterface;
 import net.bubbaland.trivia.TriviaInterface;
 import net.bubbaland.trivia.UserList.Role;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 
 /**
@@ -50,138 +19,31 @@ import java.util.Calendar;
  * @author Walter Kolczynski
  * 
  */
-public class TriviaClient extends UnicastRemoteObject implements TriviaClientInterface, WindowListener {
+public class TriviaClient extends UnicastRemoteObject implements TriviaClientInterface, Runnable {
 
 	/**
 	 * 
 	 */
-	private static final long						serialVersionUID			= 1L;
+	private static final long					serialVersionUID	= 1L;
 
-	// URL for Wiki
-	final static protected String					WIKI_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
-	// URL for Issues
-	final static protected String					ISSUES_URL					= "https://github.com/bubba0077/Trivia/issues";
-	// URL for KVSC
-	final static protected String					KVSC_URL					= "http://www.kvsc.org/trivia_news.php";
-	// URL base for Visual Trivia Pages
-	final static protected String					VISUAL_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/visual-trivia/visual-trivia-";
-	// File name of font
-	final static private String						FONT_FILENAME				= "fonts/tahoma.ttf";
-	// File name to store window positions
-	final static private String						DEFAULTS_FILENAME			= ".trivia-defaults";
-	// File name to store window positions
-	final static private String						SETTINGS_FILENAME			= ".trivia-settings";
-	// Settings version to force reloading defaults
-	final static private String						SETTINGS_VERSION			= "2";
-	// Calendar to track date
-	final static private Calendar					TIME						= Calendar.getInstance();
-	// Format for log timestamps
-	static private SimpleDateFormat					TIMESTAMP_FORMAT;
-
-	//
-	final static protected String					NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
-
-	/**
-	 * Setup properties
-	 */
-	final static public Properties					PROPERTIES					= new Properties();
-	static {
-		/**
-		 * Load Nimbus
-		 */
-		for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-			if ("Nimbus".equals(info.getName())) {
-				try {
-					UIManager.setLookAndFeel(new NimbusLookAndFeel() {
-						private static final long	serialVersionUID	= -4162111942682867066L;
-
-						@Override
-						public UIDefaults getDefaults() {
-							UIDefaults ret = super.getDefaults();
-							Font font;
-							try {
-								font = Font.createFont(Font.TRUETYPE_FONT,
-										TriviaClient.class.getResourceAsStream(FONT_FILENAME));
-								ret.put("defaultFont", font.deriveFont(12f));
-							} catch (FontFormatException | IOException exception) {
-								exception.printStackTrace();
-							}
-							return ret;
-						}
-
-					});
-				} catch (UnsupportedLookAndFeelException exception) {
-					exception.printStackTrace();
-				}
-			}
-
-
-		}
-
-		/**
-		 * Default properties
-		 */
-		loadDefaults();
-
-		/**
-		 * Load saved properties from file
-		 */
-		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
-		try {
-			final BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
-			PROPERTIES.load(fileBuffer);
-		} catch (final IOException e) {
-			System.out.println("Couldn't load properties file, may not exist yet.");
-		}
-
-		/**
-		 * If the version doesn't match, reload defaults
-		 */
-		final String version = PROPERTIES.getProperty("SettingsVersion");
-		if (version == null || !version.equals(SETTINGS_VERSION)) {
-			System.out.println("using defaults");
-			loadDefaults();
-			PROPERTIES.setProperty("SettingsVersion", SETTINGS_VERSION);
-		}
-
-		// Set timestamp format
-		TIMESTAMP_FORMAT = new SimpleDateFormat(PROPERTIES.getProperty("TimestampFormat"));
-	}
-
-	// List of active windows
-	final private ArrayList<TriviaFrame>			windowList;
-
-	/** List of available tabs and associated descriptions. */
-	final static private Hashtable<String, String>	TAB_DESCRIPTION_HASH;
-	static {
-		TAB_DESCRIPTION_HASH = new Hashtable<String, String>(0);
-		TAB_DESCRIPTION_HASH.put("Workflow", "Main tab with summary information, open questions, and answer queue.");
-		TAB_DESCRIPTION_HASH.put("Current", "Tab showing question data for the current round.");
-		TAB_DESCRIPTION_HASH.put("History", "Tab that can show question data for any round.");
-		TAB_DESCRIPTION_HASH.put("By Round", "Tab that displays score information for every round.");
-		TAB_DESCRIPTION_HASH.put("Place Chart", "Chart showing the team's place in time");
-		TAB_DESCRIPTION_HASH.put("Score Chart", "Chart showing the team's score in each round.");
-		TAB_DESCRIPTION_HASH.put("Cumul. Score Chart", "Chart showing the team's total score in time.");
-		TAB_DESCRIPTION_HASH.put("Team Comparison", "Chart comparing each team's score to our score in time.");
-		TAB_DESCRIPTION_HASH.put("*Open Questions", "List of current open questions");
-		TAB_DESCRIPTION_HASH.put("*Answer Queue", "The proposed answer queue for the current round.");
-	}
 
 	// The user's name
-	private volatile String							user;
+	private volatile String						user;
 	// The user's role
-	private volatile Role							role;
+	private volatile Role						role;
 
 
 	// Hashtable of active users and roles
-	private volatile Hashtable<String, Role>		activeUserHash;
+	private volatile Hashtable<String, Role>	activeUserHash;
 	// Hashtable of idle users and roles
-	private volatile Hashtable<String, Role>		idleUserHash;
+	private volatile Hashtable<String, Role>	idleUserHash;
 
 	// The remote server
-	private final TriviaInterface					server;
+	private final TriviaInterface				server;
 	// The local trivia object holding all contest data
-	private volatile Trivia							trivia;
+	private volatile Trivia						trivia;
+
+	private final TriviaGUI						gui;
 
 	/**
 	 * Creates a new trivia client GUI
@@ -189,64 +51,15 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	 * @param server
 	 *            The RMI Server
 	 */
-	private TriviaClient(TriviaInterface server) throws RemoteException {
-
+	public TriviaClient(TriviaInterface server, TriviaGUI gui) throws RemoteException {
 		this.server = server;
+		this.gui = gui;
 
-		// Initialize list to hold open windows
-		this.windowList = new ArrayList<TriviaFrame>(0);
 		this.activeUserHash = new Hashtable<String, Role>(0);
 		this.idleUserHash = new Hashtable<String, Role>(0);
-
-		// Grab a copy of the current Trivia data structure from the server in the background
-		final TriviaFetcher fetcher = new TriviaFetcher(server, this);
-		fetcher.execute();
-
-		loadProperties();
-
-		// Create a prompt requesting the user name
-		this.user = PROPERTIES.getProperty("UserName");
-		if (this.user == null) {
-			new UserLoginDialog(this);
-		}
-		this.setRole(Role.RESEARCHER);
-
-		// Create startup frames
-		for (int f = 0; PROPERTIES.getProperty("Window" + f) != null; f++) {
-			new TriviaFrame(this, PROPERTIES.getProperty("Window" + f).replaceAll("[\\[\\]]", "").split(", "));
-		}
-
-		// Wait for trivia object to finish downloading
-		while (this.trivia == null) {
-			System.out.println("Awaiting trivia object from server...");
-			try {
-				Thread.sleep(10);
-			} catch (final InterruptedException exception) {
-			}
-		}
-
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				TriviaClient.this.updateGUI();
-			}
-		});
-
-		try {
-			this.server.connect(this);
-			this.log("Successfully connected to server");
-		} catch (RemoteException exception1) {
-			this.disconnected();
-		}
-
-		// Create timer that will poll server for changes
-		// final Timer refreshTimer = new Timer();
-		// refreshTimer.scheduleAtFixedRate(new RefreshTask(this), 0,
-		// Integer.parseInt(PROPERTIES.getProperty("RefreshRate")));
-
-
-		// Post welcome to status bar
-		this.log("Welcome " + this.user);
+		this.user = null;
+		this.role = Role.RESEARCHER;
+		this.trivia = null;
 	}
 
 	public int[] getVersions() {
@@ -274,6 +87,10 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 
 	}
 
+	public void log(String message) {
+		this.gui.log(message);
+	}
+
 	/**
 	 * Get the hash of active users and roles.
 	 * 
@@ -281,15 +98,6 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	 */
 	public Hashtable<String, Role> getActiveUserHash() {
 		return this.activeUserHash;
-	}
-
-	/**
-	 * Get the number of registered windows.
-	 * 
-	 * @return The number of windows
-	 */
-	public int getNTriviaWindows() {
-		return this.windowList.size();
 	}
 
 	/**
@@ -320,73 +128,6 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	}
 
 	/**
-	 * Create a panel to add as a tab to a tabbed pane.
-	 * 
-	 * @param frame
-	 *            The window that holds the tabbed pane
-	 * @param tabName
-	 *            The tab name to create
-	 * @return The panel to add as a tab
-	 */
-	public TriviaMainPanel getTab(TriviaFrame frame, String tabName) {
-		TriviaMainPanel panel = null;
-		switch (tabName) {
-			case "Workflow":
-				panel = new WorkflowPanel(this, frame);
-				break;
-			case "Current":
-				panel = new RoundPanel(this, frame);
-				break;
-			case "History":
-				panel = new HistoryPanel(this, frame);
-				break;
-			case "By Round":
-				panel = new ScoreByRoundPanel(this, frame);
-				break;
-			case "Place Chart":
-				panel = new PlaceChartPanel(this, frame);
-				break;
-			case "Score Chart":
-				panel = new ScoreByRoundChartPanel(this, frame);
-				break;
-			case "Cumul. Score Chart":
-				panel = new CumulativePointsChartPanel(this, frame);
-				break;
-			case "Team Comparison":
-				panel = new TeamComparisonPanel(this, frame);
-				break;
-			case "Open Questions":
-				panel = new OpenQuestionsPanel(this, frame);
-				break;
-			case "Answer Queue":
-				panel = new AnswerQueuePanel(this, frame);
-				break;
-		}
-		return panel;
-	}
-
-	/**
-	 * Get the description associated with a tab name
-	 * 
-	 * @param tabName
-	 *            The tab name
-	 * @return The description associated with the tab name
-	 */
-	public static String getTabDescription(String tabName) {
-		return TriviaClient.TAB_DESCRIPTION_HASH.get(tabName);
-	}
-
-	/**
-	 * Get a list of available tab names.
-	 * 
-	 * @return The available tab names
-	 */
-	public static Set<String> getTabNames() {
-		return TriviaClient.TAB_DESCRIPTION_HASH.keySet();
-	}
-
-
-	/**
 	 * Return the local Trivia object. When updating the GUI, always get the current Trivia object first to ensure the
 	 * most recent data is used. Components should always use this local version to read data to limit server traffic.
 	 * 
@@ -406,70 +147,6 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	}
 
 	/**
-	 * Ask all child windows to reload the properties.
-	 */
-	public void loadProperties() {
-		for (final TriviaFrame frame : this.windowList) {
-			frame.loadProperties();
-		}
-		TriviaChartFactory.loadProperties(PROPERTIES);
-		TriviaDialogPanel.loadProperties(PROPERTIES);
-	}
-
-	/**
-	 * Display message in the status bar and in console
-	 * 
-	 * @param message
-	 *            Message to log
-	 */
-	public void log(String message) {
-		String timestamp = TIMESTAMP_FORMAT.format(TIME.getTime());
-		for (final TriviaFrame panel : this.windowList) {
-			// Display message in status bar
-			panel.log(timestamp + " " + message);
-		}
-		// Print message to console
-		System.out.println(timestamp + " " + message);
-	}
-
-	/**
-	 * Get the name for the next top-level frame.
-	 * 
-	 * @return The frame name
-	 */
-	public String nextWindowName() {
-		ArrayList<String> windowNames = new ArrayList<String>(0);
-		for (TriviaFrame frame : this.windowList) {
-			windowNames.add(frame.getTitle());
-		}
-		String name = "Trivia";
-		for (int i = 1; windowNames.contains(name); i++) {
-			name = "Trivia (" + i + ")";
-		}
-		return name;
-	}
-
-
-	/**
-	 * Register a window as a child of the client. New Trivia Frames do this so the client can track events from them.
-	 * 
-	 * @param frame
-	 *            The window to track
-	 */
-	public void registerWindow(TriviaFrame frame) {
-		frame.addWindowListener(this);
-		this.windowList.add(frame);
-	}
-
-	/**
-	 * Reset properties to defaults, then ask all child windows to load the new properties.
-	 */
-	public void resetProperties() {
-		loadDefaults();
-		this.loadProperties();
-	}
-
-	/**
 	 * Sets the user name.
 	 * 
 	 * @param user
@@ -478,17 +155,17 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	public void setUser(String user) {
 		int tryNumber = 0;
 		boolean success = false;
-		while (tryNumber < Integer.parseInt(PROPERTIES.getProperty("MaxRetries")) && success == false) {
+		while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 			tryNumber++;
 			try {
 				if (this.user == null) {
-					// this.server.login(user);
+					this.server.setRole(user, this.role);
 				} else {
 					this.server.changeUser(this.user, user);
 				}
 				success = true;
 			} catch (final RemoteException e) {
-				this.log("Couldn't change user name on server (try #" + tryNumber + ").");
+				this.gui.log("Couldn't change user name on server (try #" + tryNumber + ").");
 			}
 		}
 
@@ -501,151 +178,29 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	}
 
 	/**
-	 * Unregister a window as a child of the client. This is done when a window closes.
-	 * 
-	 * @param frame
-	 *            The window to stop tracking
-	 */
-	public void unregisterWindow(TriviaFrame frame) {
-		frame.removeWindowListener(this);
-		this.windowList.remove(frame);
-	}
-
-	/**
-	 * Update all of the child windows.
-	 */
-	public void updateGUI() {
-		System.out.println("Updating GUI");
-		System.out.println(Arrays.toString(this.trivia.getVersions()));
-		for (final TriviaFrame frame : this.windowList) {
-			frame.updateGUI(false);
-		}
-	}
-
-	@Override
-	public void windowActivated(WindowEvent e) {
-	}
-
-	@Override
-	public void windowClosed(WindowEvent e) {
-	}
-
-	/**
-	 * When one of the windows tries to close, save the properties and position of the window first. Then exit the
-	 * program if there are no open windows left.
-	 */
-	@Override
-	public void windowClosing(WindowEvent e) {
-		final Window window = e.getWindow();
-		// Same the window position
-		savePosition(window);
-		if (window instanceof TriviaFrame) {
-			( (TriviaFrame) window ).saveProperties();
-			DnDTabbedPane.unregisterTabbedPane(( (TriviaFrame) window ).getTabbedPane());
-
-			if (this.windowList.size() == 1) {
-				// This is the last window, go through exit procedures
-				this.endProgram();
-			} else {
-				// Remove window from the list
-				this.unregisterWindow((TriviaFrame) window);
-			}
-		}
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent e) {
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent e) {
-	}
-
-	@Override
-	public void windowIconified(WindowEvent e) {
-	}
-
-	@Override
-	public void windowOpened(WindowEvent e) {
-	}
-
-	/**
-	 * Add the current window contents to properties, then save the properties to the settings file and exit.
-	 */
-	protected void endProgram() {
-		// Remove previously saved windows
-		for (int f = 0; PROPERTIES.getProperty("Window" + f) != null; f++) {
-			PROPERTIES.remove("Window" + f);
-		}
-		// Save tabs in all windows
-		for (int f = 0; f < this.getNTriviaWindows(); f++) {
-			final String[] tabNames = this.windowList.get(f).getTabbedPane().getTabNames();
-			PROPERTIES.setProperty("Window" + f, Arrays.toString(tabNames));
-			this.windowList.get(f).saveProperties();
-			savePosition(this.windowList.get(f));
-		}
-		PROPERTIES.setProperty("UserName", this.user);
-		TriviaClient.savePropertyFile();
-		System.exit(0);
-	}
-
-	/**
 	 * Change the user's role.
 	 * 
 	 * @param role
 	 */
 	protected void setRole(Role role) {
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < Integer.parseInt(PROPERTIES.getProperty("MaxRetries")) && success == false) {
-			tryNumber++;
-			try {
-				this.trivia = this.server.getTrivia();
-				this.server.setRole(this.user, role);
-				success = true;
-			} catch (final RemoteException e) {
-				this.log("Couldn't change role server (try #" + tryNumber + ").");
+		if (this.user != null) {
+			int tryNumber = 0;
+			boolean success = false;
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+				tryNumber++;
+				try {
+					this.server.setRole(this.user, role);
+					success = true;
+				} catch (final RemoteException e) {
+					this.gui.log("Couldn't change role server (try #" + tryNumber + ").");
+				}
 			}
+		} else {
+			this.gui.log("Couldn't set role yet, no user name specified");
 		}
-
-		// Show disconnected dialog if we could not retrieve the Trivia data
-		if (!success || this.trivia == null) {
-			this.disconnected();
-			return;
-		}
-
 		this.role = role;
-
 	}
 
-	/**
-	 * Clear all saved data from file.
-	 * 
-	 */
-	public static void loadDefaults() {
-		PROPERTIES.clear();
-		final InputStream defaults = TriviaClient.class.getResourceAsStream(DEFAULTS_FILENAME);
-		try {
-			PROPERTIES.load(defaults);
-		} catch (final IOException e) {
-			System.out.println("Couldn't load default properties file, aborting!");
-			System.exit(-1);
-		}
-	}
-
-	/**
-	 * Entry point for the client application. Only the first argument is used. If the first argument is "useFX", the
-	 * client will include an IRC client panel.
-	 * 
-	 * @param args
-	 *            Command line arguments; only "useFX" is recognized as an argument
-	 * 
-	 */
-	public static void main(String[] args) {
-		// Schedule a job to create and show the GUI
-		final String serverURL = args[0];
-		SwingUtilities.invokeLater(new TriviaRunnable(serverURL));
-	}
 
 	/**
 	 * Convert a cardinal number into its ordinal counterpart.
@@ -672,194 +227,55 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 		}
 	}
 
-	/**
-	 * Save the position and size of the window to file.
-	 * 
-	 * @param window
-	 *            The window whose size and position is to be saved
-	 * 
-	 */
-	public static void savePosition(Window window) {
-		final Rectangle r = window.getBounds();
-		final int x = (int) r.getX();
-		final int y = (int) r.getY();
-		final int width = (int) r.getWidth();
-		final int height = (int) r.getHeight();
-
-		final String frameID = window.getName();
-
-		PROPERTIES.setProperty(frameID + ".X", x + "");
-		PROPERTIES.setProperty(frameID + ".Y", y + "");
-		PROPERTIES.setProperty(frameID + ".Width", width + "");
-		PROPERTIES.setProperty(frameID + ".Height", height + "");
-	}
-
-	/**
-	 * Create and show the GUI.
-	 * 
-	 * @param serverURL
-	 */
-	private static void createAndShowGUI(String serverURL) {
-		// Initialize server variable
-		TriviaInterface triviaServer = null;
-
-		// Initiate connection to RMI server
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < Integer.parseInt(PROPERTIES.getProperty("MaxRetries")) && success == false) {
-			tryNumber++;
-			try {
-				// Connect to RMI server
-				triviaServer = (TriviaInterface) Naming.lookup(serverURL);
-				success = true;
-			} catch (MalformedURLException | NotBoundException | RemoteException e) {
-				// Connection failed
-				System.out.println("Initial connection to server failed (try #" + tryNumber + ")");
-
-				if (tryNumber == Integer.parseInt(PROPERTIES.getProperty("MaxRetries"))) {
-					final String message = "Could not connect to server.";
-
-					final Object[] options = { "Retry", "Exit" };
-					final int option = JOptionPane.showOptionDialog(null, message, "Disconnected",
-							JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[1]);
-
-					if (option == JOptionPane.OK_OPTION) {
-						// Retry connection
-						tryNumber = 0;
-					} else {
-						// Exit
-						System.exit(0);
-					}
-				}
-			}
-		}
-
-		System.out.println("Connected to trivia server (" + serverURL + ").");
-
-		try {
-			new TriviaClient(triviaServer);
-		} catch (RemoteException exception) {
-
-		}
-	}
-
-	/**
-	 * Save the current properties to the settings file.
-	 */
-	private static void savePropertyFile() {
-		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
-		try {
-			final BufferedWriter outfileBuffer = new BufferedWriter(new FileWriter(file));
-			PROPERTIES.store(outfileBuffer, "Trivia");
-			outfileBuffer.close();
-		} catch (final IOException e) {
-			System.out.println("Error saving properties.");
-		}
-	}
-
 	public synchronized void updateRound(int currentRound) {
 		this.trivia.setCurrentRound(currentRound);
-		log("Received round change");
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				TriviaClient.this.updateGUI();
-			}
-		});
+		this.gui.updateGUI();
 	}
 
 	public synchronized void updateTrivia(Round[] newRounds) {
 		this.trivia.updateRounds(newRounds);
-		log("Received data change");
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				TriviaClient.this.updateGUI();
-			}
-		});
+		this.gui.updateGUI();
 	}
 
 	public synchronized void updateActiveUsers(Hashtable<String, Role> newActiveUserList) {
 		this.activeUserHash = newActiveUserList;
-		log("Received active user change");
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				TriviaClient.this.updateGUI();
-			}
-		});
+		this.gui.updateGUI();
 	}
 
 	public synchronized void updateIdleUsers(Hashtable<String, Role> newIdleUserList) {
 		this.idleUserHash = newIdleUserList;
-		log("Received idle user change");
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				TriviaClient.this.updateGUI();
-			}
-		});
+		this.gui.updateGUI();
 	}
 
-	/**
-	 * Private class to handle background downloading of Trivia object from server.
-	 * 
-	 */
-	private class TriviaFetcher extends SwingWorker<Void, Void> {
-
-		final TriviaInterface	server;
-		final TriviaClient		client;
-
-		public TriviaFetcher(TriviaInterface server, TriviaClient client) {
-			super();
-			this.server = server;
-			this.client = client;
-		}
-
-		@Override
-		protected Void doInBackground() throws Exception {
-			/**
-			 * Create a local copy of the Trivia object
-			 */
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					this.client.trivia = this.server.getTrivia();
-					success = true;
-				} catch (final RemoteException e) {
-					this.client.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
-				}
+	@Override
+	public void run() {
+		// Wait for trivia object to finish downloading
+		int tryNumber = 0;
+		boolean success = false;
+		while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			tryNumber++;
+			try {
+				this.trivia = this.server.getTrivia();
+				success = true;
+			} catch (final RemoteException e) {
+				TriviaClient.this.gui.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
 			}
-
-			// Show disconnected dialog if we could not retrieve the Trivia data
-			if (!success || this.client.trivia == null) {
-				this.client.disconnected();
-				return null;
-			}
-			return null;
-
 		}
 
-	}
-
-
-	/**
-	 * Custom Runnable class to allow passing of command line argument into invokeLater.
-	 * 
-	 */
-	private static class TriviaRunnable implements Runnable {
-		private final String	serverURL;
-
-		public TriviaRunnable(String serverURL) {
-			this.serverURL = serverURL;
+		// Show disconnected dialog if we could not retrieve the Trivia data
+		if (!success || this.trivia == null) {
+			this.disconnected();
 		}
 
-		@Override
-		public void run() {
-			createAndShowGUI(this.serverURL);
+		try {
+			this.server.connect(this);
+		} catch (RemoteException exception1) {
+			this.disconnected();
 		}
+
+		this.gui.log("Successfully connected to server");
+		this.gui.updateGUI();
+
 	}
 
 }

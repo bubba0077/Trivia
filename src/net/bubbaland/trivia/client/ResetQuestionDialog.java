@@ -79,7 +79,7 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 			// Reset the question on the server
 			int tryNumber = 0;
 			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaClient.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 				tryNumber++;
 				try {
 					client.getServer().resetQuestion(client.getUser(), qNumber);
