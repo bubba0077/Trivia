@@ -7,6 +7,7 @@ import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -29,6 +30,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 	private final String		user;
 	private final int			qNumber;
 	private final JTextArea		answerTextArea;
+	private final JCheckBox		bruteForceCheckbox;
 	private final JSlider		confidenceSlider;
 	private final TriviaClient	client;
 
@@ -111,17 +113,24 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		constraints.weightx = 0.0;
 		constraints.weighty = 0.0;
 
+		// Create brute force check box
+		constraints.gridwidth = 2;
+		constraints.gridx = 0;
+		constraints.gridy = 4;
+		this.bruteForceCheckbox = new JCheckBox("Treat separate lines as multiple guesses");
+		this.add(this.bruteForceCheckbox, constraints);
+
 		// Create confidence slider
 		constraints.gridwidth = 1;
 		constraints.gridx = 0;
-		constraints.gridy = 4;
+		constraints.gridy = 5;
 		label = new JLabel("Confidence", SwingConstants.RIGHT);
 		label.setVerticalAlignment(SwingConstants.CENTER);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
 		constraints.gridx = 1;
-		constraints.gridy = 4;
+		constraints.gridy = 5;
 		constraints.insets = new Insets(sliderPaddingBottom, sliderPaddingLeft, sliderPaddingRight, sliderPaddingTop);
 		this.confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 2);
 		this.confidenceSlider.setMajorTickSpacing(1);
@@ -140,6 +149,28 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		this.dialog.setVisible(true);
 	}
 
+	private void sendAnswer(String answer, int confidence) {
+		int tryNumber = 0;
+		boolean success = false;
+		while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+			tryNumber++;
+			try {
+				client.getServer().proposeAnswer(qNumber, answer, user, confidence);
+				success = true;
+			} catch (final RemoteException e) {
+				client.log("Couldn't set announced round scores on server (try #" + tryNumber + ").");
+			}
+		}
+
+		if (!success) {
+			client.disconnected();
+			return;
+		}
+
+		client.log("Submitted an answer for Question #" + qNumber);
+
+	}
+
 	@Override
 	public void windowClosed(WindowEvent event) {
 		super.windowClosed(event);
@@ -154,26 +185,16 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 				return;
 			}
 
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					client.getServer().proposeAnswer(qNumber, answer, user, confidence);
-					success = true;
-				} catch (final RemoteException e) {
-					client.log("Couldn't set announced round scores on server (try #" + tryNumber + ").");
+			if (this.bruteForceCheckbox.isEnabled()) {
+				String[] answers = answer.split("\\r?\\n");
+				for (String a : answers) {
+					this.sendAnswer(a, confidence);
 				}
+			} else {
+				this.sendAnswer(answer, confidence);
 			}
 
-			if (!success) {
-				client.disconnected();
-				return;
-			}
-
-			client.log("Submitted an answer for Question #" + qNumber);
 
 		}
 	}
-
 }
