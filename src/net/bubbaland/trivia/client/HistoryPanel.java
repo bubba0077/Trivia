@@ -156,6 +156,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		final JComboBox<String> source = (JComboBox<String>) e.getSource();
 		final int rNumber = Integer.parseInt((String) source.getSelectedItem());
 		this.roundQuestionPanel.setRound(rNumber);
+		this.updateGUI();
 	}
 
 	/*

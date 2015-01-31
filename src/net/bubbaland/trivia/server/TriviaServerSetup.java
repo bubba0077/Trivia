@@ -339,7 +339,7 @@ public class TriviaServerSetup {
 			jnlpElem.setAttributeNode(attribute);
 
 			attribute = doc.createAttribute("codebase");
-			attribute.setValue("http://" + serverURL + "/trivia/");
+			attribute.setValue("http://" + serverURL);
 			jnlpElem.setAttributeNode(attribute);
 
 			attribute = doc.createAttribute("href");
@@ -443,7 +443,7 @@ public class TriviaServerSetup {
 			jnlpElem.setAttributeNode(attribute);
 
 			attribute = doc.createAttribute("codebase");
-			attribute.setValue("http://" + serverURL + "/trivia/");
+			attribute.setValue("http://" + serverURL);
 			jnlpElem.setAttributeNode(attribute);
 
 			attribute = doc.createAttribute("href");
