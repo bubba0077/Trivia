@@ -19,7 +19,7 @@ public class Answer implements Serializable {
 	private static final long	serialVersionUID	= -2367986992067473980L;
 
 	// Place in the queue
-	final private int			queueLocation;
+	volatile private int		queueLocation;
 
 	// The question number
 	volatile private int		qNumber;
@@ -148,6 +148,10 @@ public class Answer implements Serializable {
 
 	public int getQueueLocation() {
 		return this.queueLocation;
+	}
+
+	public void setQueueLocation(int i) {
+		this.queueLocation = i;
 	}
 
 	/**

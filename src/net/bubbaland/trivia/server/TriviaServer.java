@@ -489,7 +489,7 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	@WebMethod
 	public void newRound(String user) throws RemoteException {
 		this.userList.updateUserActivity(user);
-		this.log("New round starting...");
+		this.log(user + "triggered a new round.");
 		this.trivia.newRound();
 	}
 
@@ -535,14 +535,16 @@ public class TriviaServer implements TriviaInterface, ActionListener {
 	}
 
 	@Override
-	public void remapQuestion(int oldQNumber, int newQNumber) throws RemoteException {
+	public void remapQuestion(String user, int oldQNumber, int newQNumber) throws RemoteException {
 		this.trivia.remapQuestion(oldQNumber, newQNumber);
+		this.log(user + " remapped Q" + oldQNumber + " to Q" + newQNumber);
 	}
 
 	@Override
 	public void resetQuestion(String user, int qNumber) throws RemoteException {
 		this.userList.updateUserActivity(user);
 		this.trivia.resetQuestion(qNumber);
+		this.log(user + " reset Q" + qNumber);
 	}
 
 	/*

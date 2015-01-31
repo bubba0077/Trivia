@@ -257,7 +257,7 @@ public interface TriviaInterface extends Remote {
 	 *            The new question number
 	 * @throws RemoteException
 	 */
-	public void remapQuestion(int oldQNumber, int newQNumber) throws RemoteException;
+	public void remapQuestion(String user, int oldQNumber, int newQNumber) throws RemoteException;
 
 	/**
 	 * Reset a question.

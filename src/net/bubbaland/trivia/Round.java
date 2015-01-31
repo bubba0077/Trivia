@@ -3,6 +3,7 @@ package net.bubbaland.trivia;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * A data structure for rounds.
@@ -106,7 +107,7 @@ public class Round implements Serializable {
 	 * @param caller
 	 *            The user calling the answer in
 	 */
-	public void callIn(int queueIndex, String caller) {
+	public synchronized void callIn(int queueIndex, String caller) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		final Answer.Status oldStatus = answer.getStatus();
 		answer.callIn(caller);
@@ -125,7 +126,7 @@ public class Round implements Serializable {
 	 * @param answer
 	 *            TODO
 	 */
-	public void close(int qNumber, String answer) {
+	public synchronized void close(int qNumber, String answer) {
 		this.questions[qNumber - 1].close(answer);
 		this.version++;
 	}
@@ -737,7 +738,7 @@ public class Round implements Serializable {
 	 *            The operator who accepted the correct answer
 	 * 
 	 */
-	public void markCorrect(int queueIndex, String caller, String operator) {
+	public synchronized void markCorrect(int queueIndex, String caller, String operator) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		answer.markCorrect(caller, operator);
 		final int qNumber = answer.getQNumber();
@@ -760,7 +761,7 @@ public class Round implements Serializable {
 	 *            The operator who accepted the correct answer
 	 * 
 	 */
-	public void markCorrect(int qNumber, String answerText, String submitter, String operator) {
+	public synchronized void markCorrect(int qNumber, String answerText, String submitter, String operator) {
 		this.questions[qNumber - 1].markCorrect(answerText, submitter, operator);
 		this.version++;
 	}
@@ -772,7 +773,7 @@ public class Round implements Serializable {
 	 *            The index of the answer in the queue
 	 * 
 	 */
-	public void markDuplicate(int queueIndex) {
+	public synchronized void markDuplicate(int queueIndex) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		answer.markDuplicate();
 		this.version++;
@@ -784,7 +785,7 @@ public class Round implements Serializable {
 	 * @param qNumber
 	 *            The question number
 	 */
-	public void markIncorrect(int qNumber) {
+	public synchronized void markIncorrect(int qNumber) {
 		this.questions[qNumber - 1].markIncorrect();
 		this.version++;
 	}
@@ -797,7 +798,7 @@ public class Round implements Serializable {
 	 * @param caller
 	 *            The user calling the answer in
 	 */
-	public void markIncorrect(int queueIndex, String caller) {
+	public synchronized void markIncorrect(int queueIndex, String caller) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		final Answer.Status oldStatus = answer.getStatus();
 		answer.markIncorrect(caller);
@@ -816,7 +817,7 @@ public class Round implements Serializable {
 	 * @param caller
 	 *            The user calling the answer in
 	 */
-	public void markPartial(int queueIndex, String caller) {
+	public synchronized void markPartial(int queueIndex, String caller) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		final Answer.Status oldStatus = answer.getStatus();
 		answer.markPartial(caller);
@@ -834,7 +835,7 @@ public class Round implements Serializable {
 	 *            The index of the answer in the queue
 	 * 
 	 */
-	public void markUncalled(int queueIndex) {
+	public synchronized void markUncalled(int queueIndex) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		final Answer.Status oldStatus = answer.getStatus();
 		answer.markUncalled();
@@ -845,13 +846,13 @@ public class Round implements Serializable {
 		this.version++;
 	}
 
-	public void agree(int queueIndex) {
+	public synchronized void agree(int queueIndex) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		answer.agree();
 		this.version++;
 	}
 
-	public void disagree(int queueIndex) {
+	public synchronized void disagree(int queueIndex) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		answer.disagree();
 		this.version++;
@@ -931,7 +932,7 @@ public class Round implements Serializable {
 	 * @param question
 	 *            The text of the question
 	 */
-	public void open(int qNumber) {
+	public synchronized void open(int qNumber) {
 		this.questions[qNumber - 1].open();
 		this.version++;
 	}
@@ -948,7 +949,7 @@ public class Round implements Serializable {
 	 * @param confidence
 	 *            The confidence in the answer
 	 */
-	public void proposeAnswer(int qNumber, String answer, String submitter, int confidence) {
+	public synchronized void proposeAnswer(int qNumber, String answer, String submitter, int confidence) {
 		final int queueIndex = this.answerQueue.size();
 		this.answerQueue.add(new Answer(queueIndex + 1, qNumber, answer, submitter, confidence));
 		this.version++;
@@ -961,7 +962,7 @@ public class Round implements Serializable {
 		}
 	}
 
-	public void remapQuestion(int oldQNumber, int newQNumber) {
+	public synchronized void remapQuestion(int oldQNumber, int newQNumber) {
 		this.questions[newQNumber - 1].copy(this.getQuestion(oldQNumber));
 		this.questions[oldQNumber - 1].reset();
 		for (final Answer a : this.answerQueue) {
@@ -978,8 +979,17 @@ public class Round implements Serializable {
 	 * @param qNumber
 	 *            The question number
 	 */
-	public void resetQuestion(int qNumber) {
+	public synchronized void resetQuestion(int qNumber) {
 		this.questions[qNumber - 1].reset();
+		Iterator<Answer> i = this.answerQueue.iterator();
+		while (i.hasNext()) {
+			if (i.next().getQNumber() == qNumber) {
+				i.remove();
+			}
+		}
+		for (int a = 0; a < this.answerQueue.size(); a++) {
+			this.answerQueue.get(a).setQueueLocation(a + 1);
+		}
 		this.version++;
 	}
 
@@ -1004,7 +1014,7 @@ public class Round implements Serializable {
 	 * @param place
 	 *            The announced place
 	 */
-	public void setAnnounced(int announcedPoints, int place) {
+	public synchronized void setAnnounced(int announcedPoints, int place) {
 		this.announced = true;
 		this.announcedPoints = announcedPoints;
 		this.place = place;
@@ -1019,7 +1029,7 @@ public class Round implements Serializable {
 	 * @param answer
 	 *            The correct answer
 	 */
-	public void setAnswerText(int qNumber, String answer) {
+	public synchronized void setAnswerText(int qNumber, String answer) {
 		this.questions[qNumber - 1].setAnswerText(answer);
 		this.version++;
 	}
@@ -1030,7 +1040,7 @@ public class Round implements Serializable {
 	 * @param discrepancyText
 	 *            The new discrepancy text
 	 */
-	public void setDiscrepancyText(String discrepancyText) {
+	public synchronized void setDiscrepancyText(String discrepancyText) {
 		this.discrepancyText = discrepancyText;
 		this.version++;
 	}
@@ -1043,7 +1053,7 @@ public class Round implements Serializable {
 	 * @param operator
 	 *            The operator
 	 */
-	public void setOperator(int qNumber, String operator) {
+	public synchronized void setOperator(int qNumber, String operator) {
 		this.questions[qNumber - 1].setOperator(operator);
 		this.version++;
 	}
@@ -1056,7 +1066,7 @@ public class Round implements Serializable {
 	 * @param question
 	 *            The new value
 	 */
-	public void setQuestionText(int qNumber, String question) {
+	public synchronized void setQuestionText(int qNumber, String question) {
 		this.questions[qNumber - 1].setQuestionText(question);
 		this.version++;
 	}
@@ -1064,7 +1074,7 @@ public class Round implements Serializable {
 	/**
 	 * Make this a speed round
 	 */
-	public void setSpeed() {
+	public synchronized void setSpeed() {
 		this.speed = true;
 		this.version++;
 	}
@@ -1075,7 +1085,7 @@ public class Round implements Serializable {
 	 * @param standings
 	 *            Array of ScoreEntry representing each team's score this round
 	 */
-	public void setStandings(ScoreEntry[] standings) {
+	public synchronized void setStandings(ScoreEntry[] standings) {
 		this.announced = true;
 		this.standings = standings;
 		for (final ScoreEntry entry : standings) {
@@ -1095,7 +1105,7 @@ public class Round implements Serializable {
 	 * @param submitter
 	 *            the submitter
 	 */
-	public void setSubmitter(int qNumber, String submitter) {
+	public synchronized void setSubmitter(int qNumber, String submitter) {
 		this.questions[qNumber - 1].setSubmitter(submitter);
 		this.version++;
 	}
@@ -1108,7 +1118,7 @@ public class Round implements Serializable {
 	 * @param value
 	 *            The new value
 	 */
-	public void setValue(int qNumber, int value) {
+	public synchronized void setValue(int qNumber, int value) {
 		this.questions[qNumber - 1].setValue(value);
 		this.version++;
 	}
@@ -1116,7 +1126,7 @@ public class Round implements Serializable {
 	/**
 	 * Make this a normal round
 	 */
-	public void unsetSpeed() {
+	public synchronized void unsetSpeed() {
 		this.speed = false;
 		this.version++;
 	}
@@ -1139,7 +1149,7 @@ public class Round implements Serializable {
 	 * @param operator
 	 *            The operator who accepted the correct answer
 	 */
-	protected void setAnswer(int qNumber, String answer, String submitter, int confidence, String status,
+	protected synchronized void setAnswer(int qNumber, String answer, String submitter, int confidence, String status,
 			String caller, String operator) {
 		final Answer newAnswer = new Answer(this.answerQueue.size() + 1, qNumber, answer, submitter, confidence);
 		this.answerQueue.add(newAnswer);

@@ -12,7 +12,6 @@ import net.bubbaland.trivia.TriviaClientInterface;
 import net.bubbaland.trivia.TriviaInterface;
 import net.bubbaland.trivia.UserList.Role;
 
-
 /**
  * Provides the root functionality for connecting to the trivia server and creating the associated GUI.
  * 

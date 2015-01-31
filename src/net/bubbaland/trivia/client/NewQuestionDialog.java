@@ -230,7 +230,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
 					tryNumber++;
 					try {
-						client.getServer().remapQuestion(qNumberStart, qNumber);
+						client.getServer().remapQuestion(this.client.getUser(), qNumberStart, qNumber);
 						success = true;
 					} catch (final RemoteException e) {
 						client.log("Couldn't open question on server (try #" + tryNumber + ").");
