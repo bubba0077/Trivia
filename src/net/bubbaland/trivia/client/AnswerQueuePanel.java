@@ -716,7 +716,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			final QueueSort sortMethod = AnswerQueuePanel.this.frame.getQueueSort();
 
 			// Get the queue data from the server
-			final Answer[] newAnswerQueue = trivia.getAnswerQueue();
+			final Answer[] newAnswerQueue = trivia.getAnswerQueue(AnswerQueuePanel.this.rNumber);
 
 			switch (sortMethod) {
 				case TIMESTAMP_ASCENDING:

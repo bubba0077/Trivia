@@ -9,10 +9,12 @@ import java.awt.event.ItemListener;
 import java.math.BigInteger;
 import java.util.Properties;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 
@@ -38,6 +40,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 	 */
 	private final JComboBox<String>		roundSelector;
 	private final RoundQuestionsPanel	roundQuestionPanel;
+	private final AnswerQueuePanel		answerQueuePanel;
 	private final JLabel				roundScoreLabel, totalScoreLabel, placeScoreLabel, roundLabel, totalLabel,
 			placeLabel, blank0, blank1;
 
@@ -58,6 +61,9 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		super(client, parent);
 
 		this.nRounds = client.getTrivia().getNRounds();
+
+		this.roundQuestionPanel = new RoundQuestionsPanel(client, parent, false, 1);
+		this.answerQueuePanel = new AnswerQueuePanel(client, parent, 1);
 
 		// Set up layout constraints
 		final GridBagConstraints solo = new GridBagConstraints();
@@ -130,7 +136,6 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		constraints.gridy = 0;
 		this.placeScoreLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
-
 		/**
 		 * Add a question list panel to show the selected round data
 		 */
@@ -139,8 +144,12 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		constraints.gridwidth = 9;
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
-		this.roundQuestionPanel = new RoundQuestionsPanel(client, parent, false, 1);
-		this.add(this.roundQuestionPanel, constraints);
+
+		final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.roundQuestionPanel,
+				this.answerQueuePanel);
+		splitPane.setResizeWeight(0.0);
+		splitPane.setBorder(BorderFactory.createEmptyBorder());
+		this.add(splitPane, constraints);
 
 		this.loadProperties(TriviaGUI.PROPERTIES);
 	}
@@ -156,6 +165,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		final JComboBox<String> source = (JComboBox<String>) e.getSource();
 		final int rNumber = Integer.parseInt((String) source.getSelectedItem());
 		this.roundQuestionPanel.setRound(rNumber);
+		this.answerQueuePanel.setRoundNumber(rNumber);
 		this.updateGUI();
 	}
 
@@ -179,6 +189,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		}
 
 		this.roundQuestionPanel.updateGUI(force);
+		this.answerQueuePanel.updateGUI(force);
 	}
 
 	@Override
