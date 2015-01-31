@@ -48,7 +48,7 @@ public class TriviaServerSetup {
 															+ "2) Another available internet-facing port for the trivia server (default is 1099)";
 
 	private static final String	requestHTML			= "Enter local html root directory. A folder named trivia will be created there which will serve the trivia files.";
-	private static final String	defaultHTML			= "/var/www";
+	private static final String	defaultHTML			= "/var/www/trivia";
 
 	private static final String	requestURL			= "Enter domain name where the jars and java webstart files will be hosted. Do not include a protocol.";
 	private static final String	defaultURL			= "www.bubbaland.net";
@@ -212,7 +212,8 @@ public class TriviaServerSetup {
 		/*
 		 * Create trivia directories
 		 */
-		final String triviaDirPath = htmlDirName + "/trivia";
+		// final String triviaDirPath = htmlDirName + "/trivia";
+		final String triviaDirPath = htmlDirName;
 		final File triviaDir = new File(triviaDirPath);
 		final File savesDir = new File(triviaDirPath + "/saves");
 		final File chartDir = new File(triviaDirPath + "/charts");
@@ -266,7 +267,7 @@ public class TriviaServerSetup {
 		 */
 		createClientJNLP(triviaDirPath + "/triviaClient.jnlp", serverURL, port, textArea);
 		for (String libname : LIBS) {
-			createLibJNLP(triviaDirPath + "/" + libname + ".jnlp", libname, triviaDirPath, textArea);
+			createLibJNLP(triviaDirPath + "/" + libname + ".jnlp", libname, serverURL, textArea);
 		}
 
 		/*
@@ -283,12 +284,12 @@ public class TriviaServerSetup {
 			textArea.append("Your trivia server is now set up. You can run it with the following command:\n");
 			textArea.append(">java -jar " + triviaDirPath + "/triviaServer.jar\n\n");
 			textArea.append("Users can access the client through the following links:\n");
-			textArea.append("http://" + serverURL + "/trivia/triviaClient.jnlp\n");
+			textArea.append("http://" + serverURL + "/triviaClient.jnlp\n");
 		} else {
 			System.out.println("Your trivia server is now set up. You can run it with the following command:\n");
 			System.out.println(">java -jar " + triviaDirPath + "/triviaServer.jar\n\n");
 			System.out.println("Users can access the client through the following links:\n");
-			System.out.println("http://" + serverURL + "/trivia/triviaClient.jnlp\n");
+			System.out.println("http://" + serverURL + "/triviaClient.jnlp\n");
 		}
 	}
 
