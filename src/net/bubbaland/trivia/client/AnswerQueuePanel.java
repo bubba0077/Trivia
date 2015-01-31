@@ -891,8 +891,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					this.statusComboBoxes.get(a).setName(( newQueueNumber - 1 ) + "");
 					this.statusComboBoxes.get(a).setSelectedIndex(statusIndex);
 					// Add the status box listener back to monitor user changes
-					for (final ItemListener listener : listeners) {
-						this.statusComboBoxes.get(a).addItemListener(listener);
+					if (AnswerQueuePanel.this.isLive) {
+						for (final ItemListener listener : listeners) {
+							this.statusComboBoxes.get(a).addItemListener(listener);
+						}
 					}
 
 					if (( hideClosed && closed ) || ( hideDuplicates && newStatus.equals("Duplicate") ) || filtered) {
@@ -930,7 +932,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.answerTextAreas.get(a).getParent().setVisible(true);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(true);
 						this.confidenceLabels.get(a).setVisible(true);
-						this.agreeButtons.get(a).setVisible(true);
+						if (AnswerQueuePanel.this.isLive) {
+							this.agreeButtons.get(a).setVisible(true);
+						}
 						this.submitterLabels.get(a).setVisible(true);
 						this.operatorLabels.get(a).setVisible(true);
 						this.callerLabels.get(a).setVisible(true);
@@ -1069,9 +1073,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.agreeButtons.get(a).setMinimumSize(new Dimension(confidenceWidth, rowHeight / 2));
 			this.agreeButtons.get(a).setBorder(BorderFactory.createEmptyBorder());
 			this.agreeButtons.get(a).setMargin(new Insets(0, 0, 0, 0));
-			this.agreeButtons.get(a).setVisible(true);
 			this.agreeButtons.get(a).setActionCommand("Agree");
-			this.agreeButtons.get(a).addActionListener(this);
+			if (AnswerQueuePanel.this.isLive) {
+				this.agreeButtons.get(a).addActionListener(this);
+			} else {
+				this.agreeButtons.get(a).setEnabled(false);
+			}
 			buttonPanel.add(this.agreeButtons.get(a), buttonConstraints);
 			this.agreements.put(a, false);
 			constraints.gridheight = 2;
@@ -1103,11 +1110,17 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.add(panel, constraints);
 			this.statusComboBoxes.add(new JComboBox<String>(STATUSES));
 			this.statusComboBoxes.get(a).setName(a + "");
-			this.statusComboBoxes.get(a).addItemListener(this);
-			this.statusComboBoxes.get(a).addPopupMenuListener(this);
+			if (AnswerQueuePanel.this.isLive) {
+				this.statusComboBoxes.get(a).addItemListener(this);
+				this.statusComboBoxes.get(a).addPopupMenuListener(this);
+			} else {
+				this.statusComboBoxes.get(a).setEditable(false);
+				this.statusComboBoxes.get(a).setEnabled(false);
+			}
 			this.statusComboBoxes.get(a).setRenderer(
 					new StatusCellRenderer((ListCellRenderer<String>) this.statusComboBoxes.get(a).getRenderer(),
 							this.statusComboBoxes.get(a)));
+
 			panel.add(this.statusComboBoxes.get(a));
 
 			this.lastStatus.add("new");
