@@ -3,6 +3,9 @@ package net.bubbaland.trivia;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The primary data structure for the trivia contest.
  * 
@@ -16,25 +19,32 @@ public class Trivia implements Serializable {
 	private static final long	serialVersionUID	= -1849743738638088417L;
 
 	// The team name
+	@JsonProperty("teamName")
 	final private String		teamName;
 
 	// The number of rounds
+	@JsonProperty("nRounds")
 	final private int			nRounds;
 
 	// The number of questions in a normal round
+	@JsonProperty("nQuestions")
 	final private int			nQuestions;
 
 	// The number of questions in a speed round
+	@JsonProperty("nQuestionsSpeed")
 	final private int			nQuestionsSpeed;
 
 	// The number of teams in the contest
+	@JsonProperty("nTeams")
 	private int					nTeams;
 
 	// The current round
 	// private volatile Round currentRound;
+	@JsonProperty("rNumber")
 	private volatile int		rNumber;
 
 	// Array of all the rounds in the contest
+	@JsonProperty("rounds")
 	private volatile Round[]	rounds;
 
 	/**
@@ -59,7 +69,23 @@ public class Trivia implements Serializable {
 		// this.getCurrentRound() = this.rounds[0];
 		this.rNumber = 1;
 		this.nTeams = 100;
+		System.out.println("Trivia made");
 	}
+
+	@JsonCreator
+	private Trivia(@JsonProperty("teamName") String teamName, @JsonProperty("nRounds") int nRounds,
+			@JsonProperty("nQuestions") int nQuestions, @JsonProperty("nQuestionsSpeed") int nQuestionsSpeed,
+			@JsonProperty("nTeams") int nTeams, @JsonProperty("rNumber") int rNumber,
+			@JsonProperty("rounds") Round[] rounds) {
+		this.teamName = teamName;
+		this.nRounds = nRounds;
+		this.nQuestions = nQuestions;
+		this.nQuestionsSpeed = nQuestionsSpeed;
+		this.nTeams = nTeams;
+		this.rNumber = rNumber;
+		this.rounds = rounds;
+	}
+
 
 	/**
 	 * Gets whether a question has ever been opened.
@@ -972,8 +998,8 @@ public class Trivia implements Serializable {
 	 * @param question
 	 *            The question text
 	 */
-	public void open(String user, int rNumber, int qNumber) {
-		this.rounds[rNumber - 1].open(qNumber);
+	public void open(String user, int rNumber, int qNumber, String qText, int qValue) {
+		this.rounds[rNumber - 1].open(qNumber, qText, qValue);
 	}
 
 	/**
@@ -986,8 +1012,8 @@ public class Trivia implements Serializable {
 	 * @param question
 	 *            The question text
 	 */
-	public void open(int qNumber) {
-		this.getCurrentRound().open(qNumber);
+	public void open(int qNumber, String qText, int qValue) {
+		this.getCurrentRound().open(qNumber, qText, qValue);
 	}
 
 	/**
@@ -1111,18 +1137,15 @@ public class Trivia implements Serializable {
 	/**
 	 * Makes the current round a speed round.
 	 */
-	public void setSpeed() {
-		this.getCurrentRound().setSpeed();
+	public void setSpeed(boolean isSpeed) {
+		this.getCurrentRound().setSpeed(isSpeed);
 	}
 
 	/**
-	 * Makes a round a speed round.
-	 * 
-	 * @param rNumber
-	 *            The round number
+	 * Makes the current round a speed round.
 	 */
-	public void setSpeed(int rNumber) {
-		this.rounds[rNumber - 1].setSpeed();
+	public void setSpeed(int rNumber, boolean isSpeed) {
+		this.rounds[rNumber - 1].setSpeed(isSpeed);
 	}
 
 	/**
@@ -1185,4 +1208,7 @@ public class Trivia implements Serializable {
 		return this.getCurrentRound().getAgreement(queueIndex);
 	}
 
+	public enum Role {
+		TYPIST, CALLER, RESEARCHER
+	}
 }

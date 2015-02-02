@@ -21,7 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
-import net.bubbaland.trivia.UserList.Role;
+import net.bubbaland.trivia.Trivia.Role;
 
 /**
  * Creates a panel that displays active and idle user names.

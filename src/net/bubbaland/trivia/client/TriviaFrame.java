@@ -34,7 +34,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import javazoom.jl.player.Player;
-import net.bubbaland.trivia.UserList.Role;
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
+import net.bubbaland.trivia.Trivia.Role;
 
 /**
  * Creates a top-level window for displaying the trivia GUI.
@@ -421,7 +422,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 			case "Load state":
 				// Triggered by change state, prompt for save file
-				new LoadStateDialog(this.client);
+				this.client.sendMessage(ClientMessageFactory.listSaves());
 				break;
 			case "Hide Closed":
 				// Triggered by change to Hide Closed menu item

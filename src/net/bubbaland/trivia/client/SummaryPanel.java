@@ -8,7 +8,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigInteger;
-import java.rmi.RemoteException;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -18,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
 
 /**
@@ -211,73 +211,16 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	public synchronized void actionPerformed(ActionEvent event) {
 		final JComponent source = (JComponent) event.getSource();
 		if (source.equals(this.speedButton)) {
+			this.client.sendMessage(ClientMessageFactory.setSpeed(this.speedButton.isSelected()));
 			// Speed button changed
 			if (this.speedButton.isSelected()) {
-				// Speed button now pressed, tell server
-				int tryNumber = 0;
-				boolean success = false;
-				while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-					tryNumber++;
-					try {
-						this.client.getServer().setSpeed(this.client.getUser());
-						success = true;
-					} catch (final Exception e) {
-						this.client.log("Couldn't make this a speed round (try #" + tryNumber + ").");
-					}
-
-					if (!success) {
-						this.client.disconnected();
-						return;
-					}
-
-					this.client.log("Made this a speed round.");
-				}
-
+				this.client.log("Made this a speed round.");
 			} else {
-				// Speed button now not pressed, tell server
-				int tryNumber = 0;
-				boolean success = false;
-				while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-					tryNumber++;
-					try {
-						this.client.getServer().unsetSpeed(this.client.getUser());
-						success = true;
-					} catch (final RemoteException e) {
-						this.client.log("Couldn't make this a normal round (try #" + tryNumber + ").");
-						return;
-					}
-				}
-
-				if (!success) {
-					this.client.disconnected();
-					return;
-				}
-
 				this.client.log("Made this a normal round");
-
 			}
 		} else if (source.equals(this.newRoundButton)) {
-			// New round button pressed, tell server
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					this.client.getServer().newRound(this.client.getUser());
-					success = true;
-				} catch (final Exception e) {
-					this.client.log("Couldn't get current round number from server (try #" + tryNumber + ").");
-				}
-
-			}
-
-			if (!success) {
-				this.client.log("Connection failed!");
-				return;
-			}
-
+			this.client.sendMessage(ClientMessageFactory.advanceRound());
 			this.client.log("Started new round");
-
 		} else if (source.equals(this.conflictButton)) {
 			new ConflictDialog(this.client);
 		}

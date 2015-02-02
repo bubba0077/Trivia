@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * A data structure for rounds.
  * 
@@ -19,42 +22,55 @@ public class Round implements Serializable {
 	private static final long			serialVersionUID	= 1601712912797562923L;
 
 	// Data version number
+	@JsonProperty("version")
 	private volatile int				version;
 
 	// The round number
+	@JsonProperty("rNumber")
 	final private int					rNumber;
 
 	// The number of questions in a speed round
+	@JsonProperty("nQuestionsSpeed")
 	final private int					nQuestionsSpeed;
 
 	// The number of questions in a normal round
+	@JsonProperty("nQuestions")
 	final private int					nQuestions;
 
 	// The array holding the questions
+	@JsonProperty("questions")
 	final private Question[]			questions;
 
 	// Whether this is a speed round
+	@JsonProperty("speed")
 	private volatile boolean			speed;
 
 	// Whether the scores for this round have been announced
+	@JsonProperty("announced")
 	private volatile boolean			announced;
 
 	// The announced score for our team
+	@JsonProperty("announcedPoints")
 	private volatile int				announcedPoints;
 
 	// The announced place for our team
+	@JsonProperty("place")
 	private volatile int				place;
 
 	// All announced scores and places for this round
+	@JsonProperty("standings")
 	private volatile ScoreEntry[]		standings;
 
 	// Our team name
+	@JsonProperty("teamName")
 	private final String				teamName;
 
 	// The answer queue for this round
+	@JsonProperty("answerQueue")
 	private volatile ArrayList<Answer>	answerQueue;
 
 	// The discrepancy text for this round, used if the announced score does not match the calculated score
+	@JsonProperty("discrepancyText")
 	private String						discrepancyText;
 
 	/**
@@ -82,11 +98,35 @@ public class Round implements Serializable {
 		this.version = 0;
 
 		for (int q = 0; q < nQuestionsSpeed; q++) {
-			this.questions[q] = new Question(this, q + 1);
+			this.questions[q] = new Question(q + 1);
 		}
 
 		this.answerQueue = new ArrayList<Answer>(0);
 	}
+
+	@JsonCreator
+	private Round(@JsonProperty("version") int version, @JsonProperty("rNumber") int rNumber,
+			@JsonProperty("nQuestionsSpeed") int nQuestionsSpeed, @JsonProperty("nQuestions") int nQuestions,
+			@JsonProperty("questions") Question[] questions, @JsonProperty("speed") boolean speed,
+			@JsonProperty("announced") boolean announced, @JsonProperty("announcedPoints") int announcedPoints,
+			@JsonProperty("place") int place, @JsonProperty("standings") ScoreEntry[] standings,
+			@JsonProperty("teamName") String teamName, @JsonProperty("answerQueue") ArrayList<Answer> answerQueue,
+			@JsonProperty("discrepancyText") String discrepancyText) {
+		this.version = version;
+		this.rNumber = rNumber;
+		this.nQuestionsSpeed = nQuestionsSpeed;
+		this.nQuestions = nQuestions;
+		this.questions = questions;
+		this.speed = speed;
+		this.announced = announced;
+		this.announcedPoints = announcedPoints;
+		this.place = place;
+		this.standings = standings;
+		this.teamName = teamName;
+		this.answerQueue = answerQueue;
+		this.discrepancyText = discrepancyText;
+	}
+
 
 	/**
 	 * Checks if a question has been open
@@ -927,13 +967,17 @@ public class Round implements Serializable {
 	 * 
 	 * @param qNumber
 	 *            The question number
+	 * @param qValue
+	 * @param qText
 	 * @param value
 	 *            The value of the question
 	 * @param question
 	 *            The text of the question
 	 */
-	public synchronized void open(int qNumber) {
+	public synchronized void open(int qNumber, String qText, int qValue) {
 		this.questions[qNumber - 1].open();
+		this.questions[qNumber - 1].setQuestionText(qText);
+		this.questions[qNumber - 1].setValue(qValue);
 		this.version++;
 	}
 
@@ -1073,9 +1117,11 @@ public class Round implements Serializable {
 
 	/**
 	 * Make this a speed round
+	 * 
+	 * @param isSpeed
 	 */
-	public synchronized void setSpeed() {
-		this.speed = true;
+	public synchronized void setSpeed(boolean isSpeed) {
+		this.speed = isSpeed;
 		this.version++;
 	}
 

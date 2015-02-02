@@ -3,8 +3,6 @@ package net.bubbaland.trivia.client;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
-import java.rmi.RemoteException;
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -14,6 +12,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
 
 /**
@@ -155,22 +154,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		if (!client.getTrivia().isOpen(qNumberStart)) {
 			// Open the question on the server temporarily
 			this.temporaryOpen = true;
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					client.getServer().open(client.getUser(), qNumberStart);
-					success = true;
-				} catch (final RemoteException e) {
-					client.log("Couldn't open question on server (try #" + tryNumber + ").");
-				}
-			}
-
-			if (!success) {
-				client.disconnected();
-				return;
-			}
+			this.client.sendMessage(ClientMessageFactory.open(qNumberStart, this.client.getUser()
+					+ " is typing the question...", 0));
 		}
 
 		// Display the dialog box
@@ -225,23 +210,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				}
 
 				// Open the question on the server
-				int tryNumber = 0;
-				boolean success = false;
-				while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-					tryNumber++;
-					try {
-						client.getServer().remapQuestion(this.client.getUser(), qNumberStart, qNumber);
-						success = true;
-					} catch (final RemoteException e) {
-						client.log("Couldn't open question on server (try #" + tryNumber + ").");
-					}
-				}
-
-				if (!success) {
-					client.disconnected();
-					return;
-				}
-
+				this.client.sendMessage(ClientMessageFactory.remapQuestion(qNumberStart, qNumber));
 				client.log("Question #" + qNumberStart + " changed to " + qNumber);
 			}
 
@@ -338,24 +307,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			}
 
 			// Open the question on the server
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					client.getServer().open(client.getUser(), qNumber);
-					client.getServer().setQuestionText(client.getUser(), currentRound, qNumber, qText);
-					client.getServer().setQuestionValue(client.getUser(), currentRound, qNumber, qValue);
-					success = true;
-				} catch (final RemoteException e) {
-					client.log("Couldn't open question on server (try #" + tryNumber + ").");
-				}
-			}
-
-			if (!success) {
-				client.disconnected();
-				return;
-			}
+			this.client.sendMessage(ClientMessageFactory.open(qNumber, qText, qValue));
 			client.log("Question #" + qNumber + " submitted.");
 		} else if (this.temporaryOpen) {
 			resetTemporaryOpen();
@@ -363,21 +315,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	}
 
 	private void resetTemporaryOpen() {
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-			tryNumber++;
-			try {
-				client.getServer().resetQuestion(this.client.getUser(), this.qNumberStart);
-				success = true;
-			} catch (final RemoteException e) {
-				client.log("Couldn't open question on server (try #" + tryNumber + ").");
-			}
-		}
-		if (!success) {
-			client.disconnected();
-			return;
-		}
+		this.client.sendMessage(ClientMessageFactory.resetQuestion(this.qNumberStart));
 	}
 
 }

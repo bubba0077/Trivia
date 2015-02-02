@@ -16,7 +16,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -44,6 +43,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import net.bubbaland.trivia.Answer;
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.client.TriviaFrame.QueueSort;
 
@@ -580,53 +580,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					JToggleButton source = ( (JToggleButton) event.getSource() );
 					queueIndex = Integer.parseInt(source.getName());
 					this.agreements.put(queueIndex, true);
-
-					// Update status on server
-					int tryNumber = 0;
-					boolean success = false;
-					while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries"))
-							&& success == false) {
-						tryNumber++;
-						try {
-							this.client.getServer().agree(this.client.getUser(), queueIndex);
-							success = true;
-						} catch (final RemoteException e) {
-							this.client.log("Couldn't register agreement server (try #" + tryNumber + ").");
-						}
-					}
-
-					// Unable to update status on server, show disconnected dialog
-					if (!success) {
-						this.client.disconnected();
-						return;
-					}
-
+					this.client.sendMessage(ClientMessageFactory.agree(queueIndex));
 					this.client.log("Agreed with answer #" + ( queueIndex + 1 ));
 					break;
 				case "Disagree":
 					source = ( (JToggleButton) event.getSource() );
 					queueIndex = Integer.parseInt(source.getName());
 					this.agreements.put(queueIndex, false);
-					// Update status on server
-					tryNumber = 0;
-					success = false;
-					while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries"))
-							&& success == false) {
-						tryNumber++;
-						try {
-							this.client.getServer().disagree(this.client.getUser(), queueIndex);
-							success = true;
-						} catch (final RemoteException e) {
-							this.client.log("Couldn't register disagreement on server (try #" + tryNumber + ").");
-						}
-					}
-
-					// Unable to update status on server, show disconnected dialog
-					if (!success) {
-						this.client.disconnected();
-						return;
-					}
-
+					this.client.sendMessage(ClientMessageFactory.disagree(queueIndex));
 					this.client.log("Disagreed with answer #" + ( queueIndex + 1 ));
 					break;
 				default:
@@ -653,48 +614,28 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					comboBoxName = ( (JComboBox<String>) source ).getName();
 				}
 				final int queueIndex = Integer.parseInt(comboBoxName);
-
-				// Update status on server
-				int tryNumber = 0;
-				boolean success = false;
-				while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-					tryNumber++;
-					try {
-						switch (newStatus) {
-							case "Duplicate":
-								this.client.getServer().markDuplicate(this.client.getUser(), queueIndex);
-								break;
-							case "Not Called In":
-								this.client.getServer().markUncalled(this.client.getUser(), queueIndex);
-								break;
-							case "Calling":
-								this.client.getServer().callIn(queueIndex, this.client.getUser());
-								break;
-							case "Incorrect":
-								this.client.getServer().markIncorrect(queueIndex, this.client.getUser());
-								break;
-							case "Partial":
-								this.client.getServer().markPartial(queueIndex, this.client.getUser());
-								break;
-							case "Correct":
-								new CorrectEntryDialog(this.client, this.client.getUser(), queueIndex,
-										( (JComboBox<String>) source ));
-								break;
-							default:
-								break;
-						}
-						success = true;
-					} catch (final RemoteException e) {
-						this.client.log("Couldn't change answer status on server (try #" + tryNumber + ").");
-					}
+				switch (newStatus) {
+					case "Duplicate":
+						this.client.sendMessage(ClientMessageFactory.markDuplicate(queueIndex));
+						break;
+					case "Not Called In":
+						this.client.sendMessage(ClientMessageFactory.markUncalled(queueIndex));
+						break;
+					case "Calling":
+						this.client.sendMessage(ClientMessageFactory.callIn(queueIndex));
+						break;
+					case "Incorrect":
+						this.client.sendMessage(ClientMessageFactory.markIncorrect(queueIndex));
+						break;
+					case "Partial":
+						this.client.sendMessage(ClientMessageFactory.markPartial(queueIndex));
+						break;
+					case "Correct":
+						new CorrectEntryDialog(this.client, queueIndex, ( (JComboBox<String>) source ));
+						break;
+					default:
+						break;
 				}
-
-				// Unable to update status on server, show disconnected dialog
-				if (!success) {
-					this.client.disconnected();
-					return;
-				}
-
 				this.client.log("Changed status of answer #" + ( queueIndex + 1 ) + " in the queue to " + newStatus);
 
 			}

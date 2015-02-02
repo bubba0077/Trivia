@@ -1,16 +1,28 @@
 package net.bubbaland.trivia.client;
 
-// imports for RMI
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.io.IOException;
+import java.net.URI;
 import java.util.Hashtable;
 
 import javax.swing.JOptionPane;
+import javax.websocket.ClientEndpoint;
+import javax.websocket.DeploymentException;
+import javax.websocket.EncodeException;
+import javax.websocket.EndpointConfig;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+
+import org.glassfish.tyrus.client.ClientManager;
+
+import net.bubbaland.trivia.ClientMessage;
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Round;
+import net.bubbaland.trivia.ServerMessage;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaClientInterface;
-import net.bubbaland.trivia.TriviaInterface;
-import net.bubbaland.trivia.UserList.Role;
+import net.bubbaland.trivia.Trivia.Role;
 
 /**
  * Provides the root functionality for connecting to the trivia server and creating the associated GUI.
@@ -18,13 +30,8 @@ import net.bubbaland.trivia.UserList.Role;
  * @author Walter Kolczynski
  * 
  */
-public class TriviaClient extends UnicastRemoteObject implements TriviaClientInterface, Runnable {
-
-	/**
-	 * 
-	 */
-	private static final long					serialVersionUID	= 1L;
-
+@ClientEndpoint(decoders = { ServerMessage.MessageDecoder.class }, encoders = { ClientMessage.MessageEncoder.class })
+public class TriviaClient implements Runnable {
 
 	// The user's name
 	private volatile String						user;
@@ -38,11 +45,14 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	private volatile Hashtable<String, Role>	idleUserHash;
 
 	// The remote server
-	private final TriviaInterface				server;
+	private Session								session;
+
 	// The local trivia object holding all contest data
 	private volatile Trivia						trivia;
 
 	private final TriviaGUI						gui;
+
+	private String								serverURL;
 
 	/**
 	 * Creates a new trivia client GUI
@@ -50,15 +60,26 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	 * @param server
 	 *            The RMI Server
 	 */
-	public TriviaClient(TriviaInterface server, TriviaGUI gui) throws RemoteException {
-		this.server = server;
+	public TriviaClient(String serverURL, TriviaGUI gui) {
 		this.gui = gui;
+		this.serverURL = serverURL;
+		this.session = null;
 
 		this.activeUserHash = new Hashtable<String, Role>(0);
 		this.idleUserHash = new Hashtable<String, Role>(0);
 		this.user = null;
 		this.role = Role.RESEARCHER;
 		this.trivia = null;
+	}
+
+	public void run() {
+		final ClientManager clientManager = ClientManager.createClient();
+		try {
+			clientManager.connectToServer(this, URI.create(serverURL));
+			// this.session.addMessageHandler(this);
+		} catch (DeploymentException | IOException exception) {
+			exception.printStackTrace();
+		}
 	}
 
 	public int[] getVersions() {
@@ -122,8 +143,8 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	 * 
 	 * @return The remote server handle
 	 */
-	public TriviaInterface getServer() {
-		return this.server;
+	public Session getSession() {
+		return this.session;
 	}
 
 	/**
@@ -152,27 +173,23 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	 *            The new user name
 	 */
 	public void setUser(String user) {
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-			tryNumber++;
+		if (this.user == null) {
+			// this.server.setRole(user, this.role);
 			try {
-				if (this.user == null) {
-					this.server.setRole(user, this.role);
-				} else {
-					this.server.changeUser(this.user, user);
-				}
-				success = true;
-			} catch (final RemoteException e) {
-				this.gui.log("Couldn't change user name on server (try #" + tryNumber + ").");
+				session.getBasicRemote().sendObject(ClientMessageFactory.setRole(user, this.role));
+			} catch (IOException | EncodeException exception) {
+				// TODO Auto-generated catch block
+				exception.printStackTrace();
+			}
+		} else {
+			// this.server.changeUser(this.user, user);
+			try {
+				session.getBasicRemote().sendObject(ClientMessageFactory.changeUser(user));
+			} catch (IOException | EncodeException exception) {
+				// TODO Auto-generated catch block
+				exception.printStackTrace();
 			}
 		}
-
-		if (!success) {
-			this.disconnected();
-			return;
-		}
-
 		this.user = user;
 	}
 
@@ -183,23 +200,18 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 	 */
 	protected void setRole(Role role) {
 		if (this.user != null) {
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					this.server.setRole(this.user, role);
-					success = true;
-				} catch (final RemoteException e) {
-					this.gui.log("Couldn't change role server (try #" + tryNumber + ").");
-				}
+			// this.server.setRole(this.user, role);
+			try {
+				session.getBasicRemote().sendObject(ClientMessageFactory.setRole(user, role));
+			} catch (IOException | EncodeException exception) {
+				// TODO Auto-generated catch block
+				exception.printStackTrace();
 			}
 		} else {
 			this.gui.log("Couldn't set role yet, no user name specified");
 		}
 		this.role = role;
 	}
-
 
 	/**
 	 * Convert a cardinal number into its ordinal counterpart.
@@ -246,35 +258,64 @@ public class TriviaClient extends UnicastRemoteObject implements TriviaClientInt
 		this.gui.updateGUI();
 	}
 
-	@Override
-	public void run() {
-		// Wait for trivia object to finish downloading
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-			tryNumber++;
-			try {
-				this.trivia = this.server.getTrivia();
-				success = true;
-			} catch (final RemoteException e) {
-				TriviaClient.this.gui.log("Couldn't retrive trivia data from server (try #" + tryNumber + ").");
-			}
-		}
-
-		// Show disconnected dialog if we could not retrieve the Trivia data
-		if (!success || this.trivia == null) {
-			this.disconnected();
-		}
-
+	public void sendMessage(ClientMessage message) {
 		try {
-			this.server.connect(this);
-		} catch (RemoteException exception1) {
-			this.disconnected();
+			this.session.getBasicRemote().sendObject(message);
+		} catch (IOException | EncodeException exception) {
+			// TODO Auto-generated catch block
+			exception.printStackTrace();
 		}
-
-		this.gui.log("Successfully connected to server");
-		this.gui.updateGUI();
-
 	}
+
+	@OnOpen
+	public void onOpen(final Session session, EndpointConfig config) {
+		System.out.println("Connected to trivia server (" + this.serverURL + ").");
+		this.session = session;
+		this.sendMessage(ClientMessageFactory.setIdleTime(Integer.parseInt(TriviaGUI.PROPERTIES
+				.getProperty("UserList.timeToIdle"))));
+		this.sendMessage(ClientMessageFactory.fetchTrivia());
+	}
+
+	@OnError
+	public void onError(Throwable t) {
+		t.printStackTrace();
+	}
+
+	@OnMessage
+	public void onMessage(ServerMessage message) {
+		ServerMessage.ServerCommand command = message.getCommand();
+		switch (command) {
+			case UPDATE_ROUND:
+				this.trivia.updateRounds(message.getRounds());
+				this.gui.log("Updating data");
+				break;
+			case UPDATE_TRIVIA:
+				this.trivia = message.getTrivia();
+				this.gui.log("Trivia received");
+				break;
+			case UPDATE_USER_LISTS:
+				this.activeUserHash = message.getActiveUserList();
+				this.idleUserHash = message.getIdleUserList();
+				this.gui.log("New user lists received");
+				break;
+			case LIST_SAVES:
+				new LoadStateDialog(this, message.getSaves());
+				break;
+			case UPDATE_R_NUMBER:
+				this.trivia.setCurrentRound(message.getRNumber());
+				break;
+		// default:
+		// System.out.println("Unknown command received: " + command);
+		// break;
+		}
+		this.gui.updateGUI();
+	}
+
+	@OnClose
+	public void onClose() {
+		this.gui.log("Connection closed");
+		this.gui.endProgram();
+	}
+
 
 }

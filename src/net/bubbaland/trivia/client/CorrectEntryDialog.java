@@ -2,12 +2,12 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
-import java.rmi.RemoteException;
-
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
 /**
  * Creates a dialog that asks for the operator to confirm a correct answer.
@@ -20,7 +20,6 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 	private static final long		serialVersionUID	= -8974614016214193902L;
 
 	private final TriviaClient		client;
-	private final String			caller;
 	private final int				queueIndex;
 	private final JComboBox<String>	statusComboBox;
 	private final JTextField		operatorTextField;
@@ -37,11 +36,10 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 	 * @param statusComboBox
 	 *            The status combo box for this answer, so it can be reverted to previous state if dialog is cancelled
 	 */
-	public CorrectEntryDialog(TriviaClient client, String caller, int queueIndex, JComboBox<String> statusComboBox) {
+	public CorrectEntryDialog(TriviaClient client, int queueIndex, JComboBox<String> statusComboBox) {
 		super();
 
 		this.client = client;
-		this.caller = caller;
 		this.queueIndex = queueIndex;
 		this.statusComboBox = statusComboBox;
 
@@ -78,23 +76,7 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			// If the OK button was pressed, mark the question as correct
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					client.getServer().markCorrect(queueIndex, caller, operatorTextField.getText());
-					success = true;
-				} catch (final RemoteException e) {
-					client.log("Couldn't change answer status on server (try #" + tryNumber + ").");
-				}
-			}
-
-			if (!success) {
-				client.disconnected();
-				return;
-			}
-
+			this.client.sendMessage(ClientMessageFactory.markCorrect(queueIndex, operatorTextField.getText()));
 		} else {
 			// If the OK button wasn't pressed, reset the status box to the previous status
 			statusComboBox.setSelectedItem(client.getTrivia().getAnswerQueueStatus(queueIndex));

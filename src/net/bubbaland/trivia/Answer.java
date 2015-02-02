@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * A data structure for proposed answers.
  * 
@@ -19,33 +22,43 @@ public class Answer implements Serializable {
 	private static final long	serialVersionUID	= -2367986992067473980L;
 
 	// Place in the queue
+	@JsonProperty("queueLocation")
 	volatile private int		queueLocation;
 
 	// The question number
+	@JsonProperty("qNumber")
 	volatile private int		qNumber;
 
 	// The answer text
+	@JsonProperty("answer")
 	final private String		answer;
 
 	// The confidence in the answer
+	@JsonProperty("confidence")
 	final private int			confidence;
 
 	// A counter for the number of +1's
+	@JsonProperty("agreement")
 	private volatile int		agreement;
 
 	// The timestamp of when the answer was submitted
+	@JsonProperty("timestamp")
 	final private String		timestamp;
 
 	// The user name of the answer submitter
+	@JsonProperty("submitter")
 	final private String		submitter;
 
 	// The user name of the person who is calling in the answer
+	@JsonProperty("caller")
 	private volatile String		caller;
 
 	// The operator who accepted a correct answer
+	@JsonProperty("operator")
 	private volatile String		operator;
 
 	// The current status of the question
+	@JsonProperty("status")
 	private volatile Status		status;
 
 	/**
@@ -88,6 +101,24 @@ public class Answer implements Serializable {
 		this.operator = "";
 		this.status = Status.NOT_CALLED_IN;
 	};
+
+	@JsonCreator
+	private Answer(@JsonProperty("queueLocation") int queueLocation, @JsonProperty("qNumber") int qNumber,
+			@JsonProperty("answer") String answer, @JsonProperty("confidence") int confidence,
+			@JsonProperty("agreement") int agreement, @JsonProperty("timestamp") String timestamp,
+			@JsonProperty("submitter") String submitter, @JsonProperty("caller") String caller,
+			@JsonProperty("operator") String operator, @JsonProperty("status") Status status) {
+		this.queueLocation = queueLocation;
+		this.qNumber = qNumber;
+		this.answer = answer;
+		this.confidence = confidence;
+		this.agreement = agreement;
+		this.timestamp = timestamp;
+		this.submitter = submitter;
+		this.caller = caller;
+		this.operator = operator;
+		this.status = status;
+	}
 
 	/**
 	 * Mark this answer as being called in

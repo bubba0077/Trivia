@@ -13,10 +13,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +21,6 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -34,7 +29,6 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import net.bubbaland.trivia.TriviaChartFactory;
-import net.bubbaland.trivia.TriviaInterface;
 
 public class TriviaGUI implements WindowListener {
 
@@ -53,7 +47,7 @@ public class TriviaGUI implements WindowListener {
 	// File name to store window positions
 	final static private String						SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String						SETTINGS_VERSION			= "2";
+	final static private String						SETTINGS_VERSION			= "3";
 	// Calendar to track date
 	final static private Calendar					TIME						= Calendar.getInstance();
 	// Format for log timestamps
@@ -147,21 +141,13 @@ public class TriviaGUI implements WindowListener {
 
 	private TriviaClient							client;
 
-	public TriviaGUI(TriviaInterface server) {
-		this.client = null;
+	public TriviaGUI(final String serverURL) {
 		// Initialize list to hold open windows
 		this.windowList = new ArrayList<TriviaFrame>(0);
-
-		try {
-			this.client = new TriviaClient(server, this);
-		} catch (RemoteException exception) {
-			// This should never happen
-			this.endProgram();
-		}
+		this.client = new TriviaClient(serverURL, this);
+		this.client.run();
 
 		loadProperties();
-
-		this.client.run();
 
 		// Create a prompt requesting the user name
 		String user = PROPERTIES.getProperty("UserName");
@@ -169,6 +155,15 @@ public class TriviaGUI implements WindowListener {
 			new UserLoginDialog(this.client);
 		} else {
 			this.client.setUser(user);
+		}
+
+		while (this.client.getTrivia() == null) {
+			// log("Awaiting trivia data...");
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException exception) {
+				exception.printStackTrace();
+			}
 		}
 
 		// Create startup frames
@@ -191,7 +186,10 @@ public class TriviaGUI implements WindowListener {
 	 */
 	public static void main(String[] args) {
 		// Schedule a job to create and show the GUI
-		final String serverURL = args[0];
+		String serverURL = "ws://localhost:1100";
+		if (args.length > 0) {
+			serverURL = args[0];
+		}
 		SwingUtilities.invokeLater(new TriviaRunnable(serverURL));
 	}
 
@@ -449,51 +447,6 @@ public class TriviaGUI implements WindowListener {
 	}
 
 	/**
-	 * Create and show the GUI.
-	 * 
-	 * @param serverURL
-	 */
-	static void createAndShowGUI(String serverURL) {
-		// Initialize server variable
-		TriviaInterface triviaServer = null;
-
-		// Initiate connection to RMI server
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < Integer.parseInt(PROPERTIES.getProperty("MaxRetries")) && success == false) {
-			tryNumber++;
-			try {
-				// Connect to RMI server
-				triviaServer = (TriviaInterface) Naming.lookup(serverURL);
-				success = true;
-			} catch (MalformedURLException | NotBoundException | RemoteException e) {
-				// Connection failed
-				System.out.println("Initial connection to server failed (try #" + tryNumber + ")");
-
-				if (tryNumber == Integer.parseInt(PROPERTIES.getProperty("MaxRetries"))) {
-					final String message = "Could not connect to server.";
-
-					final Object[] options = { "Retry", "Exit" };
-					final int option = JOptionPane.showOptionDialog(null, message, "Disconnected",
-							JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[1]);
-
-					if (option == JOptionPane.OK_OPTION) {
-						// Retry connection
-						tryNumber = 0;
-					} else {
-						// Exit
-						System.exit(0);
-					}
-				}
-			}
-		}
-
-		System.out.println("Connected to trivia server (" + serverURL + ").");
-
-		new TriviaGUI(triviaServer);
-	}
-
-	/**
 	 * Save the current properties to the settings file.
 	 */
 	static void savePropertyFile() {
@@ -540,7 +493,7 @@ public class TriviaGUI implements WindowListener {
 
 		@Override
 		public void run() {
-			createAndShowGUI(this.serverURL);
+			new TriviaGUI(serverURL);
 		}
 	}
 }

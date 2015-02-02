@@ -3,8 +3,6 @@ package net.bubbaland.trivia.client;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
-import java.rmi.RemoteException;
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -12,6 +10,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
 public class ResetQuestionDialog extends TriviaDialogPanel {
 
@@ -76,27 +76,8 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 		super.windowClosed(event);
 		final int confirm = ( (Integer) dialog.getValue() ).intValue();
 		if (confirm == JOptionPane.OK_OPTION) {
-			// Reset the question on the server
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					client.getServer().resetQuestion(client.getUser(), qNumber);
-					success = true;
-				} catch (final RemoteException e) {
-					client.log("Couldn't open question on server (try #" + tryNumber + ").");
-				}
-			}
-
-			if (!success) {
-				client.disconnected();
-				return;
-			}
-
+			this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
 			client.log("Question #" + qNumber + " reset.");
-
-
 			return;
 		}
 	}

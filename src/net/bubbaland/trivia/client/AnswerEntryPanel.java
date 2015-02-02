@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.WindowEvent;
-import java.rmi.RemoteException;
 import java.util.Hashtable;
 
 import javax.swing.JCheckBox;
@@ -16,6 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
 
 /**
@@ -150,25 +150,8 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 	}
 
 	private void sendAnswer(String answer, int confidence) {
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-			tryNumber++;
-			try {
-				client.getServer().proposeAnswer(qNumber, answer, user, confidence);
-				success = true;
-			} catch (final RemoteException e) {
-				client.log("Couldn't set announced round scores on server (try #" + tryNumber + ").");
-			}
-		}
-
-		if (!success) {
-			client.disconnected();
-			return;
-		}
-
+		this.client.sendMessage(ClientMessageFactory.proposeAnswer(qNumber, answer, confidence));
 		client.log("Submitted an answer for Question #" + qNumber);
-
 	}
 
 	@Override

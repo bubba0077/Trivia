@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigInteger;
-import java.rmi.RemoteException;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
@@ -29,6 +28,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
 
 /**
@@ -415,25 +415,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 					new EditQuestionDialog(this.client, this.rNumber, qNumber);
 					break;
 				case "Reopen":
-					// Repen the question on the server
-					int tryNumber = 0;
-					boolean success = false;
-					while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries"))
-							&& success == false) {
-						tryNumber++;
-						try {
-							this.client.getServer().reopen(this.client.getUser(), qNumber);
-							success = true;
-						} catch (final RemoteException e) {
-							this.client.log("Couldn't reopen question on server (try #" + tryNumber + ").");
-						}
-					}
-
-					if (!success) {
-						this.client.disconnected();
-						return;
-					}
-
+					this.client.sendMessage(ClientMessageFactory.reopen(qNumber));
 					this.client.log("Question #" + qNumber + " reopened.");
 					break;
 				default:

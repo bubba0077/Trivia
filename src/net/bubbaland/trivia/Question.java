@@ -2,6 +2,9 @@ package net.bubbaland.trivia;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * A data structure for questions.
  * 
@@ -14,34 +17,40 @@ public class Question implements Serializable {
 
 	private static final long	serialVersionUID	= 5230169250657519692L;
 
-	// The round to which this question belongs
-	final private Round			round;
-
 	// The question number
-	final private int			qNumber;
+	@JsonProperty("qNumber")
+	private int					qNumber;
 
 	// The value of the question
+	@JsonProperty("value")
 	private volatile int		value;
 
 	// The text of the question
+	@JsonProperty("question")
 	private volatile String		question;
 
 	// The text of the correct answer
+	@JsonProperty("answer")
 	private volatile String		answer;
 
 	// The operator who accepted the correct answer
+	@JsonProperty("operator")
 	private volatile String		operator;
 
 	// The user who submitted the correct answer
+	@JsonProperty("submitter")
 	private volatile String		submitter;
 
 	// Whether the question is currently open
-	private volatile boolean	open;
+	@JsonProperty("isOpen")
+	private volatile boolean	isOpen;
 
 	// Whether the question has ever been open
+	@JsonProperty("beenOpen")
 	private volatile boolean	beenOpen;
 
 	// Whether the question was answered correctly
+	@JsonProperty("correct")
 	private volatile boolean	correct;
 
 	/**
@@ -52,17 +61,33 @@ public class Question implements Serializable {
 	 * @param qNumber
 	 *            The question number
 	 */
-	public Question(Round round, int qNumber) {
-		this.round = round;
+	public Question(int qNumber) {
 		this.qNumber = qNumber;
 		this.value = 0;
 		this.question = "";
 		this.answer = "";
 		this.operator = "";
 		this.submitter = "";
-		this.open = false;
+		this.isOpen = false;
 		this.beenOpen = false;
 		this.correct = false;
+	}
+
+	@JsonCreator
+	private Question(@JsonProperty("qNumber") int qNumber, @JsonProperty("value") int value,
+			@JsonProperty("question") String question, @JsonProperty("answer") String answer,
+			@JsonProperty("operator") String operator, @JsonProperty("submitter") String submitter,
+			@JsonProperty("isOpen") boolean open, @JsonProperty("beenOpen") boolean beenOpen,
+			@JsonProperty("correct") boolean correct) {
+		this.qNumber = qNumber;
+		this.value = value;
+		this.question = question;
+		this.answer = answer;
+		this.operator = operator;
+		this.submitter = submitter;
+		this.isOpen = open;
+		this.beenOpen = beenOpen;
+		this.correct = correct;
 	}
 
 	/**
@@ -82,7 +107,7 @@ public class Question implements Serializable {
 	 */
 	public void close(String answer) {
 		this.answer = answer;
-		this.open = false;
+		this.isOpen = false;
 	}
 
 	/**
@@ -134,15 +159,6 @@ public class Question implements Serializable {
 	}
 
 	/**
-	 * Gets the round number of this question
-	 * 
-	 * @return The round number
-	 */
-	public int getRoundNumber() {
-		return this.round.getRoundNumber();
-	}
-
-	/**
 	 * Gets the user who submitted the correct answer for this questino (if any)
 	 * 
 	 * @return The submitter's name
@@ -175,7 +191,7 @@ public class Question implements Serializable {
 	 * @return True if the question is currently open
 	 */
 	public boolean isOpen() {
-		return this.open;
+		return this.isOpen;
 	}
 
 	/**
@@ -190,7 +206,7 @@ public class Question implements Serializable {
 	 */
 	public void markCorrect(String answer, String submitter, String operator) {
 		this.correct = true;
-		this.open = false;
+		this.isOpen = false;
 		this.answer = answer;
 		this.operator = operator;
 		this.submitter = submitter;
@@ -201,7 +217,7 @@ public class Question implements Serializable {
 	 */
 	public void markIncorrect() {
 		this.correct = false;
-		this.open = true;
+		this.isOpen = true;
 		this.answer = "";
 		this.operator = "";
 		this.submitter = "";
@@ -211,7 +227,7 @@ public class Question implements Serializable {
 	 * Open this question
 	 */
 	public void open() {
-		this.open = true;
+		this.isOpen = true;
 		this.beenOpen = true;
 	}
 
@@ -224,7 +240,7 @@ public class Question implements Serializable {
 		this.answer = "";
 		this.operator = "";
 		this.submitter = "";
-		this.open = false;
+		this.isOpen = false;
 		this.beenOpen = false;
 		this.correct = false;
 	}
@@ -285,7 +301,7 @@ public class Question implements Serializable {
 		this.answer = question.answer;
 		this.operator = question.operator;
 		this.submitter = question.submitter;
-		this.open = question.open;
+		this.isOpen = question.isOpen;
 		this.beenOpen = question.beenOpen;
 		this.correct = question.correct;
 	}

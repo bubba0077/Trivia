@@ -3,14 +3,13 @@ package net.bubbaland.trivia.client;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
-import java.rmi.RemoteException;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
 
 /**
@@ -106,26 +105,8 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			final String answer = answerTextArea.getText();
-
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					client.getServer().close(client.getUser(), qNumber, answer);
-					success = true;
-				} catch (final RemoteException e) {
-					client.log("Couldn't close question on server (try #" + tryNumber + ").");
-				}
-			}
-
-			if (!success) {
-				client.disconnected();
-				return;
-			}
-
+			this.client.sendMessage(ClientMessageFactory.close(qNumber, answer));
 			client.log("Closed Question #" + qNumber);
-
 		}
 	}
 

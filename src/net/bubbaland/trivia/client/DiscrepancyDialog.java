@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
 
 public class DiscrepancyDialog extends TriviaDialogPanel {
@@ -66,23 +67,7 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 
 		if (option == JOptionPane.OK_OPTION) {
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					client.getServer().setDiscrepancyText(client.getUser(), rNumber, discrepancyTextField.getText());
-					success = true;
-				} catch (final Exception exception) {
-					client.log("Couldn't set discrepancy text on server (try #" + tryNumber + ").");
-				}
-			}
-
-			if (!success) {
-				client.disconnected();
-				return;
-			}
-
+			this.client.sendMessage(ClientMessageFactory.setDiscrepancyText(rNumber, discrepancyTextField.getText()));
 			return;
 		}
 	}

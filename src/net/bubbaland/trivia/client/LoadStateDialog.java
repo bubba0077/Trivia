@@ -2,11 +2,11 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
-import java.rmi.RemoteException;
-
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
 /**
  * Creates a dialog that lists the saves and prompts for one to load.
@@ -21,33 +21,33 @@ public class LoadStateDialog extends TriviaDialogPanel {
 	private final TriviaClient	client;
 	private JComboBox<String>	chooser;
 
-	public LoadStateDialog(TriviaClient client) {
+	public LoadStateDialog(TriviaClient client, String[] saveList) {
 
 		super();
 
 		this.client = client;
 
-		// Try to communicate with server
-		String[] saveList = null;
-		int tryNumber = 0;
-		boolean success = false;
-		while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-			tryNumber++;
-			try {
-				// Set the announced values
-				saveList = client.getServer().listSaves();
-				success = true;
-			} catch (final RemoteException e) {
-				// Retry if the connection is broken
-				client.log("Couldn't get list of save from server (try #" + tryNumber + ").");
-			}
-		}
-
-		if (!success) {
-			// Couldn't retrieve data from server, create a disconnected dialog box
-			client.disconnected();
-			return;
-		}
+		// // Try to communicate with server
+		// String[] saveList = null;
+		// int tryNumber = 0;
+		// boolean success = false;
+		// while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
+		// tryNumber++;
+		// try {
+		// // Set the announced values
+		// saveList = client.getServer().listSaves();
+		// success = true;
+		// } catch (final RemoteException e) {
+		// // Retry if the connection is broken
+		// client.log("Couldn't get list of save from server (try #" + tryNumber + ").");
+		// }
+		// }
+		//
+		// if (!success) {
+		// // Couldn't retrieve data from server, create a disconnected dialog box
+		// client.disconnected();
+		// return;
+		// }
 
 		// Set up base layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -95,26 +95,7 @@ public class LoadStateDialog extends TriviaDialogPanel {
 			final String saveFile = (String) chooser.getSelectedItem();
 
 			// Try to communicate with server
-			int tryNumber = 0;
-			boolean success = false;
-			while (tryNumber < Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("MaxRetries")) && success == false) {
-				tryNumber++;
-				try {
-					// Set the announced values
-					client.getServer().loadState(client.getUser(), saveFile);
-					success = true;
-				} catch (final RemoteException e) {
-					// Retry if the connection is broken
-					client.log("Couldn't load save file on server (try #" + tryNumber + ").");
-				}
-			}
-
-			if (!success) {
-				// Couldn't retrieve data from server, create a disconnected dialog box
-				client.disconnected();
-				return;
-			}
-
+			this.client.sendMessage(ClientMessageFactory.loadState(saveFile));
 		}
 	}
 
