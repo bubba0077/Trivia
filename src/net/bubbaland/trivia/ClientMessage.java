@@ -530,7 +530,7 @@ public class ClientMessage {
 
 		@Override
 		public String encode(final ClientMessage message) throws EncodeException {
-			System.out.println("Encoding ClientMessage with command " + message.command);
+			// System.out.println("Encoding ClientMessage with command " + message.command);
 			StringWriter writer = new StringWriter();
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -560,7 +560,7 @@ public class ClientMessage {
 
 		@Override
 		public ClientMessage decode(final String str) throws DecodeException {
-			System.out.println("Decoding ClientMessage");
+			// System.out.println("Decoding ClientMessage");
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
@@ -572,7 +572,7 @@ public class ClientMessage {
 				// TODO Auto-generated catch block
 				exception.printStackTrace();
 			}
-			System.out.println("Decoded ClientMessage with command " + message.getCommand());
+			// System.out.println("Decoded ClientMessage with command " + message.getCommand());
 			return message;
 		}
 

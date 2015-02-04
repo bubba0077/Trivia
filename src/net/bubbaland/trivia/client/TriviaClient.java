@@ -285,16 +285,16 @@ public class TriviaClient implements Runnable {
 		switch (command) {
 			case UPDATE_ROUND:
 				this.trivia.updateRounds(message.getRounds());
-				this.gui.log("Updating data");
+				// this.gui.log("Updating data");
 				break;
 			case UPDATE_TRIVIA:
 				this.trivia = message.getTrivia();
-				this.gui.log("Trivia received");
+				// this.gui.log("Trivia received");
 				break;
 			case UPDATE_USER_LISTS:
 				this.activeUserHash = message.getActiveUserList();
 				this.idleUserHash = message.getIdleUserList();
-				this.gui.log("New user lists received");
+				// this.gui.log("New user lists received");
 				break;
 			case LIST_SAVES:
 				new LoadStateDialog(this, message.getSaves());

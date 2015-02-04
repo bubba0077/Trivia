@@ -15,6 +15,7 @@ nQuestionsSpeed=18
 TeamName=Knee Deep In Theses
 ServerURL=www.bubbaland.net
 SaveFrequency=300000
+StandingsFrequency=60000
 SaveDir=saves
 ChartDir=charts
 StandingsURL=http://www.kvsc.org/trivia/points/hour

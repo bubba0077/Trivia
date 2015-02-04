@@ -180,7 +180,7 @@ public class ServerMessage {
 
 		@Override
 		public String encode(final ServerMessage message) throws EncodeException {
-			System.out.println("Encoding ServerMessage with command " + message.command);
+			// System.out.println("Encoding ServerMessage with command " + message.command);
 			StringWriter writer = new StringWriter();
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -210,7 +210,7 @@ public class ServerMessage {
 
 		@Override
 		public ServerMessage decode(final String str) throws DecodeException {
-			System.out.println("Decoding ServerMessage");
+			// System.out.println("Decoding ServerMessage");
 			ObjectMapper mapper = new ObjectMapper();
 			// mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
@@ -222,7 +222,7 @@ public class ServerMessage {
 				// TODO Auto-generated catch block
 				exception.printStackTrace();
 			}
-			System.out.println("Decoded ServerMessage with command " + message.getCommand());
+			// System.out.println("Decoded ServerMessage with command " + message.getCommand());
 			return message;
 		}
 

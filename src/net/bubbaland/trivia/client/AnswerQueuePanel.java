@@ -658,8 +658,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			final boolean hideDuplicates = AnswerQueuePanel.this.frame.hideDuplicates();
 			final QueueSort sortMethod = AnswerQueuePanel.this.frame.getQueueSort();
 
-			// Get the queue data from the server
-			System.out.println(AnswerQueuePanel.this.isLive + " " + AnswerQueuePanel.this.rNumber);
+			// Get the queue data
 			final Answer[] newAnswerQueue = trivia.getAnswerQueue(AnswerQueuePanel.this.rNumber);
 
 			switch (sortMethod) {

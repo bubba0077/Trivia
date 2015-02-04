@@ -99,6 +99,9 @@ public class TriviaServerEndpoint {
 	// Frequency of backups (milliseconds)
 	private static int										SAVE_FREQUENCY;
 
+	// Frequency to check for standings (milliseconds)
+	private static int										STANDINGS_FREQUENCY;
+
 	// Directory to hold backups (must exist)
 	private static String									SAVE_DIR;
 
@@ -162,6 +165,7 @@ public class TriviaServerEndpoint {
 		SERVER_URL = PROPERTIES.getProperty("ServerURL");
 		SERVER_PORT = Integer.parseInt(PROPERTIES.getProperty("Server.Port"));
 		SAVE_FREQUENCY = Integer.parseInt(PROPERTIES.getProperty("SaveFrequency"));
+		STANDINGS_FREQUENCY = Integer.parseInt(PROPERTIES.getProperty("StandingsFrequency"));
 		SAVE_DIR = PROPERTIES.getProperty("SaveDir");
 		CHART_DIR = PROPERTIES.getProperty("ChartDir");
 		CHART_WIDTH = Integer.parseInt(PROPERTIES.getProperty("Chart.Width"));
@@ -173,13 +177,22 @@ public class TriviaServerEndpoint {
 		sessionList = new Hashtable<Session, TriviaServerEndpoint>(0);
 
 		// Create timer that will make save files
-		final Timer backupTimer = new Timer(SAVE_FREQUENCY, new ActionListener() {
+		new Timer(SAVE_FREQUENCY, new ActionListener() {
 			/**
 			 * Handle the save timer triggers.
 			 */
 			public void actionPerformed(ActionEvent e) {
-				final int rNumber = TriviaServerEndpoint.trivia.getCurrentRoundNumber();
-				for (int r = 1; r < rNumber; r++) {
+				TriviaServerEndpoint.saveState();
+			}
+		}).start();
+
+		// Create timer that will make save files
+		new Timer(STANDINGS_FREQUENCY, new ActionListener() {
+			/**
+			 * Handle the save timer triggers.
+			 */
+			public void actionPerformed(ActionEvent e) {
+				for (int r = 1; r < TriviaServerEndpoint.trivia.getCurrentRoundNumber(); r++) {
 					// For each past round, try to get announced standings if we don't have them
 					if (!TriviaServerEndpoint.trivia.isAnnounced(r)) {
 						final ScoreEntry[] standings = getStandings(r);
@@ -188,10 +201,8 @@ public class TriviaServerEndpoint {
 						}
 					}
 				}
-				TriviaServerEndpoint.saveState();
 			}
-		});
-		backupTimer.start();
+		}).start();
 	}
 
 	private int[]											lastVersions;
