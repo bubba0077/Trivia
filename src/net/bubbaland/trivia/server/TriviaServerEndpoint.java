@@ -117,30 +117,27 @@ public class TriviaServerEndpoint {
 	private static final SimpleDateFormat					stringDateFormat	= new SimpleDateFormat(
 																						"yyyy MMM dd HH:mm:ss");
 
-	private static final Hashtable<Session, TriviaServerEndpoint>	sessionList;
+	private static Hashtable<Session, TriviaServerEndpoint>	sessionList;
 
 	// The Trivia object that holds all of the contest data
-	private static final Trivia								trivia;
-
-	private int[]											lastVersions;
-	private int												timeToIdle;
-	private String											user;
-	private Role											role;
-	private Date											lastActive;
+	private static Trivia									trivia;
 
 	/**
 	 * Setup properties
 	 */
 	final static public Properties							PROPERTIES			= new Properties();
 
+
 	static {
+		final InputStream defaults = TriviaServerEndpoint.class.getResourceAsStream(SETTINGS_FILENAME);
+
 		/**
 		 * Default properties
 		 */
-		final InputStream defaults = TriviaServerEndpoint.class.getResourceAsStream(SETTINGS_FILENAME);
 		try {
 			PROPERTIES.load(defaults);
-		} catch (final IOException e) {
+		} catch (final IOException | NullPointerException e) {
+			e.printStackTrace();
 			System.out.println("Couldn't load default properties file, aborting!");
 			System.exit(-1);
 		}
@@ -171,6 +168,7 @@ public class TriviaServerEndpoint {
 		CHART_HEIGHT = Integer.parseInt(PROPERTIES.getProperty("Chart.Height"));
 		STANDINGS_BASE_URL = PROPERTIES.getProperty("StandingsURL");
 
+
 		trivia = new Trivia(TEAM_NAME, N_ROUNDS, N_QUESTIONS_NORMAL, N_QUESTIONS_SPEED);
 		sessionList = new Hashtable<Session, TriviaServerEndpoint>(0);
 
@@ -196,6 +194,11 @@ public class TriviaServerEndpoint {
 		backupTimer.start();
 	}
 
+	private int[]											lastVersions;
+	private int												timeToIdle;
+	private String											user;
+	private Role											role;
+	private Date											lastActive;
 
 	/**
 	 * Creates a new trivia server.
@@ -244,10 +247,10 @@ public class TriviaServerEndpoint {
 			final Element triviaElement = doc.getDocumentElement();
 
 			// Read/set the trivia parameters
-			TriviaServerEndpoint.trivia.setNTeams(Integer.parseInt(triviaElement.getElementsByTagName("Number_of_Teams")
-					.item(0).getTextContent()));
-			TriviaServerEndpoint.trivia.setCurrentRound(Integer.parseInt(triviaElement.getElementsByTagName("Current_Round")
-					.item(0).getTextContent()));
+			TriviaServerEndpoint.trivia.setNTeams(Integer.parseInt(triviaElement
+					.getElementsByTagName("Number_of_Teams").item(0).getTextContent()));
+			TriviaServerEndpoint.trivia.setCurrentRound(Integer.parseInt(triviaElement
+					.getElementsByTagName("Current_Round").item(0).getTextContent()));
 
 			// Get a list of the round elements
 			final NodeList roundElements = triviaElement.getElementsByTagName("Round");
@@ -262,8 +265,8 @@ public class TriviaServerEndpoint {
 						.equals("true");
 				TriviaServerEndpoint.trivia.setSpeed(rNumber, isSpeed);
 
-				TriviaServerEndpoint.trivia.setDiscrepencyText(rNumber, roundElement.getElementsByTagName("Discrepancy_Text")
-						.item(0).getTextContent());
+				TriviaServerEndpoint.trivia.setDiscrepencyText(rNumber,
+						roundElement.getElementsByTagName("Discrepancy_Text").item(0).getTextContent());
 
 				// Get a list of the question elements in this round
 				final NodeList questionElements = roundElement.getElementsByTagName("Question");
@@ -460,7 +463,8 @@ public class TriviaServerEndpoint {
 
 					// The question text
 					element = doc.createElement("Question_Text");
-					element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getQuestionText(r + 1, q + 1) + ""));
+					element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getQuestionText(r + 1, q + 1)
+							+ ""));
 					questionElement.appendChild(element);
 
 					// The answer
@@ -633,8 +637,9 @@ public class TriviaServerEndpoint {
 			filename = CHART_DIR + "/latest_scoreByRoundChart.png";
 			try {
 				final File file = new File(filename);
-				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeScoreByRoundChart(TriviaServerEndpoint.trivia),
-						CHART_WIDTH, CHART_HEIGHT);
+				ChartUtilities.saveChartAsPNG(file,
+						TriviaChartFactory.makeScoreByRoundChart(TriviaServerEndpoint.trivia), CHART_WIDTH,
+						CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved score by round chart to " + filename);
 			} catch (final IOException exception) {
 				System.out.println("Couldn't save score by round chart to file " + filename);
@@ -644,8 +649,9 @@ public class TriviaServerEndpoint {
 			filename = CHART_DIR + "/latest_cumulativeScoreChart.png";
 			try {
 				final File file = new File(filename);
-				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeCumulativePointChart(TriviaServerEndpoint.trivia),
-						CHART_WIDTH, CHART_HEIGHT);
+				ChartUtilities.saveChartAsPNG(file,
+						TriviaChartFactory.makeCumulativePointChart(TriviaServerEndpoint.trivia), CHART_WIDTH,
+						CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved cumulative score chart to " + filename);
 			} catch (final IOException exception) {
 				System.out.println("Couldn't save cumulative score chart to file " + filename);
@@ -655,8 +661,9 @@ public class TriviaServerEndpoint {
 			filename = CHART_DIR + "/latest_teamComparisonChart.png";
 			try {
 				final File file = new File(filename);
-				ChartUtilities.saveChartAsPNG(file, TriviaChartFactory.makeTeamComparisonChart(TriviaServerEndpoint.trivia),
-						CHART_WIDTH, CHART_HEIGHT);
+				ChartUtilities.saveChartAsPNG(file,
+						TriviaChartFactory.makeTeamComparisonChart(TriviaServerEndpoint.trivia), CHART_WIDTH,
+						CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved team comparison chart to " + filename);
 			} catch (final IOException exception) {
 				System.out.println("Couldn't save team comparison chart to file " + filename);
@@ -816,7 +823,8 @@ public class TriviaServerEndpoint {
 
 	private static synchronized void updateRoundNumber() {
 		for (Session session : TriviaServerEndpoint.sessionList.keySet()) {
-			sendMessage(session, ServerMessageFactory.updateRoundNumber(TriviaServerEndpoint.trivia.getCurrentRoundNumber()));
+			sendMessage(session,
+					ServerMessageFactory.updateRoundNumber(TriviaServerEndpoint.trivia.getCurrentRoundNumber()));
 		}
 	}
 
@@ -824,10 +832,9 @@ public class TriviaServerEndpoint {
 		Collection<TriviaServerEndpoint> clients = TriviaServerEndpoint.sessionList.values();
 		for (Session session : TriviaServerEndpoint.sessionList.keySet()) {
 			int timeToIdle = sessionList.get(session).timeToIdle;
-			sendMessage(
-					session,
-					ServerMessageFactory.updateUserLists(TriviaServerEndpoint.getActiveUsers(clients, timeToIdle),
-							TriviaServerEndpoint.getIdleUsers(clients, timeToIdle)));
+			sendMessage(session, ServerMessageFactory.updateUserLists(
+					TriviaServerEndpoint.getActiveUsers(clients, timeToIdle),
+					TriviaServerEndpoint.getIdleUsers(clients, timeToIdle)));
 		}
 	}
 
@@ -864,8 +871,8 @@ public class TriviaServerEndpoint {
 				break;
 			case CALL_IN:
 				TriviaServerEndpoint.trivia.callIn(message.getQueueIndex(), info.user);
-				TriviaServerEndpoint
-						.log(info.user + " is calling in item " + message.getQueueIndex() + " in the answer queue.");
+				TriviaServerEndpoint.log(info.user + " is calling in item " + message.getQueueIndex()
+						+ " in the answer queue.");
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case CHANGE_USER:
@@ -887,11 +894,11 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case EDIT_QUESTION:
-				TriviaServerEndpoint.trivia.editQuestion(message.getrNumber(), message.getqNumber(), message.getqValue(),
-						message.getqText(), message.getaText(), message.isCorrect(), message.getUser(),
-						message.getOperator());
-				TriviaServerEndpoint.log("Round " + message.getrNumber() + " Question " + message.getqNumber() + " edited by "
-						+ info.user);
+				TriviaServerEndpoint.trivia.editQuestion(message.getrNumber(), message.getqNumber(),
+						message.getqValue(), message.getqText(), message.getaText(), message.isCorrect(),
+						message.getUser(), message.getOperator());
+				TriviaServerEndpoint.log("Round " + message.getrNumber() + " Question " + message.getqNumber()
+						+ " edited by " + info.user);
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case LIST_SAVES:
@@ -945,15 +952,14 @@ public class TriviaServerEndpoint {
 				break;
 			case REMAP_QUESTION:
 				TriviaServerEndpoint.trivia.remapQuestion(message.getOldQNumber(), message.getqNumber());
-				TriviaServerEndpoint.log(info.user + " remapped Q" + message.getOldQNumber() + " to Q" + message.getqNumber());
+				TriviaServerEndpoint.log(info.user + " remapped Q" + message.getOldQNumber() + " to Q"
+						+ message.getqNumber());
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case REOPEN_QUESTION:
-				TriviaServerEndpoint.trivia
-						.open(message.getqNumber(),
-								TriviaServerEndpoint.trivia.getQuestionText(message.getqNumber()),
-								TriviaServerEndpoint.trivia.getValue(TriviaServerEndpoint.trivia.getCurrentRoundNumber(),
-										message.getqNumber()));
+				TriviaServerEndpoint.trivia.open(message.getqNumber(), TriviaServerEndpoint.trivia
+						.getQuestionText(message.getqNumber()), TriviaServerEndpoint.trivia.getValue(
+						TriviaServerEndpoint.trivia.getCurrentRoundNumber(), message.getqNumber()));
 				TriviaServerEndpoint.log("Q" + message.getqNumber() + " re-opened by " + info.user);
 				TriviaServerEndpoint.updateTrivia();
 				break;
@@ -977,7 +983,8 @@ public class TriviaServerEndpoint {
 			case SET_SPEED:
 				TriviaServerEndpoint.trivia.setSpeed(message.isSpeed());
 				if (message.isSpeed()) {
-					TriviaServerEndpoint.log("Making round " + TriviaServerEndpoint.trivia.getCurrentRoundNumber() + " a speed round");
+					TriviaServerEndpoint.log("Making round " + TriviaServerEndpoint.trivia.getCurrentRoundNumber()
+							+ " a speed round");
 				} else {
 					TriviaServerEndpoint.log("Making round " + TriviaServerEndpoint.trivia.getCurrentRoundNumber()
 							+ " not a speed round");

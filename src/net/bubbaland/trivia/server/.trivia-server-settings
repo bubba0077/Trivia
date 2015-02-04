@@ -18,4 +18,4 @@ SaveFrequency=300000
 SaveDir=saves
 ChartDir=charts
 StandingsURL=http://www.kvsc.org/trivia/points/hour
-Server.Port=1100
+Server.Port=1099

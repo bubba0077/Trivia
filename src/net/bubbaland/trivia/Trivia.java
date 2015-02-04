@@ -66,10 +66,8 @@ public class Trivia implements Serializable {
 		for (int r = 0; r < nRounds; r++) {
 			this.rounds[r] = new Round(teamName, r + 1, nQuestionsSpeed, nQuestions);
 		}
-		// this.getCurrentRound() = this.rounds[0];
 		this.rNumber = 1;
 		this.nTeams = 100;
-		System.out.println("Trivia made");
 	}
 
 	@JsonCreator

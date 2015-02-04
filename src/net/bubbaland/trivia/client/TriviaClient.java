@@ -55,10 +55,7 @@ public class TriviaClient implements Runnable {
 	private String								serverURL;
 
 	/**
-	 * Creates a new trivia client GUI
-	 * 
-	 * @param server
-	 *            The RMI Server
+	 * Creates a new trivia client
 	 */
 	public TriviaClient(String serverURL, TriviaGUI gui) {
 		this.gui = gui;
@@ -93,6 +90,7 @@ public class TriviaClient implements Runnable {
 	/**
 	 * Display disconnected dialog box and prompt for action
 	 */
+	// TODO
 	public synchronized void disconnected() {
 
 		final String message = "Communication with server failed!";
