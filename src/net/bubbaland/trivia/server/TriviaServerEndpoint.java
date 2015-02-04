@@ -102,6 +102,9 @@ public class TriviaServerEndpoint {
 	// Frequency to check for standings (milliseconds)
 	private static int										STANDINGS_FREQUENCY;
 
+	// Frequency to check for standings (milliseconds)
+	private static int										IDLE_FREQUENCY;
+
 	// Directory to hold backups (must exist)
 	private static String									SAVE_DIR;
 
@@ -166,6 +169,7 @@ public class TriviaServerEndpoint {
 		SERVER_PORT = Integer.parseInt(PROPERTIES.getProperty("Server.Port"));
 		SAVE_FREQUENCY = Integer.parseInt(PROPERTIES.getProperty("SaveFrequency"));
 		STANDINGS_FREQUENCY = Integer.parseInt(PROPERTIES.getProperty("StandingsFrequency"));
+		IDLE_FREQUENCY = Integer.parseInt(PROPERTIES.getProperty("IdleFrequency"));
 		SAVE_DIR = PROPERTIES.getProperty("SaveDir");
 		CHART_DIR = PROPERTIES.getProperty("ChartDir");
 		CHART_WIDTH = Integer.parseInt(PROPERTIES.getProperty("Chart.Width"));
@@ -178,19 +182,13 @@ public class TriviaServerEndpoint {
 
 		// Create timer that will make save files
 		new Timer(SAVE_FREQUENCY, new ActionListener() {
-			/**
-			 * Handle the save timer triggers.
-			 */
 			public void actionPerformed(ActionEvent e) {
 				TriviaServerEndpoint.saveState();
 			}
 		}).start();
 
-		// Create timer that will make save files
+		// Create timer that will check standings
 		new Timer(STANDINGS_FREQUENCY, new ActionListener() {
-			/**
-			 * Handle the save timer triggers.
-			 */
 			public void actionPerformed(ActionEvent e) {
 				for (int r = 1; r < TriviaServerEndpoint.trivia.getCurrentRoundNumber(); r++) {
 					// For each past round, try to get announced standings if we don't have them
@@ -201,6 +199,13 @@ public class TriviaServerEndpoint {
 						}
 					}
 				}
+			}
+		}).start();
+
+		// Create time that will update user lists with idle users
+		new Timer(IDLE_FREQUENCY, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				updateUsers();
 			}
 		}).start();
 	}
@@ -969,9 +974,7 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case REOPEN_QUESTION:
-				TriviaServerEndpoint.trivia.open(message.getqNumber(), TriviaServerEndpoint.trivia
-						.getQuestionText(message.getqNumber()), TriviaServerEndpoint.trivia.getValue(
-						TriviaServerEndpoint.trivia.getCurrentRoundNumber(), message.getqNumber()));
+				TriviaServerEndpoint.trivia.reopen(message.getqNumber());
 				TriviaServerEndpoint.log("Q" + message.getqNumber() + " re-opened by " + info.user);
 				TriviaServerEndpoint.updateTrivia();
 				break;

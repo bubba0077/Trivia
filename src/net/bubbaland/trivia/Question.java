@@ -231,6 +231,11 @@ public class Question implements Serializable {
 		this.beenOpen = true;
 	}
 
+	public void reopen() {
+		this.open();
+		this.correct = false;
+	}
+
 	/**
 	 * Reset the question
 	 */

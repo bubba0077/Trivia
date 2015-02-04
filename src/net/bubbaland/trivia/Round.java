@@ -981,6 +981,11 @@ public class Round implements Serializable {
 		this.version++;
 	}
 
+	public synchronized void reopen(int qNumber) {
+		this.questions[qNumber - 1].reopen();
+		this.version++;
+	}
+
 	/**
 	 * Propose an answer for a question.
 	 * 
