@@ -346,10 +346,12 @@ public class Trivia implements Serializable {
 	/**
 	 * Gets the size of the answer queue for the current round.
 	 * 
+	 * @param rNumber
+	 * 
 	 * @return The answer queue size
 	 */
-	public int getAnswerQueueSize() {
-		return this.getCurrentRound().getAnswerQueueSize();
+	public int getAnswerQueueSize(int rNumber) {
+		return this.rounds[rNumber - 1].getAnswerQueueSize();
 	}
 
 	/**

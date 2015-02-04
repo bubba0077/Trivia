@@ -490,7 +490,8 @@ public class TriviaServerEndpoint {
 			}
 
 			// The size of the answer queue for the current round
-			final int queueSize = TriviaServerEndpoint.trivia.getAnswerQueueSize();
+			final int queueSize = TriviaServerEndpoint.trivia.getAnswerQueueSize(TriviaServerEndpoint.trivia
+					.getCurrentRoundNumber());
 
 			// Create a queue element
 			final Element queueElement = doc.createElement("Answer_Queue");

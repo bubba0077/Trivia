@@ -358,7 +358,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	@Override
 	public synchronized void updateGUI(boolean force) {
 		// Update the queue size
-		final int queueSize = this.client.getTrivia().getAnswerQueueSize();
+		this.rNumber = this.client.getTrivia().getCurrentRoundNumber();
+
+		final int queueSize = this.client.getTrivia().getAnswerQueueSize(this.rNumber);
 		this.queueSizeLabel.setText(queueSize + "");
 		this.answerQueueSubPanel.updateGUI(force);
 		final QueueSort sortMethod = this.frame.getQueueSort();
@@ -657,6 +659,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			final QueueSort sortMethod = AnswerQueuePanel.this.frame.getQueueSort();
 
 			// Get the queue data from the server
+			System.out.println(AnswerQueuePanel.this.isLive + " " + AnswerQueuePanel.this.rNumber);
 			final Answer[] newAnswerQueue = trivia.getAnswerQueue(AnswerQueuePanel.this.rNumber);
 
 			switch (sortMethod) {
