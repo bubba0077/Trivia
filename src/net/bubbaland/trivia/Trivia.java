@@ -1016,6 +1016,11 @@ public class Trivia implements Serializable {
 		this.getCurrentRound().open(qNumber, qText, qValue);
 	}
 
+	public void reopen(int qNumber) {
+		this.getCurrentRound().reopen(qNumber);
+	}
+
+
 	/**
 	 * Propose an answer.
 	 * 
