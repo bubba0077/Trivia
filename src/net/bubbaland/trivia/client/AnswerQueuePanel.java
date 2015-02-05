@@ -1260,7 +1260,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			// Display the dialog box
 			this.dialog = new TriviaDialog(null, "Set Answer Filter", this, JOptionPane.PLAIN_MESSAGE,
 					JOptionPane.OK_CANCEL_OPTION);
-			this.dialog.setName("Filter Answers by Text");
+			this.dialog.setName("Filter Answers by Text (regex allowed)");
 			this.dialog.setVisible(true);
 		}
 

@@ -769,18 +769,6 @@ public class TriviaServerEndpoint {
 		}
 	}
 
-	// private class TriviaServer {
-	// // final private TriviaServer server;
-	// private int[] lastVersions;
-	// private int timeToIdle, lastCurrentRound;
-	// private String user;
-	// private Role role;
-	// private Date lastActive;
-	//
-	// public TriviaServer(Session session) {
-	// }
-	// }
-
 	/**
 	 * Get the users and roles that have been active. Active means having changed something on the server.
 	 * 
@@ -957,8 +945,17 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case OPEN_QUESTION:
-				TriviaServerEndpoint.trivia.open(message.getqNumber(), message.getqText(), message.getqValue());
-				TriviaServerEndpoint.log("Question " + message.getqNumber() + " opened by " + info.user);
+				final int qNumber = message.getqNumber();
+				final String qText = message.getqText();
+				final int qValue = message.getqValue();
+				TriviaServerEndpoint.trivia.open(qNumber, qText, qValue);
+				if (qValue == 0) {
+					TriviaServerEndpoint.log("Question " + qNumber + " is being typed in by " + info.user + "...");
+				} else {
+					TriviaServerEndpoint.log("Question " + qNumber + " opened by " + info.user + " worth " + qValue
+							+ " points:");
+					TriviaServerEndpoint.log("\t" + qText);
+				}
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case PROPOSE_ANSWER:
