@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -34,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
@@ -100,6 +102,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	private final JPopupMenu				contextMenu;
 	private int								rNumber;
 	private boolean							live;
+	private Pattern							filterText;
 
 	/** The workflow queue sub panel */
 	final private AnswerQueueSubPanel		answerQueueSubPanel;
@@ -123,6 +126,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		super(client, frame);
 		this.live = true;
 		this.rNumber = client.getTrivia().getCurrentRoundNumber();
+		this.filterText = Pattern.compile("");
 
 		this.maxQuestions = client.getTrivia().getMaxQuestions();
 
@@ -131,15 +135,30 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		 */
 		this.contextMenu = new JPopupMenu();
 
-		final JMenuItem viewItem = new JMenuItem("Filter");
-		viewItem.setActionCommand("Filter");
-		viewItem.addActionListener(this);
-		this.contextMenu.add(viewItem);
+		JMenuItem menuItem = new JMenuItem("Filter by Q#");
+		menuItem.setActionCommand("FilterQ#");
+		menuItem.addActionListener(this);
+		this.contextMenu.add(menuItem);
 
-		final JMenuItem editItem = new JMenuItem("Clear Filters");
-		editItem.setActionCommand("Clear Filters");
-		editItem.addActionListener(this);
-		this.contextMenu.add(editItem);
+		menuItem = new JMenuItem("Filter by Text");
+		menuItem.setActionCommand("FilterText");
+		menuItem.addActionListener(this);
+		this.contextMenu.add(menuItem);
+
+		menuItem = new JMenuItem("Clear Q# Filters");
+		menuItem.setActionCommand("Clear Q# Filters");
+		menuItem.addActionListener(this);
+		this.contextMenu.add(menuItem);
+
+		menuItem = new JMenuItem("Clear Text Filters");
+		menuItem.setActionCommand("Clear Text Filters");
+		menuItem.addActionListener(this);
+		this.contextMenu.add(menuItem);
+
+		menuItem = new JMenuItem("Clear All Filters");
+		menuItem.setActionCommand("Clear All Filters");
+		menuItem.addActionListener(this);
+		this.contextMenu.add(menuItem);
 
 		this.add(this.contextMenu);
 
@@ -172,6 +191,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		constraints.weightx = 1.0;
 		this.answerLabel = this.enclosedLabel("Proposed Answer", constraints, SwingConstants.LEFT,
 				SwingConstants.CENTER);
+		this.answerLabel.addMouseListener(new PopupListener(this.contextMenu));
 		constraints.weightx = 0.0;
 
 		constraints.gridx = 3;
@@ -234,7 +254,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		this.spacer.setPreferredSize(new Dimension(0, 0));
 		scrollPanel.add(this.spacer, constraints);
 
-		resetFilter();
+		resetQNumFilter();
 		this.loadProperties(TriviaGUI.PROPERTIES);
 	}
 
@@ -242,12 +262,18 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		this.rNumber = newRoundNumber;
 	}
 
-	private void resetFilter() {
+	private void resetQNumFilter() {
 		this.qNumberFilter = new ArrayList<Integer>(0);
 		for (int i = 0; i < this.maxQuestions; i++) {
 			this.qNumberFilter.add(i + 1);
 		}
 		this.qNumberLabel.setText("Q#");
+		this.updateGUI(true);
+	}
+
+	private void resetTextFilter() {
+		this.filterText = Pattern.compile("");
+		this.updateGUI(true);
 	}
 
 	private class PopupListener extends MouseAdapter {
@@ -291,11 +317,23 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	public synchronized void actionPerformed(ActionEvent event) {
 		final String command = event.getActionCommand();
 		switch (command) {
-			case "Filter":
-				new AnswerFilterDialog();
+			case "FilterQ#":
+				new AnswerQNumFilterDialog();
 				break;
-			case "Clear Filters":
-				resetFilter();
+			case "FilterText":
+				new AnswerTextFilterDialog();
+				break;
+			case "Clear Q# Filters":
+				resetQNumFilter();
+				this.answerQueueSubPanel.updateGUI(true);
+				break;
+			case "Clear Text Filters":
+				resetTextFilter();
+				this.answerQueueSubPanel.updateGUI(true);
+				break;
+			case "Clear All Filters":
+				resetQNumFilter();
+				resetTextFilter();
 				this.answerQueueSubPanel.updateGUI(true);
 				break;
 			default:
@@ -359,6 +397,11 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		final int queueSize = this.client.getTrivia().getAnswerQueueSize(this.rNumber);
 		this.queueSizeLabel.setText(queueSize + "");
+		if (this.filterText.pattern().equals("")) {
+			this.answerLabel.setText("Proposed Answer");
+		} else {
+			this.answerLabel.setText("Proposed Answer (filtered by: \"" + this.filterText + "\")");
+		}
 		this.answerQueueSubPanel.updateGUI(force);
 		final QueueSort sortMethod = this.frame.getQueueSort();
 
@@ -727,7 +770,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 				this.lastStatus.set(a, newStatus);
 				final boolean closed = !trivia.isOpen(newQNumber);
-				final boolean filtered = !qNumberFilter.contains(newQNumber);
+				final boolean filtered = !qNumberFilter.contains(newQNumber)
+						|| !( AnswerQueuePanel.this.filterText.pattern().equals("") || AnswerQueuePanel.this.filterText
+								.matcher(newAnswer).find() );
 
 				if (!( hideClosed && closed ) && !( hideDuplicates && newStatus.equals("Duplicate") )) {
 					shownRows++;
@@ -1187,14 +1232,58 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		}
 	}
 
-	private class AnswerFilterDialog extends TriviaDialogPanel {
+	private class AnswerTextFilterDialog extends TriviaDialogPanel {
+
+		private static final long	serialVersionUID	= -3726819964211373465L;
+
+		final private JTextField	textField;
+
+		public AnswerTextFilterDialog() {
+			super();
+
+			final GridBagConstraints constraints = new GridBagConstraints();
+			constraints.fill = GridBagConstraints.BOTH;
+			constraints.anchor = GridBagConstraints.CENTER;
+
+			JLabel label = new JLabel("Filter answers by", JLabel.LEFT);
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			constraints.weightx = 1.0;
+			constraints.weighty = 0.5;
+			this.add(label, constraints);
+
+			constraints.gridx = 0;
+			constraints.gridy = 1;
+			this.textField = new JTextField();
+			this.add(this.textField, constraints);
+
+			// Display the dialog box
+			this.dialog = new TriviaDialog(null, "Set Answer Filter", this, JOptionPane.PLAIN_MESSAGE,
+					JOptionPane.OK_CANCEL_OPTION);
+			this.dialog.setName("Filter Answers by Text");
+			this.dialog.setVisible(true);
+		}
+
+		@Override
+		public void windowClosed(WindowEvent event) {
+			super.windowClosed(event);
+			// If the OK button was pressed, add the proposed answer to the queue
+			final int option = ( (Integer) this.dialog.getValue() ).intValue();
+			if (option == JOptionPane.OK_OPTION) {
+				AnswerQueuePanel.this.filterText = Pattern.compile(this.textField.getText());
+				AnswerQueuePanel.this.updateGUI(true);
+			}
+		}
+	}
+
+	private class AnswerQNumFilterDialog extends TriviaDialogPanel {
 
 		private static final long	serialVersionUID	= -3726819964211373465L;
 
 		final private JCheckBox[]	checkboxes;
 		final private static int	nPerColumn			= 5;
 
-		public AnswerFilterDialog() {
+		public AnswerQNumFilterDialog() {
 			super();
 
 			final GridBagConstraints constraints = new GridBagConstraints();
