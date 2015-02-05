@@ -755,11 +755,12 @@ public class TriviaServerEndpoint {
 	 *             A remote exception
 	 */
 	public static void main(String args[]) {
+		System.out.print("Starting server...");
 		final Server server = new Server(SERVER_URL, SERVER_PORT, "/", null, TriviaServerEndpoint.class);
 		try {
 			server.start();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			System.out.print("Please press a key to stop the server.");
+			System.out.print("Press return to stop the server.");
 			reader.readLine();
 		} catch (DeploymentException | IOException exception) {
 			exception.printStackTrace();
