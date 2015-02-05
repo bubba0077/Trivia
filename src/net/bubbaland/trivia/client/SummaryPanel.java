@@ -367,7 +367,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		}
 
 		// If the round is over, hide speed round button and show new round button
-		if (trivia.roundOver()) {
+		if (trivia.roundOver() && trivia.getCurrentRoundNumber() < trivia.getNRounds()) {
 			this.speedButton.setVisible(false);
 			this.newRoundButton.setVisible(true);
 		} else {
