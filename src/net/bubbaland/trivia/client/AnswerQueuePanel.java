@@ -99,19 +99,15 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	final private JScrollPane				scrollPane;
 	private final JPopupMenu				contextMenu;
 	private int								rNumber;
-	private boolean							isLive;
+	private boolean							live;
 
 	/** The workflow queue sub panel */
 	final private AnswerQueueSubPanel		answerQueueSubPanel;
 
-	/** The local client */
-	// final private TriviaClient client;
-	// final private TriviaFrame parent;
-
 	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame, int rNumber) {
 		this(client, frame);
 		this.rNumber = rNumber;
-		this.isLive = false;
+		this.live = false;
 	}
 
 	/**
@@ -125,7 +121,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame) {
 
 		super(client, frame);
-		this.isLive = true;
+		this.live = true;
 		this.rNumber = client.getTrivia().getCurrentRoundNumber();
 
 		this.maxQuestions = client.getTrivia().getMaxQuestions();
@@ -243,9 +239,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	}
 
 	public void setRoundNumber(int newRoundNumber) {
-		if (!this.isLive) {
-			this.rNumber = newRoundNumber;
-		}
+		this.rNumber = newRoundNumber;
 	}
 
 	private void resetFilter() {
@@ -358,7 +352,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	@Override
 	public synchronized void updateGUI(boolean force) {
 		// Update the queue size
-		this.rNumber = this.client.getTrivia().getCurrentRoundNumber();
+		if (this.live) {
+			this.setRoundNumber(this.client.getTrivia().getCurrentRoundNumber());
+			this.answerQueueSubPanel.resetAgreement();
+		}
 
 		final int queueSize = this.client.getTrivia().getAnswerQueueSize(this.rNumber);
 		this.queueSizeLabel.setText(queueSize + "");
@@ -565,7 +562,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		@Override
 		public synchronized void actionPerformed(ActionEvent event) {
 			final Trivia trivia = this.client.getTrivia();
-			if (AnswerQueuePanel.this.isLive) {
+			if (AnswerQueuePanel.this.live) {
 				AnswerQueuePanel.this.rNumber = trivia.getCurrentRoundNumber();
 			}
 			final String command = event.getActionCommand();
@@ -594,6 +591,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					break;
 				default:
 					break;
+			}
+		}
+
+		public void resetAgreement() {
+			for (Integer queueIndex : this.agreements.keySet()) {
+				this.agreements.put(queueIndex, false);
 			}
 		}
 
@@ -721,6 +724,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				final String newCaller = this.answerQueue[a].getCaller();
 				final String newStatus = this.answerQueue[a].getStatusString();
 
+
 				this.lastStatus.set(a, newStatus);
 				final boolean closed = !trivia.isOpen(newQNumber);
 				final boolean filtered = !qNumberFilter.contains(newQNumber);
@@ -834,7 +838,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					this.statusComboBoxes.get(a).setName(( newQueueNumber - 1 ) + "");
 					this.statusComboBoxes.get(a).setSelectedIndex(statusIndex);
 					// Add the status box listener back to monitor user changes
-					if (AnswerQueuePanel.this.isLive) {
+					if (AnswerQueuePanel.this.live) {
 						for (final ItemListener listener : listeners) {
 							this.statusComboBoxes.get(a).addItemListener(listener);
 						}
@@ -875,8 +879,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.answerTextAreas.get(a).getParent().setVisible(true);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(true);
 						this.confidenceLabels.get(a).setVisible(true);
-						if (AnswerQueuePanel.this.isLive) {
+						if (AnswerQueuePanel.this.live) {
 							this.agreeButtons.get(a).setVisible(true);
+							this.agreeButtons.get(a).getParent().setVisible(true);
 						}
 						this.submitterLabels.get(a).setVisible(true);
 						this.operatorLabels.get(a).setVisible(true);
@@ -889,7 +894,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.answerTextAreas.get(a).getParent().setVisible(true);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(true);
 						this.confidenceLabels.get(a).getParent().setVisible(true);
-						this.agreeButtons.get(a).getParent().setVisible(true);
 						this.submitterLabels.get(a).getParent().setVisible(true);
 						this.operatorLabels.get(a).getParent().setVisible(true);
 						this.callerLabels.get(a).getParent().setVisible(true);
@@ -1017,7 +1021,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.agreeButtons.get(a).setBorder(BorderFactory.createEmptyBorder());
 			this.agreeButtons.get(a).setMargin(new Insets(0, 0, 0, 0));
 			this.agreeButtons.get(a).setActionCommand("Agree");
-			if (AnswerQueuePanel.this.isLive) {
+			if (AnswerQueuePanel.this.live) {
 				this.agreeButtons.get(a).addActionListener(this);
 			} else {
 				this.agreeButtons.get(a).setEnabled(false);
@@ -1053,7 +1057,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.add(panel, constraints);
 			this.statusComboBoxes.add(new JComboBox<String>(STATUSES));
 			this.statusComboBoxes.get(a).setName(a + "");
-			if (AnswerQueuePanel.this.isLive) {
+			if (AnswerQueuePanel.this.live) {
 				this.statusComboBoxes.get(a).addItemListener(this);
 				this.statusComboBoxes.get(a).addPopupMenuListener(this);
 			} else {
