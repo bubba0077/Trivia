@@ -462,7 +462,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 							&& this.cumulativeEarnedLabels[r].getText().equals(cumulativeEarned + "")
 							&& this.cumulativeValueLabels[r].getText().equals(cumulativeValue + "")
 							&& this.announcedScoreLabels[r].getText().equals(announced + "")
-							&& this.placeLabels[r].getText().equals(TriviaClient.ordinalize(place)) && this.discrepancyLabels[r]
+							&& this.placeLabels[r].getText().equals(TriviaGUI.ordinalize(place)) && this.discrepancyLabels[r]
 							.getText().equals(discrepancy) );
 				}
 
@@ -481,7 +481,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 						this.percentTotalLabels[r].setText(percentTotal);
 						if (isAnnounced) {
 							this.announcedScoreLabels[r].setText(announced + "");
-							this.placeLabels[r].setText(TriviaClient.ordinalize(place));
+							this.placeLabels[r].setText(TriviaGUI.ordinalize(place));
 						}
 						this.discrepancyLabels[r].setText(discrepancy);
 					} else {

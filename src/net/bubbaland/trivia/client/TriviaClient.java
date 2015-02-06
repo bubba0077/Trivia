@@ -73,9 +73,9 @@ public class TriviaClient implements Runnable {
 		final ClientManager clientManager = ClientManager.createClient();
 		try {
 			clientManager.connectToServer(this, URI.create(serverURL));
-			// this.session.addMessageHandler(this);
+			this.gui.connected();
 		} catch (DeploymentException | IOException exception) {
-			exception.printStackTrace();
+			this.gui.disconnected();
 		}
 	}
 
@@ -85,24 +85,6 @@ public class TriviaClient implements Runnable {
 
 	public int getCurrentRoundNumber() {
 		return this.trivia.getCurrentRoundNumber();
-	}
-
-	/**
-	 * Display disconnected dialog box and prompt for action
-	 */
-	// TODO
-	public synchronized void disconnected() {
-
-		final String message = "Communication with server failed!";
-
-		final Object[] options = { "Retry", "Exit" };
-		final int option = JOptionPane.showOptionDialog(null, message, "Disconnected", JOptionPane.OK_CANCEL_OPTION,
-				JOptionPane.ERROR_MESSAGE, null, options, options[1]);
-		if (option == 1) {
-			// Exit the client
-			System.exit(0);
-		}
-
 	}
 
 	public void log(String message) {
@@ -211,31 +193,6 @@ public class TriviaClient implements Runnable {
 		this.role = role;
 	}
 
-	/**
-	 * Convert a cardinal number into its ordinal counterpart.
-	 * 
-	 * @param cardinal
-	 *            The number to convert to ordinal form
-	 * @return String with the ordinal representation of the number (e.g., 1st, 2nd, 3rd, etc.)
-	 * 
-	 */
-	public static String ordinalize(int cardinal) {
-		// Short-circuit for teen numbers that don't follow normal rules
-		if (10 < cardinal % 100 && cardinal % 100 < 14) return cardinal + "th";
-		// Ordinal suffix depends on the ones digit
-		final int modulus = cardinal % 10;
-		switch (modulus) {
-			case 1:
-				return cardinal + "st";
-			case 2:
-				return cardinal + "nd";
-			case 3:
-				return cardinal + "rd";
-			default:
-				return cardinal + "th";
-		}
-	}
-
 	public synchronized void updateRound(int currentRound) {
 		this.trivia.setCurrentRound(currentRound);
 		this.gui.updateGUI();
@@ -302,9 +259,9 @@ public class TriviaClient implements Runnable {
 			case UPDATE_R_NUMBER:
 				this.trivia.setCurrentRound(message.getRNumber());
 				break;
-		// default:
-		// System.out.println("Unknown command received: " + command);
-		// break;
+			default:
+				System.out.println("Unknown command received: " + command);
+				break;
 		}
 		this.gui.updateGUI();
 	}
@@ -312,7 +269,7 @@ public class TriviaClient implements Runnable {
 	@OnClose
 	public void onClose() {
 		this.gui.log("Connection closed");
-		this.gui.endProgram();
+		this.gui.disconnected();
 	}
 
 

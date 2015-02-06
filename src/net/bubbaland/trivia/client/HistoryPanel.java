@@ -182,7 +182,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		this.roundScoreLabel.setText(trivia.getEarned(rNumber) + " / " + trivia.getValue(rNumber));
 		this.totalScoreLabel.setText(trivia.getCumulativeEarned(rNumber) + " / " + trivia.getCumulativeValue(rNumber));
 		if (trivia.isAnnounced(rNumber)) {
-			this.placeScoreLabel.setText(TriviaClient.ordinalize(trivia.getAnnouncedPlace(rNumber)) + " / "
+			this.placeScoreLabel.setText(TriviaGUI.ordinalize(trivia.getAnnouncedPlace(rNumber)) + " / "
 					+ trivia.getNTeams() + " ");
 		} else {
 			this.placeScoreLabel.setText("-- / " + trivia.getNTeams() + " ");

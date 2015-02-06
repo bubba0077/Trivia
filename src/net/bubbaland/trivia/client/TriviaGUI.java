@@ -21,6 +21,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -55,6 +56,8 @@ public class TriviaGUI implements WindowListener {
 
 	//
 	final static protected String					NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
+
+	private boolean									connected;
 
 	/**
 	 * Setup properties
@@ -139,10 +142,14 @@ public class TriviaGUI implements WindowListener {
 		TAB_DESCRIPTION_HASH.put("*Answer Queue", "The proposed answer queue for the current round.");
 	}
 
+	// final private String serverURL;
+
 	private TriviaClient							client;
 
 	public TriviaGUI(final String serverURL) {
 		// Initialize list to hold open windows
+		// this.serverURL = serverURL;
+		this.connected = false;
 		this.windowList = new ArrayList<TriviaFrame>(0);
 		this.client = new TriviaClient(serverURL, this);
 		this.client.run();
@@ -158,7 +165,7 @@ public class TriviaGUI implements WindowListener {
 		}
 
 		while (this.client.getTrivia() == null) {
-			// log("Awaiting trivia data...");
+			log("Awaiting trivia data...");
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException exception) {
@@ -174,6 +181,10 @@ public class TriviaGUI implements WindowListener {
 
 		this.log("Welcome " + this.client.getUser());
 
+	}
+
+	public void connected() {
+		this.connected = true;
 	}
 
 	/**
@@ -461,6 +472,27 @@ public class TriviaGUI implements WindowListener {
 	}
 
 	/**
+	 * Display disconnected dialog box and prompt for action
+	 */
+	public synchronized void disconnected() {
+
+		this.connected = true;
+
+		final String message = "Communication with server interrupted!";
+
+		final Object[] options = { "Retry", "Exit" };
+		final int option = JOptionPane.showOptionDialog(null, message, "Disconnected", JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.ERROR_MESSAGE, null, options, options[1]);
+		if (option == 1) {
+			// Exit the client
+			System.exit(0);
+		}
+
+		this.client.run();
+
+	}
+
+	/**
 	 * Add the current window contents to properties, then save the properties to the settings file and exit.
 	 */
 	protected void endProgram() {
@@ -478,6 +510,31 @@ public class TriviaGUI implements WindowListener {
 		PROPERTIES.setProperty("UserName", this.client.getUser());
 		TriviaGUI.savePropertyFile();
 		System.exit(0);
+	}
+
+	/**
+	 * Convert a cardinal number into its ordinal counterpart.
+	 * 
+	 * @param cardinal
+	 *            The number to convert to ordinal form
+	 * @return String with the ordinal representation of the number (e.g., 1st, 2nd, 3rd, etc.)
+	 * 
+	 */
+	public static String ordinalize(int cardinal) {
+		// Short-circuit for teen numbers that don't follow normal rules
+		if (10 < cardinal % 100 && cardinal % 100 < 14) return cardinal + "th";
+		// Ordinal suffix depends on the ones digit
+		final int modulus = cardinal % 10;
+		switch (modulus) {
+			case 1:
+				return cardinal + "st";
+			case 2:
+				return cardinal + "nd";
+			case 3:
+				return cardinal + "rd";
+			default:
+				return cardinal + "th";
+		}
 	}
 
 	/**
