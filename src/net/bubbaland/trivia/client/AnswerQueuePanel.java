@@ -743,7 +743,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				}
 			}
 
-			if (this.answerQueue.length != newAnswerQueue.length) {
+			if (AnswerQueuePanel.this.live && this.answerQueue.length != newAnswerQueue.length) {
 				AnswerQueuePanel.this.frame.playNewAnswerSound();
 			}
 
