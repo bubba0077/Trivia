@@ -343,6 +343,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	@Override
 	public void mouseClicked(MouseEvent event) {
+		System.out.println("---");
 		final JComponent source = (JComponent) event.getSource();
 		final QueueSort sortMethod = this.frame.getQueueSort();
 		if (source.equals(this.timestampLabel)) {
@@ -364,6 +365,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.frame.setSort(QueueSort.STATUS_ASCENDING);
 			}
 		}
+		this.updateGUI();
 	}
 
 	@Override

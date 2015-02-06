@@ -262,17 +262,17 @@ public class TriviaServerSetup {
 		 */
 		downloadFile("triviaClient.jar", triviaDirPath, textArea);
 		downloadFile("triviaServer.jar", triviaDirPath, textArea);
-		for (String libname : LIBS) {
-			downloadFile("lib/" + libname + ".jar", triviaDirPath, textArea);
-		}
+		// for (String libname : LIBS) {
+		// downloadFile("lib/" + libname + ".jar", triviaDirPath, textArea);
+		// }
 
 		/*
 		 * Create webstart files
 		 */
 		createClientJNLP(triviaDirPath + "/triviaClient.jnlp", serverURL, port, textArea);
-		for (String libname : LIBS) {
-			createLibJNLP(triviaDirPath + "/" + libname + ".jnlp", libname, serverURL, textArea);
-		}
+		// for (String libname : LIBS) {
+		// createLibJNLP(triviaDirPath + "/" + libname + ".jnlp", libname, serverURL, textArea);
+		// }
 
 		/*
 		 * Create server settings file
@@ -406,13 +406,13 @@ public class TriviaServerSetup {
 			attribute.setValue("true");
 			element.setAttributeNode(attribute);
 
-			for (String lib : LIBS) {
-				element = doc.createElement("extension");
-				resElement.appendChild(element);
-				attribute = doc.createAttribute("href");
-				attribute.setValue(lib + ".jnlp");
-				element.setAttributeNode(attribute);
-			}
+			// for (String lib : LIBS) {
+			// element = doc.createElement("extension");
+			// resElement.appendChild(element);
+			// attribute = doc.createAttribute("href");
+			// attribute.setValue(lib + ".jnlp");
+			// element.setAttributeNode(attribute);
+			// }
 
 			Element descElement = doc.createElement("application-desc");
 			jnlpElem.appendChild(descElement);
@@ -461,7 +461,7 @@ public class TriviaServerSetup {
 			jnlpElem.setAttributeNode(attribute);
 
 			attribute = doc.createAttribute("href");
-			attribute.setValue(filename);
+			attribute.setValue(serverURL + "/" + libname);
 			jnlpElem.setAttributeNode(attribute);
 
 			Element infElement = doc.createElement("information");
