@@ -220,6 +220,11 @@ public class TriviaServerEndpoint {
 	 * Creates a new trivia server.
 	 */
 	public TriviaServerEndpoint() {
+		this.lastActive = new Date();
+		this.timeToIdle = 30000;
+		this.user = "";
+		this.role = Role.RESEARCHER;
+		this.lastVersions = new int[50];
 	}
 
 	/**
@@ -863,12 +868,12 @@ public class TriviaServerEndpoint {
 	public void onMessage(ClientMessage message, Session session) {
 		// ClientMessage message = (ClientMessage) message1;
 		ClientCommand command = message.getCommand();
-		TriviaServerEndpoint info = sessionList.get(session);
-		info.lastActive = new Date();
+		// TriviaServerEndpoint info = sessionList.get(session);
+		this.lastActive = new Date();
 		switch (command) {
 			case ADVANCE_ROUND:
 				TriviaServerEndpoint.trivia.newRound();
-				TriviaServerEndpoint.log("New round started by " + info.user);
+				TriviaServerEndpoint.log("New round started by " + this.user);
 				TriviaServerEndpoint.updateRoundNumber();
 				break;
 			case AGREE:
@@ -876,14 +881,14 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case CALL_IN:
-				TriviaServerEndpoint.trivia.callIn(message.getQueueIndex(), info.user);
-				TriviaServerEndpoint.log(info.user + " is calling in item " + message.getQueueIndex()
+				TriviaServerEndpoint.trivia.callIn(message.getQueueIndex(), this.user);
+				TriviaServerEndpoint.log(this.user + " is calling in item " + message.getQueueIndex()
 						+ " in the answer queue.");
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case CHANGE_USER:
 				// this.changeUser(info.user, message.getUser());
-				info.user = message.getUser();
+				this.user = message.getUser();
 				TriviaServerEndpoint.updateUsers();
 				break;
 			case CLOSE_QUESTION:
@@ -904,18 +909,18 @@ public class TriviaServerEndpoint {
 						message.getqValue(), message.getqText(), message.getaText(), message.isCorrect(),
 						message.getUser(), message.getOperator());
 				TriviaServerEndpoint.log("Round " + message.getrNumber() + " Question " + message.getqNumber()
-						+ " edited by " + info.user);
+						+ " edited by " + this.user);
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case LIST_SAVES:
 				sendMessage(session, ServerMessageFactory.sendSaveList(TriviaServerEndpoint.listSaves()));
 				break;
 			case LOAD_STATE:
-				TriviaServerEndpoint.loadState(info.user, message.getSaveFilename());
+				TriviaServerEndpoint.loadState(this.user, message.getSaveFilename());
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case MARK_CORRECT:
-				TriviaServerEndpoint.trivia.markCorrect(message.getQueueIndex(), info.user, message.getOperator());
+				TriviaServerEndpoint.trivia.markCorrect(message.getQueueIndex(), this.user, message.getOperator());
 				TriviaServerEndpoint.log("Item "
 						+ message.getQueueIndex()
 						+ " in the queue is correct, "
@@ -930,12 +935,12 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case MARK_INCORRECT:
-				TriviaServerEndpoint.trivia.markIncorrect(message.getQueueIndex(), info.user);
+				TriviaServerEndpoint.trivia.markIncorrect(message.getQueueIndex(), this.user);
 				TriviaServerEndpoint.log("Item " + message.getQueueIndex() + " in the queue is incorrect.");
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case MARK_PARTIAL:
-				TriviaServerEndpoint.trivia.markPartial(message.getQueueIndex(), info.user);
+				TriviaServerEndpoint.trivia.markPartial(message.getQueueIndex(), this.user);
 				TriviaServerEndpoint.log("Item " + message.getQueueIndex() + " in the queue is partially correct.");
 				TriviaServerEndpoint.updateTrivia();
 				break;
@@ -950,35 +955,35 @@ public class TriviaServerEndpoint {
 				final int qValue = message.getqValue();
 				TriviaServerEndpoint.trivia.open(qNumber, qText, qValue);
 				if (qValue == 0) {
-					TriviaServerEndpoint.log("Question " + qNumber + " is being typed in by " + info.user + "...");
+					TriviaServerEndpoint.log("Question " + qNumber + " is being typed in by " + this.user + "...");
 				} else {
-					TriviaServerEndpoint.log("Question " + qNumber + " opened by " + info.user + " worth " + qValue
+					TriviaServerEndpoint.log("Question " + qNumber + " opened by " + this.user + " worth " + qValue
 							+ " points:");
 					TriviaServerEndpoint.log("\t" + qText);
 				}
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case PROPOSE_ANSWER:
-				TriviaServerEndpoint.trivia.proposeAnswer(message.getqNumber(), message.getaText(), info.user,
+				TriviaServerEndpoint.trivia.proposeAnswer(message.getqNumber(), message.getaText(), this.user,
 						message.getConfidence());
-				TriviaServerEndpoint.log(info.user + " submitted an answer for Q" + message.getqNumber()
+				TriviaServerEndpoint.log(this.user + " submitted an answer for Q" + message.getqNumber()
 						+ " with a confidence of " + message.getConfidence() + ":\n" + message.getaText());
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case REMAP_QUESTION:
 				TriviaServerEndpoint.trivia.remapQuestion(message.getOldQNumber(), message.getqNumber());
-				TriviaServerEndpoint.log(info.user + " remapped Q" + message.getOldQNumber() + " to Q"
+				TriviaServerEndpoint.log(this.user + " remapped Q" + message.getOldQNumber() + " to Q"
 						+ message.getqNumber());
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case REOPEN_QUESTION:
 				TriviaServerEndpoint.trivia.reopen(message.getqNumber());
-				TriviaServerEndpoint.log("Q" + message.getqNumber() + " re-opened by " + info.user);
+				TriviaServerEndpoint.log("Q" + message.getqNumber() + " re-opened by " + this.user);
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case RESET_QUESTION:
 				TriviaServerEndpoint.trivia.resetQuestion(message.getqNumber());
-				TriviaServerEndpoint.log(info.user + " reset Q" + message.getqNumber());
+				TriviaServerEndpoint.log(this.user + " reset Q" + message.getqNumber());
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case SET_DISCREPENCY_TEXT:
@@ -986,11 +991,11 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case SET_IDLE_TIME:
-				info.timeToIdle = message.getTimeToIdle();
+				this.timeToIdle = message.getTimeToIdle();
 				break;
 			case SET_ROLE:
-				info.user = message.getUser();
-				info.role = message.getRole();
+				this.user = message.getUser();
+				this.role = message.getRole();
 				TriviaServerEndpoint.updateUsers();
 				break;
 			case SET_SPEED:
@@ -1007,7 +1012,7 @@ public class TriviaServerEndpoint {
 			case FETCH_TRIVIA:
 				Trivia trivia = TriviaServerEndpoint.trivia;
 				sendMessage(session, ServerMessageFactory.updateTrivia(trivia));
-				info.lastVersions = trivia.getVersions();
+				this.lastVersions = trivia.getVersions();
 				break;
 		// default:
 		// break;

@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,8 +57,6 @@ public class TriviaGUI implements WindowListener {
 
 	//
 	final static protected String					NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
-
-	private boolean									connected;
 
 	/**
 	 * Setup properties
@@ -145,46 +144,78 @@ public class TriviaGUI implements WindowListener {
 	// final private String serverURL;
 
 	private TriviaClient							client;
+	private WaitDialog								waitDialog;
 
 	public TriviaGUI(final String serverURL) {
 		// Initialize list to hold open windows
 		// this.serverURL = serverURL;
-		this.connected = false;
 		this.windowList = new ArrayList<TriviaFrame>(0);
+
 		this.client = new TriviaClient(serverURL, this);
 		this.client.run();
 
 		loadProperties();
 
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					TriviaGUI.this.waitDialog = new WaitDialog(TriviaGUI.this);
+				}
+			});
+		} catch (InvocationTargetException | InterruptedException exception1) {
+			exception1.printStackTrace();
+			System.exit(2);
+		}
+		// this.waitDialog = new WaitDialog(this);
+
 		// Create a prompt requesting the user name
 		String user = PROPERTIES.getProperty("UserName");
 		if (user == null) {
-			new UserLoginDialog(this.client);
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						new UserLoginDialog(TriviaGUI.this.client);
+					}
+				});
+			} catch (InvocationTargetException | InterruptedException exception) {
+				exception.printStackTrace();
+				System.exit(2);
+			}
 		} else {
 			this.client.setUser(user);
 		}
 
 		while (this.client.getTrivia() == null) {
-			log("Awaiting trivia data...");
+			// log("Awaiting trivia data...");
+			waitDialog.setVisible(true);
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException exception) {
 				exception.printStackTrace();
+				System.exit(2);
 			}
 		}
+		waitDialog.setVisible(false);
 
 		// Create startup frames
 		for (int f = 0; PROPERTIES.getProperty("Window" + f) != null; f++) {
-			new TriviaFrame(this.client, this, PROPERTIES.getProperty("Window" + f).replaceAll("[\\[\\]]", "")
-					.split(", "));
+			final int f1 = f;
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						new TriviaFrame(TriviaGUI.this.client, TriviaGUI.this, PROPERTIES.getProperty("Window" + f1)
+								.replaceAll("[\\[\\]]", "").split(", "));
+						;
+					}
+				});
+			} catch (InvocationTargetException | InterruptedException exception) {
+				exception.printStackTrace();
+				System.exit(2);
+			}
 		}
 
+		this.updateGUI();
 		this.log("Welcome " + this.client.getUser());
-
-	}
-
-	public void connected() {
-		this.connected = true;
 	}
 
 	/**
@@ -201,7 +232,8 @@ public class TriviaGUI implements WindowListener {
 		if (args.length > 0) {
 			serverURL = args[0];
 		}
-		SwingUtilities.invokeLater(new TriviaRunnable(serverURL));
+		new TriviaGUI(serverURL);
+		// SwingUtilities.invokeLater(new TriviaRunnable(serverURL));
 	}
 
 	public TriviaClient getClient() {
@@ -476,8 +508,6 @@ public class TriviaGUI implements WindowListener {
 	 */
 	public synchronized void disconnected() {
 
-		this.connected = true;
-
 		final String message = "Communication with server interrupted!";
 
 		final Object[] options = { "Retry", "Exit" };
@@ -489,7 +519,6 @@ public class TriviaGUI implements WindowListener {
 		}
 
 		this.client.run();
-
 	}
 
 	/**
@@ -507,7 +536,9 @@ public class TriviaGUI implements WindowListener {
 			this.windowList.get(f).saveProperties();
 			TriviaGUI.savePosition(this.windowList.get(f));
 		}
-		PROPERTIES.setProperty("UserName", this.client.getUser());
+		if (this.client.getUser() != null) {
+			PROPERTIES.setProperty("UserName", this.client.getUser());
+		}
 		TriviaGUI.savePropertyFile();
 		System.exit(0);
 	}
@@ -534,23 +565,6 @@ public class TriviaGUI implements WindowListener {
 				return cardinal + "rd";
 			default:
 				return cardinal + "th";
-		}
-	}
-
-	/**
-	 * Custom Runnable class to allow passing of command line argument into invokeLater.
-	 * 
-	 */
-	private static class TriviaRunnable implements Runnable {
-		private final String	serverURL;
-
-		public TriviaRunnable(String serverURL) {
-			this.serverURL = serverURL;
-		}
-
-		@Override
-		public void run() {
-			new TriviaGUI(serverURL);
 		}
 	}
 }

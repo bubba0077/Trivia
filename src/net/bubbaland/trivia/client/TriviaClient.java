@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Hashtable;
 
-import javax.swing.JOptionPane;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.DeploymentException;
 import javax.websocket.EncodeException;
@@ -73,7 +72,6 @@ public class TriviaClient implements Runnable {
 		final ClientManager clientManager = ClientManager.createClient();
 		try {
 			clientManager.connectToServer(this, URI.create(serverURL));
-			this.gui.connected();
 		} catch (DeploymentException | IOException exception) {
 			this.gui.disconnected();
 		}
