@@ -256,6 +256,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		resetQNumFilter();
 		this.loadProperties(TriviaGUI.PROPERTIES);
+
+		this.updateGUI(true);
 	}
 
 	public void setRoundNumber(int newRoundNumber) {
@@ -343,7 +345,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	@Override
 	public void mouseClicked(MouseEvent event) {
-		System.out.println("---");
 		final JComponent source = (JComponent) event.getSource();
 		final QueueSort sortMethod = this.frame.getQueueSort();
 		if (source.equals(this.timestampLabel)) {
