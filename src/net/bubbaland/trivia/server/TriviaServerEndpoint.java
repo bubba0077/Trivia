@@ -16,8 +16,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.Timer;
 import javax.websocket.DeploymentException;
@@ -857,12 +859,13 @@ public class TriviaServerEndpoint {
 	public static Hashtable<String, Role> getIdleUsers(Collection<TriviaServerEndpoint> clients, int timeToIdle) {
 		final Date currentDate = new Date();
 		final Hashtable<String, Role> userHash = new Hashtable<String, Role>(0);
+		final Set<String> activeUsers = getActiveUsers(clients, timeToIdle).keySet();
 
 		// Build a list of users who are active
 		for (final TriviaServerEndpoint client : clients) {
 			final Date lastDate = client.lastActive;
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
-			if (diff >= timeToIdle && client.user != null) {
+			if (diff >= timeToIdle && client.user != null && !activeUsers.contains(client.user)) {
 				userHash.put(client.user, client.role);
 			}
 		}
