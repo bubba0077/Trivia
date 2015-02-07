@@ -903,6 +903,10 @@ public class Round implements Serializable {
 		return answer.getAgreement();
 	}
 
+	public Question[] getQuestions() {
+		return this.questions;
+	}
+
 	/**
 	 * Get the number of correct answers in this round
 	 * 
@@ -1201,8 +1205,9 @@ public class Round implements Serializable {
 	 *            The operator who accepted the correct answer
 	 */
 	protected synchronized void setAnswer(int qNumber, String answer, String submitter, int confidence, String status,
-			String caller, String operator) {
-		final Answer newAnswer = new Answer(this.answerQueue.size() + 1, qNumber, answer, submitter, confidence);
+			String caller, String operator, String timestamp) {
+		final Answer newAnswer = new Answer(this.answerQueue.size() + 1, qNumber, answer, submitter, confidence,
+				timestamp);
 		this.answerQueue.add(newAnswer);
 		switch (status) {
 			case "Duplicate":

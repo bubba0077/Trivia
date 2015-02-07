@@ -19,47 +19,49 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Answer implements Serializable {
 
-	private static final long	serialVersionUID	= -2367986992067473980L;
+	private static final long				serialVersionUID	= -2367986992067473980L;
 
 	// Place in the queue
 	@JsonProperty("queueLocation")
-	volatile private int		queueLocation;
+	volatile private int					queueLocation;
 
 	// The question number
 	@JsonProperty("qNumber")
-	volatile private int		qNumber;
+	volatile private int					qNumber;
 
 	// The answer text
 	@JsonProperty("answer")
-	final private String		answer;
+	final private String					answer;
 
 	// The confidence in the answer
 	@JsonProperty("confidence")
-	final private int			confidence;
+	final private int						confidence;
 
 	// A counter for the number of +1's
 	@JsonProperty("agreement")
-	private volatile int		agreement;
+	private volatile int					agreement;
 
 	// The timestamp of when the answer was submitted
 	@JsonProperty("timestamp")
-	final private String		timestamp;
+	final private String					timestamp;
 
 	// The user name of the answer submitter
 	@JsonProperty("submitter")
-	final private String		submitter;
+	final private String					submitter;
 
 	// The user name of the person who is calling in the answer
 	@JsonProperty("caller")
-	private volatile String		caller;
+	private volatile String					caller;
 
 	// The operator who accepted a correct answer
 	@JsonProperty("operator")
-	private volatile String		operator;
+	private volatile String					operator;
 
 	// The current status of the question
 	@JsonProperty("status")
-	private volatile Status		status;
+	private volatile Status					status;
+
+	final private static SimpleDateFormat	timeFormat			= new SimpleDateFormat("HH:mm:ss");
 
 	/**
 	 * Create a new answer
@@ -71,9 +73,9 @@ public class Answer implements Serializable {
 	 * @param submitter
 	 *            The user submitting the answer
 	 */
-	public Answer(int queueLocation, int qNumber, String answer, String submitter) {
-		this(queueLocation, qNumber, answer, submitter, -1);
-	}
+	// public Answer(int queueLocation, int qNumber, String answer, String submitter) {
+	// this(queueLocation, qNumber, answer, submitter, -1);
+	// }
 
 	/**
 	 * Instantiates a new answer.
@@ -88,19 +90,12 @@ public class Answer implements Serializable {
 	 *            Confidence in the proposed answer
 	 */
 	public Answer(int queueLocation, int qNumber, String answer, String submitter, int confidence) {
-		this.queueLocation = queueLocation;
-		this.qNumber = qNumber;
-		this.answer = answer;
-		this.submitter = submitter;
-		this.confidence = confidence;
-		this.agreement = 0;
-		final Date time = new Date();
-		final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-		this.timestamp = timeFormat.format(time);
-		this.caller = "";
-		this.operator = "";
-		this.status = Status.NOT_CALLED_IN;
+		this(queueLocation, qNumber, answer, submitter, confidence, timeFormat.format(new Date()));
 	};
+
+	protected Answer(int queueLocation, int qNumber, String answer, String submitter, int confidence, String timestamp) {
+		this(queueLocation, qNumber, answer, confidence, 0, timestamp, submitter, "", "", Status.NOT_CALLED_IN);
+	}
 
 	@JsonCreator
 	private Answer(@JsonProperty("queueLocation") int queueLocation, @JsonProperty("qNumber") int qNumber,

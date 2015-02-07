@@ -37,8 +37,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import net.bubbaland.trivia.Answer;
 import net.bubbaland.trivia.ClientMessage;
 import net.bubbaland.trivia.ClientMessage.ClientCommand;
+import net.bubbaland.trivia.Question;
 import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.ScoreEntry;
 import net.bubbaland.trivia.ServerMessage;
@@ -261,8 +263,12 @@ public class TriviaServerEndpoint {
 	public static void loadState(String user, String stateFile) {
 		// The full qualified file name
 		stateFile = SAVE_DIR + "/" + stateFile;
+
 		// Clear all data from the trivia contest
 		TriviaServerEndpoint.trivia.reset();
+
+		// Make a private copy to prevent interference
+		Trivia trivia = TriviaServerEndpoint.trivia;
 
 		try {
 			// Open the save file
@@ -276,10 +282,10 @@ public class TriviaServerEndpoint {
 			final Element triviaElement = doc.getDocumentElement();
 
 			// Read/set the trivia parameters
-			TriviaServerEndpoint.trivia.setNTeams(Integer.parseInt(triviaElement
-					.getElementsByTagName("Number_of_Teams").item(0).getTextContent()));
-			TriviaServerEndpoint.trivia.setCurrentRound(Integer.parseInt(triviaElement
-					.getElementsByTagName("Current_Round").item(0).getTextContent()));
+			trivia.setNTeams(Integer.parseInt(triviaElement.getElementsByTagName("Number_of_Teams").item(0)
+					.getTextContent()));
+			trivia.setCurrentRound(Integer.parseInt(triviaElement.getElementsByTagName("Current_Round").item(0)
+					.getTextContent()));
 
 			// Get a list of the round elements
 			final NodeList roundElements = triviaElement.getElementsByTagName("Round");
@@ -292,10 +298,10 @@ public class TriviaServerEndpoint {
 				// Read/set if the round is a speed round
 				final boolean isSpeed = roundElement.getElementsByTagName("Speed").item(0).getTextContent()
 						.equals("true");
-				TriviaServerEndpoint.trivia.setSpeed(rNumber, isSpeed);
+				trivia.setSpeed(rNumber, isSpeed);
 
-				TriviaServerEndpoint.trivia.setDiscrepencyText(rNumber,
-						roundElement.getElementsByTagName("Discrepancy_Text").item(0).getTextContent());
+				trivia.setDiscrepencyText(rNumber, roundElement.getElementsByTagName("Discrepancy_Text").item(0)
+						.getTextContent());
 
 				// Get a list of the question elements in this round
 				final NodeList questionElements = roundElement.getElementsByTagName("Question");
@@ -321,61 +327,91 @@ public class TriviaServerEndpoint {
 					final String operator = questionElement.getElementsByTagName("Operator").item(0).getTextContent();
 
 					if (beenOpen) {
-						TriviaServerEndpoint.trivia.open("From file", rNumber, qNumber, question, value);
+						trivia.open("From file", rNumber, qNumber, question, value);
 						if (isCorrect) {
-							TriviaServerEndpoint.trivia.markCorrect(rNumber, qNumber, answer, submitter, operator);
+							trivia.markCorrect(rNumber, qNumber, answer, submitter, operator);
 						} else if (!isOpen) {
-							TriviaServerEndpoint.trivia.close(rNumber, qNumber, answer);
+							trivia.close(rNumber, qNumber, answer);
 						}
+					}
+				}
+
+				final Element element = (Element) roundElement.getElementsByTagName("Answer_Queue").item(0);
+
+				if (element != null) {
+					// Get the list of propsed answer elements in the answer queue
+					final NodeList answerElements = element.getElementsByTagName("Proposed_Answer");
+
+					for (int a = 0; a < answerElements.getLength(); a++) {
+						final Element answerElement = (Element) answerElements.item(a);
+
+						// Read/set parameters of the answer
+						final int qNumber = Integer.parseInt(answerElement.getElementsByTagName("Question_Number")
+								.item(0).getTextContent());
+						final String status = answerElement.getElementsByTagName("Status").item(0).getTextContent();
+						final String timestamp = answerElement.getElementsByTagName("Timestamp").item(0)
+								.getTextContent();
+						final String answer = answerElement.getElementsByTagName("Answer_Text").item(0)
+								.getTextContent();
+						final String submitter = answerElement.getElementsByTagName("Submitter").item(0)
+								.getTextContent();
+						final int confidence = Integer.parseInt(answerElement.getElementsByTagName("Confidence")
+								.item(0).getTextContent());
+						final String caller = answerElement.getElementsByTagName("Caller").item(0).getTextContent();
+						final String operator = answerElement.getElementsByTagName("Operator").item(0).getTextContent();
+
+						trivia.setAnswer(rNumber, qNumber, answer, submitter, confidence, status, caller, operator,
+								timestamp);
 					}
 				}
 			}
 
 			final Element element = (Element) triviaElement.getElementsByTagName("Answer_Queue").item(0);
 
-			// Get the list of propsed answer elements in the answer queue
-			final NodeList answerElements = element.getElementsByTagName("Proposed_Answer");
+			if (element != null) {
+				// Get the list of propsed answer elements in the answer queue
+				final NodeList answerElements = element.getElementsByTagName("Proposed_Answer");
 
-			for (int a = 0; a < answerElements.getLength(); a++) {
-				final Element answerElement = (Element) answerElements.item(a);
+				for (int a = 0; a < answerElements.getLength(); a++) {
+					final Element answerElement = (Element) answerElements.item(a);
 
-				// Read/set parameters of the answer
-				final int qNumber = Integer.parseInt(answerElement.getElementsByTagName("Question_Number").item(0)
-						.getTextContent());
-				final String status = answerElement.getElementsByTagName("Status").item(0).getTextContent();
-				answerElement.getElementsByTagName("Timestamp").item(0).getTextContent();
-				final String answer = answerElement.getElementsByTagName("Answer_Text").item(0).getTextContent();
-				final String submitter = answerElement.getElementsByTagName("Submitter").item(0).getTextContent();
-				final int confidence = Integer.parseInt(answerElement.getElementsByTagName("Confidence").item(0)
-						.getTextContent());
-				final String caller = answerElement.getElementsByTagName("Caller").item(0).getTextContent();
-				final String operator = answerElement.getElementsByTagName("Operator").item(0).getTextContent();
+					// Read/set parameters of the answer
+					final int qNumber = Integer.parseInt(answerElement.getElementsByTagName("Question_Number").item(0)
+							.getTextContent());
+					final String status = answerElement.getElementsByTagName("Status").item(0).getTextContent();
+					answerElement.getElementsByTagName("Timestamp").item(0).getTextContent();
+					final String answer = answerElement.getElementsByTagName("Answer_Text").item(0).getTextContent();
+					final String submitter = answerElement.getElementsByTagName("Submitter").item(0).getTextContent();
+					final int confidence = Integer.parseInt(answerElement.getElementsByTagName("Confidence").item(0)
+							.getTextContent());
+					final String caller = answerElement.getElementsByTagName("Caller").item(0).getTextContent();
+					final String operator = answerElement.getElementsByTagName("Operator").item(0).getTextContent();
+					final String timestamp = answerElement.getElementsByTagName("Timestamp").item(0).getTextContent();
 
-				TriviaServerEndpoint.trivia.setAnswer(qNumber, answer, submitter, confidence, status, caller, operator);
-
+					trivia.setAnswer(trivia.getCurrentRoundNumber(), qNumber, answer, submitter, confidence, status,
+							caller, operator, timestamp);
+				}
 			}
-		} catch (final ParserConfigurationException e) {
 
-
-		} catch (final SAXException e) {
-			e.printStackTrace();
-		} catch (final IOException e) {
-			e.printStackTrace();
+		} catch (final ParserConfigurationException | SAXException | IOException e) {
 		}
 
 		TriviaServerEndpoint.log("Loaded state from " + stateFile);
 
-		for (int r = 1; r < TriviaServerEndpoint.trivia.getCurrentRoundNumber(); r++) {
+		for (int r = 1; r < trivia.getCurrentRoundNumber(); r++) {
 			// For each past round, try to get announced standings if we don't have them
-			if (!TriviaServerEndpoint.trivia.isAnnounced(r)) {
+			if (!trivia.isAnnounced(r)) {
 				final ScoreEntry[] standings = getStandings(r);
-				TriviaServerEndpoint.trivia.setStandings(r, standings);
+				trivia.setStandings(r, standings);
 			}
 		}
 
+		// Copy the loaded data back to the trivia object
+		TriviaServerEndpoint.trivia = trivia;
+
+		// Notify clients of the updated data
 		TriviaServerEndpoint.updateTrivia();
 		TriviaServerEndpoint.updateRoundNumber();
-
 	}
 
 	/**
@@ -397,8 +433,11 @@ public class TriviaServerEndpoint {
 		// The current date/time
 		final Date time = new Date();
 
+		// Make a local copy of the trivia object in case it changes during writing
+		final Trivia trivia = TriviaServerEndpoint.trivia;
+
 		//
-		final String roundString = "Rd" + String.format("%02d", TriviaServerEndpoint.trivia.getCurrentRoundNumber());
+		final String roundString = "Rd" + String.format("%02d", trivia.getCurrentRoundNumber());
 
 		// Timestamp used as part of the filename (no spaces, descending precision)
 		String filename = SAVE_DIR + "/" + roundString + "_" + fileDateFormat.format(time) + ".xml";
@@ -422,160 +461,160 @@ public class TriviaServerEndpoint {
 
 			// Save the number of teams
 			Element element = doc.createElement("Number_of_Teams");
-			element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getNTeams() + ""));
+			element.appendChild(doc.createTextNode(trivia.getNTeams() + ""));
 			triviaElement.appendChild(element);
 
 			// Save the current round number
 			element = doc.createElement("Current_Round");
-			element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getCurrentRoundNumber() + ""));
+			element.appendChild(doc.createTextNode(trivia.getCurrentRoundNumber() + ""));
 			triviaElement.appendChild(element);
 
-			for (int r = 0; r < TriviaServerEndpoint.trivia.getCurrentRoundNumber(); r++) {
+			for (Round r : trivia.getRounds()) {
 				// Create a round element
 				final Element roundElement = doc.createElement("Round");
 				triviaElement.appendChild(roundElement);
 
 				// The round number
 				attribute = doc.createAttribute("number");
-				attribute.setValue(( r + 1 ) + "");
+				attribute.setValue(r.getRoundNumber() + "");
 				roundElement.setAttributeNode(attribute);
 
 				// Whether it is a speed round
 				element = doc.createElement("Speed");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.isSpeed(r + 1) + ""));
+				element.appendChild(doc.createTextNode(r.isSpeed() + ""));
 				roundElement.appendChild(element);
 
 				// Whether the score has been announced for this round
 				element = doc.createElement("Announced");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.isAnnounced(r + 1) + ""));
+				element.appendChild(doc.createTextNode(r.isAnnounced() + ""));
 				roundElement.appendChild(element);
 
 				// The announced score for this round
 				element = doc.createElement("Announced_Score");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnnouncedPoints(r + 1) + ""));
+				element.appendChild(doc.createTextNode(r.getAnnounced() + ""));
 				roundElement.appendChild(element);
 
 				// The announced place for this round
 				element = doc.createElement("Announced_Place");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnnouncedPlace(r + 1) + ""));
+				element.appendChild(doc.createTextNode(r.getPlace() + ""));
 				roundElement.appendChild(element);
 
 				// The discrepancy text for this round
 				element = doc.createElement("Discrepancy_Text");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getDiscrepancyText(r + 1) + ""));
+				element.appendChild(doc.createTextNode(r.getDiscrepancyText() + ""));
 				roundElement.appendChild(element);
 
-				for (int q = 0; q < TriviaServerEndpoint.trivia.getNQuestions(r + 1); q++) {
+				Element qListElement = doc.createElement("Questions");
+				roundElement.appendChild(qListElement);
+
+				for (Question q : r.getQuestions()) {
 					// Create a question element
 					final Element questionElement = doc.createElement("Question");
-					roundElement.appendChild(questionElement);
+					qListElement.appendChild(questionElement);
 
 					// The question number
 					attribute = doc.createAttribute("number");
-					attribute.setValue(( q + 1 ) + "");
+					attribute.setValue(q.getNumber() + "");
 					questionElement.setAttributeNode(attribute);
 
 					// Whether the question has been open
 					element = doc.createElement("Been_Open");
-					element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.beenOpen(r + 1, q + 1) + ""));
+					element.appendChild(doc.createTextNode(q.beenOpen() + ""));
 					questionElement.appendChild(element);
 
 					// Whether the question is currently open
 					element = doc.createElement("Is_Open");
-					element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.isOpen(r + 1, q + 1) + ""));
+					element.appendChild(doc.createTextNode(q.isOpen() + ""));
 					questionElement.appendChild(element);
 
 					// The value of the question
 					element = doc.createElement("Value");
-					element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getValue(r + 1, q + 1) + ""));
+					element.appendChild(doc.createTextNode(q.getValue() + ""));
 					questionElement.appendChild(element);
 
 					// The question text
 					element = doc.createElement("Question_Text");
-					element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getQuestionText(r + 1, q + 1)
-							+ ""));
+					element.appendChild(doc.createTextNode(q.getQuestionText() + ""));
 					questionElement.appendChild(element);
 
 					// The answer
 					element = doc.createElement("Answer_Text");
-					element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnswerText(r + 1, q + 1) + ""));
+					element.appendChild(doc.createTextNode(q.getAnswerText() + ""));
 					questionElement.appendChild(element);
 
 					// Whether this question was answered correctly
 					element = doc.createElement("Is_Correct");
-					element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.isCorrect(r + 1, q + 1) + ""));
+					element.appendChild(doc.createTextNode(q.isCorrect() + ""));
 					questionElement.appendChild(element);
 
 					// The submitter for a correctly answered question
 					element = doc.createElement("Submitter");
-					element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getSubmitter(r + 1, q + 1) + ""));
+					element.appendChild(doc.createTextNode(q.getSubmitter() + ""));
 					questionElement.appendChild(element);
 
 					// The operator who accepted a correct answer
 					element = doc.createElement("Operator");
-					element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getOperator(r + 1, q + 1) + ""));
+					element.appendChild(doc.createTextNode(q.getOperator() + ""));
 					questionElement.appendChild(element);
 				}
-			}
 
-			// The size of the answer queue for the current round
-			final int queueSize = TriviaServerEndpoint.trivia.getAnswerQueueSize(TriviaServerEndpoint.trivia
-					.getCurrentRoundNumber());
+				// The size of the answer queue for the current round
+				final int queueSize = r.getAnswerQueueSize();
 
-			// Create a queue element
-			final Element queueElement = doc.createElement("Answer_Queue");
-			triviaElement.appendChild(queueElement);
+				// Create a queue element
+				final Element queueElement = doc.createElement("Answer_Queue");
+				roundElement.appendChild(queueElement);
 
-			// The size of the queue
-			attribute = doc.createAttribute("size");
-			attribute.setValue(queueSize + "");
-			queueElement.setAttributeNode(attribute);
+				// The size of the queue
+				attribute = doc.createAttribute("size");
+				attribute.setValue(queueSize + "");
+				queueElement.setAttributeNode(attribute);
 
-			for (int a = 0; a < queueSize; a++) {
-				// Create a proposed answer element
-				final Element answerElement = doc.createElement("Proposed_Answer");
-				queueElement.appendChild(answerElement);
+				for (Answer a : r.getAnswerQueue()) {
+					// Create a proposed answer element
+					final Element answerElement = doc.createElement("Proposed_Answer");
+					queueElement.appendChild(answerElement);
 
-				// The question number for this answer
-				element = doc.createElement("Question_Number");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnswerQueueQNumber(a) + ""));
-				answerElement.appendChild(element);
+					// The question number for this answer
+					element = doc.createElement("Question_Number");
+					element.appendChild(doc.createTextNode(a.getQNumber() + ""));
+					answerElement.appendChild(element);
 
-				// The current status of this answer
-				element = doc.createElement("Status");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnswerQueueStatus(a)));
-				answerElement.appendChild(element);
+					// The current status of this answer
+					element = doc.createElement("Status");
+					element.appendChild(doc.createTextNode(a.getStatusString()));
+					answerElement.appendChild(element);
 
-				// The time stamp of this answer
-				element = doc.createElement("Timestamp");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnswerQueueTimestamp(a)));
-				answerElement.appendChild(element);
+					// The time stamp of this answer
+					element = doc.createElement("Timestamp");
+					element.appendChild(doc.createTextNode(a.getTimestamp()));
+					answerElement.appendChild(element);
 
-				// The proposed answer
-				element = doc.createElement("Answer_Text");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnswerQueueAnswer(a)));
-				answerElement.appendChild(element);
+					// The proposed answer
+					element = doc.createElement("Answer_Text");
+					element.appendChild(doc.createTextNode(a.getAnswer()));
+					answerElement.appendChild(element);
 
-				// The submitter of this answer
-				element = doc.createElement("Submitter");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnswerQueueSubmitter(a)));
-				answerElement.appendChild(element);
+					// The submitter of this answer
+					element = doc.createElement("Submitter");
+					element.appendChild(doc.createTextNode(a.getSubmitter()));
+					answerElement.appendChild(element);
 
-				// The confidence in this answer
-				element = doc.createElement("Confidence");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnswerQueueConfidence(a) + ""));
-				answerElement.appendChild(element);
+					// The confidence in this answer
+					element = doc.createElement("Confidence");
+					element.appendChild(doc.createTextNode(a.getConfidence() + ""));
+					answerElement.appendChild(element);
 
-				// The user who called this answer in
-				element = doc.createElement("Caller");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnswerQueueCaller(a)));
-				answerElement.appendChild(element);
+					// The user who called this answer in
+					element = doc.createElement("Caller");
+					element.appendChild(doc.createTextNode(a.getCaller()));
+					answerElement.appendChild(element);
 
-				// The operator who accepted the answer as correct
-				element = doc.createElement("Operator");
-				element.appendChild(doc.createTextNode(TriviaServerEndpoint.trivia.getAnswerQueueOperator(a)));
-				answerElement.appendChild(element);
-
+					// The operator who accepted the answer as correct
+					element = doc.createElement("Operator");
+					element.appendChild(doc.createTextNode(a.getOperator()));
+					answerElement.appendChild(element);
+				}
 			}
 
 			// write the content into xml file
@@ -591,10 +630,10 @@ public class TriviaServerEndpoint {
 			System.out.println("Couldn't save data to file " + filename);
 		}
 
-		if (TriviaServerEndpoint.trivia.isAnnounced(1)) {
+		if (trivia.isAnnounced(1)) {
 			// Save place chart
 			try {
-				final JFreeChart chart = TriviaChartFactory.makePlaceChart(TriviaServerEndpoint.trivia);
+				final JFreeChart chart = TriviaChartFactory.makePlaceChart(trivia);
 				filename = CHART_DIR + "/" + roundString + "_placeChart.png";
 				File file = new File(filename);
 				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
@@ -609,7 +648,7 @@ public class TriviaServerEndpoint {
 
 			// Save score by round chart
 			try {
-				final JFreeChart chart = TriviaChartFactory.makeScoreByRoundChart(TriviaServerEndpoint.trivia);
+				final JFreeChart chart = TriviaChartFactory.makeScoreByRoundChart(trivia);
 				filename = CHART_DIR + "/" + roundString + "_scoreByRoundChart.png";
 				File file = new File(filename);
 				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
@@ -624,7 +663,7 @@ public class TriviaServerEndpoint {
 
 			// Save cumulative score chart
 			try {
-				final JFreeChart chart = TriviaChartFactory.makeCumulativePointChart(TriviaServerEndpoint.trivia);
+				final JFreeChart chart = TriviaChartFactory.makeCumulativePointChart(trivia);
 				filename = CHART_DIR + "/" + roundString + "_cumulativeScoreChart.png";
 				File file = new File(filename);
 				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
@@ -639,7 +678,7 @@ public class TriviaServerEndpoint {
 
 			// Save team comparison chart
 			try {
-				final JFreeChart chart = TriviaChartFactory.makeTeamComparisonChart(TriviaServerEndpoint.trivia);
+				final JFreeChart chart = TriviaChartFactory.makeTeamComparisonChart(trivia);
 				filename = CHART_DIR + "/" + roundString + "_teamComparisonChart.png";
 				File file = new File(filename);
 				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);

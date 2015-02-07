@@ -780,6 +780,10 @@ public class Trivia implements Serializable {
 		return value;
 	}
 
+	public Round[] getRounds() {
+		return this.rounds;
+	}
+
 	/**
 	 * Gets the value of all questions in a round.
 	 * 
@@ -1086,9 +1090,9 @@ public class Trivia implements Serializable {
 		return;
 	}
 
-	public void setAnswer(int qNumber, String answer, String submitter, int confidence, String status, String caller,
-			String operator) {
-		this.getCurrentRound().setAnswer(qNumber, answer, submitter, confidence, status, caller, operator);
+	public void setAnswer(int rNumber, int qNumber, String answer, String submitter, int confidence, String status,
+			String caller, String operator, String timestamp) {
+		this.rounds[rNumber - 1].setAnswer(qNumber, answer, submitter, confidence, status, caller, operator, timestamp);
 	}
 
 	/**
