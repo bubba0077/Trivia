@@ -18,14 +18,19 @@ import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.DeviationRenderer;
 import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.xy.DefaultTableXYDataset;
+import org.jfree.data.xy.XYIntervalSeries;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.xy.YIntervalSeries;
+import org.jfree.data.xy.YIntervalSeriesCollection;
 
 public class TriviaChartFactory {
 
@@ -358,42 +363,40 @@ public class TriviaChartFactory {
 		final int nTeams = scores.get(0).length;
 
 		// Create a new dataset
-		final DefaultTableXYDataset dataset = new DefaultTableXYDataset();
+		final YIntervalSeriesCollection dataset = new YIntervalSeriesCollection();
 		// Create a new XY chart
 		final JFreeChart chart = ChartFactory.createXYLineChart("Team Comparison", "Round", "Point Differential",
 				dataset, PlotOrientation.VERTICAL, false, true, false);
 		// Get the plot renderer
-		final XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
+		// final DeviationRenderer renderer = (DeviationRenderer) chart.getXYPlot().getRenderer();
+		final DeviationRenderer renderer = new DeviationRenderer(true, false);
+		chart.getXYPlot().setRenderer(renderer);
 		for (int t = 0; t < nTeams; t++) {
 			final String team = scores.get(0)[t].getTeamName();
-			final XYSeries series = new XYSeries(team, true, false);
+			final YIntervalSeries series = new YIntervalSeries(team, true, false);
 			// Add a data point for each team with the difference between their score and ours
-			for (int r = 0; r < lastAnnounced; r++) {
-				final int ourScore = trivia.getAnnouncedPoints(r + 1);
-				series.add(r + 1, scores.get(r)[t].getScore() - ourScore);
+			if (team.equals(trivia.getTeamName())) {
+				for (int r = 0; r < lastAnnounced; r++) {
+					final int ourScore = trivia.getAnnouncedPoints(r + 1);
+					series.add(r + 1, 0, -ourScore, trivia.getCumulativeValue(r + 1) - ourScore);
+				}
+				renderer.setSeriesStroke(t, new BasicStroke(3F));
+				renderer.setSeriesPaint(t, Color.WHITE);
+				renderer.setSeriesFillPaint(t, Color.GRAY);
+			} else {
+				for (int r = 0; r < lastAnnounced; r++) {
+					final int scoreDiff = scores.get(r)[t].getScore() - trivia.getAnnouncedPoints(r + 1);
+					series.add(r + 1, scoreDiff, scoreDiff, scoreDiff);
+				}
 			}
 
 			// Plot the data points
 			renderer.setSeriesShapesVisible(t, true);
 			renderer.setSeriesShape(t, makeCircle(2D));
 
-			// Make our line (0 difference) a thick white line
-			if (team.equals(trivia.getTeamName())) {
-				renderer.setSeriesStroke(t, new BasicStroke(3F));
-				renderer.setSeriesPaint(t, Color.WHITE);
-			}
-
 			// Add the series to the dataset
 			dataset.addSeries(series);
 		}
-
-		// Add total possible envelope
-		XYSeries series = new XYSeries("Perfect", true, false);
-		for (int r = 0; r < lastAnnounced; r++) {
-			final int ourScore = trivia.getAnnouncedPoints(r + 1);
-			series.add(r + 1, trivia.getValue(r + 1) - ourScore);
-		}
-		dataset.addSeries(series);
 
 		// Change the format of the tooltip
 		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}", NumberFormat
@@ -414,7 +417,7 @@ public class TriviaChartFactory {
 		yAxis.setNumberFormatOverride(format);
 		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(axisFontSize));
 		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(axisFontSize));
-
+		yAxis.setRangeWithMargins(DatasetUtilities.findRangeBounds(dataset, false));
 		plot.setBackgroundPaint(backgroundColor);
 		chart.setBackgroundPaint(backgroundColor);
 
