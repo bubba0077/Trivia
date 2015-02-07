@@ -19,7 +19,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
-import javax.swing.BoundedRangeModel;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -29,10 +28,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
 import javax.swing.MenuSelectionManager;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
@@ -67,7 +68,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final private JMenuItem				sortStatusAscendingMenuItem;
 	final private JMenuItem				sortStatusDescendingMenuItem;
 	final private JMenuItem				muteMenuItem;
-	final private SliderMenuItem		idleSlider;
+	final private SpinnerMenuItem		idleSlider;
 	// The status bar at the bottom
 	final private JLabel				statusBar;
 
@@ -203,12 +204,12 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menu.add(menuItem);
 
 			final JMenu idleMenu = new JMenu("Adjust time-to-idle");
-			this.idleSlider = new SliderMenuItem(0, 60, Integer.parseInt(TriviaGUI.PROPERTIES
-					.getProperty("UserList.timeToIdle")) / 60);
-			this.idleSlider.setMajorTickSpacing(10);
-			this.idleSlider.setMinorTickSpacing(5);
-			this.idleSlider.setPaintLabels(true);
-			this.idleSlider.setPaintTicks(true);
+			this.idleSlider = new SpinnerMenuItem(new SpinnerNumberModel(Integer.parseInt(TriviaGUI.PROPERTIES
+					.getProperty("UserList.timeToIdle")), 0, 3600, 60));
+			// this.idleSlider.setMajorTickSpacing(10);
+			// this.idleSlider.setMinorTickSpacing(5);
+			// this.idleSlider.setPaintLabels(true);
+			// this.idleSlider.setPaintTicks(true);
 			this.idleSlider.addChangeListener(this);
 			idleMenu.add(this.idleSlider);
 			menu.add(idleMenu);
@@ -706,7 +707,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				this.setVisible(true);
 			}
 		} else if (e.getSource().equals(this.idleSlider)) {
-			int timeToIdle = this.idleSlider.getValue() * 60;
+			int timeToIdle = ( (Integer) this.idleSlider.getValue() ).intValue();
 			TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
 			this.client.sendMessage(ClientMessageFactory.setIdleTime(timeToIdle));
 		}
@@ -833,28 +834,16 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	// Inner class that defines our special slider menu item
-	private class SliderMenuItem extends JSlider implements MenuElement {
+	private class SpinnerMenuItem extends JSpinner implements MenuElement {
 
 		private static final long	serialVersionUID	= 7803892810923109389L;
 
-		private SliderMenuItem(BoundedRangeModel brm) {
-			super(brm);
+		private SpinnerMenuItem() {
+			super();
 		}
 
-		private SliderMenuItem(int orientation, int min, int max, int value) {
-			super(orientation, min, max, value);
-		}
-
-		private SliderMenuItem(int min, int max, int value) {
-			super(min, max, value);
-		}
-
-		private SliderMenuItem(int min, int max) {
-			super(min, max);
-		}
-
-		private SliderMenuItem(int orientation) {
-			super(orientation);
+		private SpinnerMenuItem(SpinnerModel model) {
+			super(model);
 		}
 
 		public void processMouseEvent(MouseEvent e, MenuElement path[], MenuSelectionManager manager) {
