@@ -12,12 +12,14 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
+import javax.swing.BoundedRangeModel;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -27,7 +29,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSlider;
 import javax.swing.KeyStroke;
+import javax.swing.MenuElement;
+import javax.swing.MenuSelectionManager;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
@@ -62,6 +67,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final private JMenuItem				sortStatusAscendingMenuItem;
 	final private JMenuItem				sortStatusDescendingMenuItem;
 	final private JMenuItem				muteMenuItem;
+	final private SliderMenuItem		idleSlider;
 	// The status bar at the bottom
 	final private JLabel				statusBar;
 
@@ -195,6 +201,17 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menuItem.setActionCommand("Change name");
 			menuItem.addActionListener(this);
 			menu.add(menuItem);
+
+			final JMenu idleMenu = new JMenu("Adjust time-to-idle");
+			this.idleSlider = new SliderMenuItem(0, 60, Integer.parseInt(TriviaGUI.PROPERTIES
+					.getProperty("UserList.timeToIdle")) / 60);
+			this.idleSlider.setMajorTickSpacing(10);
+			this.idleSlider.setMinorTickSpacing(5);
+			this.idleSlider.setPaintLabels(true);
+			this.idleSlider.setPaintTicks(true);
+			this.idleSlider.addChangeListener(this);
+			idleMenu.add(this.idleSlider);
+			menu.add(idleMenu);
 
 			menuItem = new JMenuItem("Load Default Settings");
 			menuItem.setActionCommand("Load Default Settings");
@@ -688,6 +705,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			} else {
 				this.setVisible(true);
 			}
+		} else if (e.getSource().equals(this.idleSlider)) {
+			int timeToIdle = this.idleSlider.getValue() * 60;
+			TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
+			this.client.sendMessage(ClientMessageFactory.setIdleTime(timeToIdle));
 		}
 	}
 
@@ -808,6 +829,49 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				System.out.println("Couldn't open audio file");
 				e.printStackTrace();
 			}
+		}
+	}
+
+	// Inner class that defines our special slider menu item
+	private class SliderMenuItem extends JSlider implements MenuElement {
+
+		private static final long	serialVersionUID	= 7803892810923109389L;
+
+		private SliderMenuItem(BoundedRangeModel brm) {
+			super(brm);
+		}
+
+		private SliderMenuItem(int orientation, int min, int max, int value) {
+			super(orientation, min, max, value);
+		}
+
+		private SliderMenuItem(int min, int max, int value) {
+			super(min, max, value);
+		}
+
+		private SliderMenuItem(int min, int max) {
+			super(min, max);
+		}
+
+		private SliderMenuItem(int orientation) {
+			super(orientation);
+		}
+
+		public void processMouseEvent(MouseEvent e, MenuElement path[], MenuSelectionManager manager) {
+		}
+
+		public void processKeyEvent(KeyEvent e, MenuElement path[], MenuSelectionManager manager) {
+		}
+
+		public void menuSelectionChanged(boolean isIncluded) {
+		}
+
+		public MenuElement[] getSubElements() {
+			return new MenuElement[0];
+		}
+
+		public Component getComponent() {
+			return this;
 		}
 	}
 

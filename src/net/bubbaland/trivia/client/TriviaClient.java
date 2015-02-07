@@ -43,6 +43,8 @@ public class TriviaClient implements Runnable {
 	// Hashtable of idle users and roles
 	private volatile Hashtable<String, Role>	idleUserHash;
 
+	private int									timeToIdle;
+
 	// The remote server
 	private Session								session;
 
@@ -66,6 +68,7 @@ public class TriviaClient implements Runnable {
 		this.user = null;
 		this.role = Role.RESEARCHER;
 		this.trivia = null;
+		this.timeToIdle = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("UserList.timeToIdle"));
 	}
 
 	public void run() {
@@ -224,8 +227,7 @@ public class TriviaClient implements Runnable {
 	public void onOpen(final Session session, EndpointConfig config) {
 		System.out.println("Connected to trivia server (" + this.serverURL + ").");
 		this.session = session;
-		this.sendMessage(ClientMessageFactory.setIdleTime(Integer.parseInt(TriviaGUI.PROPERTIES
-				.getProperty("UserList.timeToIdle"))));
+		this.sendMessage(ClientMessageFactory.setIdleTime(this.timeToIdle));
 		this.sendMessage(ClientMessageFactory.fetchTrivia());
 	}
 

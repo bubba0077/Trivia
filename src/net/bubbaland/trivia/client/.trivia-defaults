@@ -1,7 +1,5 @@
 #Trivia
 #Sat Oct 26 03:52:30 PDT 2013
-MaxRetries=10
-RefreshRate=250
 QueueSort=Sort Timestamp Ascending
 TimestampFormat=[yyyy MMM dd HH:mm:ss]
 HideClosed=true

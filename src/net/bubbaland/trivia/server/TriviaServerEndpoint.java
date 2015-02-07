@@ -992,6 +992,7 @@ public class TriviaServerEndpoint {
 				break;
 			case SET_IDLE_TIME:
 				this.timeToIdle = message.getTimeToIdle();
+				System.out.println(this.user + " time to idle set to " + this.timeToIdle);
 				break;
 			case SET_ROLE:
 				this.user = message.getUser();

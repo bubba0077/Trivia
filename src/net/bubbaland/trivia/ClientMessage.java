@@ -512,7 +512,11 @@ public class ClientMessage {
 
 		public static ClientMessage setIdleTime(int timeToIdle) {
 			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_IDLE_TIME);
-			message.timeToIdle = timeToIdle;
+			if (timeToIdle == 0) {
+				message.timeToIdle = 9999999;
+			} else {
+				message.timeToIdle = timeToIdle;
+			}
 			return message;
 		}
 
