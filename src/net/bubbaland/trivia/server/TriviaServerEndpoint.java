@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -234,7 +235,14 @@ public class TriviaServerEndpoint {
 	 */
 	public static String[] listSaves() {
 		final File folder = new File(SAVE_DIR);
-		final File[] files = folder.listFiles();
+		final File[] files = folder.listFiles(new FileFilter() {
+			public boolean accept(File file) {
+				if (file.getName().toLowerCase().endsWith(".xml")) {
+					return true;
+				}
+				return false;
+			}
+		});
 		final int nFiles = files.length;
 		final String[] filenames = new String[nFiles];
 		for (int f = 0; f < nFiles; f++) {
