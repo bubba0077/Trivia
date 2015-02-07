@@ -770,7 +770,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				final String newCaller = this.answerQueue[a].getCaller();
 				final String newStatus = this.answerQueue[a].getStatusString();
 
-
 				this.lastStatus.set(a, newStatus);
 				final boolean closed = !trivia.isOpen(newQNumber);
 				final boolean filtered = !qNumberFilter.contains(newQNumber)
@@ -929,8 +928,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.confidenceLabels.get(a).setVisible(true);
 						if (AnswerQueuePanel.this.live) {
 							this.agreeButtons.get(a).setVisible(true);
-							this.agreeButtons.get(a).getParent().setVisible(true);
+						} else {
+							this.agreeButtons.get(a).setVisible(false);
 						}
+						this.agreeButtons.get(a).getParent().setVisible(true);
 						this.submitterLabels.get(a).setVisible(true);
 						this.operatorLabels.get(a).setVisible(true);
 						this.callerLabels.get(a).setVisible(true);
