@@ -771,7 +771,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				final String newStatus = this.answerQueue[a].getStatusString();
 
 				this.lastStatus.set(a, newStatus);
-				final boolean closed = !trivia.isOpen(newQNumber);
+				final boolean closed;
+				if (AnswerQueuePanel.this.live) {
+					closed = !trivia.isOpen(newQNumber);
+				} else {
+					closed = false;
+				}
 				final boolean filtered = !qNumberFilter.contains(newQNumber)
 						|| !( AnswerQueuePanel.this.filterText.pattern().equals("") || AnswerQueuePanel.this.filterText
 								.matcher(newAnswer).find() );
