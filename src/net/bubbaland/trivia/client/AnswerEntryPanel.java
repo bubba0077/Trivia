@@ -168,7 +168,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 				return;
 			}
 
-			if (this.bruteForceCheckbox.isEnabled()) {
+			if (this.bruteForceCheckbox.isSelected()) {
 				String[] answers = answer.split("\\r?\\n");
 				for (String a : answers) {
 					this.sendAnswer(a, confidence);
