@@ -781,7 +781,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						|| !( AnswerQueuePanel.this.filterText.pattern().equals("") || AnswerQueuePanel.this.filterText
 								.matcher(newAnswer).find() );
 
-				if (!( hideClosed && closed ) && !( hideDuplicates && newStatus.equals("Duplicate") )) {
+				final boolean showRow = !( ( hideClosed && closed )
+						|| ( hideDuplicates && newStatus.equals("Duplicate") ) || filtered );
+
+				if (showRow) {
 					shownRows++;
 				}
 
@@ -896,7 +899,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						}
 					}
 
-					if (( hideClosed && closed ) || ( hideDuplicates && newStatus.equals("Duplicate") ) || filtered) {
+					if (!showRow) {
 						// Hide this row
 						this.queuenumberLabels.get(a).setVisible(false);
 						this.timestampLabels.get(a).setVisible(false);
