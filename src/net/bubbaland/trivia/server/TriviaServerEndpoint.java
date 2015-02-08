@@ -1117,8 +1117,9 @@ public class TriviaServerEndpoint {
 	 * @param session
 	 */
 	@OnError
-	public void onError(Session session) {
+	public void onError(Session session, Throwable throwable) {
 		log("Error while communicating with " + TriviaServerEndpoint.sessionList.get(session).user + ":");
+		throwable.printStackTrace();
 	}
 
 	/**
