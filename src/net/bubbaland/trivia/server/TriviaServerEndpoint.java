@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
@@ -26,6 +25,7 @@ import javax.websocket.DeploymentException;
 import javax.websocket.EncodeException;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
@@ -140,6 +140,7 @@ public class TriviaServerEndpoint {
 
 
 	static {
+		// Get default properties from the package
 		final InputStream defaults = TriviaServerEndpoint.class.getResourceAsStream(SETTINGS_FILENAME);
 
 		/**
@@ -149,7 +150,7 @@ public class TriviaServerEndpoint {
 			PROPERTIES.load(defaults);
 		} catch (final IOException | NullPointerException e) {
 			e.printStackTrace();
-			System.out.println("Couldn't load default properties file, aborting!");
+			log("Couldn't load default properties file, aborting!");
 			System.exit(-1);
 		}
 
@@ -161,11 +162,15 @@ public class TriviaServerEndpoint {
 			final BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
 			PROPERTIES.load(fileBuffer);
 		} catch (final IOException e) {
-			System.out.println("Couldn't load local properties file, may not exist.");
+			log("Couldn't load local properties file, may not exist.");
 		}
+
 
 		TriviaChartFactory.loadProperties(PROPERTIES);
 
+		/**
+		 * Parse properties into static variables
+		 */
 		N_ROUNDS = Integer.parseInt(PROPERTIES.getProperty("nRounds"));
 		N_QUESTIONS_NORMAL = Integer.parseInt(PROPERTIES.getProperty("nQuestionsNormal"));
 		N_QUESTIONS_SPEED = Integer.parseInt(PROPERTIES.getProperty("nQuestionsSpeed"));
@@ -182,6 +187,9 @@ public class TriviaServerEndpoint {
 		STANDINGS_BASE_URL = PROPERTIES.getProperty("StandingsURL");
 
 
+		/**
+		 * Create a new trivia data object and list of connected clients
+		 */
 		trivia = new Trivia(TEAM_NAME, N_ROUNDS, N_QUESTIONS_NORMAL, N_QUESTIONS_SPEED);
 		sessionList = new Hashtable<Session, TriviaServerEndpoint>(0);
 
@@ -207,7 +215,7 @@ public class TriviaServerEndpoint {
 			}
 		}).start();
 
-		// Create time that will update user lists with idle users
+		// Create timer that will update user lists with idle users
 		new Timer(IDLE_FREQUENCY, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				updateUsers();
@@ -215,21 +223,26 @@ public class TriviaServerEndpoint {
 		}).start();
 	}
 
+	// Array of the last round versions sent to this client
 	private int[]											lastVersions;
+	// Time before this client considers a user idle (in ms)
 	private int												timeToIdle;
+	// User name for this client
 	private String											user;
+	// Role of this client
 	private Role											role;
+	// Last time this client sent a command
 	private Date											lastActive;
 
 	/**
-	 * Creates a new trivia server.
+	 * Creates a new trivia server endpoint.
 	 */
 	public TriviaServerEndpoint() {
 		this.lastActive = new Date();
 		this.timeToIdle = 30000;
 		this.user = "";
 		this.role = Role.RESEARCHER;
-		this.lastVersions = new int[50];
+		this.lastVersions = new int[N_ROUNDS];
 	}
 
 	/**
@@ -241,6 +254,7 @@ public class TriviaServerEndpoint {
 		final File folder = new File(SAVE_DIR);
 		final File[] files = folder.listFiles(new FileFilter() {
 			public boolean accept(File file) {
+				// Only get XML files
 				if (file.getName().toLowerCase().endsWith(".xml")) {
 					return true;
 				}
@@ -872,6 +886,9 @@ public class TriviaServerEndpoint {
 		return userHash;
 	}
 
+	/**
+	 * Send updated trivia information to each connected client
+	 */
 	private static synchronized void updateTrivia() {
 		for (Session session : TriviaServerEndpoint.sessionList.keySet()) {
 			TriviaServerEndpoint info = sessionList.get(session);
@@ -882,6 +899,9 @@ public class TriviaServerEndpoint {
 		}
 	}
 
+	/**
+	 * Send the current round number to each connected client
+	 */
 	private static synchronized void updateRoundNumber() {
 		for (Session session : TriviaServerEndpoint.sessionList.keySet()) {
 			sendMessage(session,
@@ -889,6 +909,9 @@ public class TriviaServerEndpoint {
 		}
 	}
 
+	/**
+	 * Send the active and idle user lists to each connected client
+	 */
 	private static synchronized void updateUsers() {
 		Collection<TriviaServerEndpoint> clients = TriviaServerEndpoint.sessionList.values();
 		for (Session session : TriviaServerEndpoint.sessionList.keySet()) {
@@ -899,26 +922,42 @@ public class TriviaServerEndpoint {
 		}
 	}
 
+	/**
+	 * Send a message to the specified client
+	 * 
+	 * @param session
+	 * @param message
+	 */
 	private static void sendMessage(Session session, ServerMessage message) {
 		try {
 			session.getBasicRemote().sendObject(message);
 		} catch (IOException | EncodeException exception) {
-			// TODO Auto-generated catch block
+			log("Error while communicating with " + TriviaServerEndpoint.sessionList.get(session).user + ":");
 			exception.printStackTrace();
 		}
 	}
 
+	/**
+	 * Initial hook when a client first connects (TriviaServerEndpoint() is automatically called as well)
+	 * 
+	 * @param session
+	 * @param config
+	 */
 	@OnOpen
 	public void onOpen(Session session, EndpointConfig config) {
 		log("New client connecting...");
 		TriviaServerEndpoint.sessionList.put(session, this);
 	}
 
+	/**
+	 * Handle a message from the client
+	 * 
+	 * @param message
+	 * @param session
+	 */
 	@OnMessage
 	public void onMessage(ClientMessage message, Session session) {
-		// ClientMessage message = (ClientMessage) message1;
 		ClientCommand command = message.getCommand();
-		// TriviaServerEndpoint info = sessionList.get(session);
 		this.lastActive = new Date();
 		switch (command) {
 			case ADVANCE_ROUND:
@@ -937,7 +976,6 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case CHANGE_USER:
-				// this.changeUser(info.user, message.getUser());
 				this.user = message.getUser();
 				TriviaServerEndpoint.updateUsers();
 				break;
@@ -1071,11 +1109,21 @@ public class TriviaServerEndpoint {
 		}
 	}
 
-	// @OnError
-	// public void onError(Session session) {
-	//
-	// }
+	/**
+	 * Handle error in communicating with a client
+	 * 
+	 * @param session
+	 */
+	@OnError
+	public void onError(Session session) {
+		log("Error while communicating with " + TriviaServerEndpoint.sessionList.get(session).user + ":");
+	}
 
+	/**
+	 * Handle a client disconnection
+	 * 
+	 * @param session
+	 */
 	@OnClose
 	public void onClose(Session session) {
 		TriviaServerEndpoint.log(TriviaServerEndpoint.sessionList.get(session).user + " disconnected");
