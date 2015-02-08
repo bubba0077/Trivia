@@ -58,7 +58,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 	// Sort menu items
 	final private JRadioButtonMenuItem	researcherMenuItem, callerMenuItem, typistMenuItem;
-
 	final private JCheckBoxMenuItem		hideClosedMenuItem;
 	final private JCheckBoxMenuItem		hideDuplicatesMenuItem;
 	final private JMenuItem				sortTimestampAscendingMenuItem;

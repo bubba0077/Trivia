@@ -8,7 +8,6 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -133,6 +132,9 @@ public class TriviaServerEndpoint {
 	// The Trivia object that holds all of the contest data
 	private static Trivia									trivia;
 
+	// Boolean that tracks whether the server is running
+	private static boolean									isRunning;
+
 	/**
 	 * Setup properties
 	 */
@@ -165,7 +167,6 @@ public class TriviaServerEndpoint {
 			log("Couldn't load local properties file, may not exist.");
 		}
 
-
 		TriviaChartFactory.loadProperties(PROPERTIES);
 
 		/**
@@ -192,6 +193,7 @@ public class TriviaServerEndpoint {
 		 */
 		trivia = new Trivia(TEAM_NAME, N_ROUNDS, N_QUESTIONS_NORMAL, N_QUESTIONS_SPEED);
 		sessionList = new Hashtable<Session, TriviaServerEndpoint>(0);
+		isRunning = false;
 
 		// Create timer that will make save files
 		new Timer(SAVE_FREQUENCY, new ActionListener() {
@@ -823,14 +825,14 @@ public class TriviaServerEndpoint {
 	 *             A remote exception
 	 */
 	public static void main(String args[]) {
-		System.out.print("Starting server...");
+		log("Starting server...");
 		final Server server = new Server(SERVER_URL, SERVER_PORT, "/", null, TriviaServerEndpoint.class);
 		try {
 			server.start();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			System.out.print("Press return to stop the server.");
-			reader.readLine();
-		} catch (DeploymentException | IOException exception) {
+			TriviaServerEndpoint.isRunning = true;
+			while (TriviaServerEndpoint.isRunning) {
+			}
+		} catch (DeploymentException exception) {
 			exception.printStackTrace();
 		} finally {
 			server.stop();

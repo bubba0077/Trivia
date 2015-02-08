@@ -39,11 +39,11 @@ public class TriviaServerSetup {
 	final static private String	SETTINGS_FILENAME	= ".trivia-server-settings";
 
 	private static String		SOURCE_URL			= "http://www.bubbaland.net/trivia";
-	private static String[]		LIBS				= { "grizzly-framework-2.3.15-gfa", "grizzly-http-2.3.15-gfa",
-			"grizzly-http-server-2.3.15-gfa", "jackson-annotations-2.5.0", "jackson-core-2.5.0",
-			"jackson-databind-2.5.0", "javax.websocket-api-1.0", "jcommon-1.0.23", "jfreechart-1.0.19", "jlayer-1.0.1",
-			"jsoup-1.7.2", "tyrus-client-1.9", "tyrus-container-grizzly-client-1.9",
-			"tyrus-container-grizzly-server-1.9", "tyrus-core-1.9", "tyrus-server-1.9", "tyrus-spi-1.9" };
+	// private static String[] LIBS = { "grizzly-framework-2.3.15-gfa", "grizzly-http-2.3.15-gfa",
+	// "grizzly-http-server-2.3.15-gfa", "jackson-annotations-2.5.0", "jackson-core-2.5.0",
+	// "jackson-databind-2.5.0", "javax.websocket-api-1.0", "jcommon-1.0.23", "jfreechart-1.0.19", "jlayer-1.0.1",
+	// "jsoup-1.7.2", "tyrus-client-1.9", "tyrus-container-grizzly-client-1.9",
+	// "tyrus-container-grizzly-server-1.9", "tyrus-core-1.9", "tyrus-server-1.9", "tyrus-spi-1.9" };
 	private static boolean		showGUI;
 
 	private static final String	welcomeMsg			= "This program will download all of the files necessary to host the trivia server and configure the necessary settings.\n\n"
@@ -438,90 +438,58 @@ public class TriviaServerSetup {
 		}
 	}
 
-	private static void createLibJNLP(String filename, String libname, String serverURL, JTextArea textArea) {
-		if (textArea != null) {
-			textArea.append("Creating " + filename + " \n");
-		} else {
-			System.out.println("Creating " + filename);
-		}
-		try {
-			final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			final Document doc = docBuilder.newDocument();
-
-			final Element jnlpElem = doc.createElement("jnlp");
-			doc.appendChild(jnlpElem);
-
-			Attr attribute = doc.createAttribute("spec");
-			attribute.setValue("1.0+");
-			jnlpElem.setAttributeNode(attribute);
-
-			attribute = doc.createAttribute("codebase");
-			attribute.setValue("http://" + serverURL);
-			jnlpElem.setAttributeNode(attribute);
-
-			attribute = doc.createAttribute("href");
-			attribute.setValue(serverURL + "/" + libname);
-			jnlpElem.setAttributeNode(attribute);
-
-			Element infElement = doc.createElement("information");
-			jnlpElem.appendChild(infElement);
-
-			Element element = doc.createElement("title");
-			infElement.appendChild(element);
-			element.appendChild(doc.createTextNode(libname));
-
-			element = doc.createElement("vendor");
-			infElement.appendChild(element);
-			element.appendChild(doc.createTextNode("Walter Kolczynski"));
-
-			element = doc.createElement("homepage");
-			infElement.appendChild(element);
-			attribute = doc.createAttribute("href");
-			attribute.setValue("http://www.kneedeepintheses.org");
-			element.setAttributeNode(attribute);
-			infElement.appendChild(element);
-
-			Element secElement = doc.createElement("security");
-			jnlpElem.appendChild(secElement);
-
-			element = doc.createElement("all-permissions");
-			secElement.appendChild(element);
-
-			Element resElement = doc.createElement("resources");
-			jnlpElem.appendChild(resElement);
-
-			element = doc.createElement("j2se");
-			resElement.appendChild(element);
-
-			attribute = doc.createAttribute("version");
-			attribute.setValue("1.0+");
-			element.setAttributeNode(attribute);
-			attribute = doc.createAttribute("href");
-			attribute.setValue("http://java.sun.com/products/autodl/j2se");
-			element.setAttributeNode(attribute);
-
-			element = doc.createElement("jar");
-			resElement.appendChild(element);
-			attribute = doc.createAttribute("href");
-			attribute.setValue("lib/" + libname + ".jar");
-			element.setAttributeNode(attribute);
-
-			Element descElement = doc.createElement("component-desc");
-			jnlpElem.appendChild(descElement);
-
-			final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			final Transformer transformer = transformerFactory.newTransformer();
-			final DOMSource source = new DOMSource(doc);
-			final StreamResult result = new StreamResult(new File(filename));
-			transformer.transform(source, result);
-
-		} catch (ParserConfigurationException | TransformerException exception) {
-			textArea.append("Couldn't create settings file!");
-			textArea.append("Exiting...");
-			System.exit(0);
-		}
-	}
+	/*
+	 * private static void createLibJNLP(String filename, String libname, String serverURL, JTextArea textArea) { if
+	 * (textArea != null) { textArea.append("Creating " + filename + " \n"); } else { System.out.println("Creating " +
+	 * filename); } try { final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance(); final
+	 * DocumentBuilder docBuilder = docFactory.newDocumentBuilder(); final Document doc = docBuilder.newDocument();
+	 * 
+	 * final Element jnlpElem = doc.createElement("jnlp"); doc.appendChild(jnlpElem);
+	 * 
+	 * Attr attribute = doc.createAttribute("spec"); attribute.setValue("1.0+"); jnlpElem.setAttributeNode(attribute);
+	 * 
+	 * attribute = doc.createAttribute("codebase"); attribute.setValue("http://" + serverURL);
+	 * jnlpElem.setAttributeNode(attribute);
+	 * 
+	 * attribute = doc.createAttribute("href"); attribute.setValue(serverURL + "/" + libname);
+	 * jnlpElem.setAttributeNode(attribute);
+	 * 
+	 * Element infElement = doc.createElement("information"); jnlpElem.appendChild(infElement);
+	 * 
+	 * Element element = doc.createElement("title"); infElement.appendChild(element);
+	 * element.appendChild(doc.createTextNode(libname));
+	 * 
+	 * element = doc.createElement("vendor"); infElement.appendChild(element);
+	 * element.appendChild(doc.createTextNode("Walter Kolczynski"));
+	 * 
+	 * element = doc.createElement("homepage"); infElement.appendChild(element); attribute =
+	 * doc.createAttribute("href"); attribute.setValue("http://www.kneedeepintheses.org");
+	 * element.setAttributeNode(attribute); infElement.appendChild(element);
+	 * 
+	 * Element secElement = doc.createElement("security"); jnlpElem.appendChild(secElement);
+	 * 
+	 * element = doc.createElement("all-permissions"); secElement.appendChild(element);
+	 * 
+	 * Element resElement = doc.createElement("resources"); jnlpElem.appendChild(resElement);
+	 * 
+	 * element = doc.createElement("j2se"); resElement.appendChild(element);
+	 * 
+	 * attribute = doc.createAttribute("version"); attribute.setValue("1.0+"); element.setAttributeNode(attribute);
+	 * attribute = doc.createAttribute("href"); attribute.setValue("http://java.sun.com/products/autodl/j2se");
+	 * element.setAttributeNode(attribute);
+	 * 
+	 * element = doc.createElement("jar"); resElement.appendChild(element); attribute = doc.createAttribute("href");
+	 * attribute.setValue("lib/" + libname + ".jar"); element.setAttributeNode(attribute);
+	 * 
+	 * Element descElement = doc.createElement("component-desc"); jnlpElem.appendChild(descElement);
+	 * 
+	 * final TransformerFactory transformerFactory = TransformerFactory.newInstance(); final Transformer transformer =
+	 * transformerFactory.newTransformer(); final DOMSource source = new DOMSource(doc); final StreamResult result = new
+	 * StreamResult(new File(filename)); transformer.transform(source, result);
+	 * 
+	 * } catch (ParserConfigurationException | TransformerException exception) {
+	 * textArea.append("Couldn't create settings file!"); textArea.append("Exiting..."); System.exit(0); } }
+	 */
 
 	private static void createServerSettings(String triviaDirPath, String serverURL, int port) {
 
