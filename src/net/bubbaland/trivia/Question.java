@@ -227,12 +227,14 @@ public class Question implements Serializable {
 	 * Open this question
 	 */
 	public void open() {
-		this.isOpen = true;
+		if (this.beenOpen == false) {
+			this.isOpen = true;
+		}
 		this.beenOpen = true;
 	}
 
 	public void reopen() {
-		this.open();
+		this.isOpen = true;
 		this.correct = false;
 	}
 
