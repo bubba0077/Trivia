@@ -62,10 +62,10 @@ public class TriviaServerSetup {
 
 	public static void main(String args[]) {
 
-		if (args.length > 0 && args[0].equals("noGUI")) {
-			showGUI = false;
-		} else {
+		if (args.length > 0 && args[0].equals("showGUI")) {
 			showGUI = true;
+		} else {
+			showGUI = false;
 		}
 
 		JFrame frame = null;
@@ -422,7 +422,7 @@ public class TriviaServerSetup {
 			descElement.setAttributeNode(attribute);
 
 			element = doc.createElement("argument");
-			element.appendChild(doc.createTextNode("ws://" + serverURL + ":" + port));
+			element.appendChild(doc.createTextNode("ws://" + serverURL.split("/", 2)[0] + ":" + port));
 			descElement.appendChild(element);
 
 			final TransformerFactory transformerFactory = TransformerFactory.newInstance();
