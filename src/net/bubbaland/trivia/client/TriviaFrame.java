@@ -68,7 +68,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final private JMenuItem				sortStatusAscendingMenuItem;
 	final private JMenuItem				sortStatusDescendingMenuItem;
 	final private JMenuItem				muteMenuItem;
-	final private SpinnerMenuItem		idleSlider;
+	final private SpinnerMenuItem		idleSpinner;
 	// The status bar at the bottom
 	final private JLabel				statusBar;
 
@@ -204,14 +204,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menu.add(menuItem);
 
 			final JMenu idleMenu = new JMenu("Adjust time-to-idle");
-			this.idleSlider = new SpinnerMenuItem(new SpinnerNumberModel(Integer.parseInt(TriviaGUI.PROPERTIES
-					.getProperty("UserList.timeToIdle")), 0, 3600, 60));
+			this.idleSpinner = new SpinnerMenuItem(new SpinnerNumberModel(Integer.parseInt(TriviaGUI.PROPERTIES
+					.getProperty("UserList.timeToIdle")) / 1000, 0, 3600, 60));
 			// this.idleSlider.setMajorTickSpacing(10);
 			// this.idleSlider.setMinorTickSpacing(5);
 			// this.idleSlider.setPaintLabels(true);
 			// this.idleSlider.setPaintTicks(true);
-			this.idleSlider.addChangeListener(this);
-			idleMenu.add(this.idleSlider);
+			this.idleSpinner.addChangeListener(this);
+			idleMenu.add(this.idleSpinner);
 			menu.add(idleMenu);
 
 			menuItem = new JMenuItem("Load Default Settings");
@@ -706,8 +706,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			} else {
 				this.setVisible(true);
 			}
-		} else if (e.getSource().equals(this.idleSlider)) {
-			int timeToIdle = ( (Integer) this.idleSlider.getValue() ).intValue();
+		} else if (e.getSource().equals(this.idleSpinner)) {
+			int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue() * 1000;
 			TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
 			this.client.sendMessage(ClientMessageFactory.setIdleTime(timeToIdle));
 		}
