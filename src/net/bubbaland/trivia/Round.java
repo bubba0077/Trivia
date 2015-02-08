@@ -987,6 +987,11 @@ public class Round implements Serializable {
 
 	public synchronized void reopen(int qNumber) {
 		this.questions[qNumber - 1].reopen();
+		for (Answer a : this.answerQueue) {
+			if (a.getQNumber() == qNumber && a.getStatus() == Answer.Status.CORRECT) {
+				a.markUncalled();
+			}
+		}
 		this.version++;
 	}
 
