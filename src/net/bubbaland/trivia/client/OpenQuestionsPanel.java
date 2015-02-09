@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
@@ -37,7 +38,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	/** The Constant serialVersionUID. */
 	private static final long				serialVersionUID	= 6049067322505905668L;
 
-	private final JLabel					qNumberLabel, valueLabel, questionLabel, answerColumn, closeColumn;
+	private final JLabel					qNumberLabel, valueLabel, questionLabel;
+	private final JLabel[]					statusLabels;
 	private final JScrollPane				scrollPane;
 
 	// Set up layout constraints
@@ -55,6 +57,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 	/** Sub-panel that will hold the open questions */
 	private final OpenQuestionsSubPanel		openQuestionsSubPanel;
+	private final Color						headerColor, headerBackgroundColor, correctColor, incorrectColor;
 
 	/**
 	 * Instantiates a new workflow question list panel.
@@ -90,18 +93,17 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		this.questionLabel = this.enclosedLabel("Question", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
-		constraints.gridx = 3;
-		constraints.gridy = 0;
-		this.answerColumn = this.enclosedLabel("", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
-
-		constraints.gridx = 4;
-		constraints.gridy = 0;
-		;
-		this.closeColumn = this.enclosedLabel("", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
+		int nQuestions = this.client.getTrivia().getMaxQuestions();
+		this.statusLabels = new JLabel[nQuestions];
+		for (int q = 1; q <= nQuestions; q++) {
+			constraints.gridx = 2 + q;
+			this.statusLabels[q - 1] = this
+					.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		}
 
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		constraints.gridwidth = 5;
+		constraints.gridwidth = 3 + nQuestions;
 		constraints.weighty = 1.0;
 
 		/**
@@ -114,6 +116,14 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		this.add(this.scrollPane, constraints);
 
 		this.loadProperties(TriviaGUI.PROPERTIES);
+		this.headerColor = new Color(
+				new BigInteger(TriviaGUI.PROPERTIES.getProperty("OpenQuestions.Header.Color"), 16).intValue());
+		this.headerBackgroundColor = new Color(new BigInteger(
+				TriviaGUI.PROPERTIES.getProperty("OpenQuestions.Header.BackgroundColor"), 16).intValue());
+		this.correctColor = new Color(
+				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
+		this.incorrectColor = new Color(new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Incorrect.Color"),
+				16).intValue());
 	}
 
 	/*
@@ -123,6 +133,31 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	 */
 	@Override
 	public synchronized void updateGUI(boolean force) {
+		final Trivia trivia = this.client.getTrivia();
+		final int currentRound = trivia.getCurrentRoundNumber();
+		final int nMaxQuestions = trivia.getMaxQuestions();
+		final int nQuestions = trivia.getNQuestions();
+		final int diff = nMaxQuestions - nQuestions;
+		for (int q = 0; q < diff; q++) {
+			this.statusLabels[q].setText("");
+		}
+		for (int q = diff; q < nMaxQuestions; q++) {
+			final int qNumber = q + 1 - diff;
+			this.statusLabels[q].setText(qNumber + "");
+			if (trivia.beenOpen(currentRound, qNumber)) {
+				if (trivia.isOpen(qNumber)) {
+					this.statusLabels[q].setForeground(this.headerColor);
+				} else {
+					if (trivia.isCorrect(currentRound, qNumber)) {
+						this.statusLabels[q].setForeground(this.correctColor);
+					} else {
+						this.statusLabels[q].setForeground(this.incorrectColor);
+					}
+				}
+			} else {
+				this.statusLabels[q].setForeground(this.headerBackgroundColor);
+			}
+		}
 		this.openQuestionsSubPanel.updateGUI(force);
 	}
 
@@ -145,8 +180,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		final int qNumWidth = Integer.parseInt(properties.getProperty("OpenQuestions.QNumber.Width"));
 		final int valueWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Value.Width"));
 		final int questionWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Question.Width"));
-		final int answerWidth = Integer.parseInt(properties.getProperty("OpenQuestions.AnswerCol.Width"));
-		final int closeWidth = Integer.parseInt(properties.getProperty("OpenQuestions.CloseCol.Width"));
 
 		/**
 		 * Font sizes
@@ -162,11 +195,9 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				headerFontSize);
 		setLabelProperties(this.questionLabel, questionWidth, headerHeight, headerColor, headerBackgroundColor,
 				headerFontSize);
-		setLabelProperties(this.answerColumn, answerWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.closeColumn, closeWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
-
+		for (JLabel label : this.statusLabels) {
+			setLabelProperties(label, 18, headerHeight, headerBackgroundColor, headerBackgroundColor, headerFontSize);
+		}
 		this.scrollPane.setPreferredSize(new Dimension(0, questionsShow * rowHeight + 3));
 		this.scrollPane.setMinimumSize(new Dimension(0, rowHeight + 3));
 

@@ -768,10 +768,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	public void updateGUI(boolean forceUpdate) {
 		// Update role
 		final Role role = this.client.getRole();
-		if (role == null) {
-			this.gui.log("not defined yet");
-			return;
-		}
 		switch (role) {
 			case RESEARCHER:
 				this.researcherMenuItem.setSelected(true);
@@ -786,10 +782,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 		}
 		// Propagate update to tabs
-		if (this.book == null) {
-			this.gui.log("not defined yet");
-			return;
-		}
 		for (final String tabName : this.book.getTabNames()) {
 			final int index = this.book.indexOfTab(tabName);
 			final Component component = this.book.getComponentAt(index);
