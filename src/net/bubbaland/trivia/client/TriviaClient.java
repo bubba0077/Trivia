@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Hashtable;
 
+import javax.swing.SwingUtilities;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.DeploymentException;
 import javax.websocket.EncodeException;
@@ -88,8 +89,12 @@ public class TriviaClient implements Runnable {
 		return this.trivia.getCurrentRoundNumber();
 	}
 
-	public void log(String message) {
-		this.gui.log(message);
+	public void log(final String message) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				TriviaClient.this.gui.log(message);
+			}
+		});
 	}
 
 	/**
@@ -215,6 +220,9 @@ public class TriviaClient implements Runnable {
 	}
 
 	public void sendMessage(ClientMessage message) {
+		if (SwingUtilities.isEventDispatchThread()) {
+			System.out.println("Trying to send message from Event Dispatch Thread!");
+		}
 		try {
 			this.session.getBasicRemote().sendObject(message);
 		} catch (IOException | EncodeException exception) {

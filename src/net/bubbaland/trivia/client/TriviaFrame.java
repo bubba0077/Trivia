@@ -35,6 +35,7 @@ import javax.swing.MenuSelectionManager;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -439,7 +440,16 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 			case "Load state":
 				// Triggered by change state, prompt for save file
-				this.client.sendMessage(ClientMessageFactory.listSaves());
+				( new SwingWorker<Void, Void>() {
+					public Void doInBackground() {
+						TriviaFrame.this.client.sendMessage(ClientMessageFactory.listSaves());
+						return null;
+					}
+
+					public void done() {
+
+					}
+				} ).execute();
 				break;
 			case "Hide Closed":
 				// Triggered by change to Hide Closed menu item
@@ -503,27 +513,54 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 			case "Open wiki":
 				// Triggered by Open wiki menu item
-				try {
-					Desktop.getDesktop().browse(new URI(TriviaGUI.WIKI_URL));
-				} catch (IOException | URISyntaxException exception) {
-					this.log("Couldn't open a browser window");
-				}
+				new SwingWorker<Void, Void>() {
+					public Void doInBackground() {
+						try {
+							Desktop.getDesktop().browse(new URI(TriviaGUI.WIKI_URL));
+						} catch (IOException | URISyntaxException exception) {
+							TriviaFrame.this.log("Couldn't open a browser window");
+						}
+						return null;
+					}
+
+					public void done() {
+
+					}
+				};
 				break;
 			case "Open KVSC":
 				// Triggered by Open wiki menu item
-				try {
-					Desktop.getDesktop().browse(new URI(TriviaGUI.KVSC_URL));
-				} catch (IOException | URISyntaxException exception) {
-					this.log("Couldn't open a browser window");
-				}
+				new SwingWorker<Void, Void>() {
+					public Void doInBackground() {
+						try {
+							Desktop.getDesktop().browse(new URI(TriviaGUI.KVSC_URL));
+						} catch (IOException | URISyntaxException exception) {
+							TriviaFrame.this.log("Couldn't open a browser window");
+						}
+						return null;
+					}
+
+					public void done() {
+
+					}
+				};
 				break;
 			case "Open issues":
 				// Triggered by Open wiki menu item
-				try {
-					Desktop.getDesktop().browse(new URI(TriviaGUI.ISSUES_URL));
-				} catch (IOException | URISyntaxException exception) {
-					this.log("Couldn't open a browser window");
-				}
+				new SwingWorker<Void, Void>() {
+					public Void doInBackground() {
+						try {
+							Desktop.getDesktop().browse(new URI(TriviaGUI.ISSUES_URL));
+						} catch (IOException | URISyntaxException exception) {
+							TriviaFrame.this.log("Couldn't open a browser window");
+						}
+						return null;
+					}
+
+					public void done() {
+
+					}
+				};
 				break;
 			case "Exit":
 				// Tell client to exit the program
@@ -706,9 +743,19 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				this.setVisible(true);
 			}
 		} else if (e.getSource().equals(this.idleSpinner)) {
-			int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue() * 1000;
+			final int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue() * 1000;
 			TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
-			this.client.sendMessage(ClientMessageFactory.setIdleTime(timeToIdle));
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					TriviaFrame.this.client.sendMessage(ClientMessageFactory.setIdleTime(timeToIdle));
+					return null;
+				}
+
+				public void done() {
+
+				}
+			} ).execute();
+
 		}
 	}
 
@@ -721,6 +768,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	public void updateGUI(boolean forceUpdate) {
 		// Update role
 		final Role role = this.client.getRole();
+		if (role == null) {
+			this.gui.log("not defined yet");
+			return;
+		}
 		switch (role) {
 			case RESEARCHER:
 				this.researcherMenuItem.setSelected(true);
@@ -735,6 +786,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 		}
 		// Propagate update to tabs
+		if (this.book == null) {
+			this.gui.log("not defined yet");
+			return;
+		}
 		for (final String tabName : this.book.getTabNames()) {
 			final int index = this.book.indexOfTab(tabName);
 			final Component component = this.book.getComponentAt(index);

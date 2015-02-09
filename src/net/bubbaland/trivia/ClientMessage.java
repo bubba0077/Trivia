@@ -384,11 +384,9 @@ public class ClientMessage {
 		 * @throws RemoteException
 		 *             A remote exception
 		 */
-		public static ClientMessage open(int qNumber, String qText, int qValue) {
+		public static ClientMessage open(int qNumber) {
 			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.OPEN_QUESTION);
 			message.qNumber = qNumber;
-			message.qText = qText;
-			message.qValue = qValue;
 			return message;
 		}
 

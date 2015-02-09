@@ -3,6 +3,7 @@ package net.bubbaland.trivia.client;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -11,6 +12,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
@@ -32,7 +34,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	private final JSpinner		qNumberSpinner;
 	private final JSpinner		qValueSpinner;
 	private final JTextArea		qTextArea;
-	private boolean				temporaryOpen;
+
+	private boolean				newOpen;
 
 	/**
 	 * Instantiates a new question entry window.
@@ -44,8 +47,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	 * @param qNumberStart
 	 *            the default question number
 	 */
-	public NewQuestionDialog(TriviaClient client, int nQuestions, int qNumberStart) {
-		this(client, nQuestions, qNumberStart, 10, "");
+	public NewQuestionDialog(TriviaClient client, int nQuestions, int qNumberStart, final boolean newOpen) {
+		this(client, nQuestions, qNumberStart, 10, "", newOpen);
 	}
 
 	/**
@@ -60,8 +63,9 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	 * @param qValueStart
 	 *            the default question value
 	 */
-	public NewQuestionDialog(final TriviaClient client, int nQuestions, int qNumberStart, int qValueStart) {
-		this(client, nQuestions, qNumberStart, qValueStart, "");
+	public NewQuestionDialog(final TriviaClient client, int nQuestions, int qNumberStart, int qValueStart,
+			final boolean newOpen) {
+		this(client, nQuestions, qNumberStart, qValueStart, "", newOpen);
 	}
 
 	/**
@@ -78,14 +82,28 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	 * @param qTextStart
 	 *            the initial question text
 	 */
-	public NewQuestionDialog(final TriviaClient client, int nQuestions, int qNumberStart, int qValueStart,
-			String qTextStart) {
+	public NewQuestionDialog(final TriviaClient client, final int nQuestions, final int qNumberStart,
+			final int qValueStart, final String qTextStart, final boolean newOpen) {
 		super();
 
 		this.client = client;
 		this.nQuestions = nQuestions;
 		this.qNumberStart = qNumberStart;
-		this.temporaryOpen = false;
+		this.newOpen = newOpen;
+
+		if (this.newOpen) {
+			// Open the question on the server temporarily
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.open(qNumberStart));
+					return null;
+				}
+
+				public void done() {
+
+				}
+			} ).execute();
+		}
 
 		// Set up layout constraints
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -151,13 +169,6 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		constraints.weighty = 0.0;
 		constraints.gridwidth = 1;
 
-		if (!client.getTrivia().isOpen(qNumberStart)) {
-			// Open the question on the server temporarily
-			this.temporaryOpen = true;
-			this.client.sendMessage(ClientMessageFactory.open(qNumberStart, this.client.getUser()
-					+ " is typing the question...", 0));
-		}
-
 		// Display the dialog box
 		this.dialog = new TriviaDialog(null, "Open New Question", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
@@ -170,152 +181,203 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		// If the OK button was pressed, open the question
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		// Get the current Trivia data object
-		final Trivia trivia = client.getTrivia();
+		final Trivia trivia = this.client.getTrivia();
 		final int currentRound = trivia.getCurrentRoundNumber();
 
 		if (option == JOptionPane.OK_OPTION) {
 			// Get the input data
 			final int qNumber = (int) qNumberSpinner.getValue();
 			final int qValue = (int) qValueSpinner.getValue();
-			String qText = qTextArea.getText();
+			final String qText = qTextArea.getText();
 
 			// Get the existing question data
 			final int existingQValue = trivia.getValue(currentRound, qNumber);
 			final String existingQText = trivia.getQuestionText(currentRound, qNumber);
 
-			if (qNumberStart != qNumber && trivia.getValue(currentRound, qNumberStart) != 0
-					&& !trivia.beenOpen(currentRound, qNumber)) {
-				this.removeAll();
+			if (qNumberStart == qNumber) {
+				// Open question
+				( new SwingWorker<Void, Void>() {
+					public Void doInBackground() {
+						System.out.println("doing");
+						NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
+								NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue,
+								qText, null, null, false, null));
+						return null;
+					}
 
-				GridBagConstraints constraints = new GridBagConstraints();
-				constraints.fill = GridBagConstraints.BOTH;
-				constraints.anchor = GridBagConstraints.CENTER;
-
-				constraints.gridx = 0;
-				constraints.gridy = 0;
-				JLabel label = new JLabel("Change question number from " + qNumberStart + " to " + qNumber + "?");
-				label.setFont(label.getFont().deriveFont(fontSize));
-				this.add(label, constraints);
-
-				this.dialog = new TriviaDialog(null, "Confirm Question Number Change " + qNumberStart + " to "
-						+ qNumber, this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-				this.dialog.removeWindowListener(this);
-				this.dialog.setModal(true);
-				this.dialog.setVisible(true);
-
-				final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
-				if (confirm != JOptionPane.OK_OPTION) {
-					new NewQuestionDialog(client, nQuestions, qNumberStart, qValue, qText);
-					return;
+					public void done() {
+						client.log("Question #" + qNumber + " submitted.");
+					}
+				} ).execute();
+			} else {
+				if (trivia.beenOpen(currentRound, qNumber)) {
+					// Overwrite
+					this.confirmOverwrite(qNumber, existingQValue, existingQText, qValue, qText);
+				} else {
+					// Remap
+					this.confirmNumberChange(qNumberStart, qNumber, qValue, qText);
+				}
+			}
+		} else if (this.newOpen) {
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					NewQuestionDialog.this.client.sendMessage(ClientMessageFactory
+							.resetQuestion(NewQuestionDialog.this.qNumberStart));
+					return null;
 				}
 
-				// Open the question on the server
-				this.client.sendMessage(ClientMessageFactory.remapQuestion(qNumberStart, qNumber));
-				client.log("Question #" + qNumberStart + " changed to " + qNumber);
-			}
+				public void done() {
 
-			if (trivia.beenOpen(currentRound, qNumber) && existingQValue != 0) {
-				// If the question has already been open, confirm that we want to overwrite
-				this.removeAll();
-
-				GridBagConstraints constraints = new GridBagConstraints();
-				constraints.fill = GridBagConstraints.BOTH;
-				constraints.anchor = GridBagConstraints.CENTER;
-
-				constraints.gridx = 0;
-				constraints.gridy = 0;
-				JLabel label = new JLabel("Question alread open, overwrite?");
-				label.setFont(label.getFont().deriveFont(fontSize));
-				this.add(label, constraints);
-
-				// Show existing question data
-				constraints.gridx = 0;
-				constraints.gridy = 1;
-				label = new JLabel("Existing question:");
-				label.setFont(label.getFont().deriveFont(fontSize));
-				this.add(label, constraints);
-
-				constraints.gridx = 0;
-				constraints.gridy = 2;
-				constraints.weightx = 0.5;
-				constraints.weighty = 0.5;
-				JTextArea textArea = new JTextArea(existingQText);
-				textArea.setLineWrap(true);
-				textArea.setWrapStyleWord(true);
-				textArea.setEditable(false);
-				JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-				scrollPane.setPreferredSize(new Dimension(100, 100));
-				scrollPane.setViewportView(textArea);
-				scrollPane.setBorder(BorderFactory.createEmptyBorder());
-				this.add(scrollPane, constraints);
-				constraints.weightx = 0.0;
-				constraints.weighty = 0.0;
-
-				constraints.gridx = 0;
-				constraints.gridy = 3;
-				label = new JLabel("Value: " + existingQValue);
-				label.setFont(label.getFont().deriveFont(fontSize));
-				this.add(label, constraints);
-
-				// Show new question data
-				constraints.gridx = 0;
-				constraints.gridy = 4;
-				label = new JLabel("Entered question:");
-				label.setFont(label.getFont().deriveFont(fontSize));
-				this.add(label, constraints);
-
-				constraints.gridx = 0;
-				constraints.gridy = 5;
-				constraints.weightx = 0.5;
-				constraints.weighty = 0.5;
-				textArea = new JTextArea(qText);
-				textArea.setLineWrap(true);
-				textArea.setWrapStyleWord(true);
-				textArea.setEditable(true);
-				textArea.addAncestorListener(this);
-				this.addEnterOverride(textArea);
-				scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-				scrollPane.setPreferredSize(new Dimension(100, 100));
-				scrollPane.setViewportView(textArea);
-				scrollPane.setBorder(BorderFactory.createEmptyBorder());
-				this.add(scrollPane, constraints);
-				constraints.weightx = 0.0;
-				constraints.weighty = 0.0;
-
-				constraints.gridx = 0;
-				constraints.gridy = 6;
-				label = new JLabel("Value: " + qValue);
-				label.setFont(label.getFont().deriveFont(fontSize));
-				this.add(label, constraints);
-
-				this.dialog = new TriviaDialog(null, "Confirm Question Overwrite " + qNumber, this,
-						JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-				this.dialog.removeWindowListener(this);
-				this.dialog.setModal(true);
-				this.dialog.setVisible(true);
-
-				final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
-				if (confirm != JOptionPane.OK_OPTION) {
-					new NewQuestionDialog(client, nQuestions, qNumber, qValue, qText);
-					return;
 				}
-
-				qText = textArea.getText();
-				resetTemporaryOpen();
-			}
-
-			// Open the question on the server
-			this.client.sendMessage(ClientMessageFactory.open(qNumber, qText, qValue));
-			client.log("Question #" + qNumber + " submitted.");
-		} else if (this.temporaryOpen) {
-			resetTemporaryOpen();
+			} ).execute();
 		}
 	}
 
-	private void resetTemporaryOpen() {
-		this.client.sendMessage(ClientMessageFactory.resetQuestion(this.qNumberStart));
+	private void confirmNumberChange(final int qNumberStart, final int qNumber, final int qValue, final String qText) {
+		this.removeAll();
+
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.anchor = GridBagConstraints.CENTER;
+
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		JLabel label = new JLabel("Change question number from " + qNumberStart + " to " + qNumber + "?");
+		label.setFont(label.getFont().deriveFont(fontSize));
+		this.add(label, constraints);
+
+		this.dialog = new TriviaDialog(null, "Confirm Question Number Change " + qNumberStart + " to " + qNumber, this,
+				JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		this.dialog.removeWindowListener(this);
+		this.dialog.setModal(true);
+		this.dialog.setVisible(true);
+
+		final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
+		if (confirm != JOptionPane.OK_OPTION) {
+			new NewQuestionDialog(client, nQuestions, qNumberStart, qValue, qText, this.newOpen);
+			return;
+		}
+
+		// Remap question on server
+		( new SwingWorker<Void, Void>() {
+			public Void doInBackground() {
+				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
+				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.remapQuestion(
+						NewQuestionDialog.this.qNumberStart, qNumber));
+				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
+						NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue, qText,
+						null, null, false, null));
+				return null;
+			}
+
+			public void done() {
+
+			}
+		} ).execute();
 	}
 
+	private void confirmOverwrite(final int qNumber, final int existingQValue, final String existingQText,
+			final int qValue, final String qText) {
+		this.removeAll();
+
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.anchor = GridBagConstraints.CENTER;
+
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		JLabel label = new JLabel("Question already open, overwrite?");
+		label.setFont(label.getFont().deriveFont(fontSize));
+		this.add(label, constraints);
+
+		// Show existing question data
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		label = new JLabel("Existing question:");
+		label.setFont(label.getFont().deriveFont(fontSize));
+		this.add(label, constraints);
+
+		constraints.gridx = 0;
+		constraints.gridy = 2;
+		constraints.weightx = 0.5;
+		constraints.weighty = 0.5;
+		JTextArea textArea = new JTextArea(existingQText);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setPreferredSize(new Dimension(100, 100));
+		scrollPane.setViewportView(textArea);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		this.add(scrollPane, constraints);
+		constraints.weightx = 0.0;
+		constraints.weighty = 0.0;
+
+		constraints.gridx = 0;
+		constraints.gridy = 3;
+		label = new JLabel("Value: " + existingQValue);
+		label.setFont(label.getFont().deriveFont(fontSize));
+		this.add(label, constraints);
+
+		// Show new question data
+		constraints.gridx = 0;
+		constraints.gridy = 4;
+		label = new JLabel("Entered question:");
+		label.setFont(label.getFont().deriveFont(fontSize));
+		this.add(label, constraints);
+
+		constraints.gridx = 0;
+		constraints.gridy = 5;
+		constraints.weightx = 0.5;
+		constraints.weighty = 0.5;
+		textArea = new JTextArea(qText);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setEditable(true);
+		textArea.addAncestorListener(this);
+		this.addEnterOverride(textArea);
+		scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setPreferredSize(new Dimension(100, 100));
+		scrollPane.setViewportView(textArea);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		this.add(scrollPane, constraints);
+		constraints.weightx = 0.0;
+		constraints.weighty = 0.0;
+
+		constraints.gridx = 0;
+		constraints.gridy = 6;
+		label = new JLabel("Value: " + qValue);
+		label.setFont(label.getFont().deriveFont(fontSize));
+		this.add(label, constraints);
+
+		this.dialog = new TriviaDialog(null, "Confirm Question Overwrite " + qNumber, this, JOptionPane.PLAIN_MESSAGE,
+				JOptionPane.OK_CANCEL_OPTION);
+		this.dialog.removeWindowListener(this);
+		this.dialog.setModal(true);
+		this.dialog.setVisible(true);
+
+		final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
+		if (confirm != JOptionPane.OK_OPTION) {
+			new NewQuestionDialog(client, nQuestions, qNumber, qValue, qText, this.newOpen);
+			return;
+		}
+
+		( new SwingWorker<Void, Void>() {
+			public Void doInBackground() {
+				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
+				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.remapQuestion(
+						NewQuestionDialog.this.qNumberStart, qNumber));
+				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
+						NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue, qText,
+						null, null, false, null));
+				return null;
+			}
+
+			public void done() {
+
+			}
+		} ).execute();
+	}
 }

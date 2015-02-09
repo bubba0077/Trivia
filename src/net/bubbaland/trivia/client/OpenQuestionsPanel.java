@@ -340,7 +340,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 					int qValue = trivia.getValue(rNumber, qNumber);
 					String qText = trivia.getQuestionText(rNumber, qNumber);
 					final int nQuestions = trivia.getNQuestions();
-					new NewQuestionDialog(this.client, nQuestions, qNumber, qValue, qText);
+					new NewQuestionDialog(this.client, nQuestions, qNumber, qValue, qText, false);
 					break;
 				case "Delete":
 					qNumber = Integer.parseInt(this.contextMenu.getName());
@@ -560,9 +560,10 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			final int rNumber = trivia.getCurrentRoundNumber();
 
 			if (trivia.isSpeed(rNumber) && nextToOpen > 1) {
-				new NewQuestionDialog(this.client, nQuestions, nextToOpen, trivia.getValue(rNumber, nextToOpen - 1));
+				new NewQuestionDialog(this.client, nQuestions, nextToOpen, trivia.getValue(rNumber, nextToOpen - 1),
+						true);
 			} else {
-				new NewQuestionDialog(this.client, nQuestions, nextToOpen);
+				new NewQuestionDialog(this.client, nQuestions, nextToOpen, true);
 			}
 
 		}

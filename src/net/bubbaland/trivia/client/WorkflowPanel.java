@@ -80,7 +80,7 @@ public class WorkflowPanel extends TriviaMainPanel {
 				final Trivia trivia = client.getTrivia();
 				final int nQuestions = trivia.getNQuestions();
 				final int nextToOpen = trivia.nextToOpen();
-				new NewQuestionDialog(client, nQuestions, nextToOpen);
+				new NewQuestionDialog(client, nQuestions, nextToOpen, true);
 			}
 		});
 	}

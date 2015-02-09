@@ -3,6 +3,7 @@ package net.bubbaland.trivia.client;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -10,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
@@ -76,8 +78,16 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 		super.windowClosed(event);
 		final int confirm = ( (Integer) dialog.getValue() ).intValue();
 		if (confirm == JOptionPane.OK_OPTION) {
-			this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
-			client.log("Question #" + qNumber + " reset.");
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					ResetQuestionDialog.this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
+					return null;
+				}
+
+				public void done() {
+					client.log("Question #" + qNumber + " reset.");
+				}
+			} ).execute();
 			return;
 		}
 	}

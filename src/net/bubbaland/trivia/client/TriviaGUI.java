@@ -156,18 +156,6 @@ public class TriviaGUI implements WindowListener {
 
 		loadProperties();
 
-		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				public void run() {
-					TriviaGUI.this.waitDialog = new WaitDialog(TriviaGUI.this);
-				}
-			});
-		} catch (InvocationTargetException | InterruptedException exception1) {
-			exception1.printStackTrace();
-			System.exit(2);
-		}
-		// this.waitDialog = new WaitDialog(this);
-
 		// Create a prompt requesting the user name
 		String user = PROPERTIES.getProperty("UserName");
 		if (user == null) {
@@ -178,16 +166,21 @@ public class TriviaGUI implements WindowListener {
 					}
 				});
 			} catch (InvocationTargetException | InterruptedException exception) {
+				// TODO Auto-generated catch block
 				exception.printStackTrace();
-				System.exit(2);
 			}
 		} else {
 			this.client.setUser(user);
 		}
 
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				TriviaGUI.this.waitDialog = new WaitDialog(TriviaGUI.this);
+			}
+		});
+
 		while (this.client.getTrivia() == null) {
 			// log("Awaiting trivia data...");
-			waitDialog.setVisible(true);
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException exception) {
@@ -195,26 +188,27 @@ public class TriviaGUI implements WindowListener {
 				System.exit(2);
 			}
 		}
-		waitDialog.setVisible(false);
+		if (this.waitDialog != null) {
+			this.waitDialog.dispose();
+		}
 
 		// Create startup frames
 		for (int f = 0; PROPERTIES.getProperty("Window" + f) != null; f++) {
 			final int f1 = f;
-			try {
-				SwingUtilities.invokeAndWait(new Runnable() {
-					public void run() {
-						new TriviaFrame(TriviaGUI.this.client, TriviaGUI.this, PROPERTIES.getProperty("Window" + f1)
-								.replaceAll("[\\[\\]]", "").split(", "));
-						;
-					}
-				});
-			} catch (InvocationTargetException | InterruptedException exception) {
-				exception.printStackTrace();
-				System.exit(2);
-			}
+			new TriviaFrame(TriviaGUI.this.client, TriviaGUI.this, PROPERTIES.getProperty("Window" + f1)
+					.replaceAll("[\\[\\]]", "").split(", "));
 		}
 
-		this.updateGUI();
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					TriviaGUI.this.updateGUI();
+				}
+			});
+		} catch (InvocationTargetException | InterruptedException exception) {
+			// TODO Auto-generated catch block
+			exception.printStackTrace();
+		}
 		this.log("Welcome " + this.client.getUser());
 	}
 
@@ -228,12 +222,14 @@ public class TriviaGUI implements WindowListener {
 	 */
 	public static void main(String[] args) {
 		// Schedule a job to create and show the GUI
-		String serverURL = "ws://localhost:1100";
+		final String serverURL;
 		if (args.length > 0) {
 			serverURL = args[0];
+		} else {
+			serverURL = "ws://localhost:1100";
 		}
+
 		new TriviaGUI(serverURL);
-		// SwingUtilities.invokeLater(new TriviaRunnable(serverURL));
 	}
 
 	public TriviaClient getClient() {
@@ -376,13 +372,13 @@ public class TriviaGUI implements WindowListener {
 	 * Update all of the child windows.
 	 */
 	public void updateGUI() {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				for (final TriviaFrame frame : TriviaGUI.this.windowList) {
+		for (final TriviaFrame frame : TriviaGUI.this.windowList) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
 					frame.updateGUI(false);
 				}
-			}
-		});
+			});
+		}
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
@@ -211,7 +212,17 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	public synchronized void actionPerformed(ActionEvent event) {
 		final JComponent source = (JComponent) event.getSource();
 		if (source.equals(this.speedButton)) {
-			this.client.sendMessage(ClientMessageFactory.setSpeed(this.speedButton.isSelected()));
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					SummaryPanel.this.client.sendMessage(ClientMessageFactory.setSpeed(SummaryPanel.this.speedButton
+							.isSelected()));
+					return null;
+				}
+
+				public void done() {
+
+				}
+			} ).execute();
 			// Speed button changed
 			if (this.speedButton.isSelected()) {
 				this.client.log("Made this a speed round.");
@@ -219,7 +230,16 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				this.client.log("Made this a normal round");
 			}
 		} else if (source.equals(this.newRoundButton)) {
-			this.client.sendMessage(ClientMessageFactory.advanceRound());
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					SummaryPanel.this.client.sendMessage(ClientMessageFactory.advanceRound());
+					return null;
+				}
+
+				public void done() {
+
+				}
+			} ).execute();
 			this.client.log("Started new round");
 		} else if (source.equals(this.conflictButton)) {
 			new ConflictDialog(this.client);

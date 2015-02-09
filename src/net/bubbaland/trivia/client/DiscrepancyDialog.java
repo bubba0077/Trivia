@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
@@ -67,7 +68,17 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 
 		if (option == JOptionPane.OK_OPTION) {
-			this.client.sendMessage(ClientMessageFactory.setDiscrepancyText(rNumber, discrepancyTextField.getText()));
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					DiscrepancyDialog.this.client.sendMessage(ClientMessageFactory.setDiscrepancyText(rNumber,
+							discrepancyTextField.getText()));
+					return null;
+				}
+
+				public void done() {
+
+				}
+			} ).execute();
 			return;
 		}
 	}

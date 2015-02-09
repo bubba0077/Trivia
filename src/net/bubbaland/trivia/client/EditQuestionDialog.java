@@ -7,6 +7,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -16,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
@@ -237,9 +239,17 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 			final String operator = this.operatorTextField.getText();
 
 			// Edit the question on the server
-			this.client.sendMessage(ClientMessageFactory.editQuestion(rNumber, qNumber, qValue, qText, aText, submitter,
-					isCorrect, operator));
-			client.log("Question #" + qNumber + " edited.");
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					EditQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(rNumber, qNumber,
+							qValue, qText, aText, submitter, isCorrect, operator));
+					return null;
+				}
+
+				public void done() {
+					EditQuestionDialog.this.client.log("Question #" + qNumber + " edited.");
+				}
+			} ).execute();
 
 		}
 

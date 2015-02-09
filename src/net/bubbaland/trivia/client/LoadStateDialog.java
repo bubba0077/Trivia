@@ -2,9 +2,11 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
@@ -95,8 +97,16 @@ public class LoadStateDialog extends TriviaDialogPanel {
 			final String saveFile = (String) chooser.getSelectedItem();
 
 			// Try to communicate with server
-			this.client.sendMessage(ClientMessageFactory.loadState(saveFile));
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					LoadStateDialog.this.client.sendMessage(ClientMessageFactory.loadState(saveFile));
+					return null;
+				}
+
+				public void done() {
+
+				}
+			} ).execute();
 		}
 	}
-
 }

@@ -19,7 +19,7 @@ public class Question implements Serializable {
 
 	// The question number
 	@JsonProperty("qNumber")
-	private int					qNumber;
+	private final int			qNumber;
 
 	// The value of the question
 	@JsonProperty("value")
@@ -226,11 +226,12 @@ public class Question implements Serializable {
 	/**
 	 * Open this question
 	 */
-	public void open() {
+	public void open(String user) {
 		if (this.beenOpen == false) {
 			this.isOpen = true;
 		}
 		this.beenOpen = true;
+		this.question = "Question " + this.qNumber + " is being typed in by " + user + "...";
 	}
 
 	public void reopen() {

@@ -3,11 +3,13 @@ package net.bubbaland.trivia.client;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
@@ -105,8 +107,16 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			final String answer = answerTextArea.getText();
-			this.client.sendMessage(ClientMessageFactory.close(qNumber, answer));
-			client.log("Closed Question #" + qNumber);
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					CloseQuestionDialog.this.client.sendMessage(ClientMessageFactory.close(qNumber, answer));
+					return null;
+				}
+
+				public void done() {
+					client.log("Closed Question #" + qNumber);
+				}
+			} ).execute();
 		}
 	}
 

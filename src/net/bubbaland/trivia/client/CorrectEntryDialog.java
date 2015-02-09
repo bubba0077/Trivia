@@ -2,10 +2,12 @@ package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
@@ -76,7 +78,18 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
 			// If the OK button was pressed, mark the question as correct
-			this.client.sendMessage(ClientMessageFactory.markCorrect(queueIndex, operatorTextField.getText()));
+			( new SwingWorker<Void, Void>() {
+				public Void doInBackground() {
+					CorrectEntryDialog.this.client.sendMessage(ClientMessageFactory.markCorrect(queueIndex,
+							operatorTextField.getText()));
+					return null;
+				}
+
+				public void done() {
+
+				}
+			} ).execute();
+
 		} else {
 			// If the OK button wasn't pressed, reset the status box to the previous status
 			statusComboBox.setSelectedItem(client.getTrivia().getAnswerQueueStatus(queueIndex));

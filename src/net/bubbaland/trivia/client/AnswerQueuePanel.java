@@ -40,6 +40,7 @@ import javax.swing.JToggleButton;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -612,9 +613,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				AnswerQueuePanel.this.rNumber = trivia.getCurrentRoundNumber();
 			}
 			final String command = event.getActionCommand();
+			final int queueIndex;
 			switch (command) {
 				case "View":
-					int queueIndex = Integer.parseInt(this.contextMenu.getName());
+					queueIndex = Integer.parseInt(this.contextMenu.getName());
 					final int qNumber = trivia.getAnswerQueueQNumber(queueIndex);
 					final int qValue = trivia.getValue(AnswerQueuePanel.this.rNumber, qNumber);
 					final String qText = trivia.getQuestionText(AnswerQueuePanel.this.rNumber, qNumber);
@@ -625,15 +627,31 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					JToggleButton source = ( (JToggleButton) event.getSource() );
 					queueIndex = Integer.parseInt(source.getName());
 					this.agreements.put(queueIndex, true);
-					this.client.sendMessage(ClientMessageFactory.agree(queueIndex));
-					this.client.log("Agreed with answer #" + ( queueIndex + 1 ));
+					( new SwingWorker<Void, Void>() {
+						public Void doInBackground() {
+							AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory.agree(queueIndex));
+							return null;
+						}
+
+						public void done() {
+							AnswerQueueSubPanel.this.client.log("Agreed with answer #" + ( queueIndex + 1 ));
+						}
+					} ).execute();
 					break;
 				case "Disagree":
 					source = ( (JToggleButton) event.getSource() );
 					queueIndex = Integer.parseInt(source.getName());
 					this.agreements.put(queueIndex, false);
-					this.client.sendMessage(ClientMessageFactory.disagree(queueIndex));
-					this.client.log("Disagreed with answer #" + ( queueIndex + 1 ));
+					( new SwingWorker<Void, Void>() {
+						public Void doInBackground() {
+							AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory.disagree(queueIndex));
+							return null;
+						}
+
+						public void done() {
+							AnswerQueueSubPanel.this.client.log("Disagreed with answer #" + ( queueIndex + 1 ));
+						}
+					} ).execute();
 					break;
 				default:
 					break;
@@ -667,19 +685,68 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				final int queueIndex = Integer.parseInt(comboBoxName);
 				switch (newStatus) {
 					case "Duplicate":
-						this.client.sendMessage(ClientMessageFactory.markDuplicate(queueIndex));
+						( new SwingWorker<Void, Void>() {
+							public Void doInBackground() {
+								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory
+										.markDuplicate(queueIndex));
+								return null;
+							}
+
+							public void done() {
+
+							}
+						} ).execute();
 						break;
 					case "Not Called In":
-						this.client.sendMessage(ClientMessageFactory.markUncalled(queueIndex));
+						( new SwingWorker<Void, Void>() {
+							public Void doInBackground() {
+								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory
+										.markUncalled(queueIndex));
+								return null;
+							}
+
+							public void done() {
+
+							}
+						} ).execute();
 						break;
 					case "Calling":
-						this.client.sendMessage(ClientMessageFactory.callIn(queueIndex));
+						( new SwingWorker<Void, Void>() {
+							public Void doInBackground() {
+								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory.callIn(queueIndex));
+								return null;
+							}
+
+							public void done() {
+
+							}
+						} ).execute();
 						break;
 					case "Incorrect":
-						this.client.sendMessage(ClientMessageFactory.markIncorrect(queueIndex));
+						( new SwingWorker<Void, Void>() {
+							public Void doInBackground() {
+								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory
+										.markIncorrect(queueIndex));
+								return null;
+							}
+
+							public void done() {
+
+							}
+						} ).execute();
 						break;
 					case "Partial":
-						this.client.sendMessage(ClientMessageFactory.markPartial(queueIndex));
+						( new SwingWorker<Void, Void>() {
+							public Void doInBackground() {
+								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory
+										.markPartial(queueIndex));
+								return null;
+							}
+
+							public void done() {
+
+							}
+						} ).execute();
 						break;
 					case "Correct":
 						new CorrectEntryDialog(this.client, queueIndex, ( (JComboBox<String>) source ));

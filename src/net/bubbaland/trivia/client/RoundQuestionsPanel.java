@@ -22,6 +22,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.StyleConstants;
@@ -415,8 +416,16 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 					new EditQuestionDialog(this.client, this.rNumber, qNumber);
 					break;
 				case "Reopen":
-					this.client.sendMessage(ClientMessageFactory.reopen(qNumber));
-					this.client.log("Question #" + qNumber + " reopened.");
+					( new SwingWorker<Void, Void>() {
+						public Void doInBackground() {
+							RoundQuestionsPanel.this.client.sendMessage(ClientMessageFactory.reopen(qNumber));
+							return null;
+						}
+
+						public void done() {
+							RoundQuestionsPanel.this.client.log("Question #" + qNumber + " reopened.");
+						}
+					} ).execute();
 					break;
 				default:
 					break;

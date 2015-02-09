@@ -14,6 +14,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
@@ -149,9 +150,18 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		this.dialog.setVisible(true);
 	}
 
-	private void sendAnswer(String answer, int confidence) {
-		this.client.sendMessage(ClientMessageFactory.proposeAnswer(qNumber, answer, confidence));
-		client.log("Submitted an answer for Question #" + qNumber);
+	private void sendAnswer(final String answer, final int confidence) {
+		( new SwingWorker<Void, Void>() {
+			public Void doInBackground() {
+				AnswerEntryPanel.this.client.sendMessage(ClientMessageFactory
+						.proposeAnswer(qNumber, answer, confidence));
+				return null;
+			}
+
+			public void done() {
+				client.log("Submitted an answer for Question #" + qNumber);
+			}
+		} ).execute();
 	}
 
 	@Override

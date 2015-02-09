@@ -345,7 +345,9 @@ public class TriviaServerEndpoint {
 					final String operator = questionElement.getElementsByTagName("Operator").item(0).getTextContent();
 
 					if (beenOpen) {
-						trivia.open("From file", rNumber, qNumber, question, value);
+						trivia.open("From file", rNumber, qNumber);
+						trivia.setQuestionText(rNumber, qNumber, question);
+						trivia.setQuestionValue(rNumber, qNumber, value);
 						if (isCorrect) {
 							trivia.markCorrect(rNumber, qNumber, answer, submitter, operator);
 						} else if (!isOpen) {
@@ -995,9 +997,14 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case EDIT_QUESTION:
-				TriviaServerEndpoint.trivia.editQuestion(message.getrNumber(), message.getqNumber(),
-						message.getqValue(), message.getqText(), message.getaText(), message.isCorrect(),
-						message.getUser(), message.getOperator());
+				if (message.getaText() == null) {
+					TriviaServerEndpoint.trivia.editQuestion(message.getrNumber(), message.getqNumber(),
+							message.getqValue(), message.getqText());
+				} else {
+					TriviaServerEndpoint.trivia.editQuestion(message.getrNumber(), message.getqNumber(),
+							message.getqValue(), message.getqText(), message.getaText(), message.isCorrect(),
+							message.getUser(), message.getOperator());
+				}
 				TriviaServerEndpoint.log("Round " + message.getrNumber() + " Question " + message.getqNumber()
 						+ " edited by " + this.user);
 				TriviaServerEndpoint.updateTrivia();
@@ -1041,16 +1048,10 @@ public class TriviaServerEndpoint {
 				break;
 			case OPEN_QUESTION:
 				final int qNumber = message.getqNumber();
-				final String qText = message.getqText();
-				final int qValue = message.getqValue();
-				TriviaServerEndpoint.trivia.open(qNumber, qText, qValue);
-				if (qValue == 0) {
-					TriviaServerEndpoint.log("Question " + qNumber + " is being typed in by " + this.user + "...");
-				} else {
-					TriviaServerEndpoint.log("Question " + qNumber + " opened by " + this.user + " worth " + qValue
-							+ " points:");
-					TriviaServerEndpoint.log("\t" + qText);
-				}
+				// final String qText = message.getqText();
+				// final int qValue = message.getqValue();
+				TriviaServerEndpoint.trivia.open(this.user, qNumber);
+				TriviaServerEndpoint.log("Question " + qNumber + " is being typed in by " + this.user + "...");
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case PROPOSE_ANSWER:
