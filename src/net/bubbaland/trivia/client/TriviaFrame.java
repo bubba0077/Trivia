@@ -205,7 +205,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 			final JMenu idleMenu = new JMenu("Adjust time-to-idle");
 			this.idleSpinner = new SpinnerMenuItem(new SpinnerNumberModel(Integer.parseInt(TriviaGUI.PROPERTIES
-					.getProperty("UserList.timeToIdle")) / 1000, 0, 3600, 60));
+					.getProperty("UserList.timeToIdle")), 0, 3600, 60));
 			// this.idleSlider.setMajorTickSpacing(10);
 			// this.idleSlider.setMinorTickSpacing(5);
 			// this.idleSlider.setPaintLabels(true);
@@ -743,7 +743,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				this.setVisible(true);
 			}
 		} else if (e.getSource().equals(this.idleSpinner)) {
-			final int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue() * 1000;
+			final int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue();
 			TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
 			( new SwingWorker<Void, Void>() {
 				public Void doInBackground() {
@@ -755,7 +755,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 				}
 			} ).execute();
-
 		}
 	}
 
