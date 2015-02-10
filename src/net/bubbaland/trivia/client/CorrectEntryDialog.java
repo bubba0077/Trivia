@@ -50,7 +50,7 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 		c.fill = GridBagConstraints.BOTH;
 		c.anchor = GridBagConstraints.CENTER;
 		c.weightx = 0.0;
-		c.weighty = 0.0;
+		c.weighty = 1.0;
 
 		// Prompt for the operator
 		c.gridx = 0;
@@ -61,6 +61,8 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 
 		c.gridx = 1;
 		c.gridy = 1;
+		c.weightx = 1.0;
+		c.weighty = 1.0;
 		this.operatorTextField = new JTextField("", 15);
 		operatorTextField.setFont(operatorTextField.getFont().deriveFont(fontSize));
 		operatorTextField.addAncestorListener(this);
