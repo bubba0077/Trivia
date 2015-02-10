@@ -6,7 +6,6 @@ import java.awt.event.WindowEvent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 public class WaitDialog extends TriviaDialogPanel {
 

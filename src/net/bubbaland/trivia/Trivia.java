@@ -3,6 +3,8 @@ package net.bubbaland.trivia;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import net.bubbaland.trivia.Answer.Agreement;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -1209,16 +1211,16 @@ public class Trivia implements Serializable {
 		}
 	}
 
-	public void agree(int queueIndex) {
-		this.getCurrentRound().agree(queueIndex);
-	}
-
-	public void disagree(int queueIndex) {
-		this.getCurrentRound().disagree(queueIndex);
+	public void changeAgreement(String user, int queueIndex, Answer.Agreement agreement) {
+		this.getCurrentRound().changeAgreement(user, queueIndex, agreement);
 	}
 
 	public int getAgreement(int queueIndex) {
 		return this.getCurrentRound().getAgreement(queueIndex);
+	}
+
+	public Agreement getAgreement(String user, int queueIndex) {
+		return this.getCurrentRound().getAgreement(user, queueIndex);
 	}
 
 	public enum Role {

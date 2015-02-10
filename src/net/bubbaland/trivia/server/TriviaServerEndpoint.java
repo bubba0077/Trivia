@@ -969,8 +969,8 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.log("New round started by " + this.user);
 				TriviaServerEndpoint.updateRoundNumber();
 				break;
-			case AGREE:
-				TriviaServerEndpoint.trivia.agree(message.getQueueIndex());
+			case CHANGE_AGREEMENT:
+				TriviaServerEndpoint.trivia.changeAgreement(user, message.getQueueIndex(), message.getAgreement());
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case CALL_IN:
@@ -990,10 +990,6 @@ public class TriviaServerEndpoint {
 						+ " closed, "
 						+ TriviaServerEndpoint.trivia.getValue(TriviaServerEndpoint.trivia.getCurrentRoundNumber(),
 								message.getqNumber()) + " points earned.");
-				TriviaServerEndpoint.updateTrivia();
-				break;
-			case DISAGREE:
-				TriviaServerEndpoint.trivia.disagree(message.getQueueIndex());
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case EDIT_QUESTION:

@@ -2,8 +2,10 @@ package net.bubbaland.trivia;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Hashtable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,49 +21,53 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Answer implements Serializable {
 
-	private static final long				serialVersionUID	= -2367986992067473980L;
+	private static final long	serialVersionUID	= -2367986992067473980L;
+
+	public enum Agreement {
+		DISAGREE, NEUTRAL, AGREE
+	};
 
 	// Place in the queue
 	@JsonProperty("queueLocation")
-	volatile private int					queueLocation;
+	volatile private int							queueLocation;
 
 	// The question number
 	@JsonProperty("qNumber")
-	volatile private int					qNumber;
+	volatile private int							qNumber;
 
 	// The answer text
 	@JsonProperty("answer")
-	final private String					answer;
+	final private String							answer;
 
 	// The confidence in the answer
 	@JsonProperty("confidence")
-	final private int						confidence;
+	final private int								confidence;
 
 	// A counter for the number of +1's
 	@JsonProperty("agreement")
-	private volatile int					agreement;
+	private volatile Hashtable<String, Agreement>	agreement;
 
 	// The timestamp of when the answer was submitted
 	@JsonProperty("timestamp")
-	final private String					timestamp;
+	final private String							timestamp;
 
 	// The user name of the answer submitter
 	@JsonProperty("submitter")
-	final private String					submitter;
+	final private String							submitter;
 
 	// The user name of the person who is calling in the answer
 	@JsonProperty("caller")
-	private volatile String					caller;
+	private volatile String							caller;
 
 	// The operator who accepted a correct answer
 	@JsonProperty("operator")
-	private volatile String					operator;
+	private volatile String							operator;
 
 	// The current status of the question
 	@JsonProperty("status")
-	private volatile Status					status;
+	private volatile Status							status;
 
-	final private static SimpleDateFormat	timeFormat			= new SimpleDateFormat("HH:mm:ss");
+	final private static SimpleDateFormat			timeFormat	= new SimpleDateFormat("HH:mm:ss");
 
 	/**
 	 * Create a new answer
@@ -94,15 +100,17 @@ public class Answer implements Serializable {
 	};
 
 	protected Answer(int queueLocation, int qNumber, String answer, String submitter, int confidence, String timestamp) {
-		this(queueLocation, qNumber, answer, confidence, 0, timestamp, submitter, "", "", Status.NOT_CALLED_IN);
+		this(queueLocation, qNumber, answer, confidence, new Hashtable<String, Agreement>(), timestamp, submitter, "",
+				"", Status.NOT_CALLED_IN);
 	}
 
 	@JsonCreator
 	private Answer(@JsonProperty("queueLocation") int queueLocation, @JsonProperty("qNumber") int qNumber,
 			@JsonProperty("answer") String answer, @JsonProperty("confidence") int confidence,
-			@JsonProperty("agreement") int agreement, @JsonProperty("timestamp") String timestamp,
-			@JsonProperty("submitter") String submitter, @JsonProperty("caller") String caller,
-			@JsonProperty("operator") String operator, @JsonProperty("status") Status status) {
+			@JsonProperty("agreement") Hashtable<String, Agreement> agreement,
+			@JsonProperty("timestamp") String timestamp, @JsonProperty("submitter") String submitter,
+			@JsonProperty("caller") String caller, @JsonProperty("operator") String operator,
+			@JsonProperty("status") Status status) {
 		this.queueLocation = queueLocation;
 		this.qNumber = qNumber;
 		this.answer = answer;
@@ -286,16 +294,21 @@ public class Answer implements Serializable {
 		this.qNumber = qNumber;
 	}
 
-	public void agree() {
-		this.agreement++;
-	}
-
-	public void disagree() {
-		this.agreement--;
+	public void changeAgreement(String user, Agreement agreement) {
+		this.agreement.put(user, agreement);
 	}
 
 	public int getAgreement() {
-		return this.agreement;
+		return Collections.frequency(this.agreement.values(), Agreement.AGREE)
+				- Collections.frequency(this.agreement.values(), Agreement.DISAGREE);
+	}
+
+	public Agreement getAgreement(String user) {
+		Agreement agreement = this.agreement.get(user);
+		if (agreement == null) {
+			agreement = Agreement.NEUTRAL;
+		}
+		return agreement;
 	}
 
 	public static class QNumberCompare implements Comparator<Answer> {

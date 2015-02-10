@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;

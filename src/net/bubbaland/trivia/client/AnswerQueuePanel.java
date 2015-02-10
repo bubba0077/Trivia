@@ -18,11 +18,12 @@ import java.awt.event.WindowEvent;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -46,6 +47,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import net.bubbaland.trivia.Answer;
+import net.bubbaland.trivia.Answer.Agreement;
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.client.TriviaFrame.QueueSort;
@@ -86,9 +88,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	}
 
 	private static Color					oddRowBackgroundColor, evenRowBackgroundColor, duplicateColor,
-			notCalledInColor, callingColor, incorrectColor, partialColor, correctColor, agreeColor;
+			notCalledInColor, callingColor, incorrectColor, partialColor, correctColor, agreeColor, disagreeColor;
 	private static int						rowHeight, timeWidth, qNumWidth, answerWidth, confidenceWidth,
-			subCallerWidth, operatorWidth, statusWidth;
+			agreementWidth, subCallerWidth, operatorWidth, statusWidth;
 	private static float					fontSize, qNumFontSize;
 	private int								maxQuestions;
 	private ArrayList<Integer>				qNumberFilter;
@@ -396,7 +398,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		// Update the queue size
 		if (this.live) {
 			this.setRoundNumber(this.client.getTrivia().getCurrentRoundNumber());
-			this.answerQueueSubPanel.resetAgreement();
+			// this.answerQueueSubPanel.resetAgreement();
 		}
 
 		final int queueSize = this.client.getTrivia().getAnswerQueueSize(this.rNumber);
@@ -467,6 +469,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		partialColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Partial.Color"), 16).intValue());
 		correctColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
 		agreeColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Agree.Color"), 16).intValue());
+		disagreeColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Disagree.Color"), 16).intValue());
 
 		/**
 		 * Sizes
@@ -478,6 +481,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		qNumWidth = Integer.parseInt(properties.getProperty("AnswerQueue.QNumber.Width"));
 		answerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Answer.Width"));
 		confidenceWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Confidence.Width"));
+		agreementWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Agreement.Width"));
 		subCallerWidth = Integer.parseInt(properties.getProperty("AnswerQueue.SubCaller.Width"));
 		operatorWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Operator.Width"));
 		statusWidth = Integer.parseInt(properties.getProperty("AnswerQueue.Status.Width"));
@@ -498,8 +502,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				headerFontSize);
 		setLabelProperties(this.answerLabel, answerWidth, headerHeight, headerColor, headerBackgroundColor,
 				headerFontSize);
-		setLabelProperties(this.confidenceLabel, confidenceWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
+		setLabelProperties(this.confidenceLabel, confidenceWidth + agreementWidth, headerHeight, headerColor,
+				headerBackgroundColor, headerFontSize);
 		setLabelProperties(this.subCallerLabel, subCallerWidth, headerHeight, headerColor, headerBackgroundColor,
 				headerFontSize);
 		setLabelProperties(this.operatorLabel, operatorWidth, headerHeight, headerColor, headerBackgroundColor,
@@ -540,11 +544,11 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		 * GUI elements that will be updated
 		 */
 		final private ArrayList<JLabel>				queuenumberLabels, timestampLabels, qNumberLabels,
-				confidenceLabels, submitterLabels, operatorLabels, callerLabels;
+				confidenceLabels, agreementLabels, submitterLabels, operatorLabels, callerLabels;
 		final private ArrayList<JComboBox<String>>	statusComboBoxes;
 		final private ArrayList<JTextArea>			answerTextAreas;
-		final private ArrayList<JToggleButton>		agreeButtons;
-		final private Hashtable<Integer, Boolean>	agreements;
+		final private ArrayList<JToggleButton>		agreeButtons, disagreeButtons;
+		final private ArrayList<ButtonGroup>		buttonGroups;
 		private final JPopupMenu					contextMenu;
 		private String								activeComboBox;
 
@@ -589,8 +593,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.timestampLabels = new ArrayList<JLabel>(0);
 			this.qNumberLabels = new ArrayList<JLabel>(0);
 			this.confidenceLabels = new ArrayList<JLabel>(0);
+			this.agreementLabels = new ArrayList<JLabel>(0);
 			this.agreeButtons = new ArrayList<JToggleButton>(0);
-			this.agreements = new Hashtable<Integer, Boolean>();
+			this.disagreeButtons = new ArrayList<JToggleButton>(0);
+			this.buttonGroups = new ArrayList<ButtonGroup>(0);
 			this.submitterLabels = new ArrayList<JLabel>(0);
 			this.operatorLabels = new ArrayList<JLabel>(0);
 			this.callerLabels = new ArrayList<JLabel>(0);
@@ -623,33 +629,28 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					final String aText = trivia.getAnswerQueueAnswer(queueIndex);
 					new ViewAnswerDialog(this.client, qNumber, qValue, qText, aText);
 					break;
-				case "Agree":
+				case "Change Agreement":
 					JToggleButton source = ( (JToggleButton) event.getSource() );
 					queueIndex = Integer.parseInt(source.getName());
-					this.agreements.put(queueIndex, true);
+					final Agreement agreement;
+					if (this.agreeButtons.get(queueIndex).isSelected()) {
+						agreement = Agreement.AGREE;
+					} else if (this.disagreeButtons.get(queueIndex).isSelected()) {
+						agreement = Agreement.DISAGREE;
+					} else {
+						agreement = Agreement.NEUTRAL;
+					}
+
 					( new SwingWorker<Void, Void>() {
 						public Void doInBackground() {
-							AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory.agree(queueIndex));
+							AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory.changeAgreement(
+									queueIndex, agreement));
 							return null;
 						}
 
 						public void done() {
-							AnswerQueueSubPanel.this.client.log("Agreed with answer #" + ( queueIndex + 1 ));
-						}
-					} ).execute();
-					break;
-				case "Disagree":
-					source = ( (JToggleButton) event.getSource() );
-					queueIndex = Integer.parseInt(source.getName());
-					this.agreements.put(queueIndex, false);
-					( new SwingWorker<Void, Void>() {
-						public Void doInBackground() {
-							AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory.disagree(queueIndex));
-							return null;
-						}
-
-						public void done() {
-							AnswerQueueSubPanel.this.client.log("Disagreed with answer #" + ( queueIndex + 1 ));
+							AnswerQueueSubPanel.this.client.log("Changed agreement on #" + ( queueIndex + 1 ) + " to "
+									+ agreement.name());
 						}
 					} ).execute();
 					break;
@@ -658,11 +659,11 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			}
 		}
 
-		public void resetAgreement() {
-			for (Integer queueIndex : this.agreements.keySet()) {
-				this.agreements.put(queueIndex, false);
-			}
-		}
+		// public void resetAgreement() {
+		// for (Integer queueIndex : this.agreements.keySet()) {
+		// this.agreements.put(queueIndex, false);
+		// }
+		// }
 
 		/*
 		 * (non-Javadoc)
@@ -823,6 +824,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.makeNewRow();
 			}
 
+			final String user = this.client.getUser();
+
 			for (int a = 0; a < queueSize; a++) {
 
 				// Get the new data from the answer queue
@@ -832,6 +835,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				final String newAnswer = this.answerQueue[a].getAnswer();
 				final int newConfidence = this.answerQueue[a].getConfidence();
 				final int newAgreement = this.answerQueue[a].getAgreement();
+				final Agreement myAgreement = this.answerQueue[a].getAgreement(user);
 				final String newSubmitter = this.answerQueue[a].getSubmitter();
 				final String newOperator = this.answerQueue[a].getOperator();
 				final String newCaller = this.answerQueue[a].getCaller();
@@ -912,26 +916,42 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					this.answerTextAreas.get(a).setBackground(bColor);
 					this.answerTextAreas.get(a).setName("" + ( newQueueNumber - 1 ));
 
-					String confidenceText = ( newAgreement == 0 ) ? newConfidence + "" : newConfidence + " (+"
-							+ newAgreement + ")";
-					this.confidenceLabels.get(a).setText(confidenceText);
+					this.confidenceLabels.get(a).setText(newConfidence + "");
 					this.confidenceLabels.get(a).setForeground(color);
 					this.confidenceLabels.get(a).getParent().setBackground(bColor);
 					this.confidenceLabels.get(a).setName("" + ( newQueueNumber - 1 ));
+
+					String agreementText = String.format("%+d", newAgreement);
+					this.agreementLabels.get(a).setText(agreementText);
+					this.agreementLabels.get(a).setForeground(color);
+					this.agreementLabels.get(a).getParent().setBackground(bColor);
+					this.agreementLabels.get(a).setName("" + ( newQueueNumber - 1 ));
+
+					switch (myAgreement) {
+						case AGREE:
+							this.agreeButtons.get(a).setSelected(true);
+							this.agreeButtons.get(a).setBackground(agreeColor);
+							this.disagreeButtons.get(a).setBackground(null);
+							break;
+						case DISAGREE:
+							this.disagreeButtons.get(a).setSelected(true);
+							this.agreeButtons.get(a).setBackground(null);
+							this.disagreeButtons.get(a).setBackground(disagreeColor);
+							break;
+						case NEUTRAL:
+							this.buttonGroups.get(a).clearSelection();
+							this.agreeButtons.get(a).setBackground(null);
+							this.disagreeButtons.get(a).setBackground(null);
+							break;
+					}
 
 					this.agreeButtons.get(a).setForeground(color);
 					this.agreeButtons.get(a).getParent().setBackground(bColor);
 					this.agreeButtons.get(a).setName("" + ( newQueueNumber - 1 ));
 
-					if (this.agreements.get(newQueueNumber - 1)) {
-						this.agreeButtons.get(a).setSelected(true);
-						this.agreeButtons.get(a).setBackground(agreeColor);
-						this.agreeButtons.get(a).setActionCommand("Disagree");
-					} else {
-						this.agreeButtons.get(a).setSelected(false);
-						this.agreeButtons.get(a).setBackground(null);
-						this.agreeButtons.get(a).setActionCommand("Agree");
-					}
+					this.disagreeButtons.get(a).setForeground(color);
+					this.disagreeButtons.get(a).getParent().setBackground(bColor);
+					this.disagreeButtons.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					this.submitterLabels.get(a).setText(newSubmitter);
 					this.submitterLabels.get(a).setForeground(color);
@@ -975,7 +995,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.answerTextAreas.get(a).getParent().setVisible(false);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(false);
 						this.confidenceLabels.get(a).setVisible(false);
+						this.agreementLabels.get(a).setVisible(false);
 						this.agreeButtons.get(a).setVisible(false);
+						this.disagreeButtons.get(a).setVisible(false);
 						this.submitterLabels.get(a).setVisible(false);
 						this.operatorLabels.get(a).setVisible(false);
 						this.callerLabels.get(a).setVisible(false);
@@ -987,7 +1009,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.answerTextAreas.get(a).getParent().setVisible(false);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(false);
 						this.confidenceLabels.get(a).getParent().setVisible(false);
+						this.agreementLabels.get(a).getParent().setVisible(false);
 						this.agreeButtons.get(a).getParent().setVisible(false);
+						this.disagreeButtons.get(a).getParent().setVisible(false);
 						this.submitterLabels.get(a).getParent().setVisible(false);
 						this.operatorLabels.get(a).getParent().setVisible(false);
 						this.callerLabels.get(a).getParent().setVisible(false);
@@ -1001,12 +1025,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.answerTextAreas.get(a).getParent().setVisible(true);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(true);
 						this.confidenceLabels.get(a).setVisible(true);
+						this.agreementLabels.get(a).setVisible(true);
 						if (AnswerQueuePanel.this.live) {
 							this.agreeButtons.get(a).setVisible(true);
+							this.disagreeButtons.get(a).setVisible(true);
 						} else {
 							this.agreeButtons.get(a).setVisible(false);
+							this.disagreeButtons.get(a).setVisible(false);
 						}
-						this.agreeButtons.get(a).getParent().setVisible(true);
 						this.submitterLabels.get(a).setVisible(true);
 						this.operatorLabels.get(a).setVisible(true);
 						this.callerLabels.get(a).setVisible(true);
@@ -1018,6 +1044,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.answerTextAreas.get(a).getParent().setVisible(true);
 						this.answerTextAreas.get(a).getParent().getParent().setVisible(true);
 						this.confidenceLabels.get(a).getParent().setVisible(true);
+						this.agreementLabels.get(a).getParent().setVisible(true);
+						this.agreeButtons.get(a).getParent().setVisible(true);
+						this.disagreeButtons.get(a).getParent().setVisible(true);
 						this.submitterLabels.get(a).getParent().setVisible(true);
 						this.operatorLabels.get(a).getParent().setVisible(true);
 						this.callerLabels.get(a).getParent().setVisible(true);
@@ -1035,7 +1064,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.qNumberLabels.get(a).setVisible(false);
 				this.answerTextAreas.get(a).setVisible(false);
 				this.confidenceLabels.get(a).setVisible(false);
+				this.agreementLabels.get(a).setVisible(false);
 				this.agreeButtons.get(a).setVisible(false);
+				this.disagreeButtons.get(a).setVisible(false);
 				this.submitterLabels.get(a).setVisible(false);
 				this.operatorLabels.get(a).setVisible(false);
 				this.callerLabels.get(a).setVisible(false);
@@ -1047,7 +1078,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.answerTextAreas.get(a).getParent().setVisible(false);
 				this.answerTextAreas.get(a).getParent().getParent().setVisible(false);
 				this.confidenceLabels.get(a).getParent().setVisible(false);
+				this.agreementLabels.get(a).getParent().setVisible(false);
 				this.agreeButtons.get(a).getParent().setVisible(false);
+				this.disagreeButtons.get(a).getParent().setVisible(false);
 				this.submitterLabels.get(a).getParent().setVisible(false);
 				this.operatorLabels.get(a).getParent().setVisible(false);
 				this.callerLabels.get(a).getParent().setVisible(false);
@@ -1069,8 +1102,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				setLabelProperties(this.qNumberLabels.get(a), qNumWidth, rowHeight, null, null, qNumFontSize);
 				setTextAreaProperties(this.answerTextAreas.get(a), answerWidth, rowHeight, null, null, fontSize);
 				setLabelProperties(this.confidenceLabels.get(a), confidenceWidth, rowHeight / 2, null, null, fontSize);
-				setButtonProperties(this.agreeButtons.get(a), confidenceWidth, rowHeight / 2, null, fontSize);
-				setPanelProperties((JPanel) this.agreeButtons.get(a).getParent(), confidenceWidth, rowHeight / 2, null);
+				setLabelProperties(this.agreementLabels.get(a), confidenceWidth, rowHeight / 2, null, null, fontSize);
+				setButtonProperties(this.agreeButtons.get(a), agreementWidth, rowHeight / 2, null, fontSize);
+				setButtonProperties(this.disagreeButtons.get(a), agreementWidth, rowHeight / 2, null, fontSize);
+				setPanelProperties((JPanel) this.agreeButtons.get(a).getParent(), agreementWidth, rowHeight / 2, null);
+				setPanelProperties((JPanel) this.disagreeButtons.get(a).getParent(), agreementWidth, rowHeight / 2,
+						null);
 				setLabelProperties(this.submitterLabels.get(a), subCallerWidth, rowHeight / 2, null, null, fontSize);
 				setLabelProperties(this.operatorLabels.get(a), operatorWidth, rowHeight, null, null, fontSize);
 				setLabelProperties(this.callerLabels.get(a), subCallerWidth, rowHeight / 2, null, null, fontSize);
@@ -1134,47 +1171,86 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 			constraints.gridx = 3;
 			constraints.gridy = 2 * a + 1;
-			final JPanel buttonPanel = new JPanel(new GridBagLayout());
-			buttonPanel.setPreferredSize(new Dimension(confidenceWidth, rowHeight / 2));
-			buttonPanel.setMinimumSize(new Dimension(confidenceWidth, rowHeight / 2));
+			this.agreementLabels.add(this.enclosedLabel("", confidenceWidth, rowHeight / 2, null, null, constraints,
+					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.agreementLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
+
+			this.buttonGroups.add(new ButtonGroup() {
+				private static final long	serialVersionUID	= 1L;
+
+				public void setSelected(ButtonModel model, boolean selected) {
+					if (selected) {
+						super.setSelected(model, selected);
+					} else {
+						clearSelection();
+					}
+				}
+			});
+
+			constraints.gridx = 4;
+			constraints.gridy = 2 * a;
+			JPanel buttonPanel = new JPanel(new GridBagLayout());
+			buttonPanel.setPreferredSize(new Dimension(confidenceWidth / 2, rowHeight / 2));
+			buttonPanel.setMinimumSize(new Dimension(confidenceWidth / 2, rowHeight / 2));
 			this.add(buttonPanel, constraints);
 			this.agreeButtons.add(new JToggleButton("+1"));
-			this.agreeButtons.get(a).setToolTipText("Concur with this answer");
-			this.agreeButtons.get(a).setPreferredSize(new Dimension(confidenceWidth, rowHeight / 2));
-			this.agreeButtons.get(a).setMinimumSize(new Dimension(confidenceWidth, rowHeight / 2));
+			this.agreeButtons.get(a).setToolTipText("Agree with this answer");
+			this.agreeButtons.get(a).setPreferredSize(new Dimension(agreementWidth / 2, rowHeight / 2));
+			this.agreeButtons.get(a).setMinimumSize(new Dimension(agreementWidth / 2, rowHeight / 2));
 			this.agreeButtons.get(a).setBorder(BorderFactory.createEmptyBorder());
 			this.agreeButtons.get(a).setMargin(new Insets(0, 0, 0, 0));
-			this.agreeButtons.get(a).setActionCommand("Agree");
+			this.agreeButtons.get(a).setActionCommand("Change Agreement");
 			if (AnswerQueuePanel.this.live) {
 				this.agreeButtons.get(a).addActionListener(this);
 			} else {
 				this.agreeButtons.get(a).setEnabled(false);
 			}
 			buttonPanel.add(this.agreeButtons.get(a), buttonConstraints);
-			this.agreements.put(a, false);
-			constraints.gridheight = 2;
+			this.buttonGroups.get(a).add(this.agreeButtons.get(a));
+
+			constraints.gridx = 4;
+			constraints.gridy = 2 * a + 1;
+			buttonPanel = new JPanel(new GridBagLayout());
+			buttonPanel.setPreferredSize(new Dimension(agreementWidth / 2, rowHeight / 2));
+			buttonPanel.setMinimumSize(new Dimension(agreementWidth / 2, rowHeight / 2));
+			this.add(buttonPanel, constraints);
+
+			this.disagreeButtons.add(new JToggleButton("-1"));
+			this.disagreeButtons.get(a).setToolTipText("Disagree with this answer");
+			this.disagreeButtons.get(a).setPreferredSize(new Dimension(confidenceWidth / 2, rowHeight / 2));
+			this.disagreeButtons.get(a).setMinimumSize(new Dimension(confidenceWidth / 2, rowHeight / 2));
+			this.disagreeButtons.get(a).setBorder(BorderFactory.createEmptyBorder());
+			this.disagreeButtons.get(a).setMargin(new Insets(0, 0, 0, 0));
+			this.disagreeButtons.get(a).setActionCommand("Change Agreement");
+			if (AnswerQueuePanel.this.live) {
+				this.disagreeButtons.get(a).addActionListener(this);
+			} else {
+				this.disagreeButtons.get(a).setEnabled(false);
+			}
+			this.buttonGroups.get(a).add(this.disagreeButtons.get(a));
+			buttonPanel.add(this.disagreeButtons.get(a), buttonConstraints);
 
 			constraints.gridheight = 1;
-			constraints.gridx = 4;
+			constraints.gridx = 5;
 			constraints.gridy = 2 * a;
 			this.submitterLabels.add(this.enclosedLabel("", subCallerWidth, rowHeight / 2, null, null, constraints,
 					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.submitterLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
-			constraints.gridx = 4;
+			constraints.gridx = 5;
 			constraints.gridy = 2 * a + 1;
 			this.callerLabels.add(this.enclosedLabel("", subCallerWidth, rowHeight / 2, null, null, constraints,
 					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.callerLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 			constraints.gridheight = 2;
 
-			constraints.gridx = 5;
+			constraints.gridx = 6;
 			constraints.gridy = 2 * a;
 			this.operatorLabels.add(this.enclosedLabel("", operatorWidth, rowHeight, null, null, constraints, fontSize,
 					SwingConstants.CENTER, SwingConstants.CENTER));
 			this.operatorLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
-			constraints.gridx = 6;
+			constraints.gridx = 7;
 			constraints.gridy = 2 * a;
 			final JPanel panel = new JPanel(new GridBagLayout());
 			panel.setPreferredSize(new Dimension(statusWidth, rowHeight));

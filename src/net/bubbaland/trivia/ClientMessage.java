@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 
+import net.bubbaland.trivia.Answer.Agreement;
 import net.bubbaland.trivia.Trivia.Role;
 
 public class ClientMessage {
@@ -27,7 +28,7 @@ public class ClientMessage {
 	protected static JsonFactory	jsonFactory	= new JsonFactory();
 
 	public static enum ClientCommand {
-		CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, AGREE, DISAGREE, SET_IDLE_TIME, FETCH_TRIVIA
+		CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA
 	};
 
 	private ClientCommand	command;
@@ -35,6 +36,7 @@ public class ClientMessage {
 	private String			user, qText, aText, operator, saveFilename, discrepancyText;
 	private boolean			correct, speed;
 	private Role			role;
+	private Agreement		agreement;
 
 	private ClientMessage() {
 
@@ -134,6 +136,10 @@ public class ClientMessage {
 	 */
 	public Role getRole() {
 		return this.role;
+	}
+
+	public Agreement getAgreement() {
+		return this.agreement;
 	}
 
 	/**
@@ -496,15 +502,10 @@ public class ClientMessage {
 			return message;
 		}
 
-		public static ClientMessage agree(int queueIndex) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.AGREE);
+		public static ClientMessage changeAgreement(int queueIndex, Answer.Agreement agreement) {
+			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CHANGE_AGREEMENT);
 			message.queueIndex = queueIndex;
-			return message;
-		}
-
-		public static ClientMessage disagree(int queueIndex) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.DISAGREE);
-			message.queueIndex = queueIndex;
+			message.agreement = agreement;
 			return message;
 		}
 

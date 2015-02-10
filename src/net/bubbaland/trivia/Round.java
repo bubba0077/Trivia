@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import net.bubbaland.trivia.Answer.Agreement;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -886,21 +888,17 @@ public class Round implements Serializable {
 		this.version++;
 	}
 
-	public synchronized void agree(int queueIndex) {
-		final Answer answer = this.answerQueue.get(queueIndex);
-		answer.agree();
-		this.version++;
-	}
-
-	public synchronized void disagree(int queueIndex) {
-		final Answer answer = this.answerQueue.get(queueIndex);
-		answer.disagree();
+	public synchronized void changeAgreement(String user, int queueIndex, Answer.Agreement agreement) {
+		this.answerQueue.get(queueIndex).changeAgreement(user, agreement);
 		this.version++;
 	}
 
 	public int getAgreement(int queueIndex) {
-		final Answer answer = this.answerQueue.get(queueIndex);
-		return answer.getAgreement();
+		return this.answerQueue.get(queueIndex).getAgreement();
+	}
+
+	public Agreement getAgreement(String user, int queueIndex) {
+		return this.answerQueue.get(queueIndex).getAgreement(user);
 	}
 
 	public Question[] getQuestions() {
