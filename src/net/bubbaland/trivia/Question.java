@@ -106,7 +106,9 @@ public class Question implements Serializable {
 	 *            TODO
 	 */
 	public void close(String answer) {
-		this.answer = answer;
+		if (!answer.equals("")) {
+			this.answer = answer;
+		}
 		this.isOpen = false;
 	}
 
