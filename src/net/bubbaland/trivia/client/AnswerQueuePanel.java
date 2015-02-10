@@ -1195,11 +1195,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.add(buttonPanel, constraints);
 			this.agreeButtons.add(new JToggleButton("+1"));
 			this.agreeButtons.get(a).setToolTipText("Agree with this answer");
-			this.agreeButtons.get(a).setPreferredSize(new Dimension(agreementWidth / 2, rowHeight / 2));
-			this.agreeButtons.get(a).setMinimumSize(new Dimension(agreementWidth / 2, rowHeight / 2));
 			this.agreeButtons.get(a).setBorder(BorderFactory.createEmptyBorder());
 			this.agreeButtons.get(a).setMargin(new Insets(0, 0, 0, 0));
 			this.agreeButtons.get(a).setActionCommand("Change Agreement");
+			setButtonProperties(this.agreeButtons.get(a), agreementWidth, rowHeight / 2, null, fontSize);
 			if (AnswerQueuePanel.this.live) {
 				this.agreeButtons.get(a).addActionListener(this);
 			} else {
@@ -1217,11 +1216,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 			this.disagreeButtons.add(new JToggleButton("-1"));
 			this.disagreeButtons.get(a).setToolTipText("Disagree with this answer");
-			this.disagreeButtons.get(a).setPreferredSize(new Dimension(confidenceWidth / 2, rowHeight / 2));
-			this.disagreeButtons.get(a).setMinimumSize(new Dimension(confidenceWidth / 2, rowHeight / 2));
 			this.disagreeButtons.get(a).setBorder(BorderFactory.createEmptyBorder());
 			this.disagreeButtons.get(a).setMargin(new Insets(0, 0, 0, 0));
 			this.disagreeButtons.get(a).setActionCommand("Change Agreement");
+			setButtonProperties(this.disagreeButtons.get(a), agreementWidth, rowHeight / 2, null, fontSize);
 			if (AnswerQueuePanel.this.live) {
 				this.disagreeButtons.get(a).addActionListener(this);
 			} else {
