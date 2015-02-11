@@ -54,9 +54,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 	private static final long			serialVersionUID	= -3639363131235278472L;
 
-	// // The Hide Closed menu item
-	// private volatile boolean hideClosed, hideDuplicates, mute;
-
 	// Sort menu items
 	final private JRadioButtonMenuItem	researcherMenuItem, callerMenuItem, typistMenuItem;
 	final private JCheckBoxMenuItem		hideClosedMenuItem;
@@ -78,8 +75,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final static private TriviaAudio	NEW_ANSWER_PLAYER	= new TriviaAudio(TriviaGUI.NEW_ANSWER_SOUND_FILENAME);
 
 	final private DnDTabbedPane			tabbedPane;
-
-	// Sort method for the queue
 
 	/**
 	 * Creates a new frame based on a drag-drop event from the tabbed pane in another frame. This is done when a tab is

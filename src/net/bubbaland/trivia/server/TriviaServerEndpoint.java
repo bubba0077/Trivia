@@ -1,7 +1,5 @@
 package net.bubbaland.trivia.server;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
@@ -18,8 +16,11 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Timer;
 
-import javax.swing.Timer;
+import java.util.TimerTask;
+
+// import javax.swing.Timer;
 import javax.websocket.DeploymentException;
 import javax.websocket.EncodeException;
 import javax.websocket.EndpointConfig;
@@ -196,15 +197,16 @@ public class TriviaServerEndpoint {
 		isRunning = false;
 
 		// Create timer that will make save files
-		new Timer(SAVE_FREQUENCY, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			public void run() {
 				TriviaServerEndpoint.saveState();
 			}
-		}).start();
+		}, SAVE_FREQUENCY, SAVE_FREQUENCY);
 
 		// Create timer that will check standings
-		new Timer(STANDINGS_FREQUENCY, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		timer.schedule(new TimerTask() {
+			public void run() {
 				for (int r = 1; r < TriviaServerEndpoint.trivia.getCurrentRoundNumber(); r++) {
 					// For each past round, try to get announced standings if we don't have them
 					if (!TriviaServerEndpoint.trivia.isAnnounced(r)) {
@@ -215,14 +217,13 @@ public class TriviaServerEndpoint {
 					}
 				}
 			}
-		}).start();
+		}, STANDINGS_FREQUENCY, STANDINGS_FREQUENCY);
 
-		// Create timer that will update user lists with idle users
-		new Timer(IDLE_FREQUENCY, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		timer.schedule(new TimerTask() {
+			public void run() {
 				updateUsers();
 			}
-		}).start();
+		}, IDLE_FREQUENCY, IDLE_FREQUENCY);
 	}
 
 	// Array of the last round versions sent to this client
