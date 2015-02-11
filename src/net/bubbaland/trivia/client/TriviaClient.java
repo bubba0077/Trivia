@@ -232,12 +232,6 @@ public class TriviaClient implements Runnable {
 				// this.gui.log("Updating data");
 				break;
 			case UPDATE_TRIVIA:
-				try {
-					Thread.sleep(4000);
-				} catch (InterruptedException exception) {
-					// TODO Auto-generated catch block
-					exception.printStackTrace();
-				}
 				this.trivia = message.getTrivia();
 				// this.gui.log("Trivia received");
 				break;

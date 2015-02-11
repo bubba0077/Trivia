@@ -37,6 +37,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -96,11 +97,15 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	final private JPanel					spacer;
 	final private JScrollPane				scrollPane;
 	private final JPopupMenu				contextMenu;
-	private int								rNumber;
-	private boolean							live;
+	private int								rNumber, nBlinks;
+	private boolean							live, blink;
+	final private Timer						blinkTimer;
 
 	/** The workflow queue sub panel */
 	final private AnswerQueueSubPanel		answerQueueSubPanel;
+
+	private Color							headerColor;
+	private Color							headerBackgroundColor;
 
 	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame, int rNumber) {
 		this(client, frame);
@@ -121,6 +126,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		super(client, frame);
 		this.live = true;
 		this.rNumber = client.getTrivia().getCurrentRoundNumber();
+		this.blinkTimer = new Timer(500, this);
+		this.blinkTimer.setActionCommand("Blink");
+		this.blink = false;
+		this.nBlinks = 0;
 
 		/**
 		 * Build context menu
@@ -288,6 +297,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	}
 
+	private void blink() {
+		this.blinkTimer.start();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -313,6 +326,19 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.gui.resetNumberFilter();
 				this.gui.resetTextFilter();
 				break;
+			case "Blink":
+				this.nBlinks++;
+				if (this.blink) {
+					this.answerLabel.setBackground(headerColor);
+					this.answerLabel.setForeground(headerBackgroundColor);
+				} else {
+					this.answerLabel.setBackground(headerBackgroundColor);
+					this.answerLabel.setForeground(headerColor);
+				}
+				if (this.nBlinks % 10 == 0) {
+					this.blinkTimer.stop();
+				}
+
 			default:
 				break;
 		}
@@ -431,10 +457,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		/**
 		 * Colors
 		 */
-		final Color headerColor = new Color(
-				new BigInteger(properties.getProperty("AnswerQueue.Header.Color"), 16).intValue());
-		final Color headerBackgroundColor = new Color(new BigInteger(
-				properties.getProperty("AnswerQueue.Header.BackgroundColor"), 16).intValue());
+		headerColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Header.Color"), 16).intValue());
+		headerBackgroundColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Header.BackgroundColor"),
+				16).intValue());
 		oddRowBackgroundColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.OddRow.BackgroundColor"),
 				16).intValue());
 		evenRowBackgroundColor = new Color(new BigInteger(
@@ -784,6 +809,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 			if (AnswerQueuePanel.this.live && this.answerQueue.length != newAnswerQueue.length) {
 				AnswerQueuePanel.this.frame.playNewAnswerSound();
+				AnswerQueuePanel.this.blink();
 			}
 
 			this.answerQueue = newAnswerQueue;
@@ -1162,8 +1188,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			constraints.gridx = 4;
 			constraints.gridy = 2 * a;
 			JPanel buttonPanel = new JPanel(new GridBagLayout());
-			buttonPanel.setPreferredSize(new Dimension(confidenceWidth / 2, rowHeight / 2));
-			buttonPanel.setMinimumSize(new Dimension(confidenceWidth / 2, rowHeight / 2));
+			buttonPanel.setPreferredSize(new Dimension(agreementWidth, rowHeight / 2));
+			buttonPanel.setMinimumSize(new Dimension(agreementWidth, rowHeight / 2));
 			this.add(buttonPanel, constraints);
 			this.agreeButtons.add(new JToggleButton("+1"));
 			this.agreeButtons.get(a).setToolTipText("Agree with this answer");
@@ -1182,8 +1208,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			constraints.gridx = 4;
 			constraints.gridy = 2 * a + 1;
 			buttonPanel = new JPanel(new GridBagLayout());
-			buttonPanel.setPreferredSize(new Dimension(agreementWidth / 2, rowHeight / 2));
-			buttonPanel.setMinimumSize(new Dimension(agreementWidth / 2, rowHeight / 2));
+			buttonPanel.setPreferredSize(new Dimension(agreementWidth, rowHeight / 2));
+			buttonPanel.setMinimumSize(new Dimension(agreementWidth, rowHeight / 2));
 			this.add(buttonPanel, constraints);
 
 			this.disagreeButtons.add(new JToggleButton("-1"));
