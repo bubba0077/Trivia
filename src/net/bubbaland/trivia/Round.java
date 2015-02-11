@@ -824,7 +824,7 @@ public class Round implements Serializable {
 		for (Answer answerCheck : this.answerQueue) {
 			if (answerCheck.getQueueLocation() != queueIndex + 1 && answerCheck.getQNumber() == qNumber
 					&& answerCheck.getAnswer().replaceAll("\\s+", "").equalsIgnoreCase(aText)
-					&& answerCheck.getStatus() == Status.DUPLICATE) {
+					&& answerCheck.getStatus() != Status.DUPLICATE) {
 				answerCheck.changeAgreement(answer.getSubmitter(), Agreement.AGREE);
 			}
 		}
@@ -1021,7 +1021,8 @@ public class Round implements Serializable {
 		this.version++;
 		for (Answer answerCheck : this.answerQueue) {
 			if (answerCheck.getQueueLocation() != queueIndex + 1 && answerCheck.getQNumber() == qNumber
-					&& answerCheck.getAnswer().replaceAll("\\s+", "").equalsIgnoreCase(answer.replaceAll("\\s+", ""))) {
+					&& answerCheck.getAnswer().replaceAll("\\s+", "").equalsIgnoreCase(answer.replaceAll("\\s+", ""))
+					&& answerCheck.getStatus() != Status.DUPLICATE) {
 				this.markDuplicate(queueIndex);
 				System.out.println("Automatically marked answer #" + ( queueIndex + 1 ) + " as duplicate.");
 			}
