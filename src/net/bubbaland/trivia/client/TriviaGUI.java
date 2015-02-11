@@ -54,7 +54,7 @@ public class TriviaGUI implements WindowListener {
 	// File name to store window positions
 	final static private String						SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String						SETTINGS_VERSION			= "7";
+	final static private String						SETTINGS_VERSION			= "9";
 	// Calendar to track date
 	final static private Calendar					TIME						= Calendar.getInstance();
 	// Format for log timestamps
@@ -64,7 +64,7 @@ public class TriviaGUI implements WindowListener {
 	final static protected String					NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
 
 	// The Hide Closed menu item
-	private volatile boolean						hideClosed, hideDuplicates, mute;
+	// private volatile boolean hideClosed, hideDuplicates, mute;
 
 	/**
 	 * Setup properties
@@ -155,6 +155,8 @@ public class TriviaGUI implements WindowListener {
 	private WaitDialog								waitDialog;
 	private ArrayList<Integer>						qNumberFilter;
 	private Pattern									filterText;
+	private volatile TriviaGUI.QueueSort			queueSort;
+
 
 	public TriviaGUI(final String serverURL) {
 		// Initialize list to hold open windows
@@ -216,7 +218,7 @@ public class TriviaGUI implements WindowListener {
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
-					TriviaGUI.this.updateGUI();
+					TriviaGUI.this.updateGUI(true);
 				}
 			});
 		} catch (InvocationTargetException | InterruptedException exception) {
@@ -385,11 +387,11 @@ public class TriviaGUI implements WindowListener {
 	/**
 	 * Update all of the child windows.
 	 */
-	public void updateGUI() {
+	public void updateGUI(final boolean force) {
 		for (final TriviaFrame frame : TriviaGUI.this.windowList) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					frame.updateGUI(false);
+					frame.updateGUI(force);
 				}
 			});
 		}
@@ -579,40 +581,40 @@ public class TriviaGUI implements WindowListener {
 	}
 
 	public boolean isHideClosed() {
-		return hideClosed;
+		return PROPERTIES.getProperty("HideClosed").equals("true");
 	}
 
 	void setHideClosed(boolean hideClosed) {
-		this.hideClosed = hideClosed;
-		this.updateGUI();
+		PROPERTIES.setProperty("HideClosed", hideClosed + "");
+		this.updateGUI(true);
 	}
 
 	public boolean isHideDuplicates() {
-		return hideDuplicates;
+		return PROPERTIES.getProperty("HideDuplicates").equals("true");
 	}
 
 	void setHideDuplicates(boolean hideDuplicates) {
-		this.hideDuplicates = hideDuplicates;
-		this.updateGUI();
+		PROPERTIES.setProperty("HideClosed", hideDuplicates + "");
+		this.updateGUI(true);
 	}
 
 	public boolean isMute() {
-		return mute;
+		return PROPERTIES.getProperty("Mute").equals("true");
 	}
 
 	void setMute(boolean mute) {
-		this.mute = mute;
-		this.updateGUI();
+		PROPERTIES.setProperty("Mute", mute + "");
+		this.updateGUI(true);
 	}
 
 	void resetNumberFilter() {
 		this.qNumberFilter = new ArrayList<Integer>(0);
-		this.updateGUI();
+		this.updateGUI(true);
 	}
 
 	void resetTextFilter() {
 		this.filterText = Pattern.compile("");
-		this.updateGUI();
+		this.updateGUI(true);
 	}
 
 	public Pattern getFilterText() {
@@ -629,6 +631,14 @@ public class TriviaGUI implements WindowListener {
 
 	void showTextFilterDialog() {
 		new TextFilterDialog();
+	}
+
+	public TriviaGUI.QueueSort getQueueSort() {
+		return queueSort;
+	}
+
+	public void setQueueSort(TriviaGUI.QueueSort queueSort) {
+		this.queueSort = queueSort;
 	}
 
 	private class NumberFilterDialog extends TriviaDialogPanel {
@@ -686,7 +696,7 @@ public class TriviaGUI implements WindowListener {
 						TriviaGUI.this.qNumberFilter.add(Integer.parseInt(checkbox.getName()));
 					}
 				}
-				TriviaGUI.this.updateGUI();
+				TriviaGUI.this.updateGUI(true);
 			}
 		}
 	}
@@ -730,8 +740,13 @@ public class TriviaGUI implements WindowListener {
 			final int option = ( (Integer) this.dialog.getValue() ).intValue();
 			if (option == JOptionPane.OK_OPTION) {
 				TriviaGUI.this.filterText = Pattern.compile(this.textField.getText());
-				TriviaGUI.this.updateGUI();
+				TriviaGUI.this.updateGUI(true);
 			}
 		}
+	}
+
+	// Queue sort option
+	public static enum QueueSort {
+		TIMESTAMP_ASCENDING, QNUMBER_ASCENDING, STATUS_ASCENDING, TIMESTAMP_DESCENDING, QNUMBER_DESCENDING, STATUS_DESCENDING
 	}
 }

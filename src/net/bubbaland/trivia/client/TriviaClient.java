@@ -19,7 +19,6 @@ import org.glassfish.tyrus.client.ClientManager;
 
 import net.bubbaland.trivia.ClientMessage;
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
-import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.ServerMessage;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.Trivia.Role;
@@ -199,26 +198,6 @@ public class TriviaClient implements Runnable {
 		this.role = role;
 	}
 
-	public synchronized void updateRound(int currentRound) {
-		this.trivia.setCurrentRound(currentRound);
-		this.gui.updateGUI();
-	}
-
-	public synchronized void updateTrivia(Round[] newRounds) {
-		this.trivia.updateRounds(newRounds);
-		this.gui.updateGUI();
-	}
-
-	public synchronized void updateActiveUsers(Hashtable<String, Role> newActiveUserList) {
-		this.activeUserHash = newActiveUserList;
-		this.gui.updateGUI();
-	}
-
-	public synchronized void updateIdleUsers(Hashtable<String, Role> newIdleUserList) {
-		this.idleUserHash = newIdleUserList;
-		this.gui.updateGUI();
-	}
-
 	public void sendMessage(ClientMessage message) {
 		if (SwingUtilities.isEventDispatchThread()) {
 			System.out.println("Trying to send message from Event Dispatch Thread!");
@@ -247,6 +226,7 @@ public class TriviaClient implements Runnable {
 	@OnMessage
 	public void onMessage(ServerMessage message) {
 		ServerMessage.ServerCommand command = message.getCommand();
+		System.out.println(command.name());
 		switch (command) {
 			case UPDATE_ROUND:
 				this.trivia.updateRounds(message.getRounds());
@@ -271,7 +251,7 @@ public class TriviaClient implements Runnable {
 				System.out.println("Unknown command received: " + command);
 				break;
 		}
-		this.gui.updateGUI();
+		this.gui.updateGUI(false);
 	}
 
 	@OnClose

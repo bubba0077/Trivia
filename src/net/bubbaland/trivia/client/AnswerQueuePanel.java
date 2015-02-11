@@ -45,7 +45,7 @@ import net.bubbaland.trivia.Answer;
 import net.bubbaland.trivia.Answer.Agreement;
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.client.TriviaFrame.QueueSort;
+import net.bubbaland.trivia.client.TriviaGUI.QueueSort;
 
 /**
  * A panel that shows the submitted answers for the current round.
@@ -636,12 +636,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			}
 		}
 
-		// public void resetAgreement() {
-		// for (Integer queueIndex : this.agreements.keySet()) {
-		// this.agreements.put(queueIndex, false);
-		// }
-		// }
-
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -748,9 +742,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			// Get the current Trivia data object
 			final Trivia trivia = this.client.getTrivia();
 
-			final boolean hideClosed = AnswerQueuePanel.this.frame.hideClosed();
-			final boolean hideDuplicates = AnswerQueuePanel.this.frame.hideDuplicates();
-			final QueueSort sortMethod = AnswerQueuePanel.this.frame.getQueueSort();
+			final boolean hideClosed = AnswerQueuePanel.this.gui.isHideClosed();
+			final boolean hideDuplicates = AnswerQueuePanel.this.gui.isHideDuplicates();
+			final QueueSort sortMethod = AnswerQueuePanel.this.gui.getQueueSort();
 
 			// Get the queue data
 			final Answer[] newAnswerQueue = trivia.getAnswerQueue(AnswerQueuePanel.this.rNumber);

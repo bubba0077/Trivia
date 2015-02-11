@@ -78,8 +78,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final static private TriviaAudio	NEW_ANSWER_PLAYER	= new TriviaAudio(TriviaGUI.NEW_ANSWER_SOUND_FILENAME);
 
 	final private DnDTabbedPane			tabbedPane;
+
 	// Sort method for the queue
-	private volatile QueueSort			queueSort;
 
 	/**
 	 * Creates a new frame based on a drag-drop event from the tabbed pane in another frame. This is done when a tab is
@@ -266,6 +266,17 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.hideDuplicatesMenuItem.addActionListener(this);
 			filter.add(this.hideDuplicatesMenuItem);
 
+			menuItem = new JMenuItem("Filter by Q#", KeyEvent.VK_N);
+			menuItem.setActionCommand("Filter by Number");
+			menuItem.addActionListener(this);
+			menu.add(menuItem);
+			filter.add(menuItem);
+
+			menuItem = new JMenuItem("Filter by Text", KeyEvent.VK_T);
+			menuItem.setActionCommand("Filter by Text");
+			menuItem.addActionListener(this);
+			menu.add(menuItem);
+			filter.add(menuItem);
 
 			final JMenu sortMenu = new JMenu("Sort by...");
 			sortMenu.setMnemonic(KeyEvent.VK_S);
@@ -281,7 +292,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.sortTimestampAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
 			this.sortTimestampAscendingMenuItem.setActionCommand("Sort Timestamp Ascending");
 			this.sortTimestampAscendingMenuItem.addActionListener(this);
-			if (this.queueSort == QueueSort.TIMESTAMP_ASCENDING) {
+			if (this.gui.getQueueSort() == TriviaGUI.QueueSort.TIMESTAMP_ASCENDING) {
 				this.sortTimestampAscendingMenuItem.setSelected(true);
 			}
 			sortOptions.add(this.sortTimestampAscendingMenuItem);
@@ -293,7 +304,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.sortTimestampDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
 			this.sortTimestampDescendingMenuItem.setActionCommand("Sort Timestamp Descending");
 			this.sortTimestampDescendingMenuItem.addActionListener(this);
-			if (this.queueSort == QueueSort.TIMESTAMP_DESCENDING) {
+			if (this.gui.getQueueSort() == TriviaGUI.QueueSort.TIMESTAMP_DESCENDING) {
 				this.sortTimestampDescendingMenuItem.setSelected(true);
 			}
 			sortOptions.add(this.sortTimestampDescendingMenuItem);
@@ -309,7 +320,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.sortQNumberAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
 			this.sortQNumberAscendingMenuItem.setActionCommand("Sort Question Number Ascending");
 			this.sortQNumberAscendingMenuItem.addActionListener(this);
-			if (this.queueSort == QueueSort.QNUMBER_ASCENDING) {
+			if (this.gui.getQueueSort() == TriviaGUI.QueueSort.QNUMBER_ASCENDING) {
 				this.sortQNumberAscendingMenuItem.setSelected(true);
 			}
 			sortOptions.add(this.sortQNumberAscendingMenuItem);
@@ -321,7 +332,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.sortQNumberDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
 			this.sortQNumberDescendingMenuItem.setActionCommand("Sort Question Number Descending");
 			this.sortQNumberDescendingMenuItem.addActionListener(this);
-			if (this.queueSort == QueueSort.QNUMBER_DESCENDING) {
+			if (this.gui.getQueueSort() == TriviaGUI.QueueSort.QNUMBER_DESCENDING) {
 				this.sortQNumberDescendingMenuItem.setSelected(true);
 			}
 			sortOptions.add(this.sortQNumberDescendingMenuItem);
@@ -337,7 +348,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.sortStatusAscendingMenuItem.setMnemonic(KeyEvent.VK_A);
 			this.sortStatusAscendingMenuItem.setActionCommand("Sort Status Ascending");
 			this.sortStatusAscendingMenuItem.addActionListener(this);
-			if (this.queueSort == QueueSort.STATUS_ASCENDING) {
+			if (this.gui.getQueueSort() == TriviaGUI.QueueSort.STATUS_ASCENDING) {
 				this.sortStatusAscendingMenuItem.setSelected(true);
 			}
 			sortOptions.add(this.sortStatusAscendingMenuItem);
@@ -349,7 +360,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.sortStatusDescendingMenuItem.setMnemonic(KeyEvent.VK_D);
 			this.sortStatusDescendingMenuItem.setActionCommand("Sort Status Descending");
 			this.sortStatusDescendingMenuItem.addActionListener(this);
-			if (this.queueSort == QueueSort.STATUS_DESCENDING) {
+			if (this.gui.getQueueSort() == TriviaGUI.QueueSort.STATUS_DESCENDING) {
 				this.sortStatusDescendingMenuItem.setSelected(true);
 			}
 			sortOptions.add(this.sortStatusDescendingMenuItem);
@@ -469,8 +480,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				this.updateGUI(true);
 				break;
 			case "Filter by Number":
+				this.gui.showNumberFilterDialog();
 				break;
 			case "Filter by Text":
+				this.gui.showTextFilterDialog();
 				break;
 			case "Mute":
 				this.gui.setMute(( (JCheckBoxMenuItem) e.getSource() ).isSelected());
@@ -478,32 +491,32 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 			case "Sort Timestamp Ascending":
 				// Triggered by Timestamp Sort menu item
-				this.setSort(QueueSort.TIMESTAMP_ASCENDING);
+				this.setSort(TriviaGUI.QueueSort.TIMESTAMP_ASCENDING);
 				this.updateGUI(true);
 				break;
 			case "Sort Question Number Ascending":
 				// Triggered by Question Number Sort menu item
-				this.setSort(QueueSort.QNUMBER_ASCENDING);
+				this.setSort(TriviaGUI.QueueSort.QNUMBER_ASCENDING);
 				this.updateGUI(true);
 				break;
 			case "Sort Status Ascending":
 				// Triggered by Status Sort menu item
-				this.setSort(QueueSort.STATUS_ASCENDING);
+				this.setSort(TriviaGUI.QueueSort.STATUS_ASCENDING);
 				this.updateGUI(true);
 				break;
 			case "Sort Timestamp Descending":
 				// Triggered by Timestamp Sort menu item
-				this.setSort(QueueSort.TIMESTAMP_DESCENDING);
+				this.setSort(TriviaGUI.QueueSort.TIMESTAMP_DESCENDING);
 				this.updateGUI(true);
 				break;
 			case "Sort Question Number Descending":
 				// Triggered by Question Number Sort menu item
-				this.setSort(QueueSort.QNUMBER_DESCENDING);
+				this.setSort(TriviaGUI.QueueSort.QNUMBER_DESCENDING);
 				this.updateGUI(true);
 				break;
 			case "Sort Status Descending":
 				// Triggered by Status Sort menu item
-				this.setSort(QueueSort.STATUS_DESCENDING);
+				this.setSort(TriviaGUI.QueueSort.STATUS_DESCENDING);
 				this.updateGUI(true);
 				break;
 			case "Caller":
@@ -594,8 +607,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * 
 	 * @return The sort method
 	 */
-	public QueueSort getQueueSort() {
-		return this.queueSort;
+	public TriviaGUI.QueueSort getQueueSort() {
+		return this.gui.getQueueSort();
 	}
 
 	/**
@@ -642,25 +655,25 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		// Load queue sort method
 		switch (this.loadProperty(id, "QueueSort")) {
 			case "Sort Timestamp Ascending":
-				this.setSort(QueueSort.TIMESTAMP_ASCENDING);
+				this.setSort(TriviaGUI.QueueSort.TIMESTAMP_ASCENDING);
 				break;
 			case "Sort Question Number Ascending":
-				this.setSort(QueueSort.QNUMBER_ASCENDING);
+				this.setSort(TriviaGUI.QueueSort.QNUMBER_ASCENDING);
 				break;
 			case "Sort Status Ascending":
-				this.setSort(QueueSort.STATUS_ASCENDING);
+				this.setSort(TriviaGUI.QueueSort.STATUS_ASCENDING);
 				break;
 			case "Sort Timestamp Descending":
-				this.setSort(QueueSort.TIMESTAMP_DESCENDING);
+				this.setSort(TriviaGUI.QueueSort.TIMESTAMP_DESCENDING);
 				break;
 			case "Sort Question Number Descending":
-				this.setSort(QueueSort.QNUMBER_DESCENDING);
+				this.setSort(TriviaGUI.QueueSort.QNUMBER_DESCENDING);
 				break;
 			case "Sort Status Descending":
-				this.setSort(QueueSort.STATUS_DESCENDING);
+				this.setSort(TriviaGUI.QueueSort.STATUS_DESCENDING);
 				break;
 			default:
-				this.setSort(QueueSort.TIMESTAMP_ASCENDING);
+				this.setSort(TriviaGUI.QueueSort.TIMESTAMP_ASCENDING);
 				break;
 		}
 
@@ -707,8 +720,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * @param newSort
 	 *            The new sort method
 	 */
-	public void setSort(QueueSort newSort) {
-		this.queueSort = newSort;
+	public void setSort(TriviaGUI.QueueSort newSort) {
+		this.gui.setQueueSort(newSort);
 		switch (newSort) {
 			case TIMESTAMP_ASCENDING:
 				this.sortTimestampAscendingMenuItem.setSelected(true);
@@ -776,6 +789,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	public void updateGUI(boolean forceUpdate) {
+		System.out.println(this.getName() + " update");
+
 		// Update role
 		final Role role = this.client.getRole();
 		while (this.researcherMenuItem == null | this.callerMenuItem == null | this.typistMenuItem == null) {
@@ -843,11 +858,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	private String loadProperty(String id, String propertyName) {
 		return TriviaGUI.PROPERTIES
 				.getProperty(id + "." + propertyName, TriviaGUI.PROPERTIES.getProperty(propertyName));
-	}
-
-	// Queue sort option
-	public static enum QueueSort {
-		TIMESTAMP_ASCENDING, QNUMBER_ASCENDING, STATUS_ASCENDING, TIMESTAMP_DESCENDING, QNUMBER_DESCENDING, STATUS_DESCENDING
 	}
 
 	/**

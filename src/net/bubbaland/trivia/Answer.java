@@ -358,7 +358,7 @@ public class Answer implements Serializable {
 	}
 
 	// Valid statuses
-	protected static enum Status {
+	public static enum Status {
 		DUPLICATE, NOT_CALLED_IN, CALLING, INCORRECT, PARTIAL, CORRECT
 	}
 
