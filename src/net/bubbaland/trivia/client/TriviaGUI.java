@@ -2,6 +2,7 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
@@ -21,8 +22,12 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Pattern;
 
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -146,8 +151,10 @@ public class TriviaGUI implements WindowListener {
 
 	// final private String serverURL;
 
-	private TriviaClient							client;
+	final private TriviaClient						client;
 	private WaitDialog								waitDialog;
+	private ArrayList<Integer>						qNumberFilter;
+	private Pattern									filterText;
 
 	public TriviaGUI(final String serverURL) {
 		// Initialize list to hold open windows
@@ -156,6 +163,10 @@ public class TriviaGUI implements WindowListener {
 
 		this.client = new TriviaClient(serverURL, this);
 		this.client.run();
+
+		this.filterText = Pattern.compile("");
+		this.qNumberFilter = new ArrayList<Integer>();
+
 
 		loadProperties();
 
@@ -571,7 +582,7 @@ public class TriviaGUI implements WindowListener {
 		return hideClosed;
 	}
 
-	public void setHideClosed(boolean hideClosed) {
+	void setHideClosed(boolean hideClosed) {
 		this.hideClosed = hideClosed;
 		this.updateGUI();
 	}
@@ -580,7 +591,7 @@ public class TriviaGUI implements WindowListener {
 		return hideDuplicates;
 	}
 
-	public void setHideDuplicates(boolean hideDuplicates) {
+	void setHideDuplicates(boolean hideDuplicates) {
 		this.hideDuplicates = hideDuplicates;
 		this.updateGUI();
 	}
@@ -589,8 +600,138 @@ public class TriviaGUI implements WindowListener {
 		return mute;
 	}
 
-	public void setMute(boolean mute) {
+	void setMute(boolean mute) {
 		this.mute = mute;
 		this.updateGUI();
+	}
+
+	void resetNumberFilter() {
+		this.qNumberFilter = new ArrayList<Integer>(0);
+		this.updateGUI();
+	}
+
+	void resetTextFilter() {
+		this.filterText = Pattern.compile("");
+		this.updateGUI();
+	}
+
+	public Pattern getFilterText() {
+		return this.filterText;
+	}
+
+	public ArrayList<Integer> getFilterNumbers() {
+		return this.qNumberFilter;
+	}
+
+	void showNumberFilterDialog() {
+		new NumberFilterDialog();
+	}
+
+	void showTextFilterDialog() {
+		new TextFilterDialog();
+	}
+
+	private class NumberFilterDialog extends TriviaDialogPanel {
+
+		private static final long	serialVersionUID	= -3726819964211373465L;
+
+		final private JCheckBox[]	checkboxes;
+		final private static int	nPerColumn			= 5;
+
+		public NumberFilterDialog() {
+			super();
+
+			final int maxQuestions = TriviaGUI.this.client.getTrivia().getMaxQuestions();
+
+			final GridBagConstraints constraints = new GridBagConstraints();
+			constraints.fill = GridBagConstraints.BOTH;
+			constraints.anchor = GridBagConstraints.CENTER;
+			constraints.weightx = 1.0;
+			constraints.weighty = 1.0;
+
+			JLabel label = new JLabel("Select Questions to Hide", JLabel.CENTER);
+			constraints.gridwidth = (int) Math.ceil(( maxQuestions + 0.0 ) / nPerColumn);
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			this.add(label, constraints);
+			constraints.gridwidth = 1;
+
+			checkboxes = new JCheckBox[maxQuestions];
+			final ArrayList<Integer> filterNumbers = TriviaGUI.this.getFilterNumbers();
+			for (int i = 0; i < checkboxes.length; i++) {
+				checkboxes[i] = new JCheckBox("Q" + ( i + 1 ));
+				checkboxes[i].setName(( i + 1 ) + "");
+				checkboxes[i].setSelected(filterNumbers.contains(i + 1));
+				constraints.gridx = i / nPerColumn;
+				constraints.gridy = 1 + i % nPerColumn;
+				this.add(checkboxes[i], constraints);
+			}
+
+			// Display the dialog box
+			this.dialog = new TriviaDialog(null, "Set Answer Filter", this, JOptionPane.PLAIN_MESSAGE,
+					JOptionPane.OK_CANCEL_OPTION);
+			this.dialog.setName("Answer Filter");
+			this.dialog.setVisible(true);
+		}
+
+		@Override
+		public void windowClosed(WindowEvent event) {
+			super.windowClosed(event);
+			// If the OK button was pressed, add the proposed answer to the queue
+			final int option = ( (Integer) this.dialog.getValue() ).intValue();
+			if (option == JOptionPane.OK_OPTION) {
+				TriviaGUI.this.qNumberFilter = new ArrayList<Integer>(0);
+				for (JCheckBox checkbox : this.checkboxes) {
+					if (checkbox.isSelected()) {
+						TriviaGUI.this.qNumberFilter.add(Integer.parseInt(checkbox.getName()));
+					}
+				}
+				TriviaGUI.this.updateGUI();
+			}
+		}
+	}
+
+	private class TextFilterDialog extends TriviaDialogPanel {
+
+		private static final long	serialVersionUID	= -3726819964211373465L;
+
+		final private JTextField	textField;
+
+		public TextFilterDialog() {
+			super();
+
+			final GridBagConstraints constraints = new GridBagConstraints();
+			constraints.fill = GridBagConstraints.BOTH;
+			constraints.anchor = GridBagConstraints.CENTER;
+
+			JLabel label = new JLabel("Filter answers by", JLabel.LEFT);
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			constraints.weightx = 1.0;
+			constraints.weighty = 0.5;
+			this.add(label, constraints);
+
+			constraints.gridx = 0;
+			constraints.gridy = 1;
+			this.textField = new JTextField();
+			this.add(this.textField, constraints);
+
+			// Display the dialog box
+			this.dialog = new TriviaDialog(null, "Set Answer Filter", this, JOptionPane.PLAIN_MESSAGE,
+					JOptionPane.OK_CANCEL_OPTION);
+			this.dialog.setName("Filter Answers by Text (regex allowed)");
+			this.dialog.setVisible(true);
+		}
+
+		@Override
+		public void windowClosed(WindowEvent event) {
+			super.windowClosed(event);
+			// If the OK button was pressed, add the proposed answer to the queue
+			final int option = ( (Integer) this.dialog.getValue() ).intValue();
+			if (option == JOptionPane.OK_OPTION) {
+				TriviaGUI.this.filterText = Pattern.compile(this.textField.getText());
+				TriviaGUI.this.updateGUI();
+			}
+		}
 	}
 }

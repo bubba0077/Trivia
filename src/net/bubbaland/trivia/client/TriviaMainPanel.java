@@ -15,6 +15,7 @@ public abstract class TriviaMainPanel extends TriviaPanel {
 
 	final protected TriviaClient	client;
 	protected TriviaFrame			frame;
+	final protected TriviaGUI		gui;
 
 	/**
 	 * Instantiates a new Trivia Panel
@@ -27,6 +28,7 @@ public abstract class TriviaMainPanel extends TriviaPanel {
 	public TriviaMainPanel(TriviaClient triviaGUI, TriviaFrame frame) {
 		super(new GridBagLayout());
 		this.client = triviaGUI;
+		this.gui = frame.getGUI();
 		this.frame = frame;
 	}
 

@@ -168,6 +168,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 			final JMenu roleMenu = new JMenu("Change Role...");
 			roleMenu.setMnemonic(KeyEvent.VK_R);
+			menu.add(roleMenu);
 
 			final ButtonGroup roleOptions = new ButtonGroup();
 			this.researcherMenuItem = new JRadioButtonMenuItem("Researcher");
@@ -196,7 +197,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			roleOptions.add(this.typistMenuItem);
 			roleMenu.add(this.typistMenuItem);
 
-			menu.add(roleMenu);
 
 			JMenuItem menuItem = new JMenuItem("Change Name", KeyEvent.VK_N);
 			menuItem.setDisplayedMnemonicIndex(7);
@@ -233,6 +233,20 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menu.setMnemonic(KeyEvent.VK_Q);
 			menuBar.add(menu);
 
+			this.muteMenuItem = new JCheckBoxMenuItem("Mute new answer notification");
+			this.muteMenuItem.setMnemonic(KeyEvent.VK_M);
+			this.muteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, Toolkit.getDefaultToolkit()
+					.getMenuShortcutKeyMask()));
+			this.muteMenuItem.setSelected(this.gui.isMute());
+			this.muteMenuItem.setActionCommand("Mute");
+			this.muteMenuItem.addActionListener(this);
+			menu.add(this.muteMenuItem);
+
+
+			final JMenu filter = new JMenu("Filter...");
+			filter.setMnemonic(KeyEvent.VK_F);
+			menu.add(filter);
+
 			this.hideClosedMenuItem = new JCheckBoxMenuItem("Hide answers to closed questions");
 			this.hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
 			this.hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, Toolkit.getDefaultToolkit()
@@ -240,7 +254,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.hideClosedMenuItem.setSelected(this.gui.isHideClosed());
 			this.hideClosedMenuItem.setActionCommand("Hide Closed");
 			this.hideClosedMenuItem.addActionListener(this);
-			menu.add(this.hideClosedMenuItem);
+			filter.add(this.hideClosedMenuItem);
 
 			this.hideDuplicatesMenuItem = new JCheckBoxMenuItem("Hide duplicate answers");
 			this.hideDuplicatesMenuItem.setMnemonic(KeyEvent.VK_D);
@@ -250,16 +264,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.hideDuplicatesMenuItem.setSelected(this.gui.isHideDuplicates());
 			this.hideDuplicatesMenuItem.setActionCommand("Hide Duplicates");
 			this.hideDuplicatesMenuItem.addActionListener(this);
-			menu.add(this.hideDuplicatesMenuItem);
+			filter.add(this.hideDuplicatesMenuItem);
 
-			this.muteMenuItem = new JCheckBoxMenuItem("Mute new answer notification");
-			this.muteMenuItem.setMnemonic(KeyEvent.VK_M);
-			this.muteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, Toolkit.getDefaultToolkit()
-					.getMenuShortcutKeyMask()));
-			this.muteMenuItem.setSelected(this.gui.isMute());
-			this.muteMenuItem.setActionCommand("Mute");
-			this.muteMenuItem.addActionListener(this);
-			menu.add(this.muteMenuItem);
 
 			final JMenu sortMenu = new JMenu("Sort by...");
 			sortMenu.setMnemonic(KeyEvent.VK_S);
@@ -353,7 +359,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 			// Make Info Menu
 			final JMenu infoMenu = new JMenu("External");
-			infoMenu.setMnemonic(KeyEvent.VK_I);
+			infoMenu.setMnemonic(KeyEvent.VK_E);
 			menuItem = new JMenuItem("KVSC");
 			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit()
 					.getMenuShortcutKeyMask()));
@@ -461,6 +467,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				// Triggered by change to Hide Duplicate menu item
 				this.gui.setHideDuplicates(( (JCheckBoxMenuItem) e.getSource() ).isSelected());
 				this.updateGUI(true);
+				break;
+			case "Filter by Number":
+				break;
+			case "Filter by Text":
 				break;
 			case "Mute":
 				this.gui.setMute(( (JCheckBoxMenuItem) e.getSource() ).isSelected());
@@ -923,6 +933,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		public Component getComponent() {
 			return this;
 		}
+	}
+
+	public TriviaGUI getGUI() {
+		return this.gui;
 	}
 
 
