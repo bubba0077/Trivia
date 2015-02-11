@@ -71,6 +71,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 																		AnswerQueuePanel.class
 																				.getResource("images/downArrow.png"));
 
+	private static int						nBlinks;
+	private static int						blinkSpeed;
+
 	// Set up layout constraints
 	private static final GridBagConstraints	buttonConstraints	= new GridBagConstraints();
 	static {
@@ -97,7 +100,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	final private JPanel					spacer;
 	final private JScrollPane				scrollPane;
 	private final JPopupMenu				contextMenu;
-	private int								rNumber, nBlinks;
+	private int								rNumber, blinkCount;
 	private boolean							live, blink;
 	final private Timer						blinkTimer;
 
@@ -126,10 +129,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		super(client, frame);
 		this.live = true;
 		this.rNumber = client.getTrivia().getCurrentRoundNumber();
-		this.blinkTimer = new Timer(500, this);
+		this.blinkTimer = new Timer(blinkSpeed, this);
 		this.blinkTimer.setActionCommand("Blink");
 		this.blink = false;
-		this.nBlinks = 0;
+		this.blinkCount = 0;
 
 		/**
 		 * Build context menu
@@ -327,18 +330,37 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.gui.resetTextFilter();
 				break;
 			case "Blink":
-				this.nBlinks++;
+				this.blinkCount++;
+				Color headerColor,
+				headerBackgroundColor;
 				if (this.blink) {
-					this.answerLabel.setBackground(headerColor);
-					this.answerLabel.setForeground(headerBackgroundColor);
+					headerColor = this.headerColor;
+					headerBackgroundColor = this.headerBackgroundColor;
+					this.blink = false;
 				} else {
-					this.answerLabel.setBackground(headerBackgroundColor);
-					this.answerLabel.setForeground(headerColor);
+					headerColor = this.headerBackgroundColor;
+					headerBackgroundColor = this.headerColor;
+					this.blink = true;
 				}
-				if (this.nBlinks % 10 == 0) {
+				if (this.blinkCount % ( nBlinks * 2 ) == 0) {
 					this.blinkTimer.stop();
 				}
-
+				this.timestampLabel.getParent().setBackground(headerBackgroundColor);
+				this.timestampLabel.setForeground(headerColor);
+				this.qNumberLabel.getParent().setBackground(headerBackgroundColor);
+				this.qNumberLabel.setForeground(headerColor);
+				this.answerLabel.getParent().setBackground(headerBackgroundColor);
+				this.answerLabel.setForeground(headerColor);
+				this.confidenceLabel.getParent().setBackground(headerBackgroundColor);
+				this.confidenceLabel.setForeground(headerColor);
+				this.subCallerLabel.getParent().setBackground(headerBackgroundColor);
+				this.subCallerLabel.setForeground(headerColor);
+				this.operatorLabel.getParent().setBackground(headerBackgroundColor);
+				this.operatorLabel.setForeground(headerColor);
+				this.statusLabel.getParent().setBackground(headerBackgroundColor);
+				this.statusLabel.setForeground(headerColor);
+				this.queueSizeLabel.getParent().setBackground(headerBackgroundColor);
+				this.queueSizeLabel.setForeground(headerColor);
 			default:
 				break;
 		}
@@ -495,6 +517,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		final float headerFontSize = Float.parseFloat(properties.getProperty("AnswerQueue.Header.FontSize"));
 		qNumFontSize = Float.parseFloat(properties.getProperty("AnswerQueue.QNumber.FontSize"));
 		fontSize = Float.parseFloat(properties.getProperty("AnswerQueue.FontSize"));
+
+		/**
+		 * 
+		 */
+		AnswerQueuePanel.nBlinks = Integer.parseInt(properties.getProperty("AnswerQueue.Blink.N"));
+		AnswerQueuePanel.blinkSpeed = Integer.parseInt(properties.getProperty("AnswerQueue.Blink.Speed"));
+		this.blinkTimer.setInitialDelay(blinkSpeed);
+		this.blinkTimer.setDelay(blinkSpeed);
 
 		/** The number of open questions to show at one time */
 		final int answersShow = Integer.parseInt(properties.getProperty("AnswerQueue.AnswersShow"));
