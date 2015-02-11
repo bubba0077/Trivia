@@ -228,6 +228,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		this.scrollPane = new JScrollPane(scrollPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		this.scrollPane.getVerticalScrollBar().setUnitIncrement(5);
 		this.add(this.scrollPane, constraints);
 
 		constraints.gridx = 0;
