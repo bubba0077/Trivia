@@ -198,7 +198,6 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				// Open question
 				( new SwingWorker<Void, Void>() {
 					public Void doInBackground() {
-						System.out.println("doing");
 						NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
 								NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue,
 								qText, null, null, false, null));

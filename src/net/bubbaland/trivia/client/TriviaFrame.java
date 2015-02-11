@@ -710,8 +710,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	public void log(String message) {
 		// Display message in status bar
 		this.statusBar.setText(message);
-		// Print message to console
-		// System.out.println("LOG: " + message);
 	}
 
 	/**
@@ -789,12 +787,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	public void updateGUI(boolean forceUpdate) {
-		System.out.println(this.getName() + " update");
-
 		// Update role
 		final Role role = this.client.getRole();
 		while (this.researcherMenuItem == null | this.callerMenuItem == null | this.typistMenuItem == null) {
-			System.out.println("Awaiting menu items");
+			// System.out.println("Awaiting menu items");
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException exception) {
@@ -815,8 +811,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 
 		// Propagate update to tabs
-		while (this.tabbedPane.getTabNames() == null) {
-			System.out.println("Awaiting tabbed pane");
+		while (this.tabbedPane == null) {
+			// System.out.println("Awaiting tabbed pane");
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException exception) {

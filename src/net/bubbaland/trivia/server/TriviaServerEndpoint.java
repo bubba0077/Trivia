@@ -647,7 +647,7 @@ public class TriviaServerEndpoint {
 			TriviaServerEndpoint.log("Saved state to " + filename);
 
 		} catch (final ParserConfigurationException | TransformerException e) {
-			System.out.println("Couldn't save data to file " + filename);
+			log("Couldn't save data to file " + filename);
 		}
 
 		if (trivia.isAnnounced(1)) {
@@ -663,7 +663,7 @@ public class TriviaServerEndpoint {
 				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved place chart to " + filename);
 			} catch (final IOException exception) {
-				System.out.println("Couldn't save place chart to file " + filename);
+				log("Couldn't save place chart to file " + filename);
 			}
 
 			// Save score by round chart
@@ -678,7 +678,7 @@ public class TriviaServerEndpoint {
 				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved score by round chart to " + filename);
 			} catch (final IOException exception) {
-				System.out.println("Couldn't save score by round chart to file " + filename);
+				log("Couldn't save score by round chart to file " + filename);
 			}
 
 			// Save cumulative score chart
@@ -693,7 +693,7 @@ public class TriviaServerEndpoint {
 				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved cumulative score chart to " + filename);
 			} catch (final IOException exception) {
-				System.out.println("Couldn't save cumulative score chart to file " + filename);
+				log("Couldn't save cumulative score chart to file " + filename);
 			}
 
 			// Save team comparison chart
@@ -708,7 +708,7 @@ public class TriviaServerEndpoint {
 				ChartUtilities.saveChartAsPNG(file, chart, CHART_WIDTH, CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved team comparison chart to " + filename);
 			} catch (final IOException exception) {
-				System.out.println("Couldn't save team comparison chart to file " + filename);
+				log("Couldn't save team comparison chart to file " + filename);
 			}
 
 			// Save place chart
@@ -719,7 +719,7 @@ public class TriviaServerEndpoint {
 						CHART_WIDTH, CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved place chart to " + filename);
 			} catch (final IOException exception) {
-				System.out.println("Couldn't save place chart to file " + filename);
+				log("Couldn't save place chart to file " + filename);
 			}
 
 			// Save score by round chart
@@ -731,7 +731,7 @@ public class TriviaServerEndpoint {
 						CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved score by round chart to " + filename);
 			} catch (final IOException exception) {
-				System.out.println("Couldn't save score by round chart to file " + filename);
+				log("Couldn't save score by round chart to file " + filename);
 			}
 
 			// Save cumulative score chart
@@ -743,7 +743,7 @@ public class TriviaServerEndpoint {
 						CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved cumulative score chart to " + filename);
 			} catch (final IOException exception) {
-				System.out.println("Couldn't save cumulative score chart to file " + filename);
+				log("Couldn't save cumulative score chart to file " + filename);
 			}
 
 			// Save team comparison chart
@@ -755,7 +755,7 @@ public class TriviaServerEndpoint {
 						CHART_HEIGHT);
 				TriviaServerEndpoint.log("Saved team comparison chart to " + filename);
 			} catch (final IOException exception) {
-				System.out.println("Couldn't save team comparison chart to file " + filename);
+				log("Couldn't save team comparison chart to file " + filename);
 			}
 
 
@@ -808,13 +808,13 @@ public class TriviaServerEndpoint {
 
 		} catch (final HttpStatusException e) {
 			// The file doesn't exist yet
-			System.out.println("Standings for round " + rNumber + " not available yet.");
+			// log("Standings for round " + rNumber + " not available yet.");
 			return null;
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
-		System.out.println("Standings for round " + rNumber + " parsed.");
+		log("Standings for round " + rNumber + " parsed.");
 		return standingsList.toArray(new ScoreEntry[standingsList.size()]);
 	}
 
@@ -1081,7 +1081,7 @@ public class TriviaServerEndpoint {
 				break;
 			case SET_IDLE_TIME:
 				this.timeToIdle = message.getTimeToIdle();
-				System.out.println(this.user + " time to idle set to " + this.timeToIdle);
+				log(this.user + " time to idle set to " + this.timeToIdle);
 				break;
 			case SET_ROLE:
 				this.user = message.getUser();

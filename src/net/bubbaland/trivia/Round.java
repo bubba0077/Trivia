@@ -1024,7 +1024,7 @@ public class Round implements Serializable {
 					&& answerCheck.getAnswer().replaceAll("\\s+", "").equalsIgnoreCase(answer.replaceAll("\\s+", ""))
 					&& answerCheck.getStatus() != Status.DUPLICATE) {
 				this.markDuplicate(queueIndex);
-				System.out.println("Automatically marked answer #" + ( queueIndex + 1 ) + " as duplicate.");
+				// System.out.println("Automatically marked answer #" + ( queueIndex + 1 ) + " as duplicate.");
 				return;
 			}
 		}

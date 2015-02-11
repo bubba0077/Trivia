@@ -54,7 +54,7 @@ public class TriviaGUI implements WindowListener {
 	// File name to store window positions
 	final static private String						SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String						SETTINGS_VERSION			= "9";
+	final static private String						SETTINGS_VERSION			= "10";
 	// Calendar to track date
 	final static private Calendar					TIME						= Calendar.getInstance();
 	// Format for log timestamps
@@ -189,11 +189,7 @@ public class TriviaGUI implements WindowListener {
 			this.client.setUser(user);
 		}
 
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				TriviaGUI.this.waitDialog = new WaitDialog(TriviaGUI.this);
-			}
-		});
+		this.waitDialog = new WaitDialog(TriviaGUI.this);
 
 		while (this.client.getTrivia() == null) {
 			// log("Awaiting trivia data...");

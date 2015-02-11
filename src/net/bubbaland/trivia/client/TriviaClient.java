@@ -212,7 +212,7 @@ public class TriviaClient implements Runnable {
 
 	@OnOpen
 	public void onOpen(final Session session, EndpointConfig config) {
-		System.out.println("Connected to trivia server (" + this.serverURL + ").");
+		this.gui.log("Connected to trivia server (" + this.serverURL + ").");
 		this.session = session;
 		this.sendMessage(ClientMessageFactory.setIdleTime(this.timeToIdle));
 		this.sendMessage(ClientMessageFactory.fetchTrivia());
@@ -226,13 +226,18 @@ public class TriviaClient implements Runnable {
 	@OnMessage
 	public void onMessage(ServerMessage message) {
 		ServerMessage.ServerCommand command = message.getCommand();
-		System.out.println(command.name());
 		switch (command) {
 			case UPDATE_ROUND:
 				this.trivia.updateRounds(message.getRounds());
 				// this.gui.log("Updating data");
 				break;
 			case UPDATE_TRIVIA:
+				try {
+					Thread.sleep(4000);
+				} catch (InterruptedException exception) {
+					// TODO Auto-generated catch block
+					exception.printStackTrace();
+				}
 				this.trivia = message.getTrivia();
 				// this.gui.log("Trivia received");
 				break;
