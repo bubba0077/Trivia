@@ -54,8 +54,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 	private static final long			serialVersionUID	= -3639363131235278472L;
 
-	// The Hide Closed menu item
-	private volatile boolean			hideClosed, hideDuplicates, mute;
+	// // The Hide Closed menu item
+	// private volatile boolean hideClosed, hideDuplicates, mute;
 
 	// Sort menu items
 	final private JRadioButtonMenuItem	researcherMenuItem, callerMenuItem, typistMenuItem;
@@ -237,7 +237,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.hideClosedMenuItem.setMnemonic(KeyEvent.VK_H);
 			this.hideClosedMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, Toolkit.getDefaultToolkit()
 					.getMenuShortcutKeyMask()));
-			this.hideClosedMenuItem.setSelected(this.hideClosed);
+			this.hideClosedMenuItem.setSelected(this.gui.isHideClosed());
 			this.hideClosedMenuItem.setActionCommand("Hide Closed");
 			this.hideClosedMenuItem.addActionListener(this);
 			menu.add(this.hideClosedMenuItem);
@@ -247,7 +247,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.hideDuplicatesMenuItem.setDisplayedMnemonicIndex(5);
 			this.hideDuplicatesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit
 					.getDefaultToolkit().getMenuShortcutKeyMask()));
-			this.hideDuplicatesMenuItem.setSelected(this.hideDuplicates);
+			this.hideDuplicatesMenuItem.setSelected(this.gui.isHideDuplicates());
 			this.hideDuplicatesMenuItem.setActionCommand("Hide Duplicates");
 			this.hideDuplicatesMenuItem.addActionListener(this);
 			menu.add(this.hideDuplicatesMenuItem);
@@ -256,7 +256,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.muteMenuItem.setMnemonic(KeyEvent.VK_M);
 			this.muteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, Toolkit.getDefaultToolkit()
 					.getMenuShortcutKeyMask()));
-			this.muteMenuItem.setSelected(this.mute);
+			this.muteMenuItem.setSelected(this.gui.isMute());
 			this.muteMenuItem.setActionCommand("Mute");
 			this.muteMenuItem.addActionListener(this);
 			menu.add(this.muteMenuItem);
@@ -454,16 +454,16 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 			case "Hide Closed":
 				// Triggered by change to Hide Closed menu item
-				this.hideClosed = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
+				this.gui.setHideClosed(( (JCheckBoxMenuItem) e.getSource() ).isSelected());
 				this.updateGUI(true);
 				break;
 			case "Hide Duplicates":
-				// Triggered by change to Hide Closed menu item
-				this.hideDuplicates = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
+				// Triggered by change to Hide Duplicate menu item
+				this.gui.setHideDuplicates(( (JCheckBoxMenuItem) e.getSource() ).isSelected());
 				this.updateGUI(true);
 				break;
 			case "Mute":
-				this.mute = ( (JCheckBoxMenuItem) e.getSource() ).isSelected();
+				this.gui.setMute(( (JCheckBoxMenuItem) e.getSource() ).isSelected());
 				this.updateGUI(true);
 				break;
 			case "Sort Timestamp Ascending":
@@ -603,7 +603,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * @return Whether answers to closed questions should be hidden
 	 */
 	public boolean hideClosed() {
-		return this.hideClosed;
+		return this.gui.isHideClosed();
 	}
 
 	/**
@@ -612,7 +612,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * @return Whether duplicate answers should be hidden
 	 */
 	public boolean hideDuplicates() {
-		return this.hideDuplicates;
+		return this.gui.isHideDuplicates();
 	}
 
 	/**
@@ -622,12 +622,12 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		final String id = this.getTitle();
 
 		// Load hide options
-		this.hideClosed = Boolean.parseBoolean(this.loadProperty(id, "HideClosed"));
-		this.hideClosedMenuItem.setSelected(this.hideClosed);
-		this.hideDuplicates = Boolean.parseBoolean(this.loadProperty(id, "HideDuplicates"));
-		this.hideDuplicatesMenuItem.setSelected(this.hideClosed);
-		this.mute = Boolean.parseBoolean(this.loadProperty(id, "Mute"));
-		this.muteMenuItem.setSelected(this.mute);
+		this.gui.setHideClosed(Boolean.parseBoolean(this.loadProperty(id, "HideClosed")));
+		this.hideClosedMenuItem.setSelected(this.gui.isHideClosed());
+		this.gui.setHideDuplicates(Boolean.parseBoolean(this.loadProperty(id, "HideDuplicates")));
+		this.hideDuplicatesMenuItem.setSelected(this.gui.isHideClosed());
+		this.gui.setMute(Boolean.parseBoolean(this.loadProperty(id, "Mute")));
+		this.muteMenuItem.setSelected(this.gui.isMute());
 
 		// Load queue sort method
 		switch (this.loadProperty(id, "QueueSort")) {
@@ -760,7 +760,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	public void playNewAnswerSound() {
-		if (!this.mute) {
+		if (!this.gui.isMute()) {
 			NEW_ANSWER_PLAYER.play();
 		}
 	}
@@ -811,8 +811,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 */
 	protected void saveProperties() {
 		final String id = this.getTitle();
-		TriviaGUI.PROPERTIES.setProperty(id + "." + "HideClosed", this.hideClosed + "");
-		TriviaGUI.PROPERTIES.setProperty(id + "." + "HideDuplicates", this.hideDuplicates + "");
+		TriviaGUI.PROPERTIES.setProperty(id + "." + "HideClosed", this.gui.isHideClosed() + "");
+		TriviaGUI.PROPERTIES.setProperty(id + "." + "HideDuplicates", this.gui.isHideDuplicates() + "");
 		final int height = this.statusBar.getPreferredSize().getSize().height;
 		final float fontSize = this.statusBar.getFont().getSize2D();
 		TriviaGUI.PROPERTIES.setProperty(id + "." + "StatusBar.Height", height + "");

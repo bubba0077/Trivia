@@ -58,6 +58,9 @@ public class TriviaGUI implements WindowListener {
 	//
 	final static protected String					NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
 
+	// The Hide Closed menu item
+	private volatile boolean						hideClosed, hideDuplicates, mute;
+
 	/**
 	 * Setup properties
 	 */
@@ -562,5 +565,32 @@ public class TriviaGUI implements WindowListener {
 			default:
 				return cardinal + "th";
 		}
+	}
+
+	public boolean isHideClosed() {
+		return hideClosed;
+	}
+
+	public void setHideClosed(boolean hideClosed) {
+		this.hideClosed = hideClosed;
+		this.updateGUI();
+	}
+
+	public boolean isHideDuplicates() {
+		return hideDuplicates;
+	}
+
+	public void setHideDuplicates(boolean hideDuplicates) {
+		this.hideDuplicates = hideDuplicates;
+		this.updateGUI();
+	}
+
+	public boolean isMute() {
+		return mute;
+	}
+
+	public void setMute(boolean mute) {
+		this.mute = mute;
+		this.updateGUI();
 	}
 }
