@@ -77,7 +77,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 	final static private TriviaAudio	NEW_ANSWER_PLAYER	= new TriviaAudio(TriviaGUI.NEW_ANSWER_SOUND_FILENAME);
 
-	final private DnDTabbedPane			book;
+	final private DnDTabbedPane			tabbedPane;
 	// Sort method for the queue
 	private volatile QueueSort			queueSort;
 
@@ -92,11 +92,12 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 */
 	public TriviaFrame(TriviaClient client, TriviaGUI gui, DropTargetDropEvent a_event, Point location) {
 		this(client, gui);
-		this.book.convertTab(this.book.getTabTransferData(a_event), this.book.getTargetTabIndex(a_event.getLocation()));
-		this.book.setSelectedIndex(0);
+		this.tabbedPane.convertTab(this.tabbedPane.getTabTransferData(a_event),
+				this.tabbedPane.getTargetTabIndex(a_event.getLocation()));
+		this.tabbedPane.setSelectedIndex(0);
 		this.pack();
 		this.setLocation(location);
-		this.book.addChangeListener(this);
+		this.tabbedPane.addChangeListener(this);
 		setCursor(null);
 	}
 
@@ -112,10 +113,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this(client, gui);
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		for (final String tabName : initialTabs) {
-			this.book.addTab(tabName, gui.getTab(this, tabName.replaceFirst(" \\([0-9]*\\)", "")));
+			this.tabbedPane.addTab(tabName, gui.getTab(this, tabName.replaceFirst(" \\([0-9]*\\)", "")));
 		}
-		this.book.setSelectedIndex(0);
-		this.book.addChangeListener(this);
+		this.tabbedPane.setSelectedIndex(0);
+		this.tabbedPane.addChangeListener(this);
 		loadPosition();
 		setCursor(null);
 	}
@@ -408,7 +409,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				SwingConstants.LEFT, SwingConstants.CENTER);
 
 		// Create drag & drop tabbed pane
-		this.book = new DnDTabbedPane(this.client, this.gui, this);
+		this.tabbedPane = new DnDTabbedPane(this.client, this.gui, this);
 
 		// Setup layout constraints
 		constraints.gridx = 0;
@@ -417,7 +418,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		constraints.weighty = 1.0;
 
 		// Add the tabbed pane to the panel
-		panel.add(this.book, constraints);
+		panel.add(this.tabbedPane, constraints);
 
 		// Add the panel to the frame and display the frame
 		this.add(panel);
@@ -593,7 +594,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	 * @return The tabbed content pane
 	 */
 	public DnDTabbedPane getTabbedPane() {
-		return this.book;
+		return this.tabbedPane;
 	}
 
 	/**
@@ -668,11 +669,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				.getProperty("UserList.Typist.Color"), 16).intValue()));
 
 		// Tell all of the tabs to reload the properties
-		for (final String tabName : this.book.getTabNames()) {
-			final int index = this.book.indexOfTab(tabName);
-			final Component component = this.book.getComponentAt(index);
+		for (final String tabName : this.tabbedPane.getTabNames()) {
+			final int index = this.tabbedPane.indexOfTab(tabName);
+			final Component component = this.tabbedPane.getComponentAt(index);
 			if (component instanceof TriviaMainPanel) {
-				( (TriviaMainPanel) this.book.getComponentAt(index) ).loadProperties(TriviaGUI.PROPERTIES);
+				( (TriviaMainPanel) this.tabbedPane.getComponentAt(index) ).loadProperties(TriviaGUI.PROPERTIES);
 			}
 		}
 	}
@@ -722,8 +723,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		if (e.getSource().equals(this.book)) {
-			if (this.book.getTabCount() == 1) {
+		if (e.getSource().equals(this.tabbedPane)) {
+			if (this.tabbedPane.getTabCount() == 1) {
 				// If there are no tabs left, hide the frame
 				this.setVisible(false);
 				// Wait 100 ms to see if the tab is added back, then close if there are still no tabs
@@ -731,7 +732,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						if (!TriviaFrame.this.isVisible()) {
-							DnDTabbedPane.unregisterTabbedPane(TriviaFrame.this.book);
+							DnDTabbedPane.unregisterTabbedPane(TriviaFrame.this.tabbedPane);
 							TriviaFrame.this.gui.unregisterWindow(TriviaFrame.this);
 							TriviaFrame.this.dispose();
 						}
@@ -767,6 +768,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	public void updateGUI(boolean forceUpdate) {
 		// Update role
 		final Role role = this.client.getRole();
+		while (this.researcherMenuItem == null | this.callerMenuItem == null | this.typistMenuItem == null) {
+			System.out.println("Awaiting menu items");
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException exception) {
+			}
+		}
 		switch (role) {
 			case RESEARCHER:
 				this.researcherMenuItem.setSelected(true);
@@ -780,12 +788,20 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			default:
 				break;
 		}
+
 		// Propagate update to tabs
-		for (final String tabName : this.book.getTabNames()) {
-			final int index = this.book.indexOfTab(tabName);
-			final Component component = this.book.getComponentAt(index);
+		while (this.tabbedPane.getTabNames() == null) {
+			System.out.println("Awaiting tabbed pane");
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException exception) {
+			}
+		}
+		for (final String tabName : this.tabbedPane.getTabNames()) {
+			final int index = this.tabbedPane.indexOfTab(tabName);
+			final Component component = this.tabbedPane.getComponentAt(index);
 			if (component instanceof TriviaMainPanel) {
-				( (TriviaMainPanel) this.book.getComponentAt(index) ).updateGUI(forceUpdate);
+				( (TriviaMainPanel) this.tabbedPane.getComponentAt(index) ).updateGUI(forceUpdate);
 			}
 		}
 	}
@@ -801,7 +817,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		final float fontSize = this.statusBar.getFont().getSize2D();
 		TriviaGUI.PROPERTIES.setProperty(id + "." + "StatusBar.Height", height + "");
 		TriviaGUI.PROPERTIES.setProperty(id + "." + "StatusBar.FontSize", fontSize + "");
-		TriviaGUI.PROPERTIES.setProperty(id + "." + "OpenTabs", this.book.getTabNames().toString());
+		TriviaGUI.PROPERTIES.setProperty(id + "." + "OpenTabs", this.tabbedPane.getTabNames().toString());
 	}
 
 	/**
@@ -841,7 +857,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 		} catch (final NumberFormatException e) {
 			// System.out.println("Couldn't load window position, may not exist yet.");
-			if (this.book == null) {
+			if (this.tabbedPane == null) {
 				this.setSize(600, 600);
 			} else {
 				this.pack();

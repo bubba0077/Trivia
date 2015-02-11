@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import net.bubbaland.trivia.Answer.Agreement;
+import net.bubbaland.trivia.Answer.Status;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -818,6 +819,15 @@ public class Round implements Serializable {
 	public synchronized void markDuplicate(int queueIndex) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		answer.markDuplicate();
+		String aText = answer.getAnswer().replaceAll("\\s+", "");
+		int qNumber = answer.getQNumber();
+		for (Answer answerCheck : this.answerQueue) {
+			if (answerCheck.getQueueLocation() != queueIndex + 1 && answerCheck.getQNumber() == qNumber
+					&& answerCheck.getAnswer().replaceAll("\\s+", "").equalsIgnoreCase(aText)
+					&& answerCheck.getStatus() == Status.DUPLICATE) {
+				answerCheck.changeAgreement(answer.getSubmitter(), Agreement.AGREE);
+			}
+		}
 		this.version++;
 	}
 
