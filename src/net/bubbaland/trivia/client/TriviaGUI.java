@@ -47,6 +47,8 @@ public class TriviaGUI implements WindowListener {
 	final static protected String					KVSC_URL					= "http://www.kvsc.org/trivia_news.php";
 	// URL base for Visual Trivia Pages
 	final static protected String					VISUAL_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/visual-trivia/visual-trivia-";
+	// URL for audio trivia
+	final static protected String					AUDIO_URL					= "http://trivia.bgsh.org/audio";
 	// File name of font
 	final static private String						FONT_FILENAME				= "fonts/tahoma.ttf";
 	// File name to store window positions

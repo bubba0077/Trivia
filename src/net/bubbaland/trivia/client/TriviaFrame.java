@@ -373,6 +373,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menuItem.addActionListener(this);
 			infoMenu.add(menuItem);
 
+			menuItem = new JMenuItem("Audio Recordings");
+			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit()
+					.getMenuShortcutKeyMask()));
+			menuItem.setActionCommand("Open audio");
+			menuItem.addActionListener(this);
+			infoMenu.add(menuItem);
+
 			menuItem = new JMenuItem("Wiki", KeyEvent.VK_W);
 			menuItem.setActionCommand("Open wiki");
 			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit()
@@ -532,54 +539,35 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 			case "Open wiki":
 				// Triggered by Open wiki menu item
-				new SwingWorker<Void, Void>() {
-					public Void doInBackground() {
-						try {
-							Desktop.getDesktop().browse(new URI(TriviaGUI.WIKI_URL));
-						} catch (IOException | URISyntaxException exception) {
-							TriviaFrame.this.log("Couldn't open a browser window");
-						}
-						return null;
-					}
-
-					public void done() {
-
-					}
-				};
+				try {
+					Desktop.getDesktop().browse(new URI(TriviaGUI.WIKI_URL));
+				} catch (IOException | URISyntaxException exception) {
+					TriviaFrame.this.log("Couldn't open a browser window");
+				}
 				break;
 			case "Open KVSC":
 				// Triggered by Open wiki menu item
-				new SwingWorker<Void, Void>() {
-					public Void doInBackground() {
-						try {
-							Desktop.getDesktop().browse(new URI(TriviaGUI.KVSC_URL));
-						} catch (IOException | URISyntaxException exception) {
-							TriviaFrame.this.log("Couldn't open a browser window");
-						}
-						return null;
-					}
-
-					public void done() {
-
-					}
-				};
+				try {
+					Desktop.getDesktop().browse(new URI(TriviaGUI.KVSC_URL));
+				} catch (IOException | URISyntaxException exception) {
+					TriviaFrame.this.log("Couldn't open a browser window");
+				}
 				break;
 			case "Open issues":
 				// Triggered by Open wiki menu item
-				new SwingWorker<Void, Void>() {
-					public Void doInBackground() {
-						try {
-							Desktop.getDesktop().browse(new URI(TriviaGUI.ISSUES_URL));
-						} catch (IOException | URISyntaxException exception) {
-							TriviaFrame.this.log("Couldn't open a browser window");
-						}
-						return null;
-					}
-
-					public void done() {
-
-					}
-				};
+				try {
+					Desktop.getDesktop().browse(new URI(TriviaGUI.ISSUES_URL));
+				} catch (IOException | URISyntaxException exception) {
+					TriviaFrame.this.log("Couldn't open a browser window");
+				}
+				break;
+			case "Open audio":
+				// Triggered by Open audio menu item
+				try {
+					Desktop.getDesktop().browse(new URI(TriviaGUI.AUDIO_URL));
+				} catch (IOException | URISyntaxException exception) {
+					TriviaFrame.this.log("Couldn't open a browser window");
+				}
 				break;
 			case "Exit":
 				// Tell client to exit the program
