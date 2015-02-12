@@ -7,6 +7,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.math.BigInteger;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,6 +36,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 	private final int			rNumber, qNumber;
 	private final JTextArea		qTextArea, aTextArea;
 	private final JSpinner		qValueSpinner;
+	private final Color			correctColor;
 
 	public EditQuestionDialog(TriviaClient client, int rNumber, int qNumber) {
 
@@ -43,6 +45,8 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		this.client = client;
 		this.rNumber = rNumber;
 		this.qNumber = qNumber;
+		this.correctColor = new Color(
+				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
 
 		// Get all of the current data for the question
 		final Trivia trivia = client.getTrivia();
@@ -182,17 +186,19 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		this.operatorTextField = new JTextField(existingOperator);
 		this.add(this.operatorTextField, constraints);
 
+		this.correctButton.setText("Correct");
+
 		// Change text on correct button and set editable state of sub/op boxes based on correctness
 		if (existingCorrect) {
+			this.correctButton.setBackground(this.correctColor);
 			this.correctButton.setSelected(true);
-			this.correctButton.setText("Correct");
 			this.submitterTextField.setEditable(true);
 			this.operatorTextField.setEditable(true);
 			this.submitterTextField.setBackground(Color.WHITE);
 			this.operatorTextField.setBackground(Color.WHITE);
 		} else {
+			this.correctButton.setBackground(null);
 			this.correctButton.setSelected(false);
-			this.correctButton.setText("Incorrect");
 			this.submitterTextField.setEditable(false);
 			this.operatorTextField.setEditable(false);
 			this.submitterTextField.setBackground(this.getBackground());
@@ -210,13 +216,13 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		if (e.getSource().equals(this.correctButton)) {
 			// If the correctness was changed, update GUI elements appropriately
 			if (this.correctButton.isSelected()) {
-				this.correctButton.setText("Correct");
+				this.correctButton.setBackground(this.correctColor);
 				this.submitterTextField.setEditable(true);
 				this.operatorTextField.setEditable(true);
 				this.submitterTextField.setBackground(Color.WHITE);
 				this.operatorTextField.setBackground(Color.WHITE);
 			} else {
-				this.correctButton.setText("Incorrect");
+				this.correctButton.setBackground(null);
 				this.submitterTextField.setEditable(false);
 				this.operatorTextField.setEditable(false);
 				this.submitterTextField.setBackground(this.getBackground());
