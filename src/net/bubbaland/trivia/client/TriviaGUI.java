@@ -592,7 +592,7 @@ public class TriviaGUI implements WindowListener {
 	}
 
 	void setHideDuplicates(boolean hideDuplicates) {
-		PROPERTIES.setProperty("HideClosed", hideDuplicates + "");
+		PROPERTIES.setProperty("HideDuplicates", hideDuplicates + "");
 		this.updateGUI(true);
 	}
 
