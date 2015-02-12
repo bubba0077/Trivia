@@ -402,6 +402,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menu.setMnemonic(KeyEvent.VK_A);
 			menuBar.add(menu);
 
+			menuItem = new JMenuItem("Restart Timer", KeyEvent.VK_T);
+			menuItem.setActionCommand("Restart Timer");
+			menuItem.addActionListener(this);
+			menu.add(menuItem);
+
 			menuItem = new JMenuItem("Load State", KeyEvent.VK_L);
 			menuItem.setActionCommand("Load state");
 			menuItem.addActionListener(this);
@@ -463,6 +468,19 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				( new SwingWorker<Void, Void>() {
 					public Void doInBackground() {
 						TriviaFrame.this.client.sendMessage(ClientMessageFactory.listSaves());
+						return null;
+					}
+
+					public void done() {
+
+					}
+				} ).execute();
+				break;
+			case "Restart Timer":
+				// Triggered by change state, prompt for save file
+				( new SwingWorker<Void, Void>() {
+					public Void doInBackground() {
+						TriviaFrame.this.client.sendMessage(ClientMessageFactory.restartTimer());
 						return null;
 					}
 

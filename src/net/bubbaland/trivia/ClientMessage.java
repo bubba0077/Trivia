@@ -28,7 +28,7 @@ public class ClientMessage {
 	protected static JsonFactory	jsonFactory	= new JsonFactory();
 
 	public static enum ClientCommand {
-		CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA
+		CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA, RESTART_TIMER
 	};
 
 	private ClientCommand	command;
@@ -499,6 +499,11 @@ public class ClientMessage {
 		public static ClientMessage setSpeed(boolean isSpeed) {
 			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_SPEED);
 			message.speed = isSpeed;
+			return message;
+		}
+
+		public static ClientMessage restartTimer() {
+			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.RESTART_TIMER);
 			return message;
 		}
 

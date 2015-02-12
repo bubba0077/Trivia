@@ -136,6 +136,8 @@ public class TriviaServerEndpoint {
 	// Boolean that tracks whether the server is running
 	private static boolean									isRunning;
 
+	private static Timer									timer;
+
 	/**
 	 * Setup properties
 	 */
@@ -197,7 +199,34 @@ public class TriviaServerEndpoint {
 		isRunning = false;
 
 		// Create timer that will make save files
-		Timer timer = new Timer();
+		restartTimer();
+	}
+
+	// Array of the last round versions sent to this client
+	private int[]											lastVersions;
+	// Time before this client considers a user idle (in ms)
+	private int												timeToIdle;
+	// User name for this client
+	private String											user;
+	// Role of this client
+	private Role											role;
+	// Last time this client sent a command
+	private Date											lastActive;
+
+	/**
+	 * Creates a new trivia server endpoint.
+	 */
+	public TriviaServerEndpoint() {
+		this.lastActive = new Date();
+		this.timeToIdle = 600;
+		this.user = "";
+		this.role = Role.RESEARCHER;
+		this.lastVersions = new int[N_ROUNDS];
+	}
+
+	private static void restartTimer() {
+		// Create timer that will make save files
+		timer = new Timer();
 		timer.schedule(new TimerTask() {
 			public void run() {
 				TriviaServerEndpoint.saveState();
@@ -224,28 +253,6 @@ public class TriviaServerEndpoint {
 				updateUsers();
 			}
 		}, IDLE_FREQUENCY, IDLE_FREQUENCY);
-	}
-
-	// Array of the last round versions sent to this client
-	private int[]											lastVersions;
-	// Time before this client considers a user idle (in ms)
-	private int												timeToIdle;
-	// User name for this client
-	private String											user;
-	// Role of this client
-	private Role											role;
-	// Last time this client sent a command
-	private Date											lastActive;
-
-	/**
-	 * Creates a new trivia server endpoint.
-	 */
-	public TriviaServerEndpoint() {
-		this.lastActive = new Date();
-		this.timeToIdle = 600;
-		this.user = "";
-		this.role = Role.RESEARCHER;
-		this.lastVersions = new int[N_ROUNDS];
 	}
 
 	/**
@@ -858,8 +865,8 @@ public class TriviaServerEndpoint {
 			final Date lastDate = client.lastActive;
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
 			if (diff < timeToIdle && client.user != null) {
-				userHash.put(client.user, client.role);
-				// userHash.put(client.user + " (" + diff + ")", client.role);
+				// userHash.put(client.user, client.role);
+				userHash.put(client.user + " (" + diff + ")", client.role);
 			}
 		}
 		return userHash;
@@ -886,8 +893,8 @@ public class TriviaServerEndpoint {
 			final Date lastDate = client.lastActive;
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
 			if (diff >= timeToIdle && client.user != null && !activeUsers.contains(client.user)) {
-				userHash.put(client.user, client.role);
-				// userHash.put(client.user + " (" + diff + ")", client.role);
+				// userHash.put(client.user, client.role);
+				userHash.put(client.user + " (" + diff + ")", client.role);
 			}
 		}
 		return userHash;
@@ -1104,6 +1111,9 @@ public class TriviaServerEndpoint {
 				Trivia trivia = TriviaServerEndpoint.trivia;
 				sendMessage(session, ServerMessageFactory.updateTrivia(trivia));
 				this.lastVersions = trivia.getVersions();
+				break;
+			case RESTART_TIMER:
+				restartTimer();
 				break;
 		// default:
 		// break;
