@@ -5,6 +5,10 @@ import java.awt.FontFormatException;
 import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedReader;
@@ -36,7 +40,9 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import net.bubbaland.trivia.TriviaChartFactory;
+import net.bubbaland.trivia.client.TristateCheckBox.TristateState;
 
+@SuppressWarnings("unused")
 public class TriviaGUI implements WindowListener {
 
 	// URL for Wiki
@@ -639,12 +645,13 @@ public class TriviaGUI implements WindowListener {
 		this.queueSort = queueSort;
 	}
 
-	private class NumberFilterDialog extends TriviaDialogPanel {
+	private class NumberFilterDialog extends TriviaDialogPanel implements ActionListener {
 
-		private static final long	serialVersionUID	= -3726819964211373465L;
+		private static final long		serialVersionUID	= -3726819964211373465L;
 
-		final private JCheckBox[]	checkboxes;
-		final private static int	nPerColumn			= 5;
+		final private JCheckBox[]		checkboxes;
+		final private TristateCheckBox	checkallBox;
+		final private static int		nPerColumn			= 5;
 
 		public NumberFilterDialog() {
 			super();
@@ -657,22 +664,40 @@ public class TriviaGUI implements WindowListener {
 			constraints.weightx = 1.0;
 			constraints.weighty = 1.0;
 
-			JLabel label = new JLabel("Select Questions to Hide", JLabel.CENTER);
+			JLabel label = new JLabel("Select Questions to Show", JLabel.CENTER);
 			constraints.gridwidth = (int) Math.ceil(( maxQuestions + 0.0 ) / nPerColumn);
 			constraints.gridx = 0;
 			constraints.gridy = 0;
 			this.add(label, constraints);
+
+			final ArrayList<Integer> filterNumbers = TriviaGUI.this.getFilterNumbers();
+
+			constraints.gridx = 0;
+			constraints.gridy = 1;
+			this.checkallBox = new TristateCheckBox("All");
+			this.checkallBox.setName("All");
+			this.checkallBox.addActionListener(this);
+			this.add(this.checkallBox, constraints);
+
 			constraints.gridwidth = 1;
 
 			checkboxes = new JCheckBox[maxQuestions];
-			final ArrayList<Integer> filterNumbers = TriviaGUI.this.getFilterNumbers();
 			for (int i = 0; i < checkboxes.length; i++) {
 				checkboxes[i] = new JCheckBox("Q" + ( i + 1 ));
 				checkboxes[i].setName(( i + 1 ) + "");
-				checkboxes[i].setSelected(filterNumbers.contains(i + 1));
+				checkboxes[i].setSelected(!filterNumbers.contains(i + 1));
+				checkboxes[i].addActionListener(this);
 				constraints.gridx = i / nPerColumn;
-				constraints.gridy = 1 + i % nPerColumn;
+				constraints.gridy = 2 + i % nPerColumn;
 				this.add(checkboxes[i], constraints);
+			}
+
+			if (allChecked()) {
+				this.checkallBox.setState(TristateState.SELECTED);
+			} else if (noneChecked()) {
+				this.checkallBox.setState(TristateState.DESELECTED);
+			} else {
+				this.checkallBox.setState(TristateState.INDETERMINATE);
 			}
 
 			// Display the dialog box
@@ -690,11 +715,66 @@ public class TriviaGUI implements WindowListener {
 			if (option == JOptionPane.OK_OPTION) {
 				TriviaGUI.this.qNumberFilter = new ArrayList<Integer>(0);
 				for (JCheckBox checkbox : this.checkboxes) {
-					if (checkbox.isSelected()) {
+					if (!checkbox.isSelected()) {
 						TriviaGUI.this.qNumberFilter.add(Integer.parseInt(checkbox.getName()));
 					}
 				}
 				TriviaGUI.this.updateGUI(true);
+			}
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("Item State Changed");
+			JCheckBox source = (JCheckBox) e.getSource();
+			if (source.getName() == "All") {
+				System.out.println(( (TristateCheckBox) source ).getState().name());
+				switch (( (TristateCheckBox) source ).getState()) {
+					case DESELECTED:
+						this.uncheckAll();
+						break;
+					case INDETERMINATE:
+						break;
+					case SELECTED:
+						this.checkAll();
+						break;
+				}
+			} else {
+				if (allChecked()) {
+					this.checkallBox.setState(TristateState.SELECTED);
+				} else if (noneChecked()) {
+					this.checkallBox.setState(TristateState.DESELECTED);
+				} else {
+					this.checkallBox.setState(TristateState.INDETERMINATE);
+				}
+			}
+		}
+
+		private boolean allChecked() {
+			boolean allChecked = true;
+			for (int i = 0; allChecked && i < checkboxes.length; i++) {
+				allChecked = allChecked && checkboxes[i].isSelected();
+			}
+			return allChecked;
+		}
+
+		private boolean noneChecked() {
+			boolean noneChecked = true;
+			for (int i = 0; noneChecked && i < checkboxes.length; i++) {
+				noneChecked = noneChecked && !checkboxes[i].isSelected();
+			}
+			return noneChecked;
+		}
+
+		private void uncheckAll() {
+			for (int i = 0; i < checkboxes.length; i++) {
+				checkboxes[i].setSelected(false);
+			}
+		}
+
+		private void checkAll() {
+			for (int i = 0; i < checkboxes.length; i++) {
+				checkboxes[i].setSelected(true);
 			}
 		}
 	}
