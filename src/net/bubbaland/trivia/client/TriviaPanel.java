@@ -60,6 +60,8 @@ public abstract class TriviaPanel extends JPanel {
 	 * Adds a word-wrapping text pane inside of a scrollable pane to the panel that can process hyperlink clicks. A
 	 * reference to the text pane is returned so the text can be read/changed later.
 	 * 
+	 * @param client
+	 *            TODO
 	 * @param string
 	 *            The initial string for the text pane
 	 * @param constraints
@@ -68,16 +70,17 @@ public abstract class TriviaPanel extends JPanel {
 	 *            The horizontal scroll bar policy (JScrollPane constants)
 	 * @param verticalScroll
 	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * 
 	 * @return The text pane inside the scroll pane
 	 */
-	public QuestionPane hyperlinkedTextPane(String string, GridBagConstraints constraints, int horizontalScroll,
-			int verticalScroll) {
+	public QuestionPane hyperlinkedTextPane(TriviaClient client, String string, GridBagConstraints constraints,
+			int horizontalScroll, int verticalScroll) {
 
 		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
 		pane.setBorder(BorderFactory.createEmptyBorder());
 		pane.setEnabled(false);
 		this.add(pane, constraints);
-		final QuestionPane textPane = new QuestionPane(new DefaultStyledDocument());
+		final QuestionPane textPane = new QuestionPane(client, new DefaultStyledDocument());
 		textPane.setContentType("text/html");
 		textPane.addHyperlinkListener(new HyperlinkListener() {
 			@Override
@@ -108,6 +111,8 @@ public abstract class TriviaPanel extends JPanel {
 	 * Adds a word-wrapping text pane inside of a scrollable pane to the panel that can process hyperlink clicks. A
 	 * reference to the text pane is returned so the text can be read/changed later.
 	 * 
+	 * @param client
+	 *            TODO
 	 * @param string
 	 *            The initial string for the text pane
 	 * @param constraints
@@ -116,6 +121,58 @@ public abstract class TriviaPanel extends JPanel {
 	 *            The horizontal scroll bar policy (JScrollPane constants)
 	 * @param verticalScroll
 	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * 
+	 * @return The text pane inside the scroll pane
+	 */
+	public QuestionPane hyperlinkedTextPane(int rNumber, String string, GridBagConstraints constraints,
+			int horizontalScroll, int verticalScroll) {
+
+		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
+		pane.setBorder(BorderFactory.createEmptyBorder());
+		pane.setEnabled(false);
+		this.add(pane, constraints);
+		final QuestionPane textPane = new QuestionPane(rNumber, new DefaultStyledDocument());
+		textPane.setContentType("text/html");
+		textPane.addHyperlinkListener(new HyperlinkListener() {
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					try {
+						Desktop.getDesktop().browse(e.getURL().toURI());
+					} catch (IOException | URISyntaxException exception) {
+					}
+				} else if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+					setCursor(new Cursor(Cursor.HAND_CURSOR));
+				} else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+
+			}
+		});
+		textPane.setText(string);
+		textPane.setBorder(BorderFactory.createEmptyBorder());
+		final DefaultCaret caret = (DefaultCaret) textPane.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		pane.setViewportView(textPane);
+
+		return textPane;
+	}
+
+	/**
+	 * Adds a word-wrapping text pane inside of a scrollable pane to the panel that can process hyperlink clicks. A
+	 * reference to the text pane is returned so the text can be read/changed later.
+	 * 
+	 * @param client
+	 *            TODO
+	 * @param string
+	 *            The initial string for the text pane
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param horizontalScroll
+	 *            The horizontal scroll bar policy (JScrollPane constants)
+	 * @param verticalScroll
+	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * 
 	 * @return The text pane inside the scroll pane
 	 */
 	public JTextPane scrollableTextPane(String string, GridBagConstraints constraints, int horizontalScroll,
@@ -125,7 +182,7 @@ public abstract class TriviaPanel extends JPanel {
 		pane.setBorder(BorderFactory.createEmptyBorder());
 		pane.setEnabled(false);
 		this.add(pane, constraints);
-		final JTextPane textPane = new QuestionPane(new DefaultStyledDocument());
+		final JTextPane textPane = new JTextPane(new DefaultStyledDocument());
 		textPane.setText(string);
 		textPane.setBorder(BorderFactory.createEmptyBorder());
 		final DefaultCaret caret = (DefaultCaret) textPane.getCaret();
@@ -450,29 +507,73 @@ public abstract class TriviaPanel extends JPanel {
 	public class QuestionPane extends JTextPane {
 		private static final long	serialVersionUID	= -4043733624909281303L;
 
-		private String				pattern				= "([Vv]isual )([Tt]rivia )?(#)?([0-9]+)";
+		private String				visualPattern		= "([Vv]isual )([Tt]rivia )?(#)?([0-9]+)";
+		private String				audioPattern		= "([Aa]udio)( [Tt]rivia)?";
 		private String				simpleString;
+		final private TriviaClient	client;
+		private int					rNumber;
+		final private boolean		live;
 
-		public QuestionPane() {
+		public QuestionPane(TriviaClient client) {
 			super();
+			this.client = client;
+			this.rNumber = 0;
+			this.live = true;
 		}
 
-		public QuestionPane(StyledDocument doc) {
+		public QuestionPane(int rNumber) {
+			super();
+			this.client = null;
+			this.rNumber = rNumber;
+			this.live = false;
+		}
+
+		public QuestionPane(TriviaClient client, StyledDocument doc) {
 			super(doc);
+			this.client = client;
+			this.rNumber = 0;
+			this.live = true;
+		}
+
+		public QuestionPane(int rNumber, StyledDocument doc) {
+			super(doc);
+			this.client = null;
+			this.rNumber = rNumber;
+			this.live = false;
+		}
+
+		public void setRNumber(int rNumber) {
+			this.rNumber = rNumber;
+		}
+
+		private int getRNumber() {
+			if (this.live) {
+				this.rNumber = this.client.getCurrentRoundNumber();
+			}
+			return this.rNumber;
 		}
 
 		@Override
 		public void setText(String question) {
-			final String hQuestion = question.replaceFirst(pattern, "<a href=\"" + TriviaGUI.VISUAL_URL
+			String RR = String.format("%02d", getRNumber());
+			String hQuestion = question.replaceFirst(visualPattern, "<a href=\"" + TriviaGUI.VISUAL_URL
 					+ "$4\">Visual Trivia #$4</a>");
+			hQuestion = hQuestion.replaceFirst(audioPattern, "<a href=\"" + TriviaGUI.AUDIO_URL + "/Hour_" + RR
+					+ "\">Audio Trivia</a>");
 			if (!hQuestion.equals(this.simpleString)) {
 				super.setText(hQuestion);
 				this.simpleString = hQuestion;
 			}
+
+
 		}
 
 		public boolean textEquals(String string) {
-			string = string.replaceFirst(pattern, "<a href=\"" + TriviaGUI.VISUAL_URL + "$4\">Visual Trivia #$4</a>");
+			String RR = String.format("%02d", getRNumber());
+			string = string.replaceFirst(visualPattern, "<a href=\"" + TriviaGUI.VISUAL_URL
+					+ "$4\">Visual Trivia #$4</a>");
+			string.replaceFirst(audioPattern, "<a href=\"" + TriviaGUI.AUDIO_URL + "/Hour_" + RR
+					+ "\">Audio Trivia</a>");
 			return this.simpleString.equals(string);
 		}
 

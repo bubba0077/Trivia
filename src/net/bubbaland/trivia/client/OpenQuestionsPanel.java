@@ -297,7 +297,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				constraints.gridx = 2;
 				constraints.gridy = q;
 				constraints.weightx = 1.0;
-				this.qTextPanes[q] = this.hyperlinkedTextPane("", constraints,
+				this.qTextPanes[q] = this.hyperlinkedTextPane(this.client, "", constraints,
 						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.qTextPanes[q].setEditable(false);
@@ -382,7 +382,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 					qNumber = Integer.parseInt(this.contextMenu.getName());
 					qValue = trivia.getValue(rNumber, qNumber);
 					qText = trivia.getQuestionText(rNumber, qNumber);
-					new ViewQuestionDialog(this.client, qNumber, qValue, qText);
+					new ViewQuestionDialog(rNumber, qNumber, qValue, qText);
 					break;
 				default:
 					break;
@@ -435,7 +435,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 					this.qNumberLabels[q].setName(openQuestionNumbers[q] + "");
 					this.qValueLabels[q].setName(openQuestionNumbers[q] + "");
 					this.qTextPanes[q].setName(openQuestionNumbers[q] + "");
-
 				}
 			}
 

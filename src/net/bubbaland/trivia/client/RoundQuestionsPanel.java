@@ -331,9 +331,15 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 				constraints.gridx = 3;
 				constraints.gridy = 2 * q;
 				constraints.weightx = 0.6;
-				this.questionTextPane[q] = this.hyperlinkedTextPane("", constraints,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				if (this.live) {
+					this.questionTextPane[q] = this.hyperlinkedTextPane(this.client, "", constraints,
+							ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+							ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				} else {
+					this.questionTextPane[q] = this.hyperlinkedTextPane(this.rNumber, "", constraints,
+							ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+							ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				}
 				this.questionTextPane[q].setEditable(false);
 				this.questionTextPane[q].setName(( q + 1 ) + "");
 				this.questionTextPane[q].addMouseListener(new PopupListener(this.contextMenu));
@@ -440,6 +446,9 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 		 */
 		public void setRound(int rNumber) {
 			this.rNumber = rNumber;
+			for (QuestionPane pane : this.questionTextPane) {
+				pane.setRNumber(rNumber);
+			}
 		}
 
 		/*

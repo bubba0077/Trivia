@@ -659,7 +659,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					final int qValue = trivia.getValue(AnswerQueuePanel.this.rNumber, qNumber);
 					final String qText = trivia.getQuestionText(AnswerQueuePanel.this.rNumber, qNumber);
 					final String aText = trivia.getAnswerQueueAnswer(queueIndex);
-					new ViewAnswerDialog(this.client, qNumber, qValue, qText, aText);
+					new ViewAnswerDialog(rNumber, qNumber, qValue, qText, aText);
 					break;
 				case "Change Agreement":
 					JToggleButton source = ( (JToggleButton) event.getSource() );

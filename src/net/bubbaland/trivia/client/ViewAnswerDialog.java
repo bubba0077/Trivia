@@ -20,7 +20,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 8466638572342233271L;
 
-	public ViewAnswerDialog(TriviaClient client, int qNumber, int qValue, String qText, String aText) {
+	public ViewAnswerDialog(int rNumber, int qNumber, int qValue, String qText, String aText) {
 
 		super();
 
@@ -57,7 +57,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		constraints.weighty = 0.5;
-		final QuestionPane qTextArea = this.hyperlinkedTextPane(qText, constraints,
+		final QuestionPane qTextArea = this.hyperlinkedTextPane(rNumber, qText, constraints,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		qTextArea.setEditable(false);
 		setTextPaneProperties(qTextArea, 300, 200, this.getForeground(), this.getBackground(), textAreaFontSize);
