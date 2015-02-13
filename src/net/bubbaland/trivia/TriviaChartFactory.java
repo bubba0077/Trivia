@@ -48,6 +48,10 @@ public class TriviaChartFactory {
 	/** The upper bound of the vertical axis */
 	private static int		maxPoints;
 
+	static {
+		System.setProperty("java.awt.headless", "true");
+	}
+
 	public static void loadProperties(Properties properties) {
 		/**
 		 * Colors
