@@ -413,6 +413,15 @@ public class Round implements Serializable {
 		return submitters;
 	}
 
+	public void changeName(String oldName, String newName) {
+		for (Answer answer : this.answerQueue) {
+			answer.changeName(oldName, newName);
+		}
+		for (Question question : this.questions) {
+			question.changeName(oldName, newName);
+		}
+	}
+
 	/**
 	 * Gets the timestamp of an answer in the queue.
 	 * 

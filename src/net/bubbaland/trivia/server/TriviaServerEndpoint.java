@@ -990,7 +990,9 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case CHANGE_USER:
+				TriviaServerEndpoint.trivia.changeName(this.user, message.getUser());
 				this.user = message.getUser();
+				TriviaServerEndpoint.updateTrivia();
 				TriviaServerEndpoint.updateUsers();
 				break;
 			case CLOSE_QUESTION:

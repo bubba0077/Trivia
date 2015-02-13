@@ -53,7 +53,7 @@ public class Answer implements Serializable {
 
 	// The user name of the answer submitter
 	@JsonProperty("submitter")
-	final private String							submitter;
+	private String									submitter;
 
 	// The user name of the person who is calling in the answer
 	@JsonProperty("caller")
@@ -309,6 +309,20 @@ public class Answer implements Serializable {
 			agreement = Agreement.NEUTRAL;
 		}
 		return agreement;
+	}
+
+	public void changeName(String oldName, String newName) {
+		if (this.submitter.equals(oldName)) {
+			this.submitter = newName;
+		}
+		if (this.caller.equals(oldName)) {
+			this.caller = newName;
+		}
+		if (this.agreement.containsKey(oldName)) {
+			Agreement agreement = this.agreement.get(oldName);
+			this.agreement.remove(oldName);
+			this.agreement.put(newName, agreement);
+		}
 	}
 
 	public static class QNumberCompare implements Comparator<Answer> {

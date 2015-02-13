@@ -316,4 +316,10 @@ public class Question implements Serializable {
 		this.correct = question.correct;
 	}
 
+	protected void changeName(String oldName, String newName) {
+		if (this.submitter.equals(oldName)) {
+			this.submitter = newName;
+		}
+	}
+
 }

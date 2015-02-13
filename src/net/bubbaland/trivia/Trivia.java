@@ -1211,6 +1211,10 @@ public class Trivia implements Serializable {
 		}
 	}
 
+	public void changeName(String oldName, String newName) {
+		this.getCurrentRound().changeName(oldName, newName);
+	}
+
 	public void changeAgreement(String user, int queueIndex, Answer.Agreement agreement) {
 		this.getCurrentRound().changeAgreement(user, queueIndex, agreement);
 	}
