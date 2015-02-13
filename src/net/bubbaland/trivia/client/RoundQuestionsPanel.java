@@ -136,6 +136,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.roundQlistPane.setBorder(BorderFactory.createEmptyBorder());
 		this.roundQlistPane.setPreferredSize(new Dimension(0, 200));
+		this.roundQlistPane.getVerticalScrollBar().setUnitIncrement(3);
 		this.add(this.roundQlistPane, constraints);
 		constraints.weighty = 0.0;
 
