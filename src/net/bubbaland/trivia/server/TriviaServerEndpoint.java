@@ -865,8 +865,8 @@ public class TriviaServerEndpoint {
 			final Date lastDate = client.lastActive;
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
 			if (diff < timeToIdle && client.user != null) {
-				// userHash.put(client.user, client.role);
-				userHash.put(client.user + " (" + diff + ")", client.role);
+				userHash.put(client.user, client.role);
+				// userHash.put(client.user + " (" + diff + ")", client.role);
 			}
 		}
 		return userHash;
@@ -893,8 +893,8 @@ public class TriviaServerEndpoint {
 			final Date lastDate = client.lastActive;
 			final long diff = ( currentDate.getTime() - lastDate.getTime() ) / 1000;
 			if (diff >= timeToIdle && client.user != null && !activeUsers.contains(client.user)) {
-				// userHash.put(client.user, client.role);
-				userHash.put(client.user + " (" + diff + ")", client.role);
+				userHash.put(client.user, client.role);
+				// userHash.put(client.user + " (" + diff + ")", client.role);
 			}
 		}
 		return userHash;
