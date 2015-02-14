@@ -904,7 +904,8 @@ public class TriviaServerEndpoint {
 	 * Send updated trivia information to each connected client
 	 */
 	private static void updateTrivia() {
-		for (Session session : TriviaServerEndpoint.sessionList.keySet()) {
+		Set<Session> sessions = TriviaServerEndpoint.sessionList.keySet();
+		for (Session session : sessions) {
 			TriviaServerEndpoint info = sessionList.get(session);
 			Round[] newRounds = TriviaServerEndpoint.trivia.getChangedRounds(info.lastVersions);
 			if (newRounds.length != 0) {
@@ -917,7 +918,8 @@ public class TriviaServerEndpoint {
 	 * Send the current round number to each connected client
 	 */
 	private static void updateRoundNumber() {
-		for (Session session : TriviaServerEndpoint.sessionList.keySet()) {
+		Set<Session> sessions = TriviaServerEndpoint.sessionList.keySet();
+		for (Session session : sessions) {
 			sendMessage(session,
 					ServerMessageFactory.updateRoundNumber(TriviaServerEndpoint.trivia.getCurrentRoundNumber()));
 		}
@@ -928,7 +930,8 @@ public class TriviaServerEndpoint {
 	 */
 	private static void updateUsers() {
 		Collection<TriviaServerEndpoint> clients = TriviaServerEndpoint.sessionList.values();
-		for (Session session : TriviaServerEndpoint.sessionList.keySet()) {
+		Set<Session> sessions = TriviaServerEndpoint.sessionList.keySet();
+		for (Session session : sessions) {
 			int timeToIdle = sessionList.get(session).timeToIdle;
 			sendMessage(session, ServerMessageFactory.updateUserLists(
 					TriviaServerEndpoint.getActiveUsers(clients, timeToIdle),
