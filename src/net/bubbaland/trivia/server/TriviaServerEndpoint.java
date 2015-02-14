@@ -1001,7 +1001,7 @@ public class TriviaServerEndpoint {
 						+ message.getqNumber()
 						+ " closed, "
 						+ TriviaServerEndpoint.trivia.getValue(TriviaServerEndpoint.trivia.getCurrentRoundNumber(),
-								message.getqNumber()) + " points earned.");
+								message.getqNumber()));
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case EDIT_QUESTION:
