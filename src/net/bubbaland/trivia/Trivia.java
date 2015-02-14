@@ -199,6 +199,9 @@ public class Trivia implements Serializable {
 		} else {
 			this.rounds[rNumber - 1].markIncorrect(qNumber);
 		}
+		if (aText != null) {
+			this.rounds[rNumber - 1].setAnswerText(qNumber, aText);
+		}
 	}
 
 	public void editQuestion(int rNumber, int qNumber, int value, String qText) {
