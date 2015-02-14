@@ -430,7 +430,9 @@ public class TriviaServerEndpoint {
 			// For each past round, try to get announced standings if we don't have them
 			if (!trivia.isAnnounced(r)) {
 				final ScoreEntry[] standings = getStandings(r);
-				trivia.setStandings(r, standings);
+				if (standings != null) {
+					trivia.setStandings(r, standings);
+				}
 			}
 		}
 
