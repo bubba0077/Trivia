@@ -354,11 +354,22 @@ public class TriviaChartFactory {
 		final ArrayList<ScoreEntry[]> scores = new ArrayList<ScoreEntry[]>(0);
 
 		// Load standings from announced rounds
-		while (trivia.isAnnounced(lastAnnounced + 1)) {
-			lastAnnounced++;
-			final ScoreEntry roundStandings[] = trivia.getStandings(lastAnnounced);
-			Arrays.sort(roundStandings);
-			scores.add(roundStandings);
+		// while (trivia.isAnnounced(lastAnnounced + 1)) {
+		// lastAnnounced++;
+		// final ScoreEntry roundStandings[] = trivia.getStandings(lastAnnounced);
+		// Arrays.sort(roundStandings);
+		// scores.add(roundStandings);
+		// }
+
+		for (int r = 1; r <= trivia.getNRounds(); r++) {
+			if (trivia.isAnnounced(r)) {
+				lastAnnounced = r;
+				final ScoreEntry roundStandings[] = trivia.getStandings(r);
+				Arrays.sort(roundStandings);
+				scores.add(roundStandings);
+			} else {
+				scores.add(null);
+			}
 		}
 
 		// If no rounds have been announced, don't make a plot
@@ -380,6 +391,9 @@ public class TriviaChartFactory {
 			// Add a data point for each team with the difference between their score and ours
 			if (team.equals(trivia.getTeamName())) {
 				for (int r = 0; r < lastAnnounced; r++) {
+					if (scores.get(r) == null) {
+						continue;
+					}
 					final int ourScore = trivia.getAnnouncedPoints(r + 1);
 					series.add(r + 1, 0, -ourScore, trivia.getCumulativeValue(r + 1) - ourScore);
 				}
@@ -388,6 +402,9 @@ public class TriviaChartFactory {
 				renderer.setSeriesFillPaint(t, Color.GRAY);
 			} else {
 				for (int r = 0; r < lastAnnounced; r++) {
+					if (scores.get(r) == null) {
+						continue;
+					}
 					final int scoreDiff = scores.get(r)[t].getScore() - trivia.getAnnouncedPoints(r + 1);
 					series.add(r + 1, scoreDiff, scoreDiff, scoreDiff);
 				}
