@@ -389,7 +389,7 @@ public class TriviaChartFactory {
 			final String team = scores.get(0)[t].getTeamName();
 			final YIntervalSeries series = new YIntervalSeries(team, true, false);
 			// Add a data point for each team with the difference between their score and ours
-			if (team.equals(trivia.getTeamName())) {
+			if (team.equalsIgnoreCase(trivia.getTeamName())) {
 				for (int r = 0; r < lastAnnounced; r++) {
 					if (scores.get(r) == null) {
 						continue;

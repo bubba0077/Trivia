@@ -1168,7 +1168,7 @@ public class Round implements Serializable {
 		this.announced = true;
 		this.standings = standings;
 		for (final ScoreEntry entry : standings) {
-			if (entry.getTeamName().equals(this.teamName)) {
+			if (entry.getTeamName().equalsIgnoreCase(this.teamName)) {
 				this.announcedPoints = entry.getScore();
 				this.place = entry.getPlace();
 			}
