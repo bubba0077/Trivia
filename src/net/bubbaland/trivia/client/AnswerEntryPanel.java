@@ -119,7 +119,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 4;
 		this.bruteForceCheckbox = new JCheckBox("Treat separate lines as multiple guesses");
-		this.add(this.bruteForceCheckbox, constraints);
+		// this.add(this.bruteForceCheckbox, constraints);
 
 		// Create confidence slider
 		constraints.gridwidth = 1;
