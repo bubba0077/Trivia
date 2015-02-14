@@ -906,10 +906,12 @@ public class TriviaServerEndpoint {
 	private static void updateTrivia() {
 		Set<Session> sessions = TriviaServerEndpoint.sessionList.keySet();
 		for (Session session : sessions) {
-			TriviaServerEndpoint info = sessionList.get(session);
-			Round[] newRounds = TriviaServerEndpoint.trivia.getChangedRounds(info.lastVersions);
-			if (newRounds.length != 0) {
-				sendMessage(session, ServerMessageFactory.updateRounds(newRounds));
+			if (session != null) {
+				TriviaServerEndpoint info = sessionList.get(session);
+				Round[] newRounds = TriviaServerEndpoint.trivia.getChangedRounds(info.lastVersions);
+				if (newRounds.length != 0) {
+					sendMessage(session, ServerMessageFactory.updateRounds(newRounds));
+				}
 			}
 		}
 	}
@@ -946,6 +948,9 @@ public class TriviaServerEndpoint {
 	 * @param message
 	 */
 	private static void sendMessage(Session session, ServerMessage message) {
+		if (session == null) {
+			return;
+		}
 		try {
 			session.getBasicRemote().sendObject(message);
 		} catch (IOException | EncodeException exception) {
