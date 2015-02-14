@@ -78,6 +78,7 @@ public class TriviaClient implements Runnable {
 		} catch (DeploymentException | IOException exception) {
 			this.gui.disconnected();
 		}
+		this.setUser(this.user);
 	}
 
 	public int[] getVersions() {
