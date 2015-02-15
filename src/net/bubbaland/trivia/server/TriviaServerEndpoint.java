@@ -17,8 +17,9 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Timer;
-
 import java.util.TimerTask;
+
+import java.util.concurrent.Future;
 
 // import javax.swing.Timer;
 import javax.websocket.DeploymentException;
@@ -953,12 +954,14 @@ public class TriviaServerEndpoint {
 		if (session == null) {
 			return;
 		}
-		try {
-			session.getBasicRemote().sendObject(message);
-		} catch (IOException | EncodeException exception) {
-			log("Error while communicating with " + TriviaServerEndpoint.sessionList.get(session).user + ":");
-			exception.printStackTrace();
-		}
+		Future<Void> future = session.getAsyncRemote().sendObject(message);
+
+		// try {
+		// session.getBasicRemote().sendObject(message);
+		// } catch (IOException | EncodeException exception) {
+		// log("Error while communicating with " + TriviaServerEndpoint.sessionList.get(session).user + ":");
+		// exception.printStackTrace();
+		// }
 	}
 
 	/**
