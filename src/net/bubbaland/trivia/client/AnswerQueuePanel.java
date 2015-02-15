@@ -661,28 +661,34 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					final String aText = trivia.getAnswerQueueAnswer(queueIndex);
 					new ViewAnswerDialog(rNumber, qNumber, qValue, qText, aText);
 					break;
-				case "Change Agreement":
+				case "Agree":
+				case "Disagree":
+				case "Neutral":
 					JToggleButton source = ( (JToggleButton) event.getSource() );
 					queueIndex = Integer.parseInt(source.getName());
-					final Agreement agreement;
-					if (this.agreeButtons.get(queueIndex).isSelected()) {
-						agreement = Agreement.AGREE;
-					} else if (this.disagreeButtons.get(queueIndex).isSelected()) {
-						agreement = Agreement.DISAGREE;
-					} else {
-						agreement = Agreement.NEUTRAL;
+					Agreement agreement = null;
+					switch (command) {
+						case "Agree":
+							agreement = Agreement.AGREE;
+							break;
+						case "Disagree":
+							agreement = Agreement.DISAGREE;
+							break;
+						case "Neutral":
+							agreement = Agreement.NEUTRAL;
+							break;
 					}
-
+					final Agreement agreementF = agreement;
 					( new SwingWorker<Void, Void>() {
 						public Void doInBackground() {
 							AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory.changeAgreement(
-									queueIndex, agreement));
+									queueIndex, agreementF));
 							return null;
 						}
 
 						public void done() {
 							AnswerQueueSubPanel.this.client.log("Changed agreement on #" + ( queueIndex + 1 ) + " to "
-									+ agreement.name());
+									+ agreementF.name());
 						}
 					} ).execute();
 					break;
@@ -959,16 +965,22 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						case AGREE:
 							this.agreeButtons.get(a).setSelected(true);
 							this.agreeButtons.get(a).setBackground(agreeColor);
+							this.agreeButtons.get(a).setActionCommand("Neutral");
+							this.disagreeButtons.get(a).setActionCommand("Disagree");
 							this.disagreeButtons.get(a).setBackground(null);
 							break;
 						case DISAGREE:
 							this.disagreeButtons.get(a).setSelected(true);
 							this.agreeButtons.get(a).setBackground(null);
+							this.agreeButtons.get(a).setActionCommand("Agree");
+							this.disagreeButtons.get(a).setActionCommand("Neutral");
 							this.disagreeButtons.get(a).setBackground(disagreeColor);
 							break;
 						case NEUTRAL:
 							this.buttonGroups.get(a).clearSelection();
 							this.agreeButtons.get(a).setBackground(null);
+							this.agreeButtons.get(a).setActionCommand("Agree");
+							this.disagreeButtons.get(a).setActionCommand("Disagree");
 							this.disagreeButtons.get(a).setBackground(null);
 							break;
 					}
@@ -1225,7 +1237,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.agreeButtons.get(a).setToolTipText("Agree with this answer");
 			this.agreeButtons.get(a).setBorder(BorderFactory.createEmptyBorder());
 			this.agreeButtons.get(a).setMargin(new Insets(0, 0, 0, 0));
-			this.agreeButtons.get(a).setActionCommand("Change Agreement");
+			this.agreeButtons.get(a).setActionCommand("Agree");
 			setButtonProperties(this.agreeButtons.get(a), agreementWidth, rowHeight / 2, null, fontSize);
 			if (AnswerQueuePanel.this.live) {
 				this.agreeButtons.get(a).addActionListener(this);
@@ -1246,7 +1258,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.disagreeButtons.get(a).setToolTipText("Disagree with this answer");
 			this.disagreeButtons.get(a).setBorder(BorderFactory.createEmptyBorder());
 			this.disagreeButtons.get(a).setMargin(new Insets(0, 0, 0, 0));
-			this.disagreeButtons.get(a).setActionCommand("Change Agreement");
+			this.disagreeButtons.get(a).setActionCommand("Disagree");
 			setButtonProperties(this.disagreeButtons.get(a), agreementWidth, rowHeight / 2, null, fontSize);
 			if (AnswerQueuePanel.this.live) {
 				this.disagreeButtons.get(a).addActionListener(this);
