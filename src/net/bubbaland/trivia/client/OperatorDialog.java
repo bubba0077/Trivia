@@ -19,12 +19,12 @@ import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 public class OperatorDialog extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long		serialVersionUID	= -8974614016214193902L;
+	private static final long	serialVersionUID	= -8974614016214193902L;
 
-	private final TriviaClient		client;
-	private final int				queueIndex;
-	private final JComboBox<String>	statusComboBox;
-	private final JTextField		operatorTextField;
+	private final TriviaClient	client;
+	private final int			queueIndex;
+	private final JTextField	operatorTextField;
+	private final String		previousStatus;
 
 	/**
 	 * Creates a new dialog box and prompts for response
@@ -38,12 +38,14 @@ public class OperatorDialog extends TriviaDialogPanel {
 	 * @param statusComboBox
 	 *            The status combo box for this answer, so it can be reverted to previous state if dialog is cancelled
 	 */
-	public OperatorDialog(TriviaClient client, String responseType, int queueIndex, JComboBox<String> statusComboBox) {
+	public OperatorDialog(TriviaClient client, String responseType, int queueIndex, JComboBox<String> statusComboBox,
+			String previousStatus) {
 		super();
 
 		this.client = client;
 		this.queueIndex = queueIndex;
-		this.statusComboBox = statusComboBox;
+		// this.statusComboBox = statusComboBox;
+		this.previousStatus = previousStatus;
 
 		// Set up layout constraints
 		final GridBagConstraints c = new GridBagConstraints();
@@ -96,7 +98,88 @@ public class OperatorDialog extends TriviaDialogPanel {
 
 		} else {
 			// If the OK button wasn't pressed, reset the status box to the previous status
-			this.statusComboBox.setSelectedItem(this.client.getTrivia().getAnswerQueueStatus(this.queueIndex));
+			switch (previousStatus) {
+				case "Duplicate":
+					( new SwingWorker<Void, Void>() {
+						@Override
+						public Void doInBackground() {
+							OperatorDialog.this.client.sendMessage(ClientMessageFactory.markDuplicate(queueIndex));
+							return null;
+						}
+
+						@Override
+						public void done() {
+						}
+					} ).execute();
+					break;
+				case "Not Called In":
+					( new SwingWorker<Void, Void>() {
+						@Override
+						public Void doInBackground() {
+							OperatorDialog.this.client.sendMessage(ClientMessageFactory.markUncalled(queueIndex));
+							return null;
+						}
+
+						@Override
+						public void done() {
+						}
+					} ).execute();
+					break;
+				case "Calling":
+					( new SwingWorker<Void, Void>() {
+						@Override
+						public Void doInBackground() {
+							OperatorDialog.this.client.sendMessage(ClientMessageFactory.callIn(queueIndex));
+							return null;
+						}
+
+						@Override
+						public void done() {
+						}
+					} ).execute();
+					break;
+				case "Incorrect":
+					( new SwingWorker<Void, Void>() {
+						@Override
+						public Void doInBackground() {
+							OperatorDialog.this.client.sendMessage(ClientMessageFactory.markIncorrect(queueIndex));
+							return null;
+						}
+
+						@Override
+						public void done() {
+						}
+					} ).execute();
+					break;
+				case "Partial":
+					( new SwingWorker<Void, Void>() {
+						@Override
+						public Void doInBackground() {
+							OperatorDialog.this.client.sendMessage(ClientMessageFactory.markPartial(queueIndex));
+							return null;
+						}
+
+						@Override
+						public void done() {
+						}
+					} ).execute();
+					break;
+				case "Correct":
+					( new SwingWorker<Void, Void>() {
+						@Override
+						public Void doInBackground() {
+							OperatorDialog.this.client.sendMessage(ClientMessageFactory.markCorrect(queueIndex));
+							return null;
+						}
+
+						@Override
+						public void done() {
+						}
+					} ).execute();
+					break;
+				default:
+					break;
+			}
 		}
 
 	}

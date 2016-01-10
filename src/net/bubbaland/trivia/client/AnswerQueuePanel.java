@@ -718,6 +718,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					comboBoxName = ( (JComboBox<String>) source ).getName();
 				}
 				final int queueIndex = Integer.parseInt(comboBoxName);
+				final String lastStatus = AnswerQueueSubPanel.this.lastStatus.get(queueIndex);
 				switch (newStatus) {
 					case "Duplicate":
 						( new SwingWorker<Void, Void>() {
@@ -730,7 +731,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 							@Override
 							public void done() {
-
 							}
 						} ).execute();
 						break;
@@ -745,7 +745,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 							@Override
 							public void done() {
-
 							}
 						} ).execute();
 						break;
@@ -759,7 +758,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 							@Override
 							public void done() {
-
 							}
 						} ).execute();
 						break;
@@ -777,7 +775,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							}
 						} ).execute();
 						new OperatorDialog(this.client, "Marking Answer Incorrect", queueIndex,
-								( (JComboBox<String>) source ));
+								( (JComboBox<String>) source ), lastStatus);
 						break;
 					case "Partial":
 						( new SwingWorker<Void, Void>() {
@@ -793,7 +791,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							}
 						} ).execute();
 						new OperatorDialog(this.client, "Marking Answer Partially Correct", queueIndex,
-								( (JComboBox<String>) source ));
+								( (JComboBox<String>) source ), lastStatus);
 						break;
 					case "Correct":
 						( new SwingWorker<Void, Void>() {
@@ -809,7 +807,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							}
 						} ).execute();
 						new OperatorDialog(this.client, "Marking Answer Correct", queueIndex,
-								( (JComboBox<String>) source ));
+								( (JComboBox<String>) source ), lastStatus);
 						break;
 					default:
 						break;

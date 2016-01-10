@@ -24,9 +24,6 @@ import net.bubbaland.trivia.Trivia.Role;
 
 public class ClientMessage {
 
-	// public static class Coder extends JSONCoder<ClientMessage> {
-	// }
-
 	protected static JsonFactory jsonFactory = new JsonFactory();
 
 	public static enum ClientCommand {

@@ -240,11 +240,10 @@ public class Answer implements Serializable {
 	 *
 	 * @param caller
 	 *            The caller's user name
-	 * @param operator
-	 *            The operator who awarded the question
 	 */
 	public void markCorrect(String caller) {
 		this.caller = caller;
+		// this.operator = "";
 		this.status = Status.CORRECT;
 	}
 
@@ -269,7 +268,7 @@ public class Answer implements Serializable {
 	 */
 	public void markIncorrect(String caller) {
 		this.caller = caller;
-		this.operator = "";
+		// this.operator = "";
 		this.status = Status.INCORRECT;
 	}
 
@@ -281,7 +280,7 @@ public class Answer implements Serializable {
 	 */
 	public void markPartial(String caller) {
 		this.caller = caller;
-		this.operator = "";
+		// this.operator = "";
 		this.status = Status.PARTIAL;
 	}
 
