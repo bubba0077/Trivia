@@ -169,8 +169,8 @@ public class Round implements Serializable {
 	 * @param answer
 	 *            TODO
 	 */
-	public synchronized void close(int qNumber, String answer) {
-		this.questions[qNumber - 1].close(answer);
+	public synchronized void close(int qNumber) {
+		this.questions[qNumber - 1].close();
 		this.version++;
 	}
 
@@ -493,18 +493,18 @@ public class Round implements Serializable {
 		return earneds;
 	}
 
-	/**
-	 * Gets the operator for each correct answer in this round.
-	 *
-	 * @return Array of operators
-	 */
-	public String[] getEachOperator() {
-		final String[] operators = new String[this.nQuestionsSpeed];
-		for (int q = 0; q < operators.length; q++) {
-			operators[q] = this.questions[q].getOperator();
-		}
-		return operators;
-	}
+	// /**
+	// * Gets the operator for each correct answer in this round.
+	// *
+	// * @return Array of operators
+	// */
+	// public String[] getEachOperator() {
+	// final String[] operators = new String[this.nQuestionsSpeed];
+	// for (int q = 0; q < operators.length; q++) {
+	// operators[q] = this.questions[q].getOperator();
+	// }
+	// return operators;
+	// }
 
 	/**
 	 * Gets the text for each question in this round.
@@ -633,8 +633,10 @@ public class Round implements Serializable {
 	 *            The question number
 	 * @return The operator
 	 */
-	public String getOperator(int qNumber) {
-		return this.questions[qNumber - 1].getOperator();
+	public String getOperator(int queueIndex) {
+		final Answer answer = this.answerQueue.get(queueIndex);
+		return answer.getOperator();
+		// return this.questions[qNumber - 1].getOperator();
 	}
 
 	/**
@@ -790,13 +792,13 @@ public class Round implements Serializable {
 	 *            The operator who accepted the correct answer
 	 *
 	 */
-	public synchronized void markCorrect(int queueIndex, String caller, String operator) {
+	public synchronized void markCorrect(int queueIndex, String caller) {
 		final Answer answer = this.answerQueue.get(queueIndex);
-		answer.markCorrect(caller, operator);
+		answer.markCorrect(caller);
 		final int qNumber = answer.getQNumber();
 		final String answerText = answer.getAnswer();
 		final String submitter = answer.getSubmitter();
-		this.questions[qNumber - 1].markCorrect(answerText, submitter, operator);
+		this.questions[qNumber - 1].markCorrect(answerText, submitter);
 		this.version++;
 	}
 
@@ -814,7 +816,7 @@ public class Round implements Serializable {
 	 *
 	 */
 	public synchronized void markCorrect(int qNumber, String answerText, String submitter, String operator) {
-		this.questions[qNumber - 1].markCorrect(answerText, submitter, operator);
+		this.questions[qNumber - 1].markCorrect(answerText, submitter);
 		this.version++;
 	}
 
@@ -1130,8 +1132,9 @@ public class Round implements Serializable {
 	 * @param operator
 	 *            The operator
 	 */
-	public synchronized void setOperator(int qNumber, String operator) {
-		this.questions[qNumber - 1].setOperator(operator);
+	public synchronized void setOperator(int queueIndex, String operator) {
+		final Answer answer = this.answerQueue.get(queueIndex);
+		answer.setOperator(operator);
 		this.version++;
 	}
 
@@ -1246,7 +1249,8 @@ public class Round implements Serializable {
 				newAnswer.markPartial(caller);
 				break;
 			case "Correct":
-				newAnswer.markCorrect(caller, operator);
+				newAnswer.markCorrect(caller);
+				newAnswer.setOperator(operator);
 				break;
 			default:
 		}

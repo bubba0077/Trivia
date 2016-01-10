@@ -774,7 +774,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 							@Override
 							public void done() {
-
 							}
 						} ).execute();
 						break;
@@ -789,11 +788,22 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 							@Override
 							public void done() {
-
 							}
 						} ).execute();
 						break;
 					case "Correct":
+						( new SwingWorker<Void, Void>() {
+							@Override
+							public Void doInBackground() {
+								AnswerQueueSubPanel.this.client
+										.sendMessage(ClientMessageFactory.markCorrect(queueIndex));
+								return null;
+							}
+
+							@Override
+							public void done() {
+							}
+						} ).execute();
 						new CorrectEntryDialog(this.client, queueIndex, ( (JComboBox<String>) source ));
 						break;
 					default:

@@ -376,7 +376,8 @@ public class TriviaServerEndpoint {
 						if (isCorrect) {
 							trivia.markCorrect(rNumber, qNumber, answer, submitter, operator);
 						} else if (!isOpen) {
-							trivia.close(rNumber, qNumber, answer);
+							trivia.close(rNumber, qNumber);
+							trivia.setAnswer(qNumber, answer);
 						}
 					}
 				}
@@ -597,11 +598,6 @@ public class TriviaServerEndpoint {
 					// The submitter for a correctly answered question
 					element = doc.createElement("Submitter");
 					element.appendChild(doc.createTextNode(q.getSubmitter() + ""));
-					questionElement.appendChild(element);
-
-					// The operator who accepted a correct answer
-					element = doc.createElement("Operator");
-					element.appendChild(doc.createTextNode(q.getOperator() + ""));
 					questionElement.appendChild(element);
 				}
 
@@ -968,9 +964,7 @@ public class TriviaServerEndpoint {
 	 */
 	private static void sendMessage(Session session, ServerMessage message) {
 		if (session == null) return;
-
 		session.getAsyncRemote().sendObject(message);
-
 	}
 
 	/**
@@ -1018,7 +1012,7 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateUsers();
 				break;
 			case CLOSE_QUESTION:
-				TriviaServerEndpoint.trivia.close(message.getqNumber(), message.getaText());
+				TriviaServerEndpoint.trivia.close(message.getqNumber());
 				TriviaServerEndpoint.log("Question " + message.getqNumber() + " closed, " + TriviaServerEndpoint.trivia
 						.getValue(TriviaServerEndpoint.trivia.getCurrentRoundNumber(), message.getqNumber()));
 				TriviaServerEndpoint.updateTrivia();
@@ -1044,7 +1038,7 @@ public class TriviaServerEndpoint {
 				TriviaServerEndpoint.updateTrivia();
 				break;
 			case MARK_CORRECT:
-				TriviaServerEndpoint.trivia.markCorrect(message.getQueueIndex(), this.user, message.getOperator());
+				TriviaServerEndpoint.trivia.markCorrect(message.getQueueIndex(), this.user);
 				TriviaServerEndpoint.log("Item " + message.getQueueIndex() + " in the queue is correct, "
 						+ TriviaServerEndpoint.trivia.getValue(TriviaServerEndpoint.trivia.getCurrentRoundNumber(),
 								TriviaServerEndpoint.trivia.getAnswerQueueQNumbers()[message.getQueueIndex()])
@@ -1126,6 +1120,23 @@ public class TriviaServerEndpoint {
 				}
 				TriviaServerEndpoint.updateTrivia();
 				break;
+			case SET_OPERATOR:
+				TriviaServerEndpoint.trivia.setOperator(message.getQueueIndex(), message.getOperator());
+				TriviaServerEndpoint.log("Operator for queue index " + message.getQueueIndex() + " set by " + this.user
+						+ " to " + message.getOperator());
+				TriviaServerEndpoint.updateTrivia();
+				break;
+			case SET_QUESTION:
+				TriviaServerEndpoint.trivia.setQuestionText(message.getqNumber(), message.getqText());
+				TriviaServerEndpoint.trivia.setQuestionValue(message.getqNumber(), message.getqValue());
+				TriviaServerEndpoint.log("Question #" + message.getqNumber() + " set to " + message.getqText()
+						+ "with a value of " + message.getqValue() + " by " + this.user);
+				TriviaServerEndpoint.updateTrivia();
+				break;
+			case SET_ANSWER:
+				TriviaServerEndpoint.trivia.setAnswer(message.getQueueIndex(), message.getaText());
+				TriviaServerEndpoint.updateTrivia();
+				break;
 			case FETCH_TRIVIA:
 				final Trivia trivia = TriviaServerEndpoint.trivia;
 				sendMessage(session, ServerMessageFactory.updateTrivia(trivia));
@@ -1134,9 +1145,9 @@ public class TriviaServerEndpoint {
 			case RESTART_TIMER:
 				restartTimer();
 				break;
-			// default:
-			// break;
-
+			default:
+				TriviaServerEndpoint.log("Unknown message received by server!" + message.toString());
+				break;
 		}
 	}
 

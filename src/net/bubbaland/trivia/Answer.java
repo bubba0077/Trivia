@@ -243,10 +243,13 @@ public class Answer implements Serializable {
 	 * @param operator
 	 *            The operator who awarded the question
 	 */
-	public void markCorrect(String caller, String operator) {
+	public void markCorrect(String caller) {
 		this.caller = caller;
-		this.operator = operator;
 		this.status = Status.CORRECT;
+	}
+
+	public void setOperator(String operator) {
+		this.operator = operator;
 	}
 
 	/**

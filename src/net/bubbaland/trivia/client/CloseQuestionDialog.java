@@ -30,6 +30,20 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 
 		super();
 
+		// Open the question on the server temporarily
+		( new SwingWorker<Void, Void>() {
+			@Override
+			public Void doInBackground() {
+				CloseQuestionDialog.this.client.sendMessage(ClientMessageFactory.close(qNumber));
+				return null;
+			}
+
+			@Override
+			public void done() {
+			}
+		} ).execute();
+
+
 		this.client = client;
 		this.qNumber = qNumber;
 
@@ -111,7 +125,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 				@Override
 				public Void doInBackground() {
 					CloseQuestionDialog.this.client
-							.sendMessage(ClientMessageFactory.close(CloseQuestionDialog.this.qNumber, answer));
+							.sendMessage(ClientMessageFactory.setAnswer(CloseQuestionDialog.this.qNumber, answer));
 					return null;
 				}
 

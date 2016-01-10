@@ -31,7 +31,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 	 * GUI elements we will need to change on an action
 	 */
 	private final JToggleButton	correctButton;
-	private final JTextField	submitterTextField, operatorTextField;
+	private final JTextField	submitterTextField;
 	private final TriviaClient	client;
 	private final int			rNumber, qNumber;
 	private final JTextArea		qTextArea, aTextArea;
@@ -56,7 +56,7 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		final String existingQText = trivia.getQuestionText(rNumber, qNumber);
 		final String existingAText = trivia.getAnswerText(rNumber, qNumber);
 		final String existingSubmitter = trivia.getSubmitter(rNumber, qNumber);
-		final String existingOperator = trivia.getOperator(rNumber, qNumber);
+		// final String existingOperator = trivia.getOperator(rNumber, qNumber);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -183,8 +183,8 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		// Operator text field; will be disable if question is incorrect
 		constraints.gridx = 2;
 		constraints.gridy = 7;
-		this.operatorTextField = new JTextField(existingOperator);
-		this.add(this.operatorTextField, constraints);
+		// this.operatorTextField = new JTextField(existingOperator);
+		// this.add(this.operatorTextField, constraints);
 
 		this.correctButton.setText("Correct");
 
@@ -193,16 +193,12 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 			this.correctButton.setBackground(this.correctColor);
 			this.correctButton.setSelected(true);
 			this.submitterTextField.setEditable(true);
-			this.operatorTextField.setEditable(true);
 			this.submitterTextField.setBackground(Color.WHITE);
-			this.operatorTextField.setBackground(Color.WHITE);
 		} else {
 			this.correctButton.setBackground(null);
 			this.correctButton.setSelected(false);
 			this.submitterTextField.setEditable(false);
-			this.operatorTextField.setEditable(false);
 			this.submitterTextField.setBackground(this.getBackground());
-			this.operatorTextField.setBackground(this.getBackground());
 		}
 
 		// Display the dialog box
@@ -218,15 +214,11 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 			if (this.correctButton.isSelected()) {
 				this.correctButton.setBackground(this.correctColor);
 				this.submitterTextField.setEditable(true);
-				this.operatorTextField.setEditable(true);
 				this.submitterTextField.setBackground(Color.WHITE);
-				this.operatorTextField.setBackground(Color.WHITE);
 			} else {
 				this.correctButton.setBackground(null);
 				this.submitterTextField.setEditable(false);
-				this.operatorTextField.setEditable(false);
 				this.submitterTextField.setBackground(this.getBackground());
-				this.operatorTextField.setBackground(this.getBackground());
 			}
 		}
 
@@ -244,15 +236,14 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 			final String qText = this.qTextArea.getText();
 			final String aText = this.aTextArea.getText();
 			final String submitter = this.submitterTextField.getText();
-			final String operator = this.operatorTextField.getText();
 
 			// Edit the question on the server
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					EditQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
-							EditQuestionDialog.this.rNumber, EditQuestionDialog.this.qNumber, qValue, qText, aText,
-							submitter, isCorrect, operator));
+					EditQuestionDialog.this.client
+							.sendMessage(ClientMessageFactory.editQuestion(EditQuestionDialog.this.rNumber,
+									EditQuestionDialog.this.qNumber, qValue, qText, aText, submitter, isCorrect));
 					return null;
 				}
 

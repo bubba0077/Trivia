@@ -201,9 +201,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
-								NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue,
-								qText, null, null, false, null));
+						NewQuestionDialog.this.client
+								.sendMessage(ClientMessageFactory.setQuestion(qNumber, qValue, qText));
 						return null;
 					}
 
@@ -270,9 +269,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
 				NewQuestionDialog.this.client
 						.sendMessage(ClientMessageFactory.remapQuestion(NewQuestionDialog.this.qNumberStart, qNumber));
-				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
-						NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue, qText, null,
-						null, false, null));
+				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.setQuestion(qNumber, qValue, qText));
 				return null;
 			}
 
@@ -377,9 +374,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
 				NewQuestionDialog.this.client
 						.sendMessage(ClientMessageFactory.remapQuestion(NewQuestionDialog.this.qNumberStart, qNumber));
-				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
-						NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue, qText, null,
-						null, false, null));
+				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.setQuestion(qNumber, qValue, qText));
 				return null;
 			}
 

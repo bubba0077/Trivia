@@ -83,7 +83,7 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					CorrectEntryDialog.this.client.sendMessage(ClientMessageFactory.markCorrect(
+					CorrectEntryDialog.this.client.sendMessage(ClientMessageFactory.setOperator(
 							CorrectEntryDialog.this.queueIndex, CorrectEntryDialog.this.operatorTextField.getText()));
 					return null;
 				}

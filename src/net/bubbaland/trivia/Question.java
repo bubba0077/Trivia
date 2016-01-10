@@ -33,10 +33,6 @@ public class Question implements Serializable {
 	@JsonProperty("answer")
 	private volatile String		answer;
 
-	// The operator who accepted the correct answer
-	@JsonProperty("operator")
-	private volatile String		operator;
-
 	// The user who submitted the correct answer
 	@JsonProperty("submitter")
 	private volatile String		submitter;
@@ -66,7 +62,6 @@ public class Question implements Serializable {
 		this.value = 0;
 		this.question = "";
 		this.answer = "";
-		this.operator = "";
 		this.submitter = "";
 		this.isOpen = false;
 		this.beenOpen = false;
@@ -83,7 +78,6 @@ public class Question implements Serializable {
 		this.value = value;
 		this.question = question;
 		this.answer = answer;
-		this.operator = operator;
 		this.submitter = submitter;
 		this.isOpen = open;
 		this.beenOpen = beenOpen;
@@ -105,10 +99,7 @@ public class Question implements Serializable {
 	 * @param answer
 	 *            TODO
 	 */
-	public void close(String answer) {
-		if (!answer.equals("")) {
-			this.answer = answer;
-		}
+	public void close() {
 		this.isOpen = false;
 	}
 
@@ -140,15 +131,6 @@ public class Question implements Serializable {
 	 */
 	public int getNumber() {
 		return this.qNumber;
-	}
-
-	/**
-	 * Gets the operator who took the correct answer for this question (if any)
-	 *
-	 * @return The operator name
-	 */
-	public String getOperator() {
-		return this.operator;
 	}
 
 	/**
@@ -206,11 +188,10 @@ public class Question implements Serializable {
 	 * @param operator
 	 *            The operator who accepted the correct answer
 	 */
-	public void markCorrect(String answer, String submitter, String operator) {
+	public void markCorrect(String answer, String submitter) {
 		this.correct = true;
 		this.isOpen = false;
 		this.answer = answer;
-		this.operator = operator;
 		this.submitter = submitter;
 	}
 
@@ -221,7 +202,6 @@ public class Question implements Serializable {
 		this.correct = false;
 		this.isOpen = true;
 		this.answer = "";
-		this.operator = "";
 		this.submitter = "";
 	}
 
@@ -248,7 +228,6 @@ public class Question implements Serializable {
 		this.value = 0;
 		this.question = "";
 		this.answer = "";
-		this.operator = "";
 		this.submitter = "";
 		this.isOpen = false;
 		this.beenOpen = false;
@@ -263,16 +242,6 @@ public class Question implements Serializable {
 	 */
 	public void setAnswerText(String answer) {
 		this.answer = answer;
-	}
-
-	/**
-	 * Sets the operator for this question
-	 *
-	 * @param operator
-	 *            The new operator
-	 */
-	public void setOperator(String operator) {
-		this.operator = operator;
 	}
 
 	/**
@@ -309,7 +278,6 @@ public class Question implements Serializable {
 		this.value = question.value;
 		this.question = question.question;
 		this.answer = question.answer;
-		this.operator = question.operator;
 		this.submitter = question.submitter;
 		this.isOpen = question.isOpen;
 		this.beenOpen = question.beenOpen;

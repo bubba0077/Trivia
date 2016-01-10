@@ -122,8 +122,8 @@ public class Trivia implements Serializable {
 	 * @param answer
 	 *            TODO
 	 */
-	public void close(int rNumber, int qNumber, String answer) {
-		this.rounds[rNumber - 1].close(qNumber, answer);
+	public void close(int rNumber, int qNumber) {
+		this.rounds[rNumber - 1].close(qNumber);
 	}
 
 	/**
@@ -134,8 +134,8 @@ public class Trivia implements Serializable {
 	 * @param answer
 	 *            TODO
 	 */
-	public void close(int qNumber, String answer) {
-		this.getCurrentRound().close(qNumber, answer);
+	public void close(int qNumber) {
+		this.getCurrentRound().close(qNumber);
 	}
 
 	/**
@@ -550,16 +550,16 @@ public class Trivia implements Serializable {
 		return this.rounds[rNumber - 1].getEachEarned();
 	}
 
-	/**
-	 * Gets the operator for each question in a round.
-	 *
-	 * @param rNumber
-	 *            The round number
-	 * @return Array of operators
-	 */
-	public String[] getEachOperator(int rNumber) {
-		return this.rounds[rNumber - 1].getEachOperator();
-	}
+	// /**
+	// * Gets the operator for each question in a round.
+	// *
+	// * @param rNumber
+	// * The round number
+	// * @return Array of operators
+	// */
+	// public String[] getEachOperator(int rNumber) {
+	// return this.rounds[rNumber - 1].getEachOperator();
+	// }
 
 	/**
 	 * Gets the text of each question in a round.
@@ -715,8 +715,8 @@ public class Trivia implements Serializable {
 	 *            The question number
 	 * @return The operator
 	 */
-	public String getOperator(int rNumber, int qNumber) {
-		return this.rounds[rNumber - 1].getOperator(qNumber);
+	public String getOperator(int rNumber, int queueIndex) {
+		return this.rounds[rNumber - 1].getOperator(queueIndex);
 	}
 
 	/**
@@ -923,8 +923,8 @@ public class Trivia implements Serializable {
 	 * @param operator
 	 *            The operator who accepted the answer
 	 */
-	public void markCorrect(int queueIndex, String caller, String operator) {
-		this.getCurrentRound().markCorrect(queueIndex, caller, operator);
+	public void markCorrect(int queueIndex, String caller) {
+		this.getCurrentRound().markCorrect(queueIndex, caller);
 	}
 
 	/**
@@ -1102,6 +1102,14 @@ public class Trivia implements Serializable {
 	public void setAnswer(int rNumber, int qNumber, String answer, String submitter, int confidence, String status,
 			String caller, String operator, String timestamp) {
 		this.rounds[rNumber - 1].setAnswer(qNumber, answer, submitter, confidence, status, caller, operator, timestamp);
+	}
+
+	public void setAnswer(int queueIndex, String answer) {
+		getCurrentRound().setAnswerText(getCurrentRound().getAnswerQueueQNumber(queueIndex), answer);
+	}
+
+	public void setOperator(int queueIndex, String operator) {
+		getCurrentRound().setOperator(queueIndex, operator);
 	}
 
 	/**

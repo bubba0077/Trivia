@@ -2,6 +2,7 @@ package net.bubbaland.trivia;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.rmi.RemoteException;
 
 import javax.websocket.DecodeException;
@@ -29,7 +30,7 @@ public class ClientMessage {
 	protected static JsonFactory jsonFactory = new JsonFactory();
 
 	public static enum ClientCommand {
-		CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA, RESTART_TIMER
+		CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA, RESTART_TIMER, SET_OPERATOR, SET_ANSWER, SET_QUESTION
 	};
 
 	private ClientCommand	command;
@@ -162,6 +163,26 @@ public class ClientMessage {
 		return this.user;
 	}
 
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+		final String newLine = System.getProperty("line.separator");
+
+		for (Field field : this.getClass().getDeclaredFields()) {
+			result.append("  ");
+			try {
+				result.append(field.getName());
+				result.append(": ");
+				// requires access to private field:
+				result.append(field.get(this));
+			} catch (IllegalAccessException ex) {
+				System.out.println(ex);
+			}
+			result.append(newLine);
+		}
+		result.append("}");
+		return result.toString();
+	}
+
 	public static class ClientMessageFactory {
 
 		/**
@@ -207,10 +228,34 @@ public class ClientMessage {
 		 * @throws RemoteException
 		 *             A remote exception
 		 */
-		public static ClientMessage close(int qNumber, String aText) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CLOSE_QUESTION);
+		public static ClientMessage setAnswer(int qNumber, String aText) {
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_ANSWER);
 			message.qNumber = qNumber;
 			message.aText = aText;
+			return message;
+		}
+
+		public static ClientMessage setQuestion(int qNumber, int qValue, String qText) {
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_QUESTION);
+			message.qNumber = qNumber;
+			message.qText = qText;
+			message.qValue = qValue;
+			return message;
+		}
+
+		/**
+		 * Close a question.
+		 *
+		 * @param user
+		 *            The user's name
+		 * @param qNumber
+		 *            The question number
+		 * @throws RemoteException
+		 *             A remote exception
+		 */
+		public static ClientMessage close(int qNumber) {
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CLOSE_QUESTION);
+			message.qNumber = qNumber;
 			return message;
 		}
 
@@ -231,12 +276,10 @@ public class ClientMessage {
 		 *            Whether the question was answered correctly
 		 * @param submitter
 		 *            The correct answer submitter
-		 * @param operator
-		 *            The operator who accepted the correct answer
 		 * @throws RemoteException
 		 */
 		public static ClientMessage editQuestion(int rNumber, int qNumber, int qValue, String qText, String aText,
-				String submitter, boolean isCorrect, String operator) {
+				String submitter, boolean isCorrect) {
 			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.EDIT_QUESTION);
 			message.rNumber = rNumber;
 			message.qNumber = qNumber;
@@ -245,7 +288,6 @@ public class ClientMessage {
 			message.aText = aText;
 			message.user = submitter;
 			message.correct = isCorrect;
-			message.operator = operator;
 			return message;
 		}
 
@@ -285,13 +327,17 @@ public class ClientMessage {
 		 *            The location of the answer in the queue
 		 * @param caller
 		 *            The caller's name
-		 * @param operator
-		 *            The operator who accepted the answer
 		 * @throws RemoteException
 		 *             A remote exception
 		 */
-		public static ClientMessage markCorrect(int queueIndex, String operator) {
+		public static ClientMessage markCorrect(int queueIndex) {
 			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_CORRECT);
+			message.queueIndex = queueIndex;
+			return message;
+		}
+
+		public static ClientMessage setOperator(int queueIndex, String operator) {
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_OPERATOR);
 			message.queueIndex = queueIndex;
 			message.operator = operator;
 			return message;
