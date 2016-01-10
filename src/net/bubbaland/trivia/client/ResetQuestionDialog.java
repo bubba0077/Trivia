@@ -70,22 +70,25 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 
 		this.dialog = new TriviaDialog(null, "Confirm Question Reset " + qNumber, this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
-		dialog.setVisible(true);
+		this.dialog.setVisible(true);
 	}
 
 	@Override
 	public void windowClosed(WindowEvent event) {
 		super.windowClosed(event);
-		final int confirm = ( (Integer) dialog.getValue() ).intValue();
+		final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
 		if (confirm == JOptionPane.OK_OPTION) {
 			( new SwingWorker<Void, Void>() {
+				@Override
 				public Void doInBackground() {
-					ResetQuestionDialog.this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
+					ResetQuestionDialog.this.client
+							.sendMessage(ClientMessageFactory.resetQuestion(ResetQuestionDialog.this.qNumber));
 					return null;
 				}
 
+				@Override
 				public void done() {
-					client.log("Question #" + qNumber + " reset.");
+					ResetQuestionDialog.this.client.log("Question #" + ResetQuestionDialog.this.qNumber + " reset.");
 				}
 			} ).execute();
 			return;

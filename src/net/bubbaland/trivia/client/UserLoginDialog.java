@@ -9,9 +9,9 @@ import javax.swing.JTextField;
 
 /**
  * Creates prompt for user name.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class UserLoginDialog extends TriviaDialogPanel {
 
@@ -23,7 +23,7 @@ public class UserLoginDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new user login.
-	 * 
+	 *
 	 * @param client
 	 *            the client
 	 * @param role
@@ -51,16 +51,16 @@ public class UserLoginDialog extends TriviaDialogPanel {
 		c.gridy = 0;
 		c.weightx = 1.0;
 		this.userTextField = new JTextField("", 15);
-		userTextField.setFont(userTextField.getFont().deriveFont(fontSize));
-		this.add(userTextField, c);
-		userTextField.addAncestorListener(this);
+		this.userTextField.setFont(this.userTextField.getFont().deriveFont(fontSize));
+		this.add(this.userTextField, c);
+		this.userTextField.addAncestorListener(this);
 
 		final String userName = client.getUser();
 		int options;
 		if (userName == null) {
 			options = JOptionPane.DEFAULT_OPTION;
 		} else {
-			userTextField.setText(userName);
+			this.userTextField.setText(userName);
 			options = JOptionPane.OK_CANCEL_OPTION;
 		}
 
@@ -71,7 +71,7 @@ public class UserLoginDialog extends TriviaDialogPanel {
 			this.dialog.removeWindowListener(this);
 			this.dialog.setVisible(true);
 
-			final String user = userTextField.getText();
+			final String user = this.userTextField.getText();
 
 			// If the OK button was pressed, add the proposed answer to the queue
 			final int option = ( (Integer) this.dialog.getValue() ).intValue();
@@ -97,37 +97,37 @@ public class UserLoginDialog extends TriviaDialogPanel {
 	public void windowClosed(WindowEvent event) {
 		super.windowClosed(event);
 		// Set the user name to input value
-		final String user = userTextField.getText();
+		final String user = this.userTextField.getText();
 
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 
 		if (option != JOptionPane.CLOSED_OPTION) {
 			// Check if name is already being used
-			while (client.getIdleUserHash() == null) {
+			while (this.client.getIdleUserHash() == null) {
 				try {
 					Thread.sleep(500);
-				} catch (InterruptedException exception) {
+				} catch (final InterruptedException exception) {
 					// Nothing to do
 				}
 			}
-			if (client.getIdleUserHash().containsKey(user)) {
-				int confirm = (int) JOptionPane.showConfirmDialog(null, "The name \"" + user
-						+ "\" has been connected recently. Do you still want to use this name?", "Name Conflict",
-						JOptionPane.YES_NO_OPTION);
+			if (this.client.getIdleUserHash().containsKey(user)) {
+				final int confirm = JOptionPane.showConfirmDialog(null,
+						"The name \"" + user + "\" has been connected recently. Do you still want to use this name?",
+						"Name Conflict", JOptionPane.YES_NO_OPTION);
 				if (confirm == JOptionPane.NO_OPTION) {
-					new UserLoginDialog(client);
+					new UserLoginDialog(this.client);
 					return;
 				}
 			}
 
 			if (user.toCharArray().length != 0) {
-				client.setUser(user);
+				this.client.setUser(user);
 			} else {
-				new UserLoginDialog(client);
+				new UserLoginDialog(this.client);
 			}
 		} else {
-			if (client.getUser() == null) {
+			if (this.client.getUser() == null) {
 				System.exit(0);
 			}
 		}

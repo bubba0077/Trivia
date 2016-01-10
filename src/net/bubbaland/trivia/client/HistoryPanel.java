@@ -22,13 +22,13 @@ import net.bubbaland.trivia.Trivia;
 
 /**
  * A panel to select and display any round.
- * 
+ *
  * The <code>History</code> class is a panel that allows you to display the question data for any round. There are two
  * parts: a top area that has a selector to choose the desired round, and a <code>RoundQlistPanel</code> that displays
  * the question data for the chosen round.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 
@@ -51,7 +51,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 
 	/**
 	 * Instantiates a new history panel.
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 */
@@ -99,8 +99,8 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 			rNumbers[r] = ( r + 1 ) + "";
 		}
 		this.roundSelector = new JComboBox<String>(rNumbers);
-		this.roundSelector.setRenderer(new RoundCellRenderer((ListCellRenderer<String>) this.roundSelector
-				.getRenderer()));
+		this.roundSelector
+				.setRenderer(new RoundCellRenderer((ListCellRenderer<String>) this.roundSelector.getRenderer()));
 		this.roundSelector.addItemListener(this);
 		panel.add(this.roundSelector, solo);
 
@@ -156,7 +156,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
 	 */
 	@SuppressWarnings("unchecked")
@@ -171,7 +171,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -182,8 +182,8 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		this.roundScoreLabel.setText(trivia.getEarned(rNumber) + " / " + trivia.getValue(rNumber));
 		this.totalScoreLabel.setText(trivia.getCumulativeEarned(rNumber) + " / " + trivia.getCumulativeValue(rNumber));
 		if (trivia.isAnnounced(rNumber)) {
-			this.placeScoreLabel.setText(TriviaGUI.ordinalize(trivia.getAnnouncedPlace(rNumber)) + " / "
-					+ trivia.getNTeams() + " ");
+			this.placeScoreLabel.setText(
+					TriviaGUI.ordinalize(trivia.getAnnouncedPlace(rNumber)) + " / " + trivia.getNTeams() + " ");
 		} else {
 			this.placeScoreLabel.setText("-- / " + trivia.getNTeams() + " ");
 		}
@@ -197,12 +197,12 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		/**
 		 * Colors
 		 */
-		final Color headerBackgroundColor = new Color(new BigInteger(
-				properties.getProperty("History.Header.BackgroundColor"), 16).intValue());
-		final Color selectorColor = new Color(new BigInteger(properties.getProperty("History.Header.Selector.Color"),
-				16).intValue());
-		final Color selectorBackgroundColor = new Color(new BigInteger(
-				properties.getProperty("History.Header.Selector.BackgroundColor"), 16).intValue());
+		final Color headerBackgroundColor = new Color(
+				new BigInteger(properties.getProperty("History.Header.BackgroundColor"), 16).intValue());
+		final Color selectorColor = new Color(
+				new BigInteger(properties.getProperty("History.Header.Selector.Color"), 16).intValue());
+		final Color selectorBackgroundColor = new Color(
+				new BigInteger(properties.getProperty("History.Header.Selector.BackgroundColor"), 16).intValue());
 		final Color roundColor = new Color(
 				new BigInteger(properties.getProperty("History.Header.Round.Color"), 16).intValue());
 		final Color totalColor = new Color(
@@ -244,19 +244,20 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		setLabelProperties(this.blank0, -1, headerHeight, roundColor, headerBackgroundColor, headerFontSize);
 		setLabelProperties(this.blank1, -1, headerHeight, roundColor, headerBackgroundColor, headerFontSize);
 
-		setComboBoxProperties(this.roundSelector, selectorWidth, selectorHeight, selectorColor,
-				selectorBackgroundColor, headerBackgroundColor, headerFontSize);
+		setComboBoxProperties(this.roundSelector, selectorWidth, selectorHeight, selectorColor, selectorBackgroundColor,
+				headerBackgroundColor, headerFontSize);
 
 		this.roundQuestionPanel.loadProperties(properties);
 	}
 
+	@Override
 	public void changeFrame(TriviaFrame newFrame) {
 		super.changeFrame(newFrame);
 		this.roundQuestionPanel.changeFrame(newFrame);
 	}
 
 	private class RoundCellRenderer implements ListCellRenderer<String> {
-		private final ListCellRenderer<String>	wrapped;
+		private final ListCellRenderer<String> wrapped;
 
 		public RoundCellRenderer(ListCellRenderer<String> listCellRenderer) {
 			this.wrapped = listCellRenderer;
@@ -269,7 +270,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 			final Component renderer = this.wrapped.getListCellRendererComponent(list, displayName, index, isSelected,
 					cellHasFocus);
 			if (renderer instanceof JLabel) {
-				( (JLabel) renderer ).setHorizontalAlignment(JLabel.RIGHT);
+				( (JLabel) renderer ).setHorizontalAlignment(SwingConstants.RIGHT);
 				if (isSelected) {
 					( (JLabel) renderer ).setForeground(HistoryPanel.this.roundSelector.getBackground());
 					( (JLabel) renderer ).setBackground(HistoryPanel.this.roundSelector.getForeground());

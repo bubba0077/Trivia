@@ -5,9 +5,9 @@ import java.util.Properties;
 
 /**
  * Super-class for most of the panels in the trivia GUI.
- * 
+ *
  * Provides methods for automatically making labels and text areas that fill their space by enclosing them in panels
- * 
+ *
  */
 public abstract class TriviaMainPanel extends TriviaPanel {
 
@@ -19,7 +19,7 @@ public abstract class TriviaMainPanel extends TriviaPanel {
 
 	/**
 	 * Instantiates a new Trivia Panel
-	 * 
+	 *
 	 * @param triviaGUI
 	 *            TODO
 	 * @param frame

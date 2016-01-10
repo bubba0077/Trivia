@@ -13,15 +13,15 @@ import javax.swing.WindowConstants;
 
 /**
  * Custom dialog that handles setting up a lot of the characteristics used by all trivia dialogs.
- * 
+ *
  * The TriviaDialog class handles the creation of the option pane for the dialog. It also handles the saving and loading
  * of position and size and makes the dialog resizable.
- * 
+ *
  * The constructor takes in the parent frame and title for the dialog box, followed by the usual arguments for
  * JOptionPane.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class TriviaDialog extends JDialog implements WindowListener, PropertyChangeListener {
 
@@ -32,7 +32,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 
 	/**
 	 * Create a TriviaDialog with no arguments for the JOptionPane
-	 * 
+	 *
 	 * @param frame
 	 *            Parent frame for the dialog
 	 * @param title
@@ -45,7 +45,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	/**
 	 * Create a TriviaDialog using the specified option pane. This is generally used internally after the option pane
 	 * has been created.
-	 * 
+	 *
 	 * @param frame
 	 *            Parent frame for the dialog
 	 * @param title
@@ -71,7 +71,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 
 	/**
 	 * Create a TriviaDialog using the specified option pane arguments.
-	 * 
+	 *
 	 * @param frame
 	 *            Parent frame for the dialog
 	 * @param title
@@ -86,7 +86,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 
 	/**
 	 * Create a TriviaDialog using the specified option pane arguments.
-	 * 
+	 *
 	 * @param frame
 	 *            Parent frame for the dialog
 	 * @param title
@@ -103,7 +103,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 
 	/**
 	 * Create a TriviaDialog using the specified option pane arguments.
-	 * 
+	 *
 	 * @param frame
 	 *            Parent frame for the dialog
 	 * @param title
@@ -122,7 +122,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 
 	/**
 	 * Create a TriviaDialog using the specified option pane arguments.
-	 * 
+	 *
 	 * @param frame
 	 *            Parent frame for the dialog
 	 * @param title
@@ -136,14 +136,15 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 	 * @param icon
 	 * @see JOptionPane
 	 */
-	public TriviaDialog(Frame frame, String title, TriviaDialogPanel panel, int messageType, int optionType, Icon icon) {
+	public TriviaDialog(Frame frame, String title, TriviaDialogPanel panel, int messageType, int optionType,
+			Icon icon) {
 		this(frame, title, new JOptionPane(panel, messageType, optionType, icon));
 		this.addWindowListener(panel);
 	}
 
 	/**
 	 * Create a TriviaDialog using the specified option pane arguments.
-	 * 
+	 *
 	 * @param frame
 	 *            Parent frame for the dialog
 	 * @param title
@@ -167,7 +168,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 
 	/**
 	 * Create a TriviaDialog using the specified option pane arguments.
-	 * 
+	 *
 	 * @param frame
 	 *            Parent frame for the dialog
 	 * @param title
@@ -209,7 +210,7 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 
 	/**
 	 * Pass through the value of the option pane.
-	 * 
+	 *
 	 * @return The value of the option pane
 	 */
 	public Object getValue() {
@@ -258,12 +259,12 @@ public class TriviaDialog extends JDialog implements WindowListener, PropertyCha
 
 	@Override
 	public void windowOpened(WindowEvent e) {
-		loadPosition();
+		this.loadPosition();
 	}
 
 	/**
 	 * Load the saved position and size of the window from file. If none found, use preferred size of components.
-	 * 
+	 *
 	 */
 	protected void loadPosition() {
 		try {

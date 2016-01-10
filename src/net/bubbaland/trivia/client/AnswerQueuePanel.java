@@ -50,9 +50,9 @@ import net.bubbaland.trivia.client.TriviaGUI.QueueSort;
 
 /**
  * A panel that shows the submitted answers for the current round.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, ActionListener {
 
@@ -61,21 +61,20 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	/** Valid statuses for queue items */
 	private static final String[]			STATUSES			= { "Duplicate", "Not Called In", "Calling",
-			"Incorrect", "Partial", "Correct"					};
+			"Incorrect", "Partial", "Correct" };
 
 	/** Sort icons */
 	private static final ImageIcon			upArrow				= new ImageIcon(
-																		AnswerQueuePanel.class
-																				.getResource("images/upArrow.png"));
+			AnswerQueuePanel.class.getResource("images/upArrow.png"));
 	private static final ImageIcon			downArrow			= new ImageIcon(
-																		AnswerQueuePanel.class
-																				.getResource("images/downArrow.png"));
+			AnswerQueuePanel.class.getResource("images/downArrow.png"));
 
 	private static int						nBlinks;
 	private static int						blinkSpeed;
 
 	// Set up layout constraints
 	private static final GridBagConstraints	buttonConstraints	= new GridBagConstraints();
+
 	static {
 		buttonConstraints.fill = GridBagConstraints.BOTH;
 		buttonConstraints.anchor = GridBagConstraints.CENTER;
@@ -86,29 +85,29 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		buttonConstraints.fill = GridBagConstraints.NONE;
 	}
 
-	private static Color					oddRowBackgroundColor, evenRowBackgroundColor, duplicateColor,
-			notCalledInColor, callingColor, incorrectColor, partialColor, correctColor, agreeColor, disagreeColor;
-	private static int						rowHeight, timeWidth, qNumWidth, answerWidth, confidenceWidth,
-			agreementWidth, subCallerWidth, operatorWidth, statusWidth;
-	private static float					fontSize, qNumFontSize;
+	private static Color				oddRowBackgroundColor, evenRowBackgroundColor, duplicateColor, notCalledInColor,
+			callingColor, incorrectColor, partialColor, correctColor, agreeColor, disagreeColor;
+	private static int					rowHeight, timeWidth, qNumWidth, answerWidth, confidenceWidth, agreementWidth,
+			subCallerWidth, operatorWidth, statusWidth;
+	private static float				fontSize, qNumFontSize;
 
 	/**
 	 * GUI elements that will be updated
 	 */
-	final private JLabel					timestampLabel, qNumberLabel, answerLabel, confidenceLabel, subCallerLabel,
+	final private JLabel				timestampLabel, qNumberLabel, answerLabel, confidenceLabel, subCallerLabel,
 			operatorLabel, statusLabel, queueSizeLabel;
-	final private JPanel					spacer;
-	final private JScrollPane				scrollPane;
-	private final JPopupMenu				contextMenu;
-	private int								rNumber, blinkCount;
-	private boolean							live, blink;
-	final private Timer						blinkTimer;
+	final private JPanel				spacer;
+	final private JScrollPane			scrollPane;
+	private final JPopupMenu			contextMenu;
+	private int							rNumber, blinkCount;
+	private boolean						live, blink;
+	final private Timer					blinkTimer;
 
 	/** The workflow queue sub panel */
-	final private AnswerQueueSubPanel		answerQueueSubPanel;
+	final private AnswerQueueSubPanel	answerQueueSubPanel;
 
-	private Color							headerColor;
-	private Color							headerBackgroundColor;
+	private Color						headerColor;
+	private Color						headerBackgroundColor;
 
 	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame, int rNumber) {
 		this(client, frame);
@@ -118,7 +117,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	/**
 	 * Instantiates a new workflow queue panel.
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 * @param frame
@@ -270,7 +269,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	private class PopupListener extends MouseAdapter {
 
-		private final JPopupMenu	menu;
+		private final JPopupMenu menu;
 
 		public PopupListener(JPopupMenu menu) {
 			this.menu = menu;
@@ -306,7 +305,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
@@ -331,8 +330,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				break;
 			case "Blink":
 				this.blinkCount++;
-				Color headerColor,
-				headerBackgroundColor;
+				Color headerColor, headerBackgroundColor;
 				if (this.blink) {
 					headerColor = this.headerColor;
 					headerBackgroundColor = this.headerBackgroundColor;
@@ -410,7 +408,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -479,18 +477,20 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		/**
 		 * Colors
 		 */
-		headerColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Header.Color"), 16).intValue());
-		headerBackgroundColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Header.BackgroundColor"),
-				16).intValue());
-		oddRowBackgroundColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.OddRow.BackgroundColor"),
-				16).intValue());
-		evenRowBackgroundColor = new Color(new BigInteger(
-				properties.getProperty("AnswerQueue.EvenRow.BackgroundColor"), 16).intValue());
-		duplicateColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Duplicate.Color"), 16).intValue());
+		this.headerColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Header.Color"), 16).intValue());
+		this.headerBackgroundColor = new Color(
+				new BigInteger(properties.getProperty("AnswerQueue.Header.BackgroundColor"), 16).intValue());
+		oddRowBackgroundColor = new Color(
+				new BigInteger(properties.getProperty("AnswerQueue.OddRow.BackgroundColor"), 16).intValue());
+		evenRowBackgroundColor = new Color(
+				new BigInteger(properties.getProperty("AnswerQueue.EvenRow.BackgroundColor"), 16).intValue());
+		duplicateColor = new Color(
+				new BigInteger(properties.getProperty("AnswerQueue.Duplicate.Color"), 16).intValue());
 		notCalledInColor = new Color(
 				new BigInteger(properties.getProperty("AnswerQueue.NotCalledIn.Color"), 16).intValue());
 		callingColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Calling.Color"), 16).intValue());
-		incorrectColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
+		incorrectColor = new Color(
+				new BigInteger(properties.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
 		partialColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Partial.Color"), 16).intValue());
 		correctColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
 		agreeColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Agree.Color"), 16).intValue());
@@ -519,7 +519,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		fontSize = Float.parseFloat(properties.getProperty("AnswerQueue.FontSize"));
 
 		/**
-		 * 
+		 *
 		 */
 		AnswerQueuePanel.nBlinks = Integer.parseInt(properties.getProperty("AnswerQueue.Blink.N"));
 		AnswerQueuePanel.blinkSpeed = Integer.parseInt(properties.getProperty("AnswerQueue.Blink.Speed"));
@@ -529,19 +529,19 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		/** The number of open questions to show at one time */
 		final int answersShow = Integer.parseInt(properties.getProperty("AnswerQueue.AnswersShow"));
 
-		setLabelProperties(this.timestampLabel, timeWidth, headerHeight, headerColor, headerBackgroundColor,
+		setLabelProperties(this.timestampLabel, timeWidth, headerHeight, this.headerColor, this.headerBackgroundColor,
 				headerFontSize);
-		setLabelProperties(this.qNumberLabel, qNumWidth, headerHeight, headerColor, headerBackgroundColor,
+		setLabelProperties(this.qNumberLabel, qNumWidth, headerHeight, this.headerColor, this.headerBackgroundColor,
 				headerFontSize);
-		setLabelProperties(this.answerLabel, answerWidth, headerHeight, headerColor, headerBackgroundColor,
+		setLabelProperties(this.answerLabel, answerWidth, headerHeight, this.headerColor, this.headerBackgroundColor,
 				headerFontSize);
-		setLabelProperties(this.confidenceLabel, confidenceWidth + agreementWidth, headerHeight, headerColor,
-				headerBackgroundColor, headerFontSize);
-		setLabelProperties(this.subCallerLabel, subCallerWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.operatorLabel, operatorWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
-		setLabelProperties(this.statusLabel, statusWidth, headerHeight, headerColor, headerBackgroundColor,
+		setLabelProperties(this.confidenceLabel, confidenceWidth + agreementWidth, headerHeight, this.headerColor,
+				this.headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.subCallerLabel, subCallerWidth, headerHeight, this.headerColor,
+				this.headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.operatorLabel, operatorWidth, headerHeight, this.headerColor,
+				this.headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.statusLabel, statusWidth, headerHeight, this.headerColor, this.headerBackgroundColor,
 				headerFontSize);
 
 		final int scrollBarWidth;
@@ -550,13 +550,13 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		} else {
 			scrollBarWidth = ( (Integer) UIManager.get("ScrollBar.width") ).intValue();
 		}
-		setLabelProperties(this.queueSizeLabel, scrollBarWidth, headerHeight, headerColor, headerBackgroundColor,
-				headerFontSize);
+		setLabelProperties(this.queueSizeLabel, scrollBarWidth, headerHeight, this.headerColor,
+				this.headerBackgroundColor, headerFontSize);
 
 		this.scrollPane.setPreferredSize(new Dimension(0, answersShow * rowHeight + 3));
 		this.scrollPane.setMinimumSize(new Dimension(0, rowHeight + 3));
 
-		this.spacer.setBackground(headerBackgroundColor);
+		this.spacer.setBackground(this.headerBackgroundColor);
 
 		this.answerQueueSubPanel.loadProperties(properties);
 	}
@@ -564,8 +564,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	/**
 	 * A panel that will show the current answer queue
 	 */
-	private class AnswerQueueSubPanel extends TriviaMainPanel implements ItemListener, ActionListener,
-			PopupMenuListener {
+	private class AnswerQueueSubPanel extends TriviaMainPanel
+			implements ItemListener, ActionListener, PopupMenuListener {
 
 		/** The Constant serialVersionUID */
 		private static final long					serialVersionUID	= -5462544756397828556L;
@@ -576,8 +576,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		/**
 		 * GUI elements that will be updated
 		 */
-		final private ArrayList<JLabel>				queuenumberLabels, timestampLabels, qNumberLabels,
-				confidenceLabels, agreementLabels, submitterLabels, operatorLabels, callerLabels;
+		final private ArrayList<JLabel>				queuenumberLabels, timestampLabels, qNumberLabels, confidenceLabels,
+				agreementLabels, submitterLabels, operatorLabels, callerLabels;
 		final private ArrayList<JComboBox<String>>	statusComboBoxes;
 		final private ArrayList<JTextArea>			answerTextAreas;
 		final private ArrayList<JToggleButton>		agreeButtons, disagreeButtons;
@@ -592,7 +592,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		/**
 		 * Instantiates a new workflow queue sub panel.
-		 * 
+		 *
 		 * @param server
 		 *            the server
 		 * @param client
@@ -641,7 +641,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		@Override
@@ -659,12 +659,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					final int qValue = trivia.getValue(AnswerQueuePanel.this.rNumber, qNumber);
 					final String qText = trivia.getQuestionText(AnswerQueuePanel.this.rNumber, qNumber);
 					final String aText = trivia.getAnswerQueueAnswer(queueIndex);
-					new ViewAnswerDialog(rNumber, qNumber, qValue, qText, aText);
+					new ViewAnswerDialog(AnswerQueuePanel.this.rNumber, qNumber, qValue, qText, aText);
 					break;
 				case "Agree":
 				case "Disagree":
 				case "Neutral":
-					JToggleButton source = ( (JToggleButton) event.getSource() );
+					final JToggleButton source = ( (JToggleButton) event.getSource() );
 					queueIndex = Integer.parseInt(source.getName());
 					Agreement agreement = null;
 					switch (command) {
@@ -680,15 +680,17 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					}
 					final Agreement agreementF = agreement;
 					( new SwingWorker<Void, Void>() {
+						@Override
 						public Void doInBackground() {
-							AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory.changeAgreement(
-									queueIndex, agreementF));
+							AnswerQueueSubPanel.this.client
+									.sendMessage(ClientMessageFactory.changeAgreement(queueIndex, agreementF));
 							return null;
 						}
 
+						@Override
 						public void done() {
-							AnswerQueueSubPanel.this.client.log("Changed agreement on #" + ( queueIndex + 1 ) + " to "
-									+ agreementF.name());
+							AnswerQueueSubPanel.this.client
+									.log("Changed agreement on #" + ( queueIndex + 1 ) + " to " + agreementF.name());
 						}
 					} ).execute();
 					break;
@@ -699,7 +701,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
 		 */
 		@SuppressWarnings("unchecked")
@@ -719,12 +721,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				switch (newStatus) {
 					case "Duplicate":
 						( new SwingWorker<Void, Void>() {
+							@Override
 							public Void doInBackground() {
-								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory
-										.markDuplicate(queueIndex));
+								AnswerQueueSubPanel.this.client
+										.sendMessage(ClientMessageFactory.markDuplicate(queueIndex));
 								return null;
 							}
 
+							@Override
 							public void done() {
 
 							}
@@ -732,12 +736,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						break;
 					case "Not Called In":
 						( new SwingWorker<Void, Void>() {
+							@Override
 							public Void doInBackground() {
-								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory
-										.markUncalled(queueIndex));
+								AnswerQueueSubPanel.this.client
+										.sendMessage(ClientMessageFactory.markUncalled(queueIndex));
 								return null;
 							}
 
+							@Override
 							public void done() {
 
 							}
@@ -745,11 +751,13 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						break;
 					case "Calling":
 						( new SwingWorker<Void, Void>() {
+							@Override
 							public Void doInBackground() {
 								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory.callIn(queueIndex));
 								return null;
 							}
 
+							@Override
 							public void done() {
 
 							}
@@ -757,12 +765,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						break;
 					case "Incorrect":
 						( new SwingWorker<Void, Void>() {
+							@Override
 							public Void doInBackground() {
-								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory
-										.markIncorrect(queueIndex));
+								AnswerQueueSubPanel.this.client
+										.sendMessage(ClientMessageFactory.markIncorrect(queueIndex));
 								return null;
 							}
 
+							@Override
 							public void done() {
 
 							}
@@ -770,12 +780,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						break;
 					case "Partial":
 						( new SwingWorker<Void, Void>() {
+							@Override
 							public Void doInBackground() {
-								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory
-										.markPartial(queueIndex));
+								AnswerQueueSubPanel.this.client
+										.sendMessage(ClientMessageFactory.markPartial(queueIndex));
 								return null;
 							}
 
+							@Override
 							public void done() {
 
 							}
@@ -795,7 +807,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
@@ -883,8 +895,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				}
 
 				final boolean filtered = this.gui.getFilterNumbers().contains(newQNumber)
-						|| !( AnswerQueuePanel.this.gui.getFilterText().pattern().equals("") || AnswerQueuePanel.this.gui
-								.getFilterText().matcher(newAnswer).find() );
+						|| !( AnswerQueuePanel.this.gui.getFilterText().pattern().equals("")
+								|| AnswerQueuePanel.this.gui.getFilterText().matcher(newAnswer).find() );
 
 				final boolean showRow = !( ( hideClosed && closed )
 						|| ( hideDuplicates && newStatus.equals("Duplicate") ) || filtered );
@@ -955,7 +967,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					this.confidenceLabels.get(a).getParent().setBackground(bColor);
 					this.confidenceLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
-					String agreementText = String.format("%+d", newAgreement);
+					final String agreementText = String.format("%+d", newAgreement);
 					this.agreementLabels.get(a).setText(agreementText);
 					this.agreementLabels.get(a).setForeground(color);
 					this.agreementLabels.get(a).getParent().setBackground(bColor);
@@ -1181,8 +1193,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 			constraints.gridx = 0;
 			constraints.gridy = 2 * a + 1;
-			this.timestampLabels.add(this.enclosedLabel("", timeWidth, rowHeight / 2, null, null, constraints,
-					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
+			this.timestampLabels.add(this.enclosedLabel("", timeWidth, rowHeight / 2, null, null, constraints, fontSize,
+					SwingConstants.CENTER, SwingConstants.CENTER));
 			this.timestampLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridheight = 2;
@@ -1216,13 +1228,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.agreementLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			this.buttonGroups.add(new ButtonGroup() {
-				private static final long	serialVersionUID	= 1L;
+				private static final long serialVersionUID = 1L;
 
+				@Override
 				public void setSelected(ButtonModel model, boolean selected) {
 					if (selected) {
 						super.setSelected(model, selected);
 					} else {
-						clearSelection();
+						this.clearSelection();
 					}
 				}
 			});
@@ -1302,8 +1315,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.statusComboBoxes.get(a).setEditable(false);
 				this.statusComboBoxes.get(a).setEnabled(false);
 			}
-			this.statusComboBoxes.get(a).setRenderer(
-					new StatusCellRenderer((ListCellRenderer<String>) this.statusComboBoxes.get(a).getRenderer(),
+			this.statusComboBoxes.get(a)
+					.setRenderer(new StatusCellRenderer(
+							(ListCellRenderer<String>) this.statusComboBoxes.get(a).getRenderer(),
 							this.statusComboBoxes.get(a)));
 
 			panel.add(this.statusComboBoxes.get(a));
@@ -1313,9 +1327,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		/**
 		 * A custom renderer to control how the status combo box is displayed.
-		 * 
+		 *
 		 * @author Walter Kolczynski
-		 * 
+		 *
 		 */
 		public class StatusCellRenderer implements ListCellRenderer<String> {
 			private final ListCellRenderer<String>	wrapped;
@@ -1372,13 +1386,13 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		/**
 		 * Listener for events to display pop-up menu.
-		 * 
+		 *
 		 * @author Walter Kolczynski
-		 * 
+		 *
 		 */
 		private class PopupListener extends MouseAdapter {
 
-			private final JPopupMenu	menu;
+			private final JPopupMenu menu;
 
 			public PopupListener(JPopupMenu menu) {
 				this.menu = menu;

@@ -19,9 +19,9 @@ import net.bubbaland.trivia.Trivia;
 
 /**
  * Creates a prompt to enter new question data.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class NewQuestionDialog extends TriviaDialogPanel {
 
@@ -39,7 +39,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new question entry window.
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 * @param nQuestions
@@ -53,7 +53,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new question entry window.
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 * @param nQuestions
@@ -70,7 +70,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new question entry window.
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 * @param nQuestions
@@ -94,11 +94,13 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		if (this.newOpen) {
 			// Open the question on the server temporarily
 			( new SwingWorker<Void, Void>() {
+				@Override
 				public Void doInBackground() {
 					NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.open(qNumberStart));
 					return null;
 				}
 
+				@Override
 				public void done() {
 
 				}
@@ -106,7 +108,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		}
 
 		// Set up layout constraints
-		GridBagConstraints constraints = new GridBagConstraints();
+		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.weightx = 0.0;
@@ -122,9 +124,9 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		constraints.gridx = 1;
 		constraints.gridy = 0;
 		this.qNumberSpinner = new JSpinner(new SpinnerNumberModel(qNumberStart, 1, nQuestions, 1));
-		qNumberSpinner.setFont(qNumberSpinner.getFont().deriveFont(fontSize));
-		this.addEnterOverride(qNumberSpinner);
-		this.add(qNumberSpinner, constraints);
+		this.qNumberSpinner.setFont(this.qNumberSpinner.getFont().deriveFont(fontSize));
+		this.addEnterOverride(this.qNumberSpinner);
+		this.add(this.qNumberSpinner, constraints);
 
 		// Create the question value spinner
 		constraints.gridx = 0;
@@ -136,11 +138,11 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		this.qValueSpinner = new JSpinner(new SpinnerNumberModel(qValueStart, 0, 1000, 5));
-		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(fontSize));
-		this.addEnterOverride(qValueSpinner);
-		this.add(qValueSpinner, constraints);
-		( (JSpinner.NumberEditor) qValueSpinner.getEditor() ).getTextField().addAncestorListener(this);
-		( (JSpinner.NumberEditor) qValueSpinner.getEditor() ).getTextField().addFocusListener(this);
+		this.qValueSpinner.setFont(this.qValueSpinner.getFont().deriveFont(fontSize));
+		this.addEnterOverride(this.qValueSpinner);
+		this.add(this.qValueSpinner, constraints);
+		( (JSpinner.NumberEditor) this.qValueSpinner.getEditor() ).getTextField().addAncestorListener(this);
+		( (JSpinner.NumberEditor) this.qValueSpinner.getEditor() ).getTextField().addFocusListener(this);
 
 		// Create input area for the question text
 		constraints.gridx = 0;
@@ -155,13 +157,13 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
 		this.qTextArea = new JTextArea(qTextStart, 4, 50);
-		qTextArea.setLineWrap(true);
-		qTextArea.setWrapStyleWord(true);
-		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
-		qTextArea.setToolTipText("Visual Trivia will automatically be linked to appropriate page.");
-		this.addEnterOverride(qTextArea);
+		this.qTextArea.setLineWrap(true);
+		this.qTextArea.setWrapStyleWord(true);
+		this.qTextArea.setFont(this.qTextArea.getFont().deriveFont(textAreaFontSize));
+		this.qTextArea.setToolTipText("Visual Trivia will automatically be linked to appropriate page.");
+		this.addEnterOverride(this.qTextArea);
 
-		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		final JScrollPane scrollPane = new JScrollPane(this.qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
 		this.add(scrollPane, constraints);
@@ -186,17 +188,18 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 		if (option == JOptionPane.OK_OPTION) {
 			// Get the input data
-			final int qNumber = (int) qNumberSpinner.getValue();
-			final int qValue = (int) qValueSpinner.getValue();
-			final String qText = qTextArea.getText();
+			final int qNumber = (int) this.qNumberSpinner.getValue();
+			final int qValue = (int) this.qValueSpinner.getValue();
+			final String qText = this.qTextArea.getText();
 
 			// Get the existing question data
 			final int existingQValue = trivia.getValue(currentRound, qNumber);
 			final String existingQText = trivia.getQuestionText(currentRound, qNumber);
 
-			if (qNumberStart == qNumber) {
+			if (this.qNumberStart == qNumber) {
 				// Open question
 				( new SwingWorker<Void, Void>() {
+					@Override
 					public Void doInBackground() {
 						NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
 								NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue,
@@ -204,8 +207,9 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 						return null;
 					}
 
+					@Override
 					public void done() {
-						client.log("Question #" + qNumber + " submitted.");
+						NewQuestionDialog.this.client.log("Question #" + qNumber + " submitted.");
 					}
 				} ).execute();
 			} else {
@@ -214,17 +218,19 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 					this.confirmOverwrite(qNumber, existingQValue, existingQText, qValue, qText);
 				} else {
 					// Remap
-					this.confirmNumberChange(qNumberStart, qNumber, qValue, qText);
+					this.confirmNumberChange(this.qNumberStart, qNumber, qValue, qText);
 				}
 			}
 		} else if (this.newOpen) {
 			( new SwingWorker<Void, Void>() {
+				@Override
 				public Void doInBackground() {
-					NewQuestionDialog.this.client.sendMessage(ClientMessageFactory
-							.resetQuestion(NewQuestionDialog.this.qNumberStart));
+					NewQuestionDialog.this.client
+							.sendMessage(ClientMessageFactory.resetQuestion(NewQuestionDialog.this.qNumberStart));
 					return null;
 				}
 
+				@Override
 				public void done() {
 
 				}
@@ -235,13 +241,13 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	private void confirmNumberChange(final int qNumberStart, final int qNumber, final int qValue, final String qText) {
 		this.removeAll();
 
-		GridBagConstraints constraints = new GridBagConstraints();
+		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		JLabel label = new JLabel("Change question number from " + qNumberStart + " to " + qNumber + "?");
+		final JLabel label = new JLabel("Change question number from " + qNumberStart + " to " + qNumber + "?");
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
@@ -253,22 +259,24 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 		final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
 		if (confirm != JOptionPane.OK_OPTION) {
-			new NewQuestionDialog(client, nQuestions, qNumberStart, qValue, qText, this.newOpen);
+			new NewQuestionDialog(this.client, this.nQuestions, qNumberStart, qValue, qText, this.newOpen);
 			return;
 		}
 
 		// Remap question on server
 		( new SwingWorker<Void, Void>() {
+			@Override
 			public Void doInBackground() {
 				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
-				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.remapQuestion(
-						NewQuestionDialog.this.qNumberStart, qNumber));
+				NewQuestionDialog.this.client
+						.sendMessage(ClientMessageFactory.remapQuestion(NewQuestionDialog.this.qNumberStart, qNumber));
 				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
-						NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue, qText,
-						null, null, false, null));
+						NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue, qText, null,
+						null, false, null));
 				return null;
 			}
 
+			@Override
 			public void done() {
 
 			}
@@ -279,7 +287,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			final int qValue, final String qText) {
 		this.removeAll();
 
-		GridBagConstraints constraints = new GridBagConstraints();
+		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 
@@ -304,7 +312,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 		textArea.setEditable(false);
-		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		JScrollPane scrollPane = new JScrollPane(this.qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(100, 100));
 		scrollPane.setViewportView(textArea);
@@ -336,7 +344,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		textArea.setEditable(true);
 		textArea.addAncestorListener(this);
 		this.addEnterOverride(textArea);
-		scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		scrollPane = new JScrollPane(this.qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(100, 100));
 		scrollPane.setViewportView(textArea);
@@ -359,21 +367,23 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 		final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
 		if (confirm != JOptionPane.OK_OPTION) {
-			new NewQuestionDialog(client, nQuestions, qNumber, qValue, qText, this.newOpen);
+			new NewQuestionDialog(this.client, this.nQuestions, qNumber, qValue, qText, this.newOpen);
 			return;
 		}
 
 		( new SwingWorker<Void, Void>() {
+			@Override
 			public Void doInBackground() {
 				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
-				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.remapQuestion(
-						NewQuestionDialog.this.qNumberStart, qNumber));
+				NewQuestionDialog.this.client
+						.sendMessage(ClientMessageFactory.remapQuestion(NewQuestionDialog.this.qNumberStart, qNumber));
 				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
-						NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue, qText,
-						null, null, false, null));
+						NewQuestionDialog.this.client.getTrivia().getCurrentRoundNumber(), qNumber, qValue, qText, null,
+						null, false, null));
 				return null;
 			}
 
+			@Override
 			public void done() {
 
 			}

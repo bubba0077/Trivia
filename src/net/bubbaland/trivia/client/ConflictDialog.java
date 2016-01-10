@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
@@ -9,13 +10,13 @@ import net.bubbaland.trivia.Trivia;
 
 /**
  * Creates a dialog notifying user of a scoring discrepancy between the announced score and the calculated score.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class ConflictDialog extends TriviaDialogPanel {
 
-	private static final long	serialVersionUID	= 542530522891342681L;
+	private static final long serialVersionUID = 542530522891342681L;
 
 	public ConflictDialog(final TriviaClient client) {
 

@@ -32,13 +32,13 @@ import javax.swing.text.StyledDocument;
 
 /**
  * Abstract class providing common methods for all trivia panels.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public abstract class TriviaPanel extends JPanel {
 
-	private static final long	serialVersionUID	= 7023089773420890665L;
+	private static final long serialVersionUID = 7023089773420890665L;
 
 	public TriviaPanel() {
 		super();
@@ -59,7 +59,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a word-wrapping text pane inside of a scrollable pane to the panel that can process hyperlink clicks. A
 	 * reference to the text pane is returned so the text can be read/changed later.
-	 * 
+	 *
 	 * @param client
 	 *            TODO
 	 * @param string
@@ -70,7 +70,7 @@ public abstract class TriviaPanel extends JPanel {
 	 *            The horizontal scroll bar policy (JScrollPane constants)
 	 * @param verticalScroll
 	 *            The vertical scroll bar policy (JScrollPane constants)
-	 * 
+	 *
 	 * @return The text pane inside the scroll pane
 	 */
 	public QuestionPane hyperlinkedTextPane(TriviaClient client, String string, GridBagConstraints constraints,
@@ -91,9 +91,9 @@ public abstract class TriviaPanel extends JPanel {
 					} catch (IOException | URISyntaxException exception) {
 					}
 				} else if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
-					setCursor(new Cursor(Cursor.HAND_CURSOR));
+					TriviaPanel.this.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				} else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
-					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					TriviaPanel.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
 
 			}
@@ -110,7 +110,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a word-wrapping text pane inside of a scrollable pane to the panel that can process hyperlink clicks. A
 	 * reference to the text pane is returned so the text can be read/changed later.
-	 * 
+	 *
 	 * @param client
 	 *            TODO
 	 * @param string
@@ -121,7 +121,7 @@ public abstract class TriviaPanel extends JPanel {
 	 *            The horizontal scroll bar policy (JScrollPane constants)
 	 * @param verticalScroll
 	 *            The vertical scroll bar policy (JScrollPane constants)
-	 * 
+	 *
 	 * @return The text pane inside the scroll pane
 	 */
 	public QuestionPane hyperlinkedTextPane(int rNumber, String string, GridBagConstraints constraints,
@@ -142,9 +142,9 @@ public abstract class TriviaPanel extends JPanel {
 					} catch (IOException | URISyntaxException exception) {
 					}
 				} else if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
-					setCursor(new Cursor(Cursor.HAND_CURSOR));
+					TriviaPanel.this.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				} else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
-					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					TriviaPanel.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
 
 			}
@@ -161,7 +161,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a word-wrapping text pane inside of a scrollable pane to the panel that can process hyperlink clicks. A
 	 * reference to the text pane is returned so the text can be read/changed later.
-	 * 
+	 *
 	 * @param client
 	 *            TODO
 	 * @param string
@@ -172,7 +172,7 @@ public abstract class TriviaPanel extends JPanel {
 	 *            The horizontal scroll bar policy (JScrollPane constants)
 	 * @param verticalScroll
 	 *            The vertical scroll bar policy (JScrollPane constants)
-	 * 
+	 *
 	 * @return The text pane inside the scroll pane
 	 */
 	public JTextPane scrollableTextPane(String string, GridBagConstraints constraints, int horizontalScroll,
@@ -195,7 +195,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
 	 * so the text can be read/changed later.
-	 * 
+	 *
 	 * @param string
 	 *            The initial string for the text area
 	 * @param constraints
@@ -226,7 +226,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
 	 * so the text can be read/changed later.
-	 * 
+	 *
 	 * @param string
 	 *            The initial string for the text area
 	 * @param width
@@ -271,7 +271,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a space-filling panel with a label to the panel. A reference to the label is returned so the text can be
 	 * changed later.
-	 * 
+	 *
 	 * @param string
 	 *            The string for the label
 	 * @param constraints
@@ -304,7 +304,7 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * Adds a space-filling panel with a label to the panel. A reference to the label is returned so the text can be
 	 * changed later.
-	 * 
+	 *
 	 * @param string
 	 *            The string for the label
 	 * @param width
@@ -351,7 +351,7 @@ public abstract class TriviaPanel extends JPanel {
 
 	/**
 	 * Update a button's properties.
-	 * 
+	 *
 	 * @param button
 	 *            The button to update
 	 * @param width
@@ -363,7 +363,8 @@ public abstract class TriviaPanel extends JPanel {
 	 * @param fontSize
 	 *            The new font size
 	 */
-	protected static void setButtonProperties(Component button, int width, int height, Color foreground, float fontSize) {
+	protected static void setButtonProperties(Component button, int width, int height, Color foreground,
+			float fontSize) {
 		if (!( button instanceof JButton || button instanceof JToggleButton )) return;
 		button.setForeground(foreground);
 		button.setFont(button.getFont().deriveFont(fontSize));
@@ -373,7 +374,7 @@ public abstract class TriviaPanel extends JPanel {
 
 	/**
 	 * Update a combo box's properties.
-	 * 
+	 *
 	 * @param comboBox
 	 *            The combo box to update
 	 * @param width
@@ -401,7 +402,7 @@ public abstract class TriviaPanel extends JPanel {
 
 	/**
 	 * Update a label's properties.
-	 * 
+	 *
 	 * @param label
 	 *            The label to update
 	 * @param width
@@ -424,7 +425,7 @@ public abstract class TriviaPanel extends JPanel {
 
 	/**
 	 * Update a panel's properties.
-	 * 
+	 *
 	 * @param panel
 	 *            The panel to update
 	 * @param width
@@ -442,7 +443,7 @@ public abstract class TriviaPanel extends JPanel {
 
 	/**
 	 * Update a text area's properties.
-	 * 
+	 *
 	 * @param textArea
 	 *            The text area to update
 	 * @param width
@@ -467,7 +468,7 @@ public abstract class TriviaPanel extends JPanel {
 
 	/**
 	 * Update a text pane's properties.
-	 * 
+	 *
 	 * @param textPane
 	 *            The text pane to update
 	 * @param width
@@ -500,15 +501,15 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * A custom text pane that automatically replaces references to visual trivia with hyperlinks to the web page with
 	 * the visual trivia.
-	 * 
+	 *
 	 * @author Walter Kolczynski
-	 * 
+	 *
 	 */
 	public class QuestionPane extends JTextPane {
 		private static final long	serialVersionUID	= -4043733624909281303L;
 
-		private String				visualPattern		= "([Vv]isual )([Tt]rivia )?(#)?([0-9]+)";
-		private String				audioPattern		= "([Aa]udio)( [Tt]rivia)?";
+		private final String		visualPattern		= "([Vv]isual )([Tt]rivia )?(#)?([0-9]+)";
+		private final String		audioPattern		= "([Aa]udio)( [Tt]rivia)?";
 		private String				simpleString;
 		final private TriviaClient	client;
 		private int					rNumber;
@@ -555,11 +556,11 @@ public abstract class TriviaPanel extends JPanel {
 
 		@Override
 		public void setText(String question) {
-			String RR = String.format("%02d", getRNumber());
-			String hQuestion = question.replaceFirst(visualPattern, "<a href=\"" + TriviaGUI.VISUAL_URL
-					+ "$4\">Visual Trivia #$4</a>");
-			hQuestion = hQuestion.replaceFirst(audioPattern, "<a href=\"" + TriviaGUI.AUDIO_URL + "/Hour_" + RR
-					+ "\">Audio Trivia</a>");
+			final String RR = String.format("%02d", this.getRNumber());
+			String hQuestion = question.replaceFirst(this.visualPattern,
+					"<a href=\"" + TriviaGUI.VISUAL_URL + "$4\">Visual Trivia #$4</a>");
+			hQuestion = hQuestion.replaceFirst(this.audioPattern,
+					"<a href=\"" + TriviaGUI.AUDIO_URL + "/Hour_" + RR + "\">Audio Trivia</a>");
 			if (!hQuestion.equals(this.simpleString)) {
 				super.setText(hQuestion);
 				this.simpleString = hQuestion;
@@ -569,11 +570,11 @@ public abstract class TriviaPanel extends JPanel {
 		}
 
 		public boolean textEquals(String string) {
-			String RR = String.format("%02d", getRNumber());
-			string = string.replaceFirst(visualPattern, "<a href=\"" + TriviaGUI.VISUAL_URL
-					+ "$4\">Visual Trivia #$4</a>");
-			string.replaceFirst(audioPattern, "<a href=\"" + TriviaGUI.AUDIO_URL + "/Hour_" + RR
-					+ "\">Audio Trivia</a>");
+			final String RR = String.format("%02d", this.getRNumber());
+			string = string.replaceFirst(this.visualPattern,
+					"<a href=\"" + TriviaGUI.VISUAL_URL + "$4\">Visual Trivia #$4</a>");
+			string.replaceFirst(this.audioPattern,
+					"<a href=\"" + TriviaGUI.AUDIO_URL + "/Hour_" + RR + "\">Audio Trivia</a>");
 			return this.simpleString.equals(string);
 		}
 
@@ -582,13 +583,13 @@ public abstract class TriviaPanel extends JPanel {
 	/**
 	 * A scroll pane designed to be used inside of another scroll pane. When the mouse wheel is scrolled and the scroll
 	 * pane is already at that edge, the scroll is passed up to the parent container.
-	 * 
+	 *
 	 * @author Walter Kolczynski
-	 * 
+	 *
 	 */
 	private class InternalScrollPane extends JScrollPane {
 
-		private static final long	serialVersionUID	= -8318646989146037930L;
+		private static final long serialVersionUID = -8318646989146037930L;
 
 		public InternalScrollPane(int vsbPolicy, int hsbPolicy) {
 			super(vsbPolicy, hsbPolicy);

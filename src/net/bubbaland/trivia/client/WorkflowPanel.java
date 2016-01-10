@@ -16,9 +16,9 @@ import net.bubbaland.trivia.Trivia;
 
 /**
  * A panel for the workflow tab, which contains most of the trivia operations
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class WorkflowPanel extends TriviaMainPanel {
 
@@ -32,7 +32,7 @@ public class WorkflowPanel extends TriviaMainPanel {
 
 	/**
 	 * Instantiates a new workflow panel.
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 * @param frame
@@ -70,10 +70,10 @@ public class WorkflowPanel extends TriviaMainPanel {
 		this.add(splitPane, constraints);
 
 		// Assign CTRL+O to open a new question
-		this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK), "openQuestion");
+		this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK), "openQuestion");
 		this.getActionMap().put("openQuestion", new AbstractAction() {
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -94,7 +94,7 @@ public class WorkflowPanel extends TriviaMainPanel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -104,6 +104,7 @@ public class WorkflowPanel extends TriviaMainPanel {
 		this.workflowQueuePanel.updateGUI(force);
 	}
 
+	@Override
 	public void changeFrame(TriviaFrame newFrame) {
 		super.changeFrame(newFrame);
 		this.workflowHeaderPanel.changeFrame(newFrame);

@@ -21,7 +21,7 @@ import net.bubbaland.trivia.Trivia;
 
 /**
  * Creates a dialog box that prompts user to propose an answer.
- * 
+ *
  * @author Walter Kolczynski
  */
 public class AnswerEntryPanel extends TriviaDialogPanel {
@@ -37,7 +37,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 
 	/**
 	 * Creates a dialog box and prompt for response
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 * @param qNumber
@@ -152,14 +152,16 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 
 	private void sendAnswer(final String answer, final int confidence) {
 		( new SwingWorker<Void, Void>() {
+			@Override
 			public Void doInBackground() {
-				AnswerEntryPanel.this.client.sendMessage(ClientMessageFactory
-						.proposeAnswer(qNumber, answer, confidence));
+				AnswerEntryPanel.this.client.sendMessage(
+						ClientMessageFactory.proposeAnswer(AnswerEntryPanel.this.qNumber, answer, confidence));
 				return null;
 			}
 
+			@Override
 			public void done() {
-				client.log("Submitted an answer for Question #" + qNumber);
+				AnswerEntryPanel.this.client.log("Submitted an answer for Question #" + AnswerEntryPanel.this.qNumber);
 			}
 		} ).execute();
 	}
@@ -170,17 +172,17 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
-			final String answer = answerTextArea.getText();
-			final int confidence = confidenceSlider.getValue();
+			final String answer = this.answerTextArea.getText();
+			final int confidence = this.confidenceSlider.getValue();
 
 			if (answer.equals("")) {
-				new AnswerEntryPanel(client, qNumber, user);
+				new AnswerEntryPanel(this.client, this.qNumber, this.user);
 				return;
 			}
 
 			if (this.bruteForceCheckbox.isSelected()) {
-				String[] answers = answer.split("\\r?\\n");
-				for (String a : answers) {
+				final String[] answers = answer.split("\\r?\\n");
+				for (final String a : answers) {
 					if (!a.equals("")) {
 						this.sendAnswer(a, confidence);
 					}

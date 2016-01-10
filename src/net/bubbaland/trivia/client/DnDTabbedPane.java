@@ -3,7 +3,7 @@ package net.bubbaland.trivia.client;
 /**
  * Modified DnDTabbedPane.java http://java-swing-tips.blogspot.com/2008/04/drag-and-drop-tabs-in-jtabbedpane.html
  * originally written by Terai Atsuhiro. so that tabs can be transfered from one pane to another. eed3si9n.
- * 
+ *
  * Further modifications by Walter Kolczynski to implement creating a new frame and tabbed pane when dragging a tab off
  * of all existing tabbed panes.
  */
@@ -59,8 +59,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	private static final int						LINEWIDTH			= 3;
 	private static final String						NAME				= "TabTransferData";
 	private final DataFlavor						FLAVOR				= new DataFlavor(
-																				DataFlavor.javaJVMLocalObjectMimeType,
-																				NAME);
+			DataFlavor.javaJVMLocalObjectMimeType, NAME);
 	private static GhostGlassPane					s_glassPane			= new GhostGlassPane();
 	private final TearAwayTab						tearTab;
 
@@ -80,8 +79,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	private final JPanel							blankPanel;
 
 	private static final ImageIcon					addTabIcon			= new ImageIcon(
-																				DnDTabbedPane.class
-																						.getResource("images/plus.png"));
+			DnDTabbedPane.class.getResource("images/plus.png"));
 
 	public DnDTabbedPane(TriviaClient client, TriviaGUI gui, TriviaFrame frame) {
 		super();
@@ -170,7 +168,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
 			final UIDefaults defaults = new UIDefaults();
-			Painter<?> painter = (Painter<?>) UIManager.get("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter");
+			final Painter<?> painter = (Painter<?>) UIManager
+					.get("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter");
 			defaults.put("TabbedPane:TabbedPaneTab[Disabled].backgroundPainter", painter);
 			this.putClientProperty("Nimbus.Overrides", defaults);
 			this.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
@@ -180,7 +179,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		this.addChangeListener(this);
 		this.addMouseListener(this);
 
-		makeNewTabTab();
+		this.makeNewTabTab();
 	}
 
 	@Override
@@ -222,7 +221,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 				this.addChangeListener((ChangeListener) child);
 			}
 		}
-		int index = this.indexOfTab(tabName);
+		final int index = this.indexOfTab(tabName);
 		if (tabName.equals("+")) {
 			this.setToolTipTextAt(index, "Add a new tab");
 		} else {
@@ -368,7 +367,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 	/**
 	 * returns potential index for drop.
-	 * 
+	 *
 	 * @param a_point
 	 *            point given in the drop site component's coordinate
 	 * @return returns potential index for drop.
@@ -468,7 +467,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 			return;
 		} // if
 
-		if (( a_data.getTabbedPane() == this ) && ( a_data.getTabIndex() == next || next - a_data.getTabIndex() == 1 )) {
+		if (( a_data.getTabbedPane() == this )
+				&& ( a_data.getTabIndex() == next || next - a_data.getTabIndex() == 1 )) {
 			this.m_lineRect.setRect(0, 0, 0, 0);
 			this.m_isDrawRect = false;
 		} else if (this.getTabCount() == 0) {
@@ -497,7 +497,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 			return;
 		} // if
 
-		if (( a_data.getTabbedPane() == this ) && ( a_data.getTabIndex() == next || next - a_data.getTabIndex() == 1 )) {
+		if (( a_data.getTabbedPane() == this )
+				&& ( a_data.getTabIndex() == next || next - a_data.getTabIndex() == 1 )) {
 			this.m_lineRect.setRect(0, 0, 0, 0);
 			this.m_isDrawRect = false;
 		} else if (this.getTabCount() == 0) {
@@ -643,7 +644,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	}
 
 	class TabTransferable implements Transferable {
-		private TabTransferData	m_data	= null;
+		private TabTransferData m_data = null;
 
 		public TabTransferable(DnDTabbedPane a_tabbedPane, int a_tabIndex) {
 			this.m_data = new TabTransferData(DnDTabbedPane.this, a_tabIndex);
@@ -698,7 +699,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 	private class PopupListener extends MouseAdapter {
 
-		private final JPopupMenu	menu;
+		private final JPopupMenu menu;
 
 		public PopupListener(JPopupMenu menu) {
 			this.menu = menu;
@@ -720,7 +721,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		}
 
 		private void checkForPopup(MouseEvent event) {
-			int clickedIndex = DnDTabbedPane.this.indexAtLocation(event.getX(), event.getY());
+			final int clickedIndex = DnDTabbedPane.this.indexAtLocation(event.getX(), event.getY());
 			if (event.isPopupTrigger() && clickedIndex > -1 && clickedIndex != DnDTabbedPane.this.getTabCount() - 1) {
 				this.menu.setName(clickedIndex + "");
 				this.menu.show((Component) event.getSource(), event.getX(), event.getY());

@@ -25,9 +25,9 @@ import net.bubbaland.trivia.Trivia.Role;
 
 /**
  * Provides the root functionality for connecting to the trivia server and creating the associated GUI.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 @ClientEndpoint(decoders = { ServerMessage.MessageDecoder.class }, encoders = { ClientMessage.MessageEncoder.class })
 public class TriviaClient implements Runnable {
@@ -43,7 +43,7 @@ public class TriviaClient implements Runnable {
 	// Hashtable of idle users and roles
 	private volatile Hashtable<String, Role>	idleUserHash;
 
-	private int									timeToIdle;
+	private final int							timeToIdle;
 
 	// The remote server
 	private Session								session;
@@ -53,7 +53,7 @@ public class TriviaClient implements Runnable {
 
 	private final TriviaGUI						gui;
 
-	private String								serverURL;
+	private final String						serverURL;
 
 	/**
 	 * Creates a new trivia client
@@ -71,10 +71,11 @@ public class TriviaClient implements Runnable {
 		this.timeToIdle = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("UserList.timeToIdle"));
 	}
 
+	@Override
 	public void run() {
 		final ClientManager clientManager = ClientManager.createClient();
 		try {
-			clientManager.connectToServer(this, URI.create(serverURL));
+			clientManager.connectToServer(this, URI.create(this.serverURL));
 		} catch (DeploymentException | IOException exception) {
 			this.gui.disconnected();
 		}
@@ -91,6 +92,7 @@ public class TriviaClient implements Runnable {
 
 	public void log(final String message) {
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				TriviaClient.this.gui.log(message);
 			}
@@ -99,7 +101,7 @@ public class TriviaClient implements Runnable {
 
 	/**
 	 * Get the hash of active users and roles.
-	 * 
+	 *
 	 * @return The hashtable of users and roles
 	 */
 	public Hashtable<String, Role> getActiveUserHash() {
@@ -108,7 +110,7 @@ public class TriviaClient implements Runnable {
 
 	/**
 	 * Get the hash of idle users and roles.
-	 * 
+	 *
 	 * @return The hashtable of users and roles
 	 */
 	public Hashtable<String, Role> getIdleUserHash() {
@@ -117,7 +119,7 @@ public class TriviaClient implements Runnable {
 
 	/**
 	 * Get the current user role.
-	 * 
+	 *
 	 * @return The user's role
 	 */
 	public Role getRole() {
@@ -126,7 +128,7 @@ public class TriviaClient implements Runnable {
 
 	/**
 	 * Get the remote server handle to allow interaction with the server.
-	 * 
+	 *
 	 * @return The remote server handle
 	 */
 	public Session getSession() {
@@ -136,7 +138,7 @@ public class TriviaClient implements Runnable {
 	/**
 	 * Return the local Trivia object. When updating the GUI, always get the current Trivia object first to ensure the
 	 * most recent data is used. Components should always use this local version to read data to limit server traffic.
-	 * 
+	 *
 	 * @return The local Trivia object
 	 */
 	public Trivia getTrivia() {
@@ -145,7 +147,7 @@ public class TriviaClient implements Runnable {
 
 	/**
 	 * Gets the user name.
-	 * 
+	 *
 	 * @return The user name
 	 */
 	public String getUser() {
@@ -154,7 +156,7 @@ public class TriviaClient implements Runnable {
 
 	/**
 	 * Sets the user name.
-	 * 
+	 *
 	 * @param user
 	 *            The new user name
 	 */
@@ -162,7 +164,7 @@ public class TriviaClient implements Runnable {
 		if (this.user == null) {
 			// this.server.setRole(user, this.role);
 			try {
-				session.getBasicRemote().sendObject(ClientMessageFactory.setRole(user, this.role));
+				this.session.getBasicRemote().sendObject(ClientMessageFactory.setRole(user, this.role));
 			} catch (IOException | EncodeException exception) {
 				// TODO Auto-generated catch block
 				exception.printStackTrace();
@@ -170,7 +172,7 @@ public class TriviaClient implements Runnable {
 		} else {
 			// this.server.changeUser(this.user, user);
 			try {
-				session.getBasicRemote().sendObject(ClientMessageFactory.changeUser(user));
+				this.session.getBasicRemote().sendObject(ClientMessageFactory.changeUser(user));
 			} catch (IOException | EncodeException exception) {
 				// TODO Auto-generated catch block
 				exception.printStackTrace();
@@ -181,14 +183,14 @@ public class TriviaClient implements Runnable {
 
 	/**
 	 * Change the user's role.
-	 * 
+	 *
 	 * @param role
 	 */
 	protected void setRole(Role role) {
 		if (this.user != null) {
 			// this.server.setRole(this.user, role);
 			try {
-				session.getBasicRemote().sendObject(ClientMessageFactory.setRole(user, role));
+				this.session.getBasicRemote().sendObject(ClientMessageFactory.setRole(this.user, role));
 			} catch (IOException | EncodeException exception) {
 				// TODO Auto-generated catch block
 				exception.printStackTrace();
@@ -226,7 +228,7 @@ public class TriviaClient implements Runnable {
 
 	@OnMessage
 	public void onMessage(ServerMessage message) {
-		ServerMessage.ServerCommand command = message.getCommand();
+		final ServerMessage.ServerCommand command = message.getCommand();
 		switch (command) {
 			case UPDATE_ROUND:
 				this.trivia.updateRounds(message.getRounds());

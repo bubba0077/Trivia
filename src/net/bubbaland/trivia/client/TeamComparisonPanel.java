@@ -3,17 +3,17 @@ package net.bubbaland.trivia.client;
 import java.awt.GridBagConstraints;
 import java.util.Properties;
 
-import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaChartFactory;
-
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
+import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.TriviaChartFactory;
+
 /**
  * A panel with a chart comparing all of the teams' scores.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 
 public class TeamComparisonPanel extends TriviaMainPanel {

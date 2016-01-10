@@ -5,13 +5,13 @@ import java.util.Properties;
 
 /**
  * A panel for the current round data.
- * 
+ *
  * <code>RoundPanel</code> is a panel that displays a summary and question data for the current round. There are two
  * parts: a <code>HeaderPanel</code> to display summary information, and a <RoundQlistPanel> to display the question
  * data.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class RoundPanel extends TriviaMainPanel {
 
@@ -24,7 +24,7 @@ public class RoundPanel extends TriviaMainPanel {
 
 	/**
 	 * Instantiates a new round panel.
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 */
@@ -56,7 +56,7 @@ public class RoundPanel extends TriviaMainPanel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override

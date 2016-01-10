@@ -28,9 +28,9 @@ import net.bubbaland.trivia.Trivia;
 
 /**
  * A panel which displays a list of the current open questions.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class OpenQuestionsPanel extends TriviaMainPanel {
 
@@ -43,6 +43,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 	// Set up layout constraints
 	private static final GridBagConstraints	buttonConstraints	= new GridBagConstraints();
+
 	static {
 		buttonConstraints.fill = GridBagConstraints.BOTH;
 		buttonConstraints.anchor = GridBagConstraints.CENTER;
@@ -55,12 +56,12 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 
 	/** Sub-panel that will hold the open questions */
-	private final OpenQuestionsSubPanel		openQuestionsSubPanel;
-	private final Color						headerColor, headerBackgroundColor, correctColor, incorrectColor;
+	private final OpenQuestionsSubPanel	openQuestionsSubPanel;
+	private final Color					headerColor, headerBackgroundColor, correctColor, incorrectColor;
 
 	/**
 	 * Instantiates a new workflow question list panel.
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 */
@@ -92,12 +93,12 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		this.questionLabel = this.enclosedLabel("Question", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
-		int nQuestions = this.client.getTrivia().getMaxQuestions();
+		final int nQuestions = this.client.getTrivia().getMaxQuestions();
 		this.statusLabels = new JLabel[nQuestions];
 		for (int q = 1; q <= nQuestions; q++) {
 			constraints.gridx = 2 + q;
-			this.statusLabels[q - 1] = this
-					.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+			this.statusLabels[q - 1] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
+					SwingConstants.CENTER);
 		}
 
 		constraints.gridx = 0;
@@ -117,17 +118,18 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		this.loadProperties(TriviaGUI.PROPERTIES);
 		this.headerColor = new Color(
 				new BigInteger(TriviaGUI.PROPERTIES.getProperty("OpenQuestions.Header.Color"), 16).intValue());
-		this.headerBackgroundColor = new Color(new BigInteger(
-				TriviaGUI.PROPERTIES.getProperty("OpenQuestions.Header.BackgroundColor"), 16).intValue());
+		this.headerBackgroundColor = new Color(
+				new BigInteger(TriviaGUI.PROPERTIES.getProperty("OpenQuestions.Header.BackgroundColor"), 16)
+						.intValue());
 		this.correctColor = new Color(
 				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
-		this.incorrectColor = new Color(new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Incorrect.Color"),
-				16).intValue());
+		this.incorrectColor = new Color(
+				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -167,13 +169,13 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		 */
 		final Color headerColor = new Color(
 				new BigInteger(properties.getProperty("OpenQuestions.Header.Color"), 16).intValue());
-		final Color headerBackgroundColor = new Color(new BigInteger(
-				properties.getProperty("OpenQuestions.Header.BackgroundColor"), 16).intValue());
+		final Color headerBackgroundColor = new Color(
+				new BigInteger(properties.getProperty("OpenQuestions.Header.BackgroundColor"), 16).intValue());
 
 		/**
 		 * Sizes
 		 */
-		final int headerHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Header.Height"));
+				final int headerHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Header.Height"));
 		final int rowHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Row.Height"));
 
 		final int qNumWidth = Integer.parseInt(properties.getProperty("OpenQuestions.QNumber.Width"));
@@ -194,7 +196,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				headerFontSize);
 		setLabelProperties(this.questionLabel, questionWidth, headerHeight, headerColor, headerBackgroundColor,
 				headerFontSize);
-		for (JLabel label : this.statusLabels) {
+		for (final JLabel label : this.statusLabels) {
 			setLabelProperties(label, 18, headerHeight, headerBackgroundColor, headerBackgroundColor, headerFontSize);
 		}
 		this.scrollPane.setPreferredSize(new Dimension(0, questionsShow * rowHeight + 3));
@@ -230,7 +232,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 		/**
 		 * Instantiates a new workflow q list sub panel.
-		 * 
+		 *
 		 * @param server
 		 *            the server
 		 * @param client
@@ -290,8 +292,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 				constraints.gridx = 1;
 				constraints.gridy = q;
-				this.qValueLabels[q] = this
-						.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.qValueLabels[q] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
+						SwingConstants.CENTER);
 				this.qValueLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 2;
@@ -344,7 +346,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		@Override
@@ -391,7 +393,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
@@ -412,8 +414,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			boolean anyUpdate = false;
 			for (int q = 0; q < nOpen; q++) {
 				qUpdated[q] = !( this.qNumberLabels[q].getText().equals(openQuestionNumbers[q] + "")
-						&& this.qValueLabels[q].getText().equals(openQuestionValues[q] + "") && this.qTextPanes[q]
-						.textEquals(openQuestionText[q]) );
+						&& this.qValueLabels[q].getText().equals(openQuestionValues[q] + "")
+						&& this.qTextPanes[q].textEquals(openQuestionText[q]) );
 				anyUpdate = anyUpdate || qUpdated[q];
 			}
 
@@ -506,21 +508,21 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			/**
 			 * Colors
 			 */
-			final Color headerBackgroundColor = new Color(new BigInteger(
-					properties.getProperty("OpenQuestions.Header.BackgroundColor"), 16).intValue());
+			final Color headerBackgroundColor = new Color(
+					new BigInteger(properties.getProperty("OpenQuestions.Header.BackgroundColor"), 16).intValue());
 			final Color oddRowColor = new Color(
 					new BigInteger(properties.getProperty("OpenQuestions.OddRow.Color"), 16).intValue());
-			final Color evenRowColor = new Color(new BigInteger(properties.getProperty("OpenQuestions.EvenRow.Color"),
-					16).intValue());
-			final Color oddRowBackgroundColor = new Color(new BigInteger(
-					properties.getProperty("OpenQuestions.OddRow.BackgroundColor"), 16).intValue());
-			final Color evenRowBackgroundColor = new Color(new BigInteger(
-					properties.getProperty("OpenQuestions.EvenRow.BackgroundColor"), 16).intValue());
+			final Color evenRowColor = new Color(
+					new BigInteger(properties.getProperty("OpenQuestions.EvenRow.Color"), 16).intValue());
+			final Color oddRowBackgroundColor = new Color(
+					new BigInteger(properties.getProperty("OpenQuestions.OddRow.BackgroundColor"), 16).intValue());
+			final Color evenRowBackgroundColor = new Color(
+					new BigInteger(properties.getProperty("OpenQuestions.EvenRow.BackgroundColor"), 16).intValue());
 
 			/**
 			 * Sizes
 			 */
-			final int rowHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Row.Height"));
+					final int rowHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Row.Height"));
 			final int qNumWidth = Integer.parseInt(properties.getProperty("OpenQuestions.QNumber.Width"));
 			final int questionWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Question.Width"));
 			final int valueWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Value.Width"));
@@ -569,7 +571,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 		/**
 		 * Propose an answer for the designated question. Creates a prompt to submit the answer.
-		 * 
+		 *
 		 * @param qNumber
 		 *            the question number
 		 */
@@ -599,7 +601,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 		private class PopupListener extends MouseAdapter {
 
-			private final JPopupMenu	menu;
+			private final JPopupMenu menu;
 
 			public PopupListener(JPopupMenu menu) {
 				this.menu = menu;

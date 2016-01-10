@@ -5,19 +5,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import net.bubbaland.trivia.Answer.Agreement;
-import net.bubbaland.trivia.Answer.Status;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import net.bubbaland.trivia.Answer.Agreement;
+import net.bubbaland.trivia.Answer.Status;
+
 /**
  * A data structure for rounds.
- * 
+ *
  * The <code>Round</code> class contains a number of fields with parameters for the round. There is also an array of
  * <code>Question</code>s that holds data for the individual questions in the round, and a list of <code>Answer</code>s
  * that contain the submitted answers for this round.
- * 
+ *
  * @author Walter Kolczynski
  */
 public class Round implements Serializable {
@@ -78,7 +78,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Creates a new round.
-	 * 
+	 *
 	 * @param rNumber
 	 *            The round number
 	 * @param nQuestionsSpeed
@@ -133,7 +133,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Checks if a question has been open
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @return true, if the question has been open
@@ -144,7 +144,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Call an answer in the queue in.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index of the answer in the queue
 	 * @param caller
@@ -163,7 +163,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Close a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param answer
@@ -176,7 +176,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Get whether each question in this round has been open.
-	 * 
+	 *
 	 * @return Array indicating whether each question has been open
 	 */
 	public boolean[] eachBeenOpen() {
@@ -189,7 +189,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Get whether each question in this round was answered correctly.
-	 * 
+	 *
 	 * @return Array indicating whether each question is correct
 	 */
 	public boolean[] eachCorrect() {
@@ -202,7 +202,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Get whether each question in this round is open.
-	 * 
+	 *
 	 * @return Array indicating whether each question is open
 	 */
 	public boolean[] eachOpen() {
@@ -215,7 +215,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets whether the score for this round has been announced
-	 * 
+	 *
 	 * @return Whether the score for this round has been announced
 	 */
 	public int getAnnounced() {
@@ -230,7 +230,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the proposed answer text of an answer in the queue.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index in the queue of the answer
 	 * @return The proposed answer
@@ -241,7 +241,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the proposed answers in the queue.
-	 * 
+	 *
 	 * @return Array of the proposed answers
 	 */
 	public String[] getAnswerQueueAnswers() {
@@ -255,7 +255,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the caller of an answer in the queue. An uncalled answer return an empty string.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index in the queue of the answer
 	 * @return The caller's name
@@ -266,7 +266,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the callers of answers in the queue. Uncalled answers return empty strings.
-	 * 
+	 *
 	 * @return Array of caller names
 	 */
 	public String[] getAnswerQueueCallers() {
@@ -280,7 +280,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the confidence of an answer in the queue.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index in the queue of the answer
 	 * @return The confidence
@@ -291,7 +291,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the confidences of answers in the queue.
-	 * 
+	 *
 	 * @return Array of confidences
 	 */
 	public int[] getAnswerQueueConfidences() {
@@ -305,7 +305,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the operator of an answer in the queue. A non-correct answer returns an empty string.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index in the queue of the answer
 	 * @return The operator
@@ -316,7 +316,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the operators who accepted correct answers in the queue. Non-correct answers return empty strings.
-	 * 
+	 *
 	 * @return Array of operators
 	 */
 	public String[] getAnswerQueueOperators() {
@@ -330,7 +330,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the question number of an answer in the queue.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index in the queue of the answer
 	 * @return The question number
@@ -341,7 +341,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the question number of answers in the queue.
-	 * 
+	 *
 	 * @return Array of question numbers
 	 */
 	public int[] getAnswerQueueQNumbers() {
@@ -355,7 +355,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the size of the answer queue.
-	 * 
+	 *
 	 * @return The answer queue size
 	 */
 	public int getAnswerQueueSize() {
@@ -364,7 +364,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the status of each answer in the queue.
-	 * 
+	 *
 	 * @return Array of statuses
 	 */
 	public String[] getAnswerQueueStatus() {
@@ -378,7 +378,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the status of an answer in the queue.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index in the queue of the answer
 	 * @return The status
@@ -390,7 +390,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the submitter of an answer in the queue.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index in the queue of the answer
 	 * @return The submitter's name
@@ -401,7 +401,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the submitters of answers in the queue.
-	 * 
+	 *
 	 * @return Array of answer submitters
 	 */
 	public String[] getAnswerQueueSubmitters() {
@@ -414,17 +414,17 @@ public class Round implements Serializable {
 	}
 
 	public void changeName(String oldName, String newName) {
-		for (Answer answer : this.answerQueue) {
+		for (final Answer answer : this.answerQueue) {
 			answer.changeName(oldName, newName);
 		}
-		for (Question question : this.questions) {
+		for (final Question question : this.questions) {
 			question.changeName(oldName, newName);
 		}
 	}
 
 	/**
 	 * Gets the timestamp of an answer in the queue.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index in the queue of the answer
 	 * @return The timestamp
@@ -435,7 +435,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the timestamp of each answer in the queue.
-	 * 
+	 *
 	 * @return Array of timestamps
 	 */
 	public String[] getAnswerQueueTimestamps() {
@@ -449,7 +449,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the correct answer for a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @return the answer text
@@ -460,7 +460,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the discrepancy text for this round.
-	 * 
+	 *
 	 * @return The discrepancy text
 	 */
 	public String getDiscrepancyText() {
@@ -469,7 +469,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the answer of each question in this round.
-	 * 
+	 *
 	 * @return Array of answers
 	 */
 	public String[] getEachAnswerText() {
@@ -482,7 +482,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the points earned for each question in this round.
-	 * 
+	 *
 	 * @return Array of points earned
 	 */
 	public int[] getEachEarned() {
@@ -495,7 +495,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the operator for each correct answer in this round.
-	 * 
+	 *
 	 * @return Array of operators
 	 */
 	public String[] getEachOperator() {
@@ -508,7 +508,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the text for each question in this round.
-	 * 
+	 *
 	 * @return Array of question text
 	 */
 	public String[] getEachQuestionText() {
@@ -521,7 +521,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the name of the submitter for each correct answer in this round.
-	 * 
+	 *
 	 * @return Array of submitter names
 	 */
 	public String[] getEachSubmitter() {
@@ -534,7 +534,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the value of each question in this round.
-	 * 
+	 *
 	 * @return Array of question values
 	 */
 	public int[] getEachValue() {
@@ -547,7 +547,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the total points earned for questions in this round.
-	 * 
+	 *
 	 * @return The total points earned
 	 */
 	public int getEarned() {
@@ -560,7 +560,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the points earned for a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @return The points earned
@@ -571,7 +571,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the number of questions in this round.
-	 * 
+	 *
 	 * @return The number of questions in this round
 	 */
 	public int getNQuestions() {
@@ -583,7 +583,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the question numbers of currently open questions.
-	 * 
+	 *
 	 * @return Array of open question numbers
 	 */
 	public int[] getOpenQuestionNumbers() {
@@ -598,7 +598,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the text of currently open questions.
-	 * 
+	 *
 	 * @return Array of text for open questions
 	 */
 	public String[] getOpenQuestionText() {
@@ -613,7 +613,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the values of currently open questions.
-	 * 
+	 *
 	 * @return Array of the values for open questions
 	 */
 	public String[] getOpenQuestionValues() {
@@ -628,7 +628,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the operator who accepted the correct answer for a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @return The operator
@@ -639,7 +639,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the announced place for this round.
-	 * 
+	 *
 	 * @return The place
 	 */
 	public int getPlace() {
@@ -648,7 +648,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the question text for the specified question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @return The Question
@@ -659,7 +659,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the question text for a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @return the question text
@@ -671,7 +671,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the round number.
-	 * 
+	 *
 	 * @return The round number
 	 */
 	public int getRoundNumber() {
@@ -680,7 +680,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the announced standings for this round.
-	 * 
+	 *
 	 * @return Array of ScoreEntry representing each team's score this round
 	 */
 	public ScoreEntry[] getStandings() {
@@ -690,7 +690,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the submitter of the correct answer for a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @return The submitter's user name
@@ -701,7 +701,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the total value of questions in this round.
-	 * 
+	 *
 	 * @return The total value of this round
 	 */
 	public int getValue() {
@@ -715,7 +715,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the value of a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @return The value of the question
@@ -731,7 +731,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Checks if this round's score has been announced.
-	 * 
+	 *
 	 * @return true if the score for this round has been announced
 	 */
 	public boolean isAnnounced() {
@@ -740,7 +740,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Checks if a question was answered correctly
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @return true, if the question is correct
@@ -751,7 +751,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Checks if there is a mismatch between the announced score and the calculated score
-	 * 
+	 *
 	 * @return true, if there is a mismatch
 	 */
 	public boolean isMismatch() {
@@ -761,7 +761,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Checks if a question is currently open
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @return true, if the question is open
@@ -772,7 +772,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Checks if this is a speed round.
-	 * 
+	 *
 	 * @return true if this is a speed round
 	 */
 	public boolean isSpeed() {
@@ -781,14 +781,14 @@ public class Round implements Serializable {
 
 	/**
 	 * Mark an answer in the queue as partially correct.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index of the answer in the queue
 	 * @param caller
 	 *            The user calling the answer in
 	 * @param operator
 	 *            The operator who accepted the correct answer
-	 * 
+	 *
 	 */
 	public synchronized void markCorrect(int queueIndex, String caller, String operator) {
 		final Answer answer = this.answerQueue.get(queueIndex);
@@ -802,7 +802,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Mark a specific question correct (used when loading saves)
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param answerText
@@ -811,7 +811,7 @@ public class Round implements Serializable {
 	 *            The user who submitted the correct answer
 	 * @param operator
 	 *            The operator who accepted the correct answer
-	 * 
+	 *
 	 */
 	public synchronized void markCorrect(int qNumber, String answerText, String submitter, String operator) {
 		this.questions[qNumber - 1].markCorrect(answerText, submitter, operator);
@@ -820,17 +820,17 @@ public class Round implements Serializable {
 
 	/**
 	 * Mark an answer in the queue as a duplicate.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index of the answer in the queue
-	 * 
+	 *
 	 */
 	public synchronized void markDuplicate(int queueIndex) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		answer.markDuplicate();
-		String aText = answer.getAnswer().replaceAll("\\s+", "");
-		int qNumber = answer.getQNumber();
-		for (Answer answerCheck : this.answerQueue) {
+		final String aText = answer.getAnswer().replaceAll("\\s+", "");
+		final int qNumber = answer.getQNumber();
+		for (final Answer answerCheck : this.answerQueue) {
 			if (answerCheck.getQueueLocation() != queueIndex + 1 && answerCheck.getQNumber() == qNumber
 					&& answerCheck.getAnswer().replaceAll("\\s+", "").equalsIgnoreCase(aText)
 					&& answerCheck.getStatus() != Status.DUPLICATE) {
@@ -842,7 +842,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Mark a question as incorrect.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 */
@@ -853,7 +853,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Mark an answer in the queue as incorrect.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index of the answer in the queue
 	 * @param caller
@@ -872,7 +872,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Mark an answer in the queue as partially correct.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index of the answer in the queue
 	 * @param caller
@@ -891,10 +891,10 @@ public class Round implements Serializable {
 
 	/**
 	 * Mark an answer in the queue as uncalled.
-	 * 
+	 *
 	 * @param queueIndex
 	 *            The index of the answer in the queue
-	 * 
+	 *
 	 */
 	public synchronized void markUncalled(int queueIndex) {
 		final Answer answer = this.answerQueue.get(queueIndex);
@@ -926,7 +926,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Get the number of correct answers in this round
-	 * 
+	 *
 	 * @return The number of correct answers
 	 */
 	public int nCorrect() {
@@ -941,7 +941,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Get the lowest unopened question number. If all questions have been opened, returns the last question number.
-	 * 
+	 *
 	 * @return The question number that should be opened next
 	 */
 	public int nextToOpen() {
@@ -960,7 +960,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Get the number of open questions in this round
-	 * 
+	 *
 	 * @return The number of open questions
 	 */
 	public int nOpen() {
@@ -985,7 +985,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Open a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param qValue
@@ -1004,7 +1004,7 @@ public class Round implements Serializable {
 
 	public synchronized void reopen(int qNumber) {
 		this.questions[qNumber - 1].reopen();
-		for (Answer a : this.answerQueue) {
+		for (final Answer a : this.answerQueue) {
 			if (a.getQNumber() == qNumber && a.getStatus() == Answer.Status.CORRECT) {
 				a.markUncalled();
 			}
@@ -1014,7 +1014,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Propose an answer for a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param answer
@@ -1028,7 +1028,7 @@ public class Round implements Serializable {
 		final int queueIndex = this.answerQueue.size();
 		this.answerQueue.add(new Answer(queueIndex + 1, qNumber, answer, submitter, confidence));
 		this.version++;
-		for (Answer answerCheck : this.answerQueue) {
+		for (final Answer answerCheck : this.answerQueue) {
 			if (answerCheck.getQueueLocation() != queueIndex + 1 && answerCheck.getQNumber() == qNumber
 					&& answerCheck.getAnswer().replaceAll("\\s+", "").equalsIgnoreCase(answer.replaceAll("\\s+", ""))
 					&& answerCheck.getStatus() != Status.DUPLICATE) {
@@ -1052,13 +1052,13 @@ public class Round implements Serializable {
 
 	/**
 	 * Reset a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 */
 	public synchronized void resetQuestion(int qNumber) {
 		this.questions[qNumber - 1].reset();
-		Iterator<Answer> i = this.answerQueue.iterator();
+		final Iterator<Answer> i = this.answerQueue.iterator();
 		while (i.hasNext()) {
 			if (i.next().getQNumber() == qNumber) {
 				i.remove();
@@ -1072,7 +1072,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Returns if the round is over (all questions have been opened and are now closed).
-	 * 
+	 *
 	 * @return true, if the round is over
 	 */
 	public boolean roundOver() {
@@ -1085,7 +1085,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Sets the announced score for this round.
-	 * 
+	 *
 	 * @param announcedPoints
 	 *            The announced score
 	 * @param place
@@ -1100,7 +1100,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Sets the correct answer text of a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param answer
@@ -1113,7 +1113,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Sets the discrepancy text for this round.
-	 * 
+	 *
 	 * @param discrepancyText
 	 *            The new discrepancy text
 	 */
@@ -1124,7 +1124,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Sets the operator who accepted the correct answer for a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param operator
@@ -1137,7 +1137,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Sets the question text of a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param question
@@ -1150,7 +1150,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Make this a speed round
-	 * 
+	 *
 	 * @param isSpeed
 	 */
 	public synchronized void setSpeed(boolean isSpeed) {
@@ -1160,7 +1160,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Sets the announced standings for this round.
-	 * 
+	 *
 	 * @param standings
 	 *            Array of ScoreEntry representing each team's score this round
 	 */
@@ -1178,7 +1178,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Sets the user who submitted a correct answer to a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param submitter
@@ -1191,7 +1191,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Sets the value of a question.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param value
@@ -1212,7 +1212,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Set an answer in the queue. Used when loading a saved state from file.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param answer
@@ -1255,7 +1255,7 @@ public class Round implements Serializable {
 
 	/**
 	 * Gets the current open questions.
-	 * 
+	 *
 	 * @return Array of the open Questions
 	 */
 	private Question[] getOpenQuestions() {

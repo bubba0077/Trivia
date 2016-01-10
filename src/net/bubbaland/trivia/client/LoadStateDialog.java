@@ -12,16 +12,16 @@ import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
 /**
  * Creates a dialog that lists the saves and prompts for one to load.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class LoadStateDialog extends TriviaDialogPanel {
 
-	private static final long	serialVersionUID	= -3297076605620744620L;
+	private static final long		serialVersionUID	= -3297076605620744620L;
 
-	private final TriviaClient	client;
-	private JComboBox<String>	chooser;
+	private final TriviaClient		client;
+	private final JComboBox<String>	chooser;
 
 	public LoadStateDialog(TriviaClient client, String[] saveList) {
 
@@ -78,8 +78,8 @@ public class LoadStateDialog extends TriviaDialogPanel {
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		this.chooser = new JComboBox<String>(saveList);
-		chooser.addAncestorListener(this);
-		this.add(chooser, constraints);
+		this.chooser.addAncestorListener(this);
+		this.add(this.chooser, constraints);
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog(null, "Load saved state", this, JOptionPane.PLAIN_MESSAGE,
@@ -94,15 +94,17 @@ public class LoadStateDialog extends TriviaDialogPanel {
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 
 		if (option == JOptionPane.OK_OPTION) {
-			final String saveFile = (String) chooser.getSelectedItem();
+			final String saveFile = (String) this.chooser.getSelectedItem();
 
 			// Try to communicate with server
 			( new SwingWorker<Void, Void>() {
+				@Override
 				public Void doInBackground() {
 					LoadStateDialog.this.client.sendMessage(ClientMessageFactory.loadState(saveFile));
 					return null;
 				}
 
+				@Override
 				public void done() {
 
 				}

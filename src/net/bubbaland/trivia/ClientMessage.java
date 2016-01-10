@@ -2,6 +2,7 @@ package net.bubbaland.trivia;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.rmi.RemoteException;
 
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
@@ -9,13 +10,13 @@ import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 
 import net.bubbaland.trivia.Answer.Agreement;
 import net.bubbaland.trivia.Trivia.Role;
@@ -25,7 +26,7 @@ public class ClientMessage {
 	// public static class Coder extends JSONCoder<ClientMessage> {
 	// }
 
-	protected static JsonFactory	jsonFactory	= new JsonFactory();
+	protected static JsonFactory jsonFactory = new JsonFactory();
 
 	public static enum ClientCommand {
 		CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA, RESTART_TIMER
@@ -150,11 +151,11 @@ public class ClientMessage {
 	}
 
 	public boolean isSpeed() {
-		return speed;
+		return this.speed;
 	}
 
 	public int getTimeToIdle() {
-		return timeToIdle;
+		return this.timeToIdle;
 	}
 
 	public String getUser() {
@@ -165,7 +166,7 @@ public class ClientMessage {
 
 		/**
 		 * Call an answer in.
-		 * 
+		 *
 		 * @param queueIndex
 		 *            The location of the answer in the queue
 		 * @param caller
@@ -174,14 +175,14 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage callIn(int queueIndex) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CALL_IN);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CALL_IN);
 			message.queueIndex = queueIndex;
 			return message;
 		}
 
 		/**
 		 * Change a user's name.
-		 * 
+		 *
 		 * @param oldUser
 		 *            The old user name
 		 * @param newUser
@@ -189,14 +190,14 @@ public class ClientMessage {
 		 * @throws RemoteException
 		 */
 		public static ClientMessage changeUser(String user) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CHANGE_USER);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CHANGE_USER);
 			message.user = user;
 			return message;
 		}
 
 		/**
 		 * Close a question.
-		 * 
+		 *
 		 * @param user
 		 *            The user's name
 		 * @param qNumber
@@ -207,7 +208,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage close(int qNumber, String aText) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CLOSE_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CLOSE_QUESTION);
 			message.qNumber = qNumber;
 			message.aText = aText;
 			return message;
@@ -215,7 +216,7 @@ public class ClientMessage {
 
 		/**
 		 * Edit question data.
-		 * 
+		 *
 		 * @param rNumber
 		 *            The round number
 		 * @param qNumber
@@ -236,7 +237,7 @@ public class ClientMessage {
 		 */
 		public static ClientMessage editQuestion(int rNumber, int qNumber, int qValue, String qText, String aText,
 				String submitter, boolean isCorrect, String operator) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.EDIT_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.EDIT_QUESTION);
 			message.rNumber = rNumber;
 			message.qNumber = qNumber;
 			message.qValue = qValue;
@@ -250,36 +251,36 @@ public class ClientMessage {
 
 		/**
 		 * Gets a list of available saves.
-		 * 
+		 *
 		 * @return Array of save file names
 		 * @throws RemoteException
 		 *             A remote exception
 		 */
 		public static ClientMessage listSaves() {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.LIST_SAVES);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.LIST_SAVES);
 			return message;
 		}
 
 		/**
 		 * Load a save state from file.
-		 * 
+		 *
 		 * @param user
 		 *            The user's name
 		 * @param stateFile
 		 *            The name of the save state file to load.
-		 * 
+		 *
 		 * @throws RemoteException
 		 *             A remote exception
 		 */
 		public static ClientMessage loadState(String saveFilename) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.LOAD_STATE);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.LOAD_STATE);
 			message.saveFilename = saveFilename;
 			return message;
 		}
 
 		/**
 		 * Mark a question correct.
-		 * 
+		 *
 		 * @param queueIndex
 		 *            The location of the answer in the queue
 		 * @param caller
@@ -290,7 +291,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage markCorrect(int queueIndex, String operator) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_CORRECT);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_CORRECT);
 			message.queueIndex = queueIndex;
 			message.operator = operator;
 			return message;
@@ -298,24 +299,24 @@ public class ClientMessage {
 
 		/**
 		 * Mark as duplicate.
-		 * 
+		 *
 		 * @param user
 		 *            The user's name
 		 * @param queueIndex
 		 *            The location of the answer in the queue
-		 * 
+		 *
 		 * @throws RemoteException
 		 *             A remote exception
 		 */
 		public static ClientMessage markDuplicate(int queueIndex) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_DUPLICATE);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_DUPLICATE);
 			message.queueIndex = queueIndex;
 			return message;
 		}
 
 		/**
 		 * Mark a question incorrect.
-		 * 
+		 *
 		 * @param queueIndex
 		 *            The location of the answer in the queue
 		 * @param caller
@@ -324,14 +325,14 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage markIncorrect(int queueIndex) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_INCORRECT);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_INCORRECT);
 			message.queueIndex = queueIndex;
 			return message;
 		}
 
 		/**
 		 * Mark a question partially correct.
-		 * 
+		 *
 		 * @param queueIndex
 		 *            The location of the answer in the queue
 		 * @param caller
@@ -340,42 +341,42 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage markPartial(int queueIndex) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_PARTIAL);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_PARTIAL);
 			message.queueIndex = queueIndex;
 			return message;
 		}
 
 		/**
 		 * Mark uncalled.
-		 * 
+		 *
 		 * @param user
 		 *            The user's name
 		 * @param queueIndex
 		 *            The location of the answer in the queue
-		 * 
+		 *
 		 * @throws RemoteException
 		 *             A remote exception
 		 */
 		public static ClientMessage markUncalled(int queueIndex) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_UNCALLED);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_UNCALLED);
 			message.queueIndex = queueIndex;
 			return message;
 		}
 
 		/**
 		 * Starts a new round.
-		 * 
+		 *
 		 * @throws RemoteException
 		 *             A remote exception
 		 */
 		public static ClientMessage advanceRound() {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.ADVANCE_ROUND);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.ADVANCE_ROUND);
 			return message;
 		}
 
 		/**
 		 * Open a question
-		 * 
+		 *
 		 * @param user
 		 *            The user's name
 		 * @param qNumber
@@ -386,25 +387,25 @@ public class ClientMessage {
 		 *            The question's value
 		 * @param question
 		 *            The question
-		 * 
+		 *
 		 * @throws RemoteException
 		 *             A remote exception
 		 */
 		public static ClientMessage open(int qNumber) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.OPEN_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.OPEN_QUESTION);
 			message.qNumber = qNumber;
 			return message;
 		}
 
 		public static ClientMessage reopen(int qNumber) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.REOPEN_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.REOPEN_QUESTION);
 			message.qNumber = qNumber;
 			return message;
 		}
 
 		/**
 		 * Propose an answer.
-		 * 
+		 *
 		 * @param qNumber
 		 *            The question number
 		 * @param answer
@@ -417,7 +418,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage proposeAnswer(int qNumber, String aText, int confidence) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.PROPOSE_ANSWER);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.PROPOSE_ANSWER);
 			message.qNumber = qNumber;
 			message.aText = aText;
 			message.confidence = confidence;
@@ -426,7 +427,7 @@ public class ClientMessage {
 
 		/**
 		 * Remap a question to a new number.
-		 * 
+		 *
 		 * @param oldQNumber
 		 *            The old question number
 		 * @param newQNumber
@@ -434,7 +435,7 @@ public class ClientMessage {
 		 * @throws RemoteException
 		 */
 		public static ClientMessage remapQuestion(int oldQNumber, int newQNumber) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.REMAP_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.REMAP_QUESTION);
 			message.oldQNumber = oldQNumber;
 			message.qNumber = newQNumber;
 			return message;
@@ -442,20 +443,20 @@ public class ClientMessage {
 
 		/**
 		 * Reset a question.
-		 * 
+		 *
 		 * @param qNumber
 		 *            The question number
 		 * @throws RemoteException
 		 */
 		public static ClientMessage resetQuestion(int qNumber) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.RESET_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.RESET_QUESTION);
 			message.qNumber = qNumber;
 			return message;
 		}
 
 		/**
 		 * Sets the discrepancy text.
-		 * 
+		 *
 		 * @param user
 		 *            The user's name
 		 * @param rNumber
@@ -466,7 +467,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage setDiscrepancyText(int rNumber, String discrepancyText) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_DISCREPENCY_TEXT);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_DISCREPENCY_TEXT);
 			message.rNumber = rNumber;
 			message.discrepancyText = discrepancyText;
 			return message;
@@ -474,7 +475,7 @@ public class ClientMessage {
 
 		/**
 		 * Change the user's role.
-		 * 
+		 *
 		 * @param user
 		 *            The user name
 		 * @param role
@@ -482,7 +483,7 @@ public class ClientMessage {
 		 * @throws RemoteException
 		 */
 		public static ClientMessage setRole(String user, Role role) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_ROLE);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_ROLE);
 			message.user = user;
 			message.role = role;
 			return message;
@@ -490,32 +491,32 @@ public class ClientMessage {
 
 		/**
 		 * Makes the current round a speed round.
-		 * 
+		 *
 		 * @param user
 		 *            The user making the change
 		 * @throws RemoteException
 		 *             A remote exception
 		 */
 		public static ClientMessage setSpeed(boolean isSpeed) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_SPEED);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_SPEED);
 			message.speed = isSpeed;
 			return message;
 		}
 
 		public static ClientMessage restartTimer() {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.RESTART_TIMER);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.RESTART_TIMER);
 			return message;
 		}
 
 		public static ClientMessage changeAgreement(int queueIndex, Answer.Agreement agreement) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CHANGE_AGREEMENT);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CHANGE_AGREEMENT);
 			message.queueIndex = queueIndex;
 			message.agreement = agreement;
 			return message;
 		}
 
 		public static ClientMessage setIdleTime(int timeToIdle) {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_IDLE_TIME);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_IDLE_TIME);
 			if (timeToIdle == 0) {
 				message.timeToIdle = 9999999;
 			} else {
@@ -525,7 +526,7 @@ public class ClientMessage {
 		}
 
 		public static ClientMessage fetchTrivia() {
-			ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.FETCH_TRIVIA);
+			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.FETCH_TRIVIA);
 			return message;
 		}
 
@@ -539,8 +540,8 @@ public class ClientMessage {
 		@Override
 		public String encode(final ClientMessage message) throws EncodeException {
 			// System.out.println("Encoding ClientMessage with command " + message.command);
-			StringWriter writer = new StringWriter();
-			ObjectMapper mapper = new ObjectMapper();
+			final StringWriter writer = new StringWriter();
+			final ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
 			mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
@@ -548,7 +549,7 @@ public class ClientMessage {
 			try {
 				jsonGen = jsonFactory.createGenerator(writer);
 				mapper.writeValue(jsonGen, message);
-			} catch (IOException exception) {
+			} catch (final IOException exception) {
 				// TODO Auto-generated catch block
 				exception.printStackTrace();
 			}
@@ -569,14 +570,14 @@ public class ClientMessage {
 		@Override
 		public ClientMessage decode(final String str) throws DecodeException {
 			// System.out.println("Decoding ClientMessage");
-			ObjectMapper mapper = new ObjectMapper();
+			final ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
 			mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 			ClientMessage message = null;
 			try {
 				message = mapper.readValue(str, ClientMessage.class);
-			} catch (IOException exception) {
+			} catch (final IOException exception) {
 				// TODO Auto-generated catch block
 				exception.printStackTrace();
 			}

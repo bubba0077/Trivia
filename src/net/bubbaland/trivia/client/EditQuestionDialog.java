@@ -95,9 +95,9 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		existingValue = ( 10 < existingValue ) ? existingValue : 10;
 		existingValue = ( 500 > existingValue ) ? existingValue : 500;
 		this.qValueSpinner = new JSpinner(new SpinnerNumberModel(existingValue, 10, 500, 5));
-		qValueSpinner.setFont(qValueSpinner.getFont().deriveFont(fontSize));
-		this.addEnterOverride(qValueSpinner);
-		this.add(qValueSpinner, constraints);
+		this.qValueSpinner.setFont(this.qValueSpinner.getFont().deriveFont(fontSize));
+		this.addEnterOverride(this.qValueSpinner);
+		this.add(this.qValueSpinner, constraints);
 		constraints.weightx = 0.0;
 
 		// Toggle button to change correctness
@@ -123,12 +123,12 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.6;
 		this.qTextArea = new JTextArea(existingQText, 4, 50);
-		qTextArea.setLineWrap(true);
-		qTextArea.setWrapStyleWord(true);
-		qTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
-		qTextArea.addAncestorListener(this);
-		this.addEnterOverride(qTextArea);
-		JScrollPane scrollPane = new JScrollPane(qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		this.qTextArea.setLineWrap(true);
+		this.qTextArea.setWrapStyleWord(true);
+		this.qTextArea.setFont(this.qTextArea.getFont().deriveFont(textAreaFontSize));
+		this.qTextArea.addAncestorListener(this);
+		this.addEnterOverride(this.qTextArea);
+		JScrollPane scrollPane = new JScrollPane(this.qTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
 		this.add(scrollPane, constraints);
@@ -148,11 +148,11 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.4;
 		this.aTextArea = new JTextArea(existingAText, 4, 50);
-		aTextArea.setLineWrap(true);
-		aTextArea.setWrapStyleWord(true);
-		aTextArea.setFont(qTextArea.getFont().deriveFont(textAreaFontSize));
-		this.addEnterOverride(aTextArea);
-		scrollPane = new JScrollPane(aTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		this.aTextArea.setLineWrap(true);
+		this.aTextArea.setWrapStyleWord(true);
+		this.aTextArea.setFont(this.qTextArea.getFont().deriveFont(textAreaFontSize));
+		this.addEnterOverride(this.aTextArea);
+		scrollPane = new JScrollPane(this.aTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
 		this.add(scrollPane, constraints);
@@ -240,22 +240,25 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		if (option == JOptionPane.OK_OPTION) {
 			// Get the input data
 			final boolean isCorrect = this.correctButton.isSelected();
-			final int qValue = (int) qValueSpinner.getValue();
-			final String qText = qTextArea.getText();
-			final String aText = aTextArea.getText();
+			final int qValue = (int) this.qValueSpinner.getValue();
+			final String qText = this.qTextArea.getText();
+			final String aText = this.aTextArea.getText();
 			final String submitter = this.submitterTextField.getText();
 			final String operator = this.operatorTextField.getText();
 
 			// Edit the question on the server
 			( new SwingWorker<Void, Void>() {
+				@Override
 				public Void doInBackground() {
-					EditQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(rNumber, qNumber,
-							qValue, qText, aText, submitter, isCorrect, operator));
+					EditQuestionDialog.this.client.sendMessage(ClientMessageFactory.editQuestion(
+							EditQuestionDialog.this.rNumber, EditQuestionDialog.this.qNumber, qValue, qText, aText,
+							submitter, isCorrect, operator));
 					return null;
 				}
 
+				@Override
 				public void done() {
-					EditQuestionDialog.this.client.log("Question #" + qNumber + " edited.");
+					EditQuestionDialog.this.client.log("Question #" + EditQuestionDialog.this.qNumber + " edited.");
 				}
 			} ).execute();
 

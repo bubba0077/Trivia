@@ -16,7 +16,7 @@ import net.bubbaland.trivia.Trivia;
 
 /**
  * Creates a dialog box that prompts user for the correct answer when closing a question.
- * 
+ *
  * @author Walter Kolczynski
  */
 public class CloseQuestionDialog extends TriviaDialogPanel {
@@ -82,13 +82,13 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		constraints.weightx = 0.5;
 		constraints.weighty = 0.5;
 		this.answerTextArea = new JTextArea("", 4, 50);
-		answerTextArea.setLineWrap(true);
-		answerTextArea.setWrapStyleWord(true);
-		answerTextArea.setFont(answerTextArea.getFont().deriveFont(textAreaFontSize));
-		answerTextArea.addAncestorListener(this);
-		this.addEnterOverride(answerTextArea);
+		this.answerTextArea.setLineWrap(true);
+		this.answerTextArea.setWrapStyleWord(true);
+		this.answerTextArea.setFont(this.answerTextArea.getFont().deriveFont(textAreaFontSize));
+		this.answerTextArea.addAncestorListener(this);
+		this.addEnterOverride(this.answerTextArea);
 		// answerTextArea.addKeyListener(this);
-		scrollPane = new JScrollPane(answerTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		scrollPane = new JScrollPane(this.answerTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(0, 200));
 		this.add(scrollPane, constraints);
@@ -106,15 +106,18 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		if (option == JOptionPane.OK_OPTION) {
-			final String answer = answerTextArea.getText();
+			final String answer = this.answerTextArea.getText();
 			( new SwingWorker<Void, Void>() {
+				@Override
 				public Void doInBackground() {
-					CloseQuestionDialog.this.client.sendMessage(ClientMessageFactory.close(qNumber, answer));
+					CloseQuestionDialog.this.client
+							.sendMessage(ClientMessageFactory.close(CloseQuestionDialog.this.qNumber, answer));
 					return null;
 				}
 
+				@Override
 				public void done() {
-					client.log("Closed Question #" + qNumber);
+					CloseQuestionDialog.this.client.log("Closed Question #" + CloseQuestionDialog.this.qNumber);
 				}
 			} ).execute();
 		}

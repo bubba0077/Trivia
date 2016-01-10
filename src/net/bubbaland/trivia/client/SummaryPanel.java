@@ -23,13 +23,13 @@ import net.bubbaland.trivia.Trivia;
 
 /**
  * A panel which displays summary information of the trivia contest.
- * 
+ *
  * The <code>HeaderPanel</code> class is a panel that contains summary information about the current state of the trivia
  * contest and of the current round. It also provides buttons to make the current round a speed round (or not) and
  * advance to a new round.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
@@ -58,7 +58,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 	/**
 	 * Instantiates a new header panel.
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 */
@@ -205,7 +205,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
@@ -213,12 +213,14 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		final JComponent source = (JComponent) event.getSource();
 		if (source.equals(this.speedButton)) {
 			( new SwingWorker<Void, Void>() {
+				@Override
 				public Void doInBackground() {
-					SummaryPanel.this.client.sendMessage(ClientMessageFactory.setSpeed(SummaryPanel.this.speedButton
-							.isSelected()));
+					SummaryPanel.this.client
+							.sendMessage(ClientMessageFactory.setSpeed(SummaryPanel.this.speedButton.isSelected()));
 					return null;
 				}
 
+				@Override
 				public void done() {
 
 				}
@@ -231,11 +233,13 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 			}
 		} else if (source.equals(this.newRoundButton)) {
 			( new SwingWorker<Void, Void>() {
+				@Override
 				public Void doInBackground() {
 					SummaryPanel.this.client.sendMessage(ClientMessageFactory.advanceRound());
 					return null;
 				}
 
+				@Override
 				public void done() {
 
 				}
@@ -253,10 +257,12 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		 * Colors
 		 */
 		backgroundColor = new Color(new BigInteger(properties.getProperty("Summary.BackgroundColor"), 16).intValue());
-		final Color labelColor = new Color(new BigInteger(properties.getProperty("Summary.Label.Color"), 16).intValue());
+		final Color labelColor = new Color(
+				new BigInteger(properties.getProperty("Summary.Label.Color"), 16).intValue());
 		final Color earnedColor = new Color(new BigInteger(properties.getProperty("Earned.Color"), 16).intValue());
 		final Color valueColor = new Color(new BigInteger(properties.getProperty("Value.Color"), 16).intValue());
-		final Color announcedColor = new Color(new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
+		final Color announcedColor = new Color(
+				new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
 		speedColor = new Color(new BigInteger(properties.getProperty("Summary.Speed.Color"), 16).intValue());
 		final Color newRoundColor = new Color(
 				new BigInteger(properties.getProperty("Summary.NewRound.Color"), 16).intValue());
@@ -297,7 +303,8 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		setLabelProperties(this.announcedBannerLabel, col4width + col5width, topRowHeight, announcedColor,
 				backgroundColor, labelFontSize);
 
-		setLabelProperties(this.earnedRowLabel, col0width, middleRowHeight, earnedColor, backgroundColor, labelFontSize);
+		setLabelProperties(this.earnedRowLabel, col0width, middleRowHeight, earnedColor, backgroundColor,
+				labelFontSize);
 		setLabelProperties(this.roundEarnedLabel, col1width, middleRowHeight, earnedColor, backgroundColor,
 				scoreFontSize);
 		setLabelProperties(this.totalEarnedLabel, col2width, middleRowHeight, earnedColor, backgroundColor,
@@ -310,8 +317,10 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				labelFontSize);
 
 		setLabelProperties(this.valueRowLabel, col0width, bottomRowHeight, valueColor, backgroundColor, labelFontSize);
-		setLabelProperties(this.roundValueLabel, col1width, bottomRowHeight, valueColor, backgroundColor, scoreFontSize);
-		setLabelProperties(this.totalValueLabel, col2width, bottomRowHeight, valueColor, backgroundColor, scoreFontSize);
+		setLabelProperties(this.roundValueLabel, col1width, bottomRowHeight, valueColor, backgroundColor,
+				scoreFontSize);
+		setLabelProperties(this.totalValueLabel, col2width, bottomRowHeight, valueColor, backgroundColor,
+				scoreFontSize);
 		setPanelProperties(this.buttonPanel, col3width, bottomRowHeight, backgroundColor);
 
 		setLabelProperties(this.placeTextLabel, col4width, bottomRowHeight, announcedColor, backgroundColor,
@@ -329,7 +338,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override

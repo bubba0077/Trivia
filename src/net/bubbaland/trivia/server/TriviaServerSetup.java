@@ -47,9 +47,9 @@ public class TriviaServerSetup {
 	private static boolean		showGUI;
 
 	private static final String	welcomeMsg			= "This program will download all of the files necessary to host the trivia server and configure the necessary settings.\n\n"
-															+ "Before continuing, please make sure you have all of the following required components set up:\n"
-															+ "1) An internet-facing html server for the webstart files\n"
-															+ "2) Another available internet-facing port for the trivia server (default is 1099)";
+			+ "Before continuing, please make sure you have all of the following required components set up:\n"
+			+ "1) An internet-facing html server for the webstart files\n"
+			+ "2) Another available internet-facing port for the trivia server (default is 1099)";
 
 	private static final String	requestHTML			= "Enter local html root directory. A folder named trivia will be created there which will serve the trivia files.";
 	private static final String	defaultHTML			= "/var/www/trivia";
@@ -70,8 +70,8 @@ public class TriviaServerSetup {
 
 		JFrame frame = null;
 		JTextArea textArea = null;
-		InputStreamReader istream = new InputStreamReader(System.in);
-		BufferedReader bufRead = new BufferedReader(istream);
+		final InputStreamReader istream = new InputStreamReader(System.in);
+		final BufferedReader bufRead = new BufferedReader(istream);
 
 		if (showGUI) {
 			frame = new JFrame("Trivia Server Setup");
@@ -83,7 +83,7 @@ public class TriviaServerSetup {
 			textArea.setAutoscrolls(true);
 			final DefaultCaret caret = (DefaultCaret) textArea.getCaret();
 			caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-			JScrollPane pane = new JScrollPane(textArea);
+			final JScrollPane pane = new JScrollPane(textArea);
 			frame.getContentPane().add(pane, BorderLayout.CENTER);
 			frame.setSize(400, 200);
 			frame.setLocationRelativeTo(null);
@@ -107,7 +107,7 @@ public class TriviaServerSetup {
 				System.out.println(requestHTML + " [" + defaultHTML + "]");
 				try {
 					htmlDirName = bufRead.readLine();
-				} catch (IOException exception) {
+				} catch (final IOException exception) {
 					System.out.println("Error reading input stream, exiting");
 					System.exit(1);
 				}
@@ -121,7 +121,7 @@ public class TriviaServerSetup {
 					textArea.append("Setup cancelled, exiting!\n");
 					try {
 						Thread.sleep(1000);
-					} catch (InterruptedException exception) {
+					} catch (final InterruptedException exception) {
 					}
 					System.exit(0);
 				}
@@ -149,7 +149,7 @@ public class TriviaServerSetup {
 			System.out.println(requestURL + " [" + defaultURL + "]");
 			try {
 				serverURL = bufRead.readLine();
-			} catch (IOException exception) {
+			} catch (final IOException exception) {
 				System.out.println("Error reading input stream, exiting");
 				System.exit(1);
 			}
@@ -163,7 +163,7 @@ public class TriviaServerSetup {
 				textArea.append("Setup cancelled, exiting!\n");
 				try {
 					Thread.sleep(1000);
-				} catch (InterruptedException exception) {
+				} catch (final InterruptedException exception) {
 				}
 				System.exit(0);
 			}
@@ -187,18 +187,18 @@ public class TriviaServerSetup {
 						port = Integer.parseInt(portString);
 					}
 				}
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				port = 0;
-			} catch (NullPointerException exception) {
+			} catch (final NullPointerException exception) {
 				if (showGUI) {
 					textArea.append("Setup cancelled, exiting!\n");
 					try {
 						Thread.sleep(1000);
-					} catch (InterruptedException exception1) {
+					} catch (final InterruptedException exception1) {
 					}
 					System.exit(0);
 				}
-			} catch (IOException exception) {
+			} catch (final IOException exception) {
 				System.out.println("Error reading input stream, exiting");
 				System.exit(1);
 			}
@@ -305,17 +305,17 @@ public class TriviaServerSetup {
 			System.out.println("Downloading " + filename);
 		}
 		try {
-			ReadableByteChannel in = Channels.newChannel(new URL(SOURCE_URL + "/" + filename).openStream());
+			final ReadableByteChannel in = Channels.newChannel(new URL(SOURCE_URL + "/" + filename).openStream());
 			outstream = new FileOutputStream(dir + "/" + filename);
-			FileChannel out = outstream.getChannel();
+			final FileChannel out = outstream.getChannel();
 			out.transferFrom(in, 0, Long.MAX_VALUE);
-		} catch (IOException exception) {
+		} catch (final IOException exception) {
 			if (textArea != null) {
 				textArea.append("Couldn't download " + SOURCE_URL + "/" + filename + "!");
 				textArea.append("Exiting...");
 				try {
 					Thread.sleep(5000);
-				} catch (InterruptedException exception1) {
+				} catch (final InterruptedException exception1) {
 				}
 			} else {
 				System.out.println("Couldn't download " + SOURCE_URL + "/" + filename + "!");
@@ -326,7 +326,7 @@ public class TriviaServerSetup {
 			if (outstream != null) {
 				try {
 					outstream.close();
-				} catch (IOException exception) {
+				} catch (final IOException exception) {
 					// TODO Auto-generated catch block
 					exception.printStackTrace();
 				}
@@ -360,7 +360,7 @@ public class TriviaServerSetup {
 			attribute.setValue("triviaClient.jnlp");
 			jnlpElem.setAttributeNode(attribute);
 
-			Element infElement = doc.createElement("information");
+			final Element infElement = doc.createElement("information");
 			jnlpElem.appendChild(infElement);
 
 			Element element = doc.createElement("title");
@@ -378,13 +378,13 @@ public class TriviaServerSetup {
 			element.setAttributeNode(attribute);
 			infElement.appendChild(element);
 
-			Element secElement = doc.createElement("security");
+			final Element secElement = doc.createElement("security");
 			jnlpElem.appendChild(secElement);
 
 			element = doc.createElement("all-permissions");
 			secElement.appendChild(element);
 
-			Element resElement = doc.createElement("resources");
+			final Element resElement = doc.createElement("resources");
 			jnlpElem.appendChild(resElement);
 
 			element = doc.createElement("j2se");
@@ -414,7 +414,7 @@ public class TriviaServerSetup {
 			// element.setAttributeNode(attribute);
 			// }
 
-			Element descElement = doc.createElement("application-desc");
+			final Element descElement = doc.createElement("application-desc");
 			jnlpElem.appendChild(descElement);
 
 			attribute = doc.createAttribute("main-class");
@@ -443,52 +443,52 @@ public class TriviaServerSetup {
 	 * (textArea != null) { textArea.append("Creating " + filename + " \n"); } else { System.out.println("Creating " +
 	 * filename); } try { final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance(); final
 	 * DocumentBuilder docBuilder = docFactory.newDocumentBuilder(); final Document doc = docBuilder.newDocument();
-	 * 
+	 *
 	 * final Element jnlpElem = doc.createElement("jnlp"); doc.appendChild(jnlpElem);
-	 * 
+	 *
 	 * Attr attribute = doc.createAttribute("spec"); attribute.setValue("1.0+"); jnlpElem.setAttributeNode(attribute);
-	 * 
+	 *
 	 * attribute = doc.createAttribute("codebase"); attribute.setValue("http://" + serverURL);
 	 * jnlpElem.setAttributeNode(attribute);
-	 * 
+	 *
 	 * attribute = doc.createAttribute("href"); attribute.setValue(serverURL + "/" + libname);
 	 * jnlpElem.setAttributeNode(attribute);
-	 * 
+	 *
 	 * Element infElement = doc.createElement("information"); jnlpElem.appendChild(infElement);
-	 * 
+	 *
 	 * Element element = doc.createElement("title"); infElement.appendChild(element);
 	 * element.appendChild(doc.createTextNode(libname));
-	 * 
-	 * element = doc.createElement("vendor"); infElement.appendChild(element);
-	 * element.appendChild(doc.createTextNode("Walter Kolczynski"));
-	 * 
+	 *
+	 * element = doc.createElement("vendor"); infElement.appendChild(element); element.appendChild(doc.createTextNode(
+	 * "Walter Kolczynski"));
+	 *
 	 * element = doc.createElement("homepage"); infElement.appendChild(element); attribute =
 	 * doc.createAttribute("href"); attribute.setValue("http://www.kneedeepintheses.org");
 	 * element.setAttributeNode(attribute); infElement.appendChild(element);
-	 * 
+	 *
 	 * Element secElement = doc.createElement("security"); jnlpElem.appendChild(secElement);
-	 * 
+	 *
 	 * element = doc.createElement("all-permissions"); secElement.appendChild(element);
-	 * 
+	 *
 	 * Element resElement = doc.createElement("resources"); jnlpElem.appendChild(resElement);
-	 * 
+	 *
 	 * element = doc.createElement("j2se"); resElement.appendChild(element);
-	 * 
+	 *
 	 * attribute = doc.createAttribute("version"); attribute.setValue("1.0+"); element.setAttributeNode(attribute);
 	 * attribute = doc.createAttribute("href"); attribute.setValue("http://java.sun.com/products/autodl/j2se");
 	 * element.setAttributeNode(attribute);
-	 * 
+	 *
 	 * element = doc.createElement("jar"); resElement.appendChild(element); attribute = doc.createAttribute("href");
 	 * attribute.setValue("lib/" + libname + ".jar"); element.setAttributeNode(attribute);
-	 * 
+	 *
 	 * Element descElement = doc.createElement("component-desc"); jnlpElem.appendChild(descElement);
-	 * 
+	 *
 	 * final TransformerFactory transformerFactory = TransformerFactory.newInstance(); final Transformer transformer =
 	 * transformerFactory.newTransformer(); final DOMSource source = new DOMSource(doc); final StreamResult result = new
 	 * StreamResult(new File(filename)); transformer.transform(source, result);
-	 * 
-	 * } catch (ParserConfigurationException | TransformerException exception) {
-	 * textArea.append("Couldn't create settings file!"); textArea.append("Exiting..."); System.exit(0); } }
+	 *
+	 * } catch (ParserConfigurationException | TransformerException exception) { textArea.append(
+	 * "Couldn't create settings file!"); textArea.append("Exiting..."); System.exit(0); } }
 	 */
 
 	private static void createServerSettings(String triviaDirPath, String serverURL, int port) {

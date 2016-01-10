@@ -17,13 +17,13 @@ import javax.swing.ScrollPaneConstants;
 
 /**
  * Creates a dialog that allows the user to select a tab to be added to the tabbed pane.
- * 
- * The dialog provides a combo box, a text area to describe the selected tab, and three option buttons: "Add",
- * "Add All", and "Cancel". "Add" will add the selected tab. "Add All" will add all non-starred items to the pane that
- * are not already open on the pane. "Cancel" will close the dialog with no further action.
- * 
+ *
+ * The dialog provides a combo box, a text area to describe the selected tab, and three option buttons: "Add", "Add All"
+ * , and "Cancel". "Add" will add the selected tab. "Add All" will add all non-starred items to the pane that are not
+ * already open on the pane. "Cancel" will close the dialog with no further action.
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 
@@ -38,6 +38,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 	// Get the list of tab names and sort them
 	private static final Set<String>	tabNameSet			= TriviaGUI.getTabNames();
 	private static final String[]		tabNames			= new String[tabNameSet.size()];
+
 	static {
 		tabNameSet.toArray(tabNames);
 		Arrays.sort(tabNames, new TabCompare());
@@ -69,7 +70,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		constraints.weighty = 1.0;
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		this.descriptionLabel = scrollableTextArea(TriviaGUI.getTabDescription(tabNames[0]), 300, 200,
+		this.descriptionLabel = this.scrollableTextArea(TriviaGUI.getTabDescription(tabNames[0]), 300, 200,
 				this.getForeground(), this.getBackground(), constraints, textAreaFontSize,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.descriptionLabel.setEditable(false);
@@ -96,13 +97,14 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 
 	/**
 	 * Customer comparator to sort tabs in the appropriate order.
-	 * 
+	 *
 	 * @author Walter Kolczynski
-	 * 
+	 *
 	 */
 	public static class TabCompare implements Comparator<String> {
 
-		final static private Hashtable<String, Integer>	SORT_ORDER;
+		final static private Hashtable<String, Integer> SORT_ORDER;
+
 		static {
 			SORT_ORDER = new Hashtable<String, Integer>(0);
 			SORT_ORDER.put("Workflow", 0);
@@ -126,7 +128,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 	@Override
 	public void windowClosed(WindowEvent event) {
 		super.windowClosed(event);
-		DnDTabbedPane pane = this.frame.getTabbedPane();
+		final DnDTabbedPane pane = this.frame.getTabbedPane();
 
 		// If a button was not pressed (option isn't a string), do nothing
 		if (!( this.dialog.getValue() instanceof String )) return;
@@ -134,12 +136,12 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 		// A list of tab names to add
 		final ArrayList<String> newTabs = new ArrayList<String>(0);
 		switch (option) {
-		// Add the selected tab to the list
+			// Add the selected tab to the list
 			case "Add": {
 				newTabs.add((String) this.tabSelector.getSelectedItem());
 				break;
 			}
-			// Add all tabs that don't start with a * and are not already in the tabbed pane
+				// Add all tabs that don't start with a * and are not already in the tabbed pane
 			case "Add All":
 				for (final String tabName : tabNameSet) {
 					if (!tabName.startsWith("*") && pane.indexOfTab(tabName) == -1) {
@@ -164,7 +166,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 				i++;
 			}
 			// Add the tab to the tabbed pane
-			this.frame.getTabbedPane().addTab(altName, this.client.getTab(frame, tabName));
+			this.frame.getTabbedPane().addTab(altName, this.client.getTab(this.frame, tabName));
 			// Make the new tab the selected one
 			final int tabLocation = pane.indexOfTab(altName);
 			pane.setSelectedIndex(tabLocation);

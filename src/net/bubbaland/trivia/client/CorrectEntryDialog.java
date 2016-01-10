@@ -13,7 +13,7 @@ import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
 /**
  * Creates a dialog that asks for the operator to confirm a correct answer.
- * 
+ *
  * @author Walter Kolczynski
  */
 public class CorrectEntryDialog extends TriviaDialogPanel {
@@ -28,7 +28,7 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 
 	/**
 	 * Creates a new dialog box and prompts for response
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
 	 * @param caller
@@ -64,9 +64,9 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 		c.weightx = 1.0;
 		c.weighty = 1.0;
 		this.operatorTextField = new JTextField("", 15);
-		operatorTextField.setFont(operatorTextField.getFont().deriveFont(fontSize));
-		operatorTextField.addAncestorListener(this);
-		this.add(operatorTextField, c);
+		this.operatorTextField.setFont(this.operatorTextField.getFont().deriveFont(fontSize));
+		this.operatorTextField.addAncestorListener(this);
+		this.add(this.operatorTextField, c);
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog(null, "Mark question correct", this, JOptionPane.PLAIN_MESSAGE,
@@ -81,12 +81,14 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 		if (option == JOptionPane.OK_OPTION) {
 			// If the OK button was pressed, mark the question as correct
 			( new SwingWorker<Void, Void>() {
+				@Override
 				public Void doInBackground() {
-					CorrectEntryDialog.this.client.sendMessage(ClientMessageFactory.markCorrect(queueIndex,
-							operatorTextField.getText()));
+					CorrectEntryDialog.this.client.sendMessage(ClientMessageFactory.markCorrect(
+							CorrectEntryDialog.this.queueIndex, CorrectEntryDialog.this.operatorTextField.getText()));
 					return null;
 				}
 
+				@Override
 				public void done() {
 
 				}
@@ -94,7 +96,7 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 
 		} else {
 			// If the OK button wasn't pressed, reset the status box to the previous status
-			statusComboBox.setSelectedItem(client.getTrivia().getAnswerQueueStatus(queueIndex));
+			this.statusComboBox.setSelectedItem(this.client.getTrivia().getAnswerQueueStatus(this.queueIndex));
 		}
 
 	}

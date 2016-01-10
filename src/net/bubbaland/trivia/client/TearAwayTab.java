@@ -1,5 +1,7 @@
 package net.bubbaland.trivia.client;
 
+import static java.awt.GraphicsDevice.WindowTranslucency.TRANSLUCENT;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
@@ -20,17 +22,15 @@ import java.awt.image.BufferedImage;
 import javax.swing.JWindow;
 import javax.swing.Timer;
 
-import static java.awt.GraphicsDevice.WindowTranslucency.*;
-
 /**
  * A class that allows tabs to be dragged off of a frame.
- * 
+ *
  * This class provides a drop location when a tab is dragged off a frame by having a window follow the cursor around
  * when not inside of a @TriviaFrame. When a tab is dropped into this, it passes the drop data along to a new
  * TriviaFrame.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class TearAwayTab extends JWindow {
 	private static final long		serialVersionUID	= -2723420566227526365L;
@@ -51,7 +51,7 @@ public class TearAwayTab extends JWindow {
 		this.add(this.glassPane);
 		// Create a timer to poll the mouse location and update the window location
 		this.mousePoller = new Timer(50, new ActionListener() {
-			private Point	lastPoint	= MouseInfo.getPointerInfo().getLocation();
+			private Point lastPoint = MouseInfo.getPointerInfo().getLocation();
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -66,7 +66,7 @@ public class TearAwayTab extends JWindow {
 		new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, new EasyDropTarget(), true);
 		// Make frame transparent
 		this.setBackground(new Color(0, 255, 0, 0));
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		if (ge.getDefaultScreenDevice().isWindowTranslucencySupported(TRANSLUCENT)) {
 			this.setOpacity(0.7f);
 		} else {
@@ -78,14 +78,12 @@ public class TearAwayTab extends JWindow {
 
 	/**
 	 * Display this window and attach it to the mouse pointer.
-	 * 
+	 *
 	 * @param location
 	 *            The location to start at
 	 */
 	public void attach(DnDTabbedPane tabbedPane, int tabIndex) {
-		if (this.isVisible()) {
-			return;
-		}
+		if (this.isVisible()) return;
 		// Get image of tab
 		final Rectangle rect = tabbedPane.getBoundsAt(tabIndex);
 		BufferedImage tabImage = new BufferedImage(tabbedPane.getWidth(), tabbedPane.getHeight(),
@@ -94,13 +92,14 @@ public class TearAwayTab extends JWindow {
 		tabbedPane.paint(g);
 		tabImage = tabImage.getSubimage(rect.x, rect.y, rect.width, rect.height);
 		// Get image of panel
-		Component panel = tabbedPane.getComponentAt(tabIndex);
-		BufferedImage panelImage = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		final Component panel = tabbedPane.getComponentAt(tabIndex);
+		final BufferedImage panelImage = new BufferedImage(panel.getWidth(), panel.getHeight(),
+				BufferedImage.TYPE_INT_ARGB);
 		final Graphics panelGraphics = panelImage.getGraphics();
 		panel.paint(panelGraphics);
-		int combinedHeight = tabImage.getHeight() + panelImage.getHeight();
+		final int combinedHeight = tabImage.getHeight() + panelImage.getHeight();
 		// Combine images into single image
-		BufferedImage combinedImage = new BufferedImage(panelImage.getWidth(), combinedHeight,
+		final BufferedImage combinedImage = new BufferedImage(panelImage.getWidth(), combinedHeight,
 				BufferedImage.TYPE_INT_ARGB);
 		combinedImage.createGraphics().drawImage(tabImage, 0, 0, null);
 		combinedImage.createGraphics().drawImage(panelImage, 0, tabImage.getHeight(), null);
@@ -122,12 +121,12 @@ public class TearAwayTab extends JWindow {
 
 	/**
 	 * Move the window.
-	 * 
+	 *
 	 * @param location
 	 *            The new window location
 	 */
 	private void center(Point location) {
-		Point offsetLocation = location;
+		final Point offsetLocation = location;
 		offsetLocation.setLocation(location.x - 10, location.y - 10);
 		TearAwayTab.this.setLocation(offsetLocation);
 		for (final DnDTabbedPane pane : DnDTabbedPane.getTabbedPanes()) {
@@ -143,9 +142,9 @@ public class TearAwayTab extends JWindow {
 
 	/**
 	 * A drop target to handle creation of a new frame when a tab is dropped.
-	 * 
+	 *
 	 * @author Walter Kolczynski
-	 * 
+	 *
 	 */
 	private class EasyDropTarget implements DropTargetListener {
 

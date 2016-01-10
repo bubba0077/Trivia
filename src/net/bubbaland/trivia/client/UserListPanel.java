@@ -25,9 +25,9 @@ import net.bubbaland.trivia.Trivia.Role;
 
 /**
  * Creates a panel that displays active and idle user names.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class UserListPanel extends TriviaMainPanel {
 
@@ -105,8 +105,8 @@ public class UserListPanel extends TriviaMainPanel {
 		/**
 		 * Colors
 		 */
-		final Color headerBackgroundColor = new Color(Integer.parseInt(
-				properties.getProperty("UserList.Header.BackgroundColor"), 16));
+		final Color headerBackgroundColor = new Color(
+				Integer.parseInt(properties.getProperty("UserList.Header.BackgroundColor"), 16));
 		final Color headerColor = new Color(Integer.parseInt(properties.getProperty("UserList.Header.Color"), 16));
 		final Color backgroundColor = new Color(
 				Integer.parseInt(properties.getProperty("UserList.BackgroundColor"), 16));
@@ -170,7 +170,7 @@ public class UserListPanel extends TriviaMainPanel {
 
 	/**
 	 * Sort user names based on role.
-	 * 
+	 *
 	 */
 	public class CompareRoles implements Comparator<String> {
 		@Override
@@ -188,11 +188,11 @@ public class UserListPanel extends TriviaMainPanel {
 
 	/**
 	 * Custom renderer to color user names based on role.
-	 * 
+	 *
 	 */
 	private class UserCellRenderer extends DefaultListCellRenderer {
 
-		private static final long	serialVersionUID	= -801444128612741125L;
+		private static final long serialVersionUID = -801444128612741125L;
 
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,

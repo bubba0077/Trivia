@@ -1,6 +1,7 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.GridBagConstraints;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneConstants;
@@ -8,13 +9,13 @@ import javax.swing.SwingConstants;
 
 /**
  * Create a dialog that displays question data.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class ViewQuestionDialog extends TriviaDialogPanel {
 
-	private static final long	serialVersionUID	= 8466638572342233271L;
+	private static final long serialVersionUID = 8466638572342233271L;
 
 	public ViewQuestionDialog(int rNumber, int qNumber, int qValue, String qText) {
 

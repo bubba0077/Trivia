@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A data structure for the announced score and place of one team.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 
 public class ScoreEntry implements Comparable<ScoreEntry>, Serializable {

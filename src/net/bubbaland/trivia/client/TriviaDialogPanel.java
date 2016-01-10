@@ -20,10 +20,10 @@ import javax.swing.event.AncestorListener;
 
 /**
  * Super-class for most of the dialog box panels in the trivia GUI.
- * 
+ *
  * Creates a new panel using the GridBagLayout manager. Also implements an AncestorListener to allow focus on an element
  * after the dialog is created.
- * 
+ *
  */
 public abstract class TriviaDialogPanel extends TriviaPanel implements AncestorListener, FocusListener, WindowListener {
 
@@ -43,7 +43,7 @@ public abstract class TriviaDialogPanel extends TriviaPanel implements AncestorL
 	/**
 	 * Override the default behavior of the text area to click the OK button of the option pane on enter and insert a
 	 * line break on shift-enter
-	 * 
+	 *
 	 * @param component
 	 *            The text are whose behavior we want to change
 	 */
@@ -51,7 +51,7 @@ public abstract class TriviaDialogPanel extends TriviaPanel implements AncestorL
 		component.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "Text Submit");
 		component.getInputMap().put(KeyStroke.getKeyStroke("shift ENTER"), "insert-break");
 		component.getActionMap().put("Text Submit", new AbstractAction() {
-			private static final long	serialVersionUID	= 1L;
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {

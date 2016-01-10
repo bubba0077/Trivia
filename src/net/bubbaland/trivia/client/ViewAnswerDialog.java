@@ -4,21 +4,19 @@ import java.awt.GridBagConstraints;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
 /**
  * Create a dialog to display answer data.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
-@SuppressWarnings("unused")
 public class ViewAnswerDialog extends TriviaDialogPanel {
 
-	private static final long	serialVersionUID	= 8466638572342233271L;
+	private static final long serialVersionUID = 8466638572342233271L;
 
 	public ViewAnswerDialog(int rNumber, int qNumber, int qValue, String qText, String aText) {
 
@@ -73,7 +71,7 @@ public class ViewAnswerDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 5;
 		constraints.weighty = 0.5;
-		final JTextArea aTextArea = scrollableTextArea(aText, 300, 200, this.getForeground(), this.getBackground(),
+		final JTextArea aTextArea = this.scrollableTextArea(aText, 300, 200, this.getForeground(), this.getBackground(),
 				constraints, textAreaFontSize, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		aTextArea.setEditable(false);

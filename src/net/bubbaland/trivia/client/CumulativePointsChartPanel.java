@@ -3,17 +3,17 @@ package net.bubbaland.trivia.client;
 import java.awt.GridBagConstraints;
 import java.util.Properties;
 
-import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaChartFactory;
-
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
+import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.TriviaChartFactory;
+
 /**
  * A panel with a stacked XY plot that shows the cumulative score by round.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class CumulativePointsChartPanel extends TriviaMainPanel {
 
@@ -29,10 +29,10 @@ public class CumulativePointsChartPanel extends TriviaMainPanel {
 
 	/**
 	 * Instantiates a new chart panel
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
-	 * 
+	 *
 	 */
 	public CumulativePointsChartPanel(TriviaClient client, TriviaFrame frame) {
 		super(client, frame);
@@ -48,7 +48,7 @@ public class CumulativePointsChartPanel extends TriviaMainPanel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override

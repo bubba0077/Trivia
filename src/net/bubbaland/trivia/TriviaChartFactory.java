@@ -69,7 +69,7 @@ public class TriviaChartFactory {
 
 	/**
 	 * Make a circle.
-	 * 
+	 *
 	 * @param radius
 	 *            the radius
 	 * @return the shape
@@ -80,7 +80,7 @@ public class TriviaChartFactory {
 
 	/**
 	 * Creates a stacked XY plot of the cumulative score after each round.
-	 * 
+	 *
 	 * @param trivia
 	 *            The trivia data
 	 * @return A stacked XY plot of the cumulative score after each round
@@ -170,7 +170,7 @@ public class TriviaChartFactory {
 
 	/**
 	 * Create an XY line chart of the team's place after each round.
-	 * 
+	 *
 	 * @param trivia
 	 *            The trivia data to use
 	 * @return An XY line chart of the team's place after each round
@@ -253,7 +253,7 @@ public class TriviaChartFactory {
 
 	/**
 	 * Create a stacked bar plot of the team's score in each round.
-	 * 
+	 *
 	 * @param trivia
 	 *            The trivia data
 	 * @return A stacked bar plot of the team's score in each round
@@ -297,8 +297,8 @@ public class TriviaChartFactory {
 		renderer.setShadowVisible(false);
 		renderer.setSeriesPaint(0, earnedColor);
 		renderer.setSeriesPaint(1, valueColor);
-		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}", NumberFormat
-				.getIntegerInstance(), NumberFormat.getIntegerInstance()));
+		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}",
+				NumberFormat.getIntegerInstance(), NumberFormat.getIntegerInstance()));
 
 		// Replace the renderer
 		final XYPlot plot = chart.getXYPlot();
@@ -341,7 +341,7 @@ public class TriviaChartFactory {
 
 	/**
 	 * Create an XY plot comparing each team's score in each round relative to ours.
-	 * 
+	 *
 	 * @param trivia
 	 *            The trivia data
 	 * @return An XY plot comparing team scores
@@ -419,8 +419,8 @@ public class TriviaChartFactory {
 		}
 
 		// Change the format of the tooltip
-		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}", NumberFormat
-				.getIntegerInstance(), NumberFormat.getIntegerInstance()));
+		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0} Rd {1}: {2}",
+				NumberFormat.getIntegerInstance(), NumberFormat.getIntegerInstance()));
 		// Set the background color and axes
 		final XYPlot plot = chart.getXYPlot();
 

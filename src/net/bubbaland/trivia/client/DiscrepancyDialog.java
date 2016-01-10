@@ -21,7 +21,7 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 
 	/**
 	 * Instantiates a new user login.
-	 * 
+	 *
 	 * @param client
 	 *            the client
 	 */
@@ -51,9 +51,9 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		this.discrepancyTextField = new JTextField(oldText, 10);
-		discrepancyTextField.setFont(discrepancyTextField.getFont().deriveFont(fontSize));
-		this.add(discrepancyTextField, constraints);
-		discrepancyTextField.addAncestorListener(this);
+		this.discrepancyTextField.setFont(this.discrepancyTextField.getFont().deriveFont(fontSize));
+		this.add(this.discrepancyTextField, constraints);
+		this.discrepancyTextField.addAncestorListener(this);
 
 		// Display the dialog box
 		this.dialog = new TriviaDialog(null, "Score Discrepancy", this, JOptionPane.PLAIN_MESSAGE,
@@ -69,12 +69,14 @@ public class DiscrepancyDialog extends TriviaDialogPanel {
 
 		if (option == JOptionPane.OK_OPTION) {
 			( new SwingWorker<Void, Void>() {
+				@Override
 				public Void doInBackground() {
-					DiscrepancyDialog.this.client.sendMessage(ClientMessageFactory.setDiscrepancyText(rNumber,
-							discrepancyTextField.getText()));
+					DiscrepancyDialog.this.client.sendMessage(ClientMessageFactory.setDiscrepancyText(
+							DiscrepancyDialog.this.rNumber, DiscrepancyDialog.this.discrepancyTextField.getText()));
 					return null;
 				}
 
+				@Override
 				public void done() {
 
 				}

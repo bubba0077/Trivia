@@ -11,7 +11,7 @@ public class WaitDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 6237850645754945230L;
 
-	private TriviaGUI			gui;
+	private final TriviaGUI		gui;
 
 	public WaitDialog(TriviaGUI gui) {
 		super();
@@ -27,11 +27,11 @@ public class WaitDialog extends TriviaDialogPanel {
 
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		JLabel label = new JLabel("Awaiting data from server...", SwingConstants.LEFT);
+		final JLabel label = new JLabel("Awaiting data from server...", SwingConstants.LEFT);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
-		Object[] options = { "Exit" };
+		final Object[] options = { "Exit" };
 		this.dialog = new TriviaDialog(null, "Awaiting Data", this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_OPTION,
 				null, options);
 		// this.dialog.setModal(false);
@@ -40,6 +40,7 @@ public class WaitDialog extends TriviaDialogPanel {
 		this.dialog.setVisible(true);
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
 		this.dialog.setVisible(visible);
@@ -49,6 +50,7 @@ public class WaitDialog extends TriviaDialogPanel {
 		this.dialog.dispose();
 	}
 
+	@Override
 	public void windowClosed(WindowEvent event) {
 		super.windowClosed(event);
 

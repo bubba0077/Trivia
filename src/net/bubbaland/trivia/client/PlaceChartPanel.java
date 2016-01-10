@@ -4,17 +4,17 @@ package net.bubbaland.trivia.client;
 import java.awt.GridBagConstraints;
 import java.util.Properties;
 
-import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.TriviaChartFactory;
-
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
+import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.TriviaChartFactory;
+
 /**
  * A panel with a chart showing announced place by round.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class PlaceChartPanel extends TriviaMainPanel {
 
@@ -29,10 +29,10 @@ public class PlaceChartPanel extends TriviaMainPanel {
 
 	/**
 	 * Instantiates a new place chart
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
-	 * 
+	 *
 	 */
 	public PlaceChartPanel(TriviaClient client, TriviaFrame parent) {
 
@@ -46,7 +46,7 @@ public class PlaceChartPanel extends TriviaMainPanel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override

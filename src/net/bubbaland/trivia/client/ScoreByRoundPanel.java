@@ -25,9 +25,9 @@ import net.bubbaland.trivia.Trivia;
 
 /**
  * A panel that displays the scores from each round.
- * 
+ *
  * @author Walter Kolczynski
- * 
+ *
  */
 public class ScoreByRoundPanel extends TriviaMainPanel {
 
@@ -49,10 +49,10 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 	/**
 	 * Instantiates a new score by round panel.
-	 * 
+	 *
 	 * @param client
 	 *            The local trivia client
-	 * 
+	 *
 	 */
 	public ScoreByRoundPanel(TriviaClient client, TriviaFrame parent) {
 
@@ -81,8 +81,8 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		this.roundEarnedLabel0 = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.gridx = 1;
 		constraints.gridy = 1;
-		this.roundEarnedLabel1 = this
-				.enclosedLabel("Earned", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.roundEarnedLabel1 = this.enclosedLabel("Earned", constraints, SwingConstants.CENTER,
+				SwingConstants.CENTER);
 
 		constraints.gridx = 2;
 		constraints.gridy = 0;
@@ -123,8 +123,8 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 				SwingConstants.CENTER);
 		constraints.gridx = 6;
 		constraints.gridy = 1;
-		this.totalPercentLabel1 = this
-				.enclosedLabel("Total", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.totalPercentLabel1 = this.enclosedLabel("Total", constraints, SwingConstants.CENTER,
+				SwingConstants.CENTER);
 
 		constraints.gridx = 7;
 		constraints.gridy = 0;
@@ -179,7 +179,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see net.bubbaland.trivia.TriviaPanel#update()
 	 */
 	@Override
@@ -192,22 +192,23 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		/**
 		 * Colors
 		 */
-		final Color headerBackgroundColor = new Color(new BigInteger(
-				properties.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
+		final Color headerBackgroundColor = new Color(
+				new BigInteger(properties.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
 		final Color roundColor = new Color(
 				new BigInteger(properties.getProperty("ScoreByRound.Round.Color"), 16).intValue());
 		final Color earnedColor = new Color(new BigInteger(properties.getProperty("Earned.Color"), 16).intValue());
 		final Color valueColor = new Color(new BigInteger(properties.getProperty("Value.Color"), 16).intValue());
 		final Color percentColor = new Color(
 				new BigInteger(properties.getProperty("ScoreByRound.Percent.Color"), 16).intValue());
-		final Color announcedColor = new Color(new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
-		final Color discrepancyColor = new Color(new BigInteger(
-				properties.getProperty("ScoreByRound.Discrepancy.Color"), 16).intValue());
+		final Color announcedColor = new Color(
+				new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
+		final Color discrepancyColor = new Color(
+				new BigInteger(properties.getProperty("ScoreByRound.Discrepancy.Color"), 16).intValue());
 
 		/**
 		 * Sizes
 		 */
-		final int headerHeight = Integer.parseInt(properties.getProperty("ScoreByRound.Header.Height"));
+				final int headerHeight = Integer.parseInt(properties.getProperty("ScoreByRound.Header.Height"));
 
 		final int roundWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Width"));
 		final int roundEarnedWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Earned.Width"));
@@ -296,7 +297,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 		/**
 		 * Instantiates a new internal scroll panel.
-		 * 
+		 *
 		 * @param server
 		 *            the server
 		 * @param client
@@ -348,8 +349,8 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 				constraints.gridx = 1;
 				constraints.gridy = r;
-				this.earnedLabels[r] = this
-						.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.earnedLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
+						SwingConstants.CENTER);
 
 				constraints.gridx = 2;
 				constraints.gridy = r;
@@ -357,8 +358,8 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 				constraints.gridx = 3;
 				constraints.gridy = r;
-				this.percentLabels[r] = this
-						.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+				this.percentLabels[r] = this.enclosedLabel("", constraints, SwingConstants.RIGHT,
+						SwingConstants.CENTER);
 
 				constraints.gridx = 4;
 				constraints.gridy = r;
@@ -386,8 +387,8 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 				constraints.gridx = 9;
 				constraints.gridy = r;
-				this.spacerLabels[r] = this
-						.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+				this.spacerLabels[r] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
+						SwingConstants.CENTER);
 
 				constraints.weightx = 1.0;
 				constraints.gridx = 10;
@@ -419,7 +420,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see net.bubbaland.trivia.TriviaPanel#update()
 		 */
 		@Override
@@ -446,24 +447,24 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 							&& this.cumulativeEarnedLabels[r].getText().equals("")
 							&& this.cumulativeValueLabels[r].getText().equals("")
 							&& ( this.announcedScoreLabels[r].getText().equals("") )
-							&& ( this.placeLabels[r].getText().equals("") ) && this.discrepancyLabels[r].getText()
-							.equals(discrepancy) );
+							&& ( this.placeLabels[r].getText().equals("") )
+							&& this.discrepancyLabels[r].getText().equals(discrepancy) );
 				} else if (!isAnnounced) {
 					updated = !( this.earnedLabels[r].getText().equals(earned + "")
 							&& this.valueLabels[r].getText().equals(value + "")
 							&& this.cumulativeEarnedLabels[r].getText().equals(cumulativeEarned + "")
 							&& this.cumulativeValueLabels[r].getText().equals(cumulativeValue + "")
 							&& this.announcedScoreLabels[r].getText().equals("")
-							&& this.placeLabels[r].getText().equals("") && this.discrepancyLabels[r].getText().equals(
-							discrepancy) );
+							&& this.placeLabels[r].getText().equals("")
+							&& this.discrepancyLabels[r].getText().equals(discrepancy) );
 				} else {
 					updated = !( this.earnedLabels[r].getText().equals(earned + "")
 							&& this.valueLabels[r].getText().equals(value + "")
 							&& this.cumulativeEarnedLabels[r].getText().equals(cumulativeEarned + "")
 							&& this.cumulativeValueLabels[r].getText().equals(cumulativeValue + "")
 							&& this.announcedScoreLabels[r].getText().equals(announced + "")
-							&& this.placeLabels[r].getText().equals(TriviaGUI.ordinalize(place)) && this.discrepancyLabels[r]
-							.getText().equals(discrepancy) );
+							&& this.placeLabels[r].getText().equals(TriviaGUI.ordinalize(place))
+							&& this.discrepancyLabels[r].getText().equals(discrepancy) );
 				}
 
 
@@ -506,27 +507,27 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 			/**
 			 * Colors
 			 */
-			final Color headerBackgroundColor = new Color(new BigInteger(
-					properties.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
-			final Color backgroundColor = new Color(new BigInteger(
-					properties.getProperty("ScoreByRound.BackgroundColor"), 16).intValue());
-			final Color altBackgroundColor = new Color(new BigInteger(
-					properties.getProperty("ScoreByRound.AltBackgroundColor"), 16).intValue());
+			final Color headerBackgroundColor = new Color(
+					new BigInteger(properties.getProperty("ScoreByRound.Header.BackgroundColor"), 16).intValue());
+			final Color backgroundColor = new Color(
+					new BigInteger(properties.getProperty("ScoreByRound.BackgroundColor"), 16).intValue());
+			final Color altBackgroundColor = new Color(
+					new BigInteger(properties.getProperty("ScoreByRound.AltBackgroundColor"), 16).intValue());
 			final Color roundColor = new Color(
 					new BigInteger(properties.getProperty("ScoreByRound.Round.Color"), 16).intValue());
 			final Color earnedColor = new Color(new BigInteger(properties.getProperty("Earned.Color"), 16).intValue());
 			final Color valueColor = new Color(new BigInteger(properties.getProperty("Value.Color"), 16).intValue());
-			final Color percentColor = new Color(new BigInteger(properties.getProperty("ScoreByRound.Percent.Color"),
-					16).intValue());
+			final Color percentColor = new Color(
+					new BigInteger(properties.getProperty("ScoreByRound.Percent.Color"), 16).intValue());
 			final Color announcedColor = new Color(
 					new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
-			final Color discrepancyColor = new Color(new BigInteger(
-					properties.getProperty("ScoreByRound.Discrepancy.Color"), 16).intValue());
+			final Color discrepancyColor = new Color(
+					new BigInteger(properties.getProperty("ScoreByRound.Discrepancy.Color"), 16).intValue());
 
 			/**
 			 * Sizes
 			 */
-			final int rowHeight = Integer.parseInt(properties.getProperty("ScoreByRound.Row.Height"));
+					final int rowHeight = Integer.parseInt(properties.getProperty("ScoreByRound.Row.Height"));
 
 			final int roundWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Width"));
 			final int roundEarnedWidth = Integer.parseInt(properties.getProperty("ScoreByRound.Round.Earned.Width"));
@@ -542,11 +543,11 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 			 * Font sizes
 			 */
 			final float fontSize = Float.parseFloat(properties.getProperty("ScoreByRound.FontSize"));
-			final float discrepancyFontSize = Float.parseFloat(properties
-					.getProperty("ScoreByRound.Discrepancy.FontSize"));
+			final float discrepancyFontSize = Float
+					.parseFloat(properties.getProperty("ScoreByRound.Discrepancy.FontSize"));
 
 			/** The number of open questions to show at one time */
-			final int altColorInterval = Integer.parseInt(properties.getProperty("ScoreByRound.AltInterval"));
+					final int altColorInterval = Integer.parseInt(properties.getProperty("ScoreByRound.AltInterval"));
 
 			// Create the labels for each round
 			for (int r = 0; r < this.nRounds; r++) {
@@ -574,7 +575,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 
 		private class PopupListener extends MouseAdapter {
 
-			private final JPopupMenu	menu;
+			private final JPopupMenu menu;
 
 			public PopupListener(JPopupMenu menu) {
 				this.menu = menu;

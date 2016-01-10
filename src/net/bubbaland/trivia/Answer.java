@@ -12,16 +12,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A data structure for proposed answers.
- * 
+ *
  * The <code>Answer</code> class contains the data and status for a proposed answer. Answers are originally created with
  * the status of NOT_CALLED_IN, and this status is then updated as someone calls the answer in and then receives a
  * response on the correctness of the answer.
- * 
+ *
  * @author Walter Kolczynski
  */
 public class Answer implements Serializable {
 
-	private static final long	serialVersionUID	= -2367986992067473980L;
+	private static final long serialVersionUID = -2367986992067473980L;
 
 	public enum Agreement {
 		DISAGREE, NEUTRAL, AGREE
@@ -71,7 +71,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Create a new answer
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param answer
@@ -85,7 +85,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Instantiates a new answer.
-	 * 
+	 *
 	 * @param qNumber
 	 *            The question number
 	 * @param answer
@@ -99,7 +99,8 @@ public class Answer implements Serializable {
 		this(queueLocation, qNumber, answer, submitter, confidence, timeFormat.format(new Date()));
 	};
 
-	protected Answer(int queueLocation, int qNumber, String answer, String submitter, int confidence, String timestamp) {
+	protected Answer(int queueLocation, int qNumber, String answer, String submitter, int confidence,
+			String timestamp) {
 		this(queueLocation, qNumber, answer, confidence, new Hashtable<String, Agreement>(), timestamp, submitter, "",
 				"", Status.NOT_CALLED_IN);
 	}
@@ -125,7 +126,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Mark this answer as being called in
-	 * 
+	 *
 	 * @param caller
 	 *            The caller's user name
 	 */
@@ -137,7 +138,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Gets the answer text
-	 * 
+	 *
 	 * @return The answer text
 	 */
 	public String getAnswer() {
@@ -146,7 +147,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Gets the last person who updated the status
-	 * 
+	 *
 	 * @return The caller's user name
 	 */
 	public String getCaller() {
@@ -155,7 +156,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Gets the confidence in the answer
-	 * 
+	 *
 	 * @return The confidence
 	 */
 	public int getConfidence() {
@@ -164,7 +165,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Gets the operator name
-	 * 
+	 *
 	 * @return The operator name
 	 */
 	public String getOperator() {
@@ -173,7 +174,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Gets the question number of this answer
-	 * 
+	 *
 	 * @return The question number
 	 */
 	public int getQNumber() {
@@ -190,7 +191,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Gets a string representation of the status of this answer
-	 * 
+	 *
 	 * @return The current status
 	 */
 	public String getStatusString() {
@@ -218,7 +219,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Gets the submitter's user name
-	 * 
+	 *
 	 * @return The submitter's user name
 	 */
 	public String getSubmitter() {
@@ -227,7 +228,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Gets the timestamp
-	 * 
+	 *
 	 * @return The timestamp
 	 */
 	public String getTimestamp() {
@@ -236,7 +237,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Mark this answer as correct
-	 * 
+	 *
 	 * @param caller
 	 *            The caller's user name
 	 * @param operator
@@ -259,7 +260,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Mark this answer as incorrect
-	 * 
+	 *
 	 * @param caller
 	 *            The caller's user name
 	 */
@@ -271,7 +272,7 @@ public class Answer implements Serializable {
 
 	/**
 	 * Mark this answer as partially correct
-	 * 
+	 *
 	 * @param caller
 	 *            The caller's user name
 	 */
@@ -319,7 +320,7 @@ public class Answer implements Serializable {
 			this.caller = newName;
 		}
 		if (this.agreement.containsKey(oldName)) {
-			Agreement agreement = this.agreement.get(oldName);
+			final Agreement agreement = this.agreement.get(oldName);
 			this.agreement.remove(oldName);
 			this.agreement.put(newName, agreement);
 		}
