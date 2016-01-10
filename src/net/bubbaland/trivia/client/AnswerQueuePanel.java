@@ -776,6 +776,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							public void done() {
 							}
 						} ).execute();
+						new OperatorDialog(this.client, "Marking Answer Incorrect", queueIndex,
+								( (JComboBox<String>) source ));
 						break;
 					case "Partial":
 						( new SwingWorker<Void, Void>() {
@@ -790,6 +792,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							public void done() {
 							}
 						} ).execute();
+						new OperatorDialog(this.client, "Marking Answer Partially Correct", queueIndex,
+								( (JComboBox<String>) source ));
 						break;
 					case "Correct":
 						( new SwingWorker<Void, Void>() {
@@ -804,7 +808,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							public void done() {
 							}
 						} ).execute();
-						new CorrectEntryDialog(this.client, queueIndex, ( (JComboBox<String>) source ));
+						new OperatorDialog(this.client, "Marking Answer Correct", queueIndex,
+								( (JComboBox<String>) source ));
 						break;
 					default:
 						break;

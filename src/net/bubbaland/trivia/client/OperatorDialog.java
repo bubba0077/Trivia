@@ -16,7 +16,7 @@ import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
  *
  * @author Walter Kolczynski
  */
-public class CorrectEntryDialog extends TriviaDialogPanel {
+public class OperatorDialog extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
 	private static final long		serialVersionUID	= -8974614016214193902L;
@@ -38,7 +38,7 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 	 * @param statusComboBox
 	 *            The status combo box for this answer, so it can be reverted to previous state if dialog is cancelled
 	 */
-	public CorrectEntryDialog(TriviaClient client, int queueIndex, JComboBox<String> statusComboBox) {
+	public OperatorDialog(TriviaClient client, String responseType, int queueIndex, JComboBox<String> statusComboBox) {
 		super();
 
 		this.client = client;
@@ -69,7 +69,7 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 		this.add(this.operatorTextField, c);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(null, "Mark question correct", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, responseType, this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
 	}
@@ -83,8 +83,8 @@ public class CorrectEntryDialog extends TriviaDialogPanel {
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					CorrectEntryDialog.this.client.sendMessage(ClientMessageFactory.setOperator(
-							CorrectEntryDialog.this.queueIndex, CorrectEntryDialog.this.operatorTextField.getText()));
+					OperatorDialog.this.client.sendMessage(ClientMessageFactory.setOperator(
+							OperatorDialog.this.queueIndex, OperatorDialog.this.operatorTextField.getText()));
 					return null;
 				}
 
