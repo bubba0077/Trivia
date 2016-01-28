@@ -815,7 +815,7 @@ public class Round implements Serializable {
 	 *            The operator who accepted the correct answer
 	 *
 	 */
-	public synchronized void markCorrect(int qNumber, String answerText, String submitter, String operator) {
+	public synchronized void markCorrect(int qNumber, String answerText, String submitter) {
 		this.questions[qNumber - 1].markCorrect(answerText, submitter);
 		this.version++;
 	}
@@ -1211,6 +1211,32 @@ public class Round implements Serializable {
 	public synchronized void unsetSpeed() {
 		this.speed = false;
 		this.version++;
+	}
+
+	public String toString() {
+		String s = "=== Data for round " + this.rNumber + " ===\n";
+		s = s + "Team name: " + this.teamName + "\n";
+		s = s + "Version: " + this.version + " nQuestions: " + this.nQuestions + " nQuestions(speed): "
+				+ this.nQuestionsSpeed + "\n";
+		s = s + "Speed Round: " + this.speed + "\n";
+		s = s + "Announced: " + this.announced + " Announced Place: " + this.place + " Announced Score: "
+				+ this.announcedPoints + "\n";
+		s = s + "Discrepency text: " + this.discrepancyText + "\n";
+		if (!( this.standings == null )) {
+			s = s + "== Standings for round " + this.rNumber + " ==\n";
+			for (ScoreEntry e : this.standings) {
+				s = s + e.toString() + "\n";
+			}
+		}
+		s = s + "== Questions for round " + this.rNumber + " ==\n";
+		for (Question q : this.questions) {
+			s = s + q.toString() + "\n";
+		}
+		s = s + "== Answer queue for round " + this.rNumber + " ==\n";
+		for (Answer a : this.answerQueue) {
+			s = s + a.toString() + "\n";
+		}
+		return s;
 	}
 
 	/**

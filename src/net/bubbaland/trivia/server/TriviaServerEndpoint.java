@@ -337,6 +337,7 @@ public class TriviaServerEndpoint {
 				final Element roundElement = (Element) roundElements.item(r);
 				// Read the round number
 				final int rNumber = Integer.parseInt(roundElement.getAttribute("number"));
+				log("Reading data for round " + rNumber);
 
 				// Read/set if the round is a speed round
 				final boolean isSpeed = roundElement.getElementsByTagName("Speed").item(0).getTextContent()
@@ -367,17 +368,12 @@ public class TriviaServerEndpoint {
 							.getTextContent();
 					final String answer = questionElement.getElementsByTagName("Answer_Text").item(0).getTextContent();
 					final String submitter = questionElement.getElementsByTagName("Submitter").item(0).getTextContent();
-					final String operator = questionElement.getElementsByTagName("Operator").item(0).getTextContent();
 
 					if (beenOpen) {
 						trivia.open("From file", rNumber, qNumber);
-						trivia.setQuestionText(rNumber, qNumber, question);
-						trivia.setQuestionValue(rNumber, qNumber, value);
-						if (isCorrect) {
-							trivia.markCorrect(rNumber, qNumber, answer, submitter, operator);
-						} else if (!isOpen) {
+						trivia.editQuestion(rNumber, qNumber, value, question, answer, isCorrect, submitter);
+						if (!isOpen) {
 							trivia.close(rNumber, qNumber);
-							trivia.setAnswer(qNumber, answer);
 						}
 					}
 				}
@@ -412,33 +408,6 @@ public class TriviaServerEndpoint {
 				}
 			}
 
-			// final Element element = (Element) triviaElement.getElementsByTagName("Answer_Queue").item(0);
-
-			// if (element != null) {
-			// // Get the list of propsed answer elements in the answer queue
-			// final NodeList answerElements = element.getElementsByTagName("Proposed_Answer");
-			//
-			// for (int a = 0; a < answerElements.getLength(); a++) {
-			// final Element answerElement = (Element) answerElements.item(a);
-			//
-			// // Read/set parameters of the answer
-			// final int qNumber = Integer.parseInt(answerElement.getElementsByTagName("Question_Number").item(0)
-			// .getTextContent());
-			// final String status = answerElement.getElementsByTagName("Status").item(0).getTextContent();
-			// answerElement.getElementsByTagName("Timestamp").item(0).getTextContent();
-			// final String answer = answerElement.getElementsByTagName("Answer_Text").item(0).getTextContent();
-			// final String submitter = answerElement.getElementsByTagName("Submitter").item(0).getTextContent();
-			// final int confidence = Integer.parseInt(answerElement.getElementsByTagName("Confidence").item(0)
-			// .getTextContent());
-			// final String caller = answerElement.getElementsByTagName("Caller").item(0).getTextContent();
-			// final String operator = answerElement.getElementsByTagName("Operator").item(0).getTextContent();
-			// final String timestamp = answerElement.getElementsByTagName("Timestamp").item(0).getTextContent();
-			//
-			// trivia.setAnswer(trivia.getCurrentRoundNumber(), qNumber, answer, submitter, confidence, status,
-			// caller, operator, timestamp);
-			// }
-			// }
-
 		} catch (final ParserConfigurationException | SAXException | IOException e) {
 		}
 
@@ -457,9 +426,11 @@ public class TriviaServerEndpoint {
 		// Copy the loaded data back to the trivia object
 		TriviaServerEndpoint.trivia = trivia;
 
+		System.out.print(trivia);
+
 		// Notify clients of the updated data
-		TriviaServerEndpoint.updateTrivia();
 		TriviaServerEndpoint.updateRoundNumber();
+		TriviaServerEndpoint.updateTrivia();
 	}
 
 	/**
@@ -653,7 +624,7 @@ public class TriviaServerEndpoint {
 					element.appendChild(doc.createTextNode(a.getCaller()));
 					answerElement.appendChild(element);
 
-					// The operator who accepted the answer as correct
+					// The operator who accepted the answer
 					element = doc.createElement("Operator");
 					element.appendChild(doc.createTextNode(a.getOperator()));
 					answerElement.appendChild(element);
@@ -1024,7 +995,7 @@ public class TriviaServerEndpoint {
 				} else {
 					TriviaServerEndpoint.trivia.editQuestion(message.getrNumber(), message.getqNumber(),
 							message.getqValue(), message.getqText(), message.getaText(), message.isCorrect(),
-							message.getUser(), message.getOperator());
+							message.getUser());
 				}
 				TriviaServerEndpoint.log("Round " + message.getrNumber() + " Question " + message.getqNumber()
 						+ " edited by " + this.user);

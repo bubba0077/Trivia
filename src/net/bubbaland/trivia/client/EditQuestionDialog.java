@@ -173,19 +173,6 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		this.submitterTextField = new JTextField(existingSubmitter);
 		this.add(this.submitterTextField, constraints);
 
-		// Operator label
-		constraints.gridx = 0;
-		constraints.gridy = 7;
-		label = new JLabel("Operator:");
-		label.setFont(label.getFont().deriveFont(fontSize));
-		this.add(label, constraints);
-
-		// Operator text field; will be disable if question is incorrect
-		constraints.gridx = 2;
-		constraints.gridy = 7;
-		// this.operatorTextField = new JTextField(existingOperator);
-		// this.add(this.operatorTextField, constraints);
-
 		this.correctButton.setText("Correct");
 
 		// Change text on correct button and set editable state of sub/op boxes based on correctness

@@ -192,10 +192,10 @@ public class Trivia implements Serializable {
 	 *            The operator who accepted the correct answer
 	 */
 	public void editQuestion(int rNumber, int qNumber, int value, String qText, String aText, boolean isCorrect,
-			String submitter, String operator) {
+			String submitter) {
 		this.editQuestion(rNumber, qNumber, value, qText);
 		if (isCorrect) {
-			this.rounds[rNumber - 1].markCorrect(qNumber, aText, submitter, operator);
+			this.rounds[rNumber - 1].markCorrect(qNumber, aText, submitter);
 		} else {
 			this.rounds[rNumber - 1].markIncorrect(qNumber);
 		}
@@ -909,8 +909,8 @@ public class Trivia implements Serializable {
 	 * @param operator
 	 *            The operator who accepted the answer
 	 */
-	public void markCorrect(int rNumber, int qNumber, String answer, String submitter, String operator) {
-		this.rounds[rNumber - 1].markCorrect(qNumber, answer, submitter, operator);
+	public void markCorrect(int rNumber, int qNumber, String answer, String submitter) {
+		this.rounds[rNumber - 1].markCorrect(qNumber, answer, submitter);
 	}
 
 	/**
@@ -1236,6 +1236,18 @@ public class Trivia implements Serializable {
 
 	public Agreement getAgreement(String user, int queueIndex) {
 		return this.getCurrentRound().getAgreement(user, queueIndex);
+	}
+
+	public String toString() {
+		String s = "Data dump for entire Trivia object\n";
+		s = s + "Team Name: " + this.teamName + "  #Teams: " + this.nTeams + "\n";
+		s = s + "nRounds: " + this.nRounds + " nQuestions: " + this.nQuestions + "nQuestions(speed): "
+				+ this.nQuestionsSpeed + "\n";
+		s = s + "Current round: " + this.rNumber + "\n";
+		for (Round r : this.rounds) {
+			s = s + r.toString();
+		}
+		return s;
 	}
 
 	public enum Role {

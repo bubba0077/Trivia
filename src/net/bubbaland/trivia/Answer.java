@@ -328,6 +328,12 @@ public class Answer implements Serializable {
 		}
 	}
 
+	public String toString() {
+		return ( "Queue Position " + this.queueLocation + " Q" + this.qNumber + "\n" + this.answer + "\n"
+				+ "Submitted by " + this.submitter + " at " + this.timestamp + " with confidence " + this.confidence
+				+ "\n" + "Status: " + this.status + " Caller: " + this.caller + " Operator: " + this.operator );
+	}
+
 	public static class QNumberCompare implements Comparator<Answer> {
 
 		@Override

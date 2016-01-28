@@ -290,4 +290,10 @@ public class Question implements Serializable {
 		}
 	}
 
+	public String toString() {
+		return ( "Q#" + this.qNumber + " worth " + this.value + "\n" + "Open: " + this.isOpen + " Been Open: "
+				+ this.beenOpen + " Correct: " + this.correct + "(" + this.submitter + ")" + "\n" + "Q: "
+				+ this.question + "\n" + "A: " + this.answer + "\n" );
+	}
+
 }

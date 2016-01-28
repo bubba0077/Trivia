@@ -48,5 +48,8 @@ public class ScoreEntry implements Comparable<ScoreEntry>, Serializable {
 		return this.teamName;
 	}
 
+	public String toString() {
+		return String.format("%1$3d %2$60s %3$05d", this.place, this.teamName, this.score);
+	}
 
 }
