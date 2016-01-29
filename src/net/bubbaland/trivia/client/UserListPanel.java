@@ -165,10 +165,7 @@ public class UserListPanel extends TriviaMainPanel {
 		this.userHash = userHash;
 
 		this.header.setText("Active (" + activeUsers.size() + ")");
-		// this.activeUserList = activeUsers;
 		activeUsers.sort(new CompareActiveUsers());
-
-		// this.idleUserList = activeUsers;
 		idleUsers.sort(new CompareIdleUsers());
 
 		this.userListModel.removeAllElements();
