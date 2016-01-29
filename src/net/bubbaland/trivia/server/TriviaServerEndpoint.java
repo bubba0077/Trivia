@@ -1,8 +1,5 @@
 package net.bubbaland.trivia.server;
 
-import java.rmi.RemoteException;
-
-import javax.websocket.DeploymentException;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -10,8 +7,6 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-
-import org.glassfish.tyrus.server.Server;
 
 import net.bubbaland.trivia.ClientMessage;
 import net.bubbaland.trivia.ServerMessage;

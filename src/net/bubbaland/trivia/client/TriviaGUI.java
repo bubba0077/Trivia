@@ -234,6 +234,10 @@ public class TriviaGUI implements WindowListener {
 		this.log("Welcome " + this.client.getUser());
 	}
 
+	public static SimpleDateFormat getTimestampFormat() {
+		return TIMESTAMP_FORMAT;
+	}
+
 	/**
 	 * Entry point for the client application. Only the first argument is used. If the first argument is "useFX", the
 	 * client will include an IRC client panel.

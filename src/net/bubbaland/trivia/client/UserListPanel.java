@@ -212,19 +212,19 @@ public class UserListPanel extends TriviaMainPanel {
 		private static final long serialVersionUID = -801444128612741125L;
 
 		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+		public Component getListCellRendererComponent(JList<?> list, Object userName, int index, boolean isSelected,
 				boolean cellHasFocus) {
-			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			super.getListCellRendererComponent(list, userName, index, isSelected, cellHasFocus);
 			Color color = null;
 			ImageIcon icon = null;
 			this.setHorizontalAlignment(LEFT);
 			this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
 
 			// Determine color based on the user role
-			if (UserListPanel.this.userHash.get(value) != null) {
+			if (UserListPanel.this.userHash.get(userName) != null) {
 				Date now = new Date();
 				int activeWindow = UserListPanel.this.client.getTimeToIdle() * 1000;
-				User user = UserListPanel.this.userHash.get(value);
+				User user = UserListPanel.this.userHash.get(userName);
 
 				switch (user.getRole()) {
 					case CALLER:
@@ -247,6 +247,11 @@ public class UserListPanel extends TriviaMainPanel {
 					// Idle User
 					color = idleColor;
 				}
+
+				final String activeTimestamp = TriviaGUI.getTimestampFormat().format(user.getLastActive().getTime());
+				this.setToolTipText("<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Last activity: "
+						+ activeTimestamp + "</html>");
+
 			} else {
 				color = idleColor;
 				this.setHorizontalAlignment(CENTER);

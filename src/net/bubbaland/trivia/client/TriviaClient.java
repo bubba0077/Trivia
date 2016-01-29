@@ -107,24 +107,6 @@ public class TriviaClient implements Runnable {
 		});
 	}
 
-	// /**
-	// * Get the hash of active users and roles.
-	// *
-	// * @return The hashtable of users and roles
-	// */
-	// public Hashtable<String, Role> getActiveUserHash() {
-	// return this.userList;
-	// }
-	//
-	// /**
-	// * Get the hash of idle users and roles.
-	// *
-	// * @return The hashtable of users and roles
-	// */
-	// public Hashtable<String, Role> getIdleUserHash() {
-	// return this.idleUserHash;
-	// }
-
 	/**
 	 * Get the current user role.
 	 *
