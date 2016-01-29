@@ -12,19 +12,26 @@ public class User {
 	private Role	role;
 	// Last time this client sent a command
 	private Date	lastActive;
+	// Time changed to current role
+	private Date	lastRollChange;
 
 	public User() {
 		this.lastActive = null;
 		this.userName = "";
 		this.role = null;
 		this.roundVersions = null;
+		this.lastRollChange = null;
 	}
 
 	public User(int nRounds) {
 		this.lastActive = new Date();
 		this.userName = "";
-		this.role = Role.RESEARCHER;
+		this.setRole(Role.RESEARCHER);
 		this.roundVersions = new int[nRounds];
+	}
+
+	public Date getLastRollChange() {
+		return this.lastRollChange;
 	}
 
 	public Date getLastActive() {
@@ -78,6 +85,7 @@ public class User {
 	 */
 	public void setRole(User.Role role) {
 		this.role = role;
+		this.lastRollChange = new Date();
 	}
 
 	public enum Role {

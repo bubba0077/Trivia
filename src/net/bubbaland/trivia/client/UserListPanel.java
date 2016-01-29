@@ -155,7 +155,7 @@ public class UserListPanel extends TriviaMainPanel {
 
 		for (User user : this.client.getUserList()) {
 			userHash.put(user.getUserName(), user);
-			if (now.getTime() - activeWindow > user.getLastActive().getTime()) {
+			if (activeWindow == 0 || now.getTime() - activeWindow > user.getLastActive().getTime()) {
 				idleUsers.add(user);
 			} else {
 				activeUsers.add(user);
@@ -249,8 +249,10 @@ public class UserListPanel extends TriviaMainPanel {
 				}
 
 				final String activeTimestamp = TriviaGUI.getTimestampFormat().format(user.getLastActive().getTime());
+				final String rollTimestamp = TriviaGUI.getTimestampFormat().format(user.getLastRollChange().getTime());
+
 				this.setToolTipText("<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Last activity: "
-						+ activeTimestamp + "</html>");
+						+ activeTimestamp + "<BR>In roll since: " + rollTimestamp + "</html>");
 
 			} else {
 				color = idleColor;
