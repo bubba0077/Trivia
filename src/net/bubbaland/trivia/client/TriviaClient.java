@@ -162,21 +162,9 @@ public class TriviaClient implements Runnable {
 	 */
 	public void setUser(String user) {
 		if (this.user == null) {
-			// this.server.setRole(user, this.role);
-			try {
-				this.session.getBasicRemote().sendObject(ClientMessageFactory.setRole(user, this.role));
-			} catch (IOException | EncodeException exception) {
-				// TODO Auto-generated catch block
-				exception.printStackTrace();
-			}
+			this.sendMessage(ClientMessageFactory.setRole(user, this.role));
 		} else {
-			// this.server.changeUser(this.user, user);
-			try {
-				this.session.getBasicRemote().sendObject(ClientMessageFactory.changeUser(user));
-			} catch (IOException | EncodeException exception) {
-				// TODO Auto-generated catch block
-				exception.printStackTrace();
-			}
+			this.sendMessage(ClientMessageFactory.changeUser(user));
 		}
 		this.user = user;
 	}
@@ -188,13 +176,7 @@ public class TriviaClient implements Runnable {
 	 */
 	protected void setRole(Role role) {
 		if (this.user != null) {
-			// this.server.setRole(this.user, role);
-			try {
-				this.session.getBasicRemote().sendObject(ClientMessageFactory.setRole(this.user, role));
-			} catch (IOException | EncodeException exception) {
-				// TODO Auto-generated catch block
-				exception.printStackTrace();
-			}
+			this.sendMessage(ClientMessageFactory.setRole(this.user, role));
 		} else {
 			this.gui.log("Couldn't set role yet, no user name specified");
 		}
@@ -208,7 +190,8 @@ public class TriviaClient implements Runnable {
 		try {
 			this.session.getBasicRemote().sendObject(message);
 		} catch (IOException | EncodeException exception) {
-			// TODO Auto-generated catch block
+			log("Error transmitting message to server!");
+			log(message.toString());
 			exception.printStackTrace();
 		}
 	}
