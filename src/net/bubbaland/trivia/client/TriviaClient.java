@@ -2,8 +2,7 @@ package net.bubbaland.trivia.client;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Hashtable;
-
+import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.DeploymentException;
@@ -21,7 +20,7 @@ import net.bubbaland.trivia.ClientMessage;
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.ServerMessage;
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.Trivia.Role;
+import net.bubbaland.trivia.User;
 
 /**
  * Provides the root functionality for connecting to the trivia server and creating the associated GUI.
@@ -33,27 +32,26 @@ import net.bubbaland.trivia.Trivia.Role;
 public class TriviaClient implements Runnable {
 
 	// The user's name
-	private volatile String						user;
+	private volatile String		user;
 	// The user's role
-	private volatile Role						role;
+	private volatile User.Role	role;
 
 
 	// Hashtable of active users and roles
-	private volatile Hashtable<String, Role>	activeUserHash;
-	// Hashtable of idle users and roles
-	private volatile Hashtable<String, Role>	idleUserHash;
+	private volatile User[]		userList;
 
-	private final int							timeToIdle;
+	// Time to idle in seconds
+	private volatile int		timeToIdle;
 
 	// The remote server
-	private Session								session;
+	private Session				session;
 
 	// The local trivia object holding all contest data
-	private volatile Trivia						trivia;
+	private volatile Trivia		trivia;
 
-	private final TriviaGUI						gui;
+	private final TriviaGUI		gui;
 
-	private final String						serverURL;
+	private final String		serverURL;
 
 	/**
 	 * Creates a new trivia client
@@ -62,11 +60,9 @@ public class TriviaClient implements Runnable {
 		this.gui = gui;
 		this.serverURL = serverURL;
 		this.session = null;
-
-		this.activeUserHash = new Hashtable<String, Role>(0);
-		this.idleUserHash = new Hashtable<String, Role>(0);
+		this.userList = new User[0];
 		this.user = null;
-		this.role = Role.RESEARCHER;
+		this.role = User.Role.RESEARCHER;
 		this.trivia = null;
 		this.timeToIdle = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("UserList.timeToIdle"));
 	}
@@ -80,6 +76,18 @@ public class TriviaClient implements Runnable {
 			this.gui.disconnected();
 		}
 		this.setUser(this.user);
+	}
+
+	public int getTimeToIdle() {
+		return this.timeToIdle;
+	}
+
+	public ArrayList<String> getUserNameList() {
+		ArrayList<String> userNameList = new ArrayList<String>();
+		for (User user : this.userList) {
+			userNameList.add(user.getUserName());
+		}
+		return userNameList;
 	}
 
 	public int[] getVersions() {
@@ -99,30 +107,30 @@ public class TriviaClient implements Runnable {
 		});
 	}
 
-	/**
-	 * Get the hash of active users and roles.
-	 *
-	 * @return The hashtable of users and roles
-	 */
-	public Hashtable<String, Role> getActiveUserHash() {
-		return this.activeUserHash;
-	}
-
-	/**
-	 * Get the hash of idle users and roles.
-	 *
-	 * @return The hashtable of users and roles
-	 */
-	public Hashtable<String, Role> getIdleUserHash() {
-		return this.idleUserHash;
-	}
+	// /**
+	// * Get the hash of active users and roles.
+	// *
+	// * @return The hashtable of users and roles
+	// */
+	// public Hashtable<String, Role> getActiveUserHash() {
+	// return this.userList;
+	// }
+	//
+	// /**
+	// * Get the hash of idle users and roles.
+	// *
+	// * @return The hashtable of users and roles
+	// */
+	// public Hashtable<String, Role> getIdleUserHash() {
+	// return this.idleUserHash;
+	// }
 
 	/**
 	 * Get the current user role.
 	 *
 	 * @return The user's role
 	 */
-	public Role getRole() {
+	public User.Role getRole() {
 		return this.role;
 	}
 
@@ -174,7 +182,7 @@ public class TriviaClient implements Runnable {
 	 *
 	 * @param role
 	 */
-	protected void setRole(Role role) {
+	protected void setRole(User.Role role) {
 		if (this.user != null) {
 			this.sendMessage(ClientMessageFactory.setRole(this.user, role));
 		} else {
@@ -200,7 +208,6 @@ public class TriviaClient implements Runnable {
 	public void onOpen(final Session session, EndpointConfig config) {
 		this.gui.log("Connected to trivia server (" + this.serverURL + ").");
 		this.session = session;
-		this.sendMessage(ClientMessageFactory.setIdleTime(this.timeToIdle));
 		this.sendMessage(ClientMessageFactory.fetchTrivia());
 	}
 
@@ -222,8 +229,7 @@ public class TriviaClient implements Runnable {
 				// this.gui.log("Trivia received");
 				break;
 			case UPDATE_USER_LISTS:
-				this.activeUserHash = message.getActiveUserList();
-				this.idleUserHash = message.getIdleUserList();
+				this.userList = message.getUserList();
 				// this.gui.log("New user lists received");
 				break;
 			case LIST_SAVES:
@@ -245,5 +251,11 @@ public class TriviaClient implements Runnable {
 		this.gui.disconnected();
 	}
 
+	public User[] getUserList() {
+		return userList;
+	}
 
+	public void setIdleTime(int timeToIdle) {
+		this.timeToIdle = timeToIdle;
+	}
 }

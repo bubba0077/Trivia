@@ -1249,8 +1249,4 @@ public class Trivia implements Serializable {
 		}
 		return s;
 	}
-
-	public enum Role {
-		TYPIST, CALLER, RESEARCHER
-	}
 }

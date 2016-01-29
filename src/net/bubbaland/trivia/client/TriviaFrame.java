@@ -42,7 +42,7 @@ import javax.swing.event.ChangeListener;
 
 import javazoom.jl.player.Player;
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
-import net.bubbaland.trivia.Trivia.Role;
+import net.bubbaland.trivia.User;
 
 /**
  * Creates a top-level window for displaying the trivia GUI.
@@ -547,15 +547,15 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 			case "Caller":
 				// Triggered by Caller Role menu item
-				this.client.setRole(Role.CALLER);
+				this.client.setRole(User.Role.CALLER);
 				break;
 			case "Typist":
 				// Triggered by Typist Role menu item
-				this.client.setRole(Role.TYPIST);
+				this.client.setRole(User.Role.TYPIST);
 				break;
 			case "Researcher":
 				// Triggered by Researcher Role menu item
-				this.client.setRole(Role.RESEARCHER);
+				this.client.setRole(User.Role.RESEARCHER);
 				break;
 			case "Load Default Settings":
 				// Triggered by Reset window positions menu item
@@ -784,24 +784,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		} else if (e.getSource().equals(this.idleSpinner)) {
 			final int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue();
 			TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
-			( new SwingWorker<Void, Void>() {
-				@Override
-				public Void doInBackground() {
-					TriviaFrame.this.client.sendMessage(ClientMessageFactory.setIdleTime(timeToIdle));
-					return null;
-				}
-
-				@Override
-				public void done() {
-
-				}
-			} ).execute();
+			this.client.setIdleTime(timeToIdle);
 		}
 	}
 
 	public void updateGUI(boolean forceUpdate) {
 		// Update role
-		final Role role = this.client.getRole();
+		final User.Role role = this.client.getRole();
 		while (this.researcherMenuItem == null | this.callerMenuItem == null | this.typistMenuItem == null) {
 			// System.out.println("Awaiting menu items");
 			try {

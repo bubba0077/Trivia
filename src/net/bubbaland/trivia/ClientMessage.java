@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.bubbaland.trivia.Answer.Agreement;
-import net.bubbaland.trivia.Trivia.Role;
 
 public class ClientMessage {
 
@@ -34,7 +33,7 @@ public class ClientMessage {
 	private int				rNumber, qNumber, oldQNumber, queueIndex, qValue, confidence, timeToIdle;
 	private String			user, qText, aText, operator, saveFilename, discrepancyText;
 	private boolean			correct, speed;
-	private Role			role;
+	private User.Role		role;
 	private Agreement		agreement;
 
 	private ClientMessage() {
@@ -133,7 +132,7 @@ public class ClientMessage {
 	/**
 	 * @return the role
 	 */
-	public Role getRole() {
+	public User.Role getRole() {
 		return this.role;
 	}
 
@@ -193,7 +192,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage callIn(int queueIndex) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CALL_IN);
+			final ClientMessage message = new ClientMessage(ClientCommand.CALL_IN);
 			message.queueIndex = queueIndex;
 			return message;
 		}
@@ -208,7 +207,7 @@ public class ClientMessage {
 		 * @throws RemoteException
 		 */
 		public static ClientMessage changeUser(String user) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CHANGE_USER);
+			final ClientMessage message = new ClientMessage(ClientCommand.CHANGE_USER);
 			message.user = user;
 			return message;
 		}
@@ -226,14 +225,14 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage setAnswer(int qNumber, String aText) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_ANSWER);
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_ANSWER);
 			message.qNumber = qNumber;
 			message.aText = aText;
 			return message;
 		}
 
 		public static ClientMessage setQuestion(int qNumber, int qValue, String qText) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_QUESTION);
 			message.qNumber = qNumber;
 			message.qText = qText;
 			message.qValue = qValue;
@@ -251,7 +250,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage close(int qNumber) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CLOSE_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientCommand.CLOSE_QUESTION);
 			message.qNumber = qNumber;
 			return message;
 		}
@@ -277,7 +276,7 @@ public class ClientMessage {
 		 */
 		public static ClientMessage editQuestion(int rNumber, int qNumber, int qValue, String qText, String aText,
 				String submitter, boolean isCorrect) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.EDIT_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientCommand.EDIT_QUESTION);
 			message.rNumber = rNumber;
 			message.qNumber = qNumber;
 			message.qValue = qValue;
@@ -296,7 +295,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage listSaves() {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.LIST_SAVES);
+			final ClientMessage message = new ClientMessage(ClientCommand.LIST_SAVES);
 			return message;
 		}
 
@@ -312,7 +311,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage loadState(String saveFilename) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.LOAD_STATE);
+			final ClientMessage message = new ClientMessage(ClientCommand.LOAD_STATE);
 			message.saveFilename = saveFilename;
 			return message;
 		}
@@ -328,13 +327,13 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage markCorrect(int queueIndex) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_CORRECT);
+			final ClientMessage message = new ClientMessage(ClientCommand.MARK_CORRECT);
 			message.queueIndex = queueIndex;
 			return message;
 		}
 
 		public static ClientMessage setOperator(int queueIndex, String operator) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_OPERATOR);
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_OPERATOR);
 			message.queueIndex = queueIndex;
 			message.operator = operator;
 			return message;
@@ -352,7 +351,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage markDuplicate(int queueIndex) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_DUPLICATE);
+			final ClientMessage message = new ClientMessage(ClientCommand.MARK_DUPLICATE);
 			message.queueIndex = queueIndex;
 			return message;
 		}
@@ -368,7 +367,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage markIncorrect(int queueIndex) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_INCORRECT);
+			final ClientMessage message = new ClientMessage(ClientCommand.MARK_INCORRECT);
 			message.queueIndex = queueIndex;
 			return message;
 		}
@@ -384,7 +383,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage markPartial(int queueIndex) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_PARTIAL);
+			final ClientMessage message = new ClientMessage(ClientCommand.MARK_PARTIAL);
 			message.queueIndex = queueIndex;
 			return message;
 		}
@@ -401,7 +400,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage markUncalled(int queueIndex) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.MARK_UNCALLED);
+			final ClientMessage message = new ClientMessage(ClientCommand.MARK_UNCALLED);
 			message.queueIndex = queueIndex;
 			return message;
 		}
@@ -413,7 +412,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage advanceRound() {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.ADVANCE_ROUND);
+			final ClientMessage message = new ClientMessage(ClientCommand.ADVANCE_ROUND);
 			return message;
 		}
 
@@ -435,13 +434,13 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage open(int qNumber) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.OPEN_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientCommand.OPEN_QUESTION);
 			message.qNumber = qNumber;
 			return message;
 		}
 
 		public static ClientMessage reopen(int qNumber) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.REOPEN_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientCommand.REOPEN_QUESTION);
 			message.qNumber = qNumber;
 			return message;
 		}
@@ -461,7 +460,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage proposeAnswer(int qNumber, String aText, int confidence) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.PROPOSE_ANSWER);
+			final ClientMessage message = new ClientMessage(ClientCommand.PROPOSE_ANSWER);
 			message.qNumber = qNumber;
 			message.aText = aText;
 			message.confidence = confidence;
@@ -478,7 +477,7 @@ public class ClientMessage {
 		 * @throws RemoteException
 		 */
 		public static ClientMessage remapQuestion(int oldQNumber, int newQNumber) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.REMAP_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientCommand.REMAP_QUESTION);
 			message.oldQNumber = oldQNumber;
 			message.qNumber = newQNumber;
 			return message;
@@ -492,7 +491,7 @@ public class ClientMessage {
 		 * @throws RemoteException
 		 */
 		public static ClientMessage resetQuestion(int qNumber) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.RESET_QUESTION);
+			final ClientMessage message = new ClientMessage(ClientCommand.RESET_QUESTION);
 			message.qNumber = qNumber;
 			return message;
 		}
@@ -510,7 +509,7 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage setDiscrepancyText(int rNumber, String discrepancyText) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_DISCREPENCY_TEXT);
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_DISCREPENCY_TEXT);
 			message.rNumber = rNumber;
 			message.discrepancyText = discrepancyText;
 			return message;
@@ -525,8 +524,8 @@ public class ClientMessage {
 		 *            The new role
 		 * @throws RemoteException
 		 */
-		public static ClientMessage setRole(String user, Role role) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_ROLE);
+		public static ClientMessage setRole(String user, User.Role role) {
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_ROLE);
 			message.user = user;
 			message.role = role;
 			return message;
@@ -541,35 +540,25 @@ public class ClientMessage {
 		 *             A remote exception
 		 */
 		public static ClientMessage setSpeed(boolean isSpeed) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_SPEED);
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_SPEED);
 			message.speed = isSpeed;
 			return message;
 		}
 
 		public static ClientMessage restartTimer() {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.RESTART_TIMER);
+			final ClientMessage message = new ClientMessage(ClientCommand.RESTART_TIMER);
 			return message;
 		}
 
 		public static ClientMessage changeAgreement(int queueIndex, Answer.Agreement agreement) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.CHANGE_AGREEMENT);
+			final ClientMessage message = new ClientMessage(ClientCommand.CHANGE_AGREEMENT);
 			message.queueIndex = queueIndex;
 			message.agreement = agreement;
 			return message;
 		}
 
-		public static ClientMessage setIdleTime(int timeToIdle) {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.SET_IDLE_TIME);
-			if (timeToIdle == 0) {
-				message.timeToIdle = 9999999;
-			} else {
-				message.timeToIdle = timeToIdle;
-			}
-			return message;
-		}
-
 		public static ClientMessage fetchTrivia() {
-			final ClientMessage message = new ClientMessage(ClientMessage.ClientCommand.FETCH_TRIVIA);
+			final ClientMessage message = new ClientMessage(ClientCommand.FETCH_TRIVIA);
 			return message;
 		}
 

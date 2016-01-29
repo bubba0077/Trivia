@@ -6,8 +6,9 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
 import java.awt.Insets;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -21,7 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
-import net.bubbaland.trivia.Trivia.Role;
+import net.bubbaland.trivia.User;
 
 /**
  * Creates a panel that displays active and idle user names.
@@ -51,14 +52,14 @@ public class UserListPanel extends TriviaMainPanel {
 	 */
 	private final JLabel					header;
 	private final DefaultListModel<String>	userListModel;
-	private final JList<String>				userList;
+	private final JList<String>				userNameList;
 
 	/** Data */
-	private Hashtable<String, Role>			activeUserHash;
-	private Hashtable<String, Role>			idleUserHash;
+	// private ArrayList<User> activeUserList;
+	// private ArrayList<User> idleUserList;
+	private Hashtable<String, User>			userHash;
 
 	public UserListPanel(TriviaClient client, TriviaFrame parent) {
-
 		super(client, parent);
 
 		// Set up layout constraints
@@ -84,13 +85,13 @@ public class UserListPanel extends TriviaMainPanel {
 		// Create the active user list
 		this.userListModel = new DefaultListModel<String>();
 
-		this.userList = new JList<String>(this.userListModel);
-		this.userList.setLayoutOrientation(JList.VERTICAL);
-		this.userList.setVisibleRowCount(-1);
-		this.userList.setForeground(researcherColor);
-		this.userList.setCellRenderer(new UserCellRenderer());
+		this.userNameList = new JList<String>(this.userListModel);
+		this.userNameList.setLayoutOrientation(JList.VERTICAL);
+		this.userNameList.setVisibleRowCount(-1);
+		this.userNameList.setForeground(researcherColor);
+		this.userNameList.setCellRenderer(new UserCellRenderer());
 
-		final JScrollPane pane = new JScrollPane(this.userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+		final JScrollPane pane = new JScrollPane(this.userNameList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		pane.setBorder(BorderFactory.createEmptyBorder());
 		pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -128,8 +129,8 @@ public class UserListPanel extends TriviaMainPanel {
 		final float fontSize = Float.parseFloat(properties.getProperty("UserList.FontSize"));
 
 		setLabelProperties(this.header, width, headerHeight, headerColor, headerBackgroundColor, headerFontSize);
-		this.userList.setBackground(backgroundColor);
-		this.userList.setFont(this.userList.getFont().deriveFont(fontSize));
+		this.userNameList.setBackground(backgroundColor);
+		this.userNameList.setFont(this.userNameList.getFont().deriveFont(fontSize));
 
 		final int fontSizeInt = new Float(fontSize).intValue();
 
@@ -146,43 +147,59 @@ public class UserListPanel extends TriviaMainPanel {
 	 */
 	@Override
 	public void updateGUI(boolean force) {
-		this.activeUserHash = this.client.getActiveUserHash();
-		final String[] users = new String[this.activeUserHash.size()];
-		this.activeUserHash.keySet().toArray(users);
-		Arrays.sort(users, new CompareRoles());
-		this.header.setText("Active (" + users.length + ")");
+		ArrayList<User> activeUsers = new ArrayList<User>();
+		ArrayList<User> idleUsers = new ArrayList<User>();
+		Hashtable<String, User> userHash = new Hashtable<String, User>();
+		Date now = new Date();
+		int activeWindow = this.client.getTimeToIdle() * 1000;
 
-		this.idleUserHash = this.client.getIdleUserHash();
-		final String[] idleUsers = new String[this.idleUserHash.size()];
-		this.idleUserHash.keySet().toArray(idleUsers);
-		Arrays.sort(idleUsers);
+		for (User user : this.client.getUserList()) {
+			userHash.put(user.getUserName(), user);
+			if (now.getTime() - activeWindow > user.getLastActive().getTime()) {
+				idleUsers.add(user);
+			} else {
+				activeUsers.add(user);
+			}
+		}
+
+		this.userHash = userHash;
+
+		this.header.setText("Active (" + activeUsers.size() + ")");
+		// this.activeUserList = activeUsers;
+		activeUsers.sort(new CompareActiveUsers());
+
+		// this.idleUserList = activeUsers;
+		idleUsers.sort(new CompareIdleUsers());
 
 		this.userListModel.removeAllElements();
-		for (final String user : users) {
-			this.userListModel.addElement(user);
+		for (final User user : activeUsers) {
+			this.userListModel.addElement(user.getUserName());
 		}
-		this.userListModel.addElement("Idle (" + idleUsers.length + ")");
-		for (final String user : idleUsers) {
-			this.userListModel.addElement(user);
+		this.userListModel.addElement("Idle (" + idleUsers.size() + ")");
+		for (final User user : idleUsers) {
+			this.userListModel.addElement(user.getUserName());
 		}
-
 	}
 
 	/**
 	 * Sort user names based on role.
 	 *
 	 */
-	public class CompareRoles implements Comparator<String> {
+	public class CompareActiveUsers implements Comparator<User> {
 		@Override
-		public int compare(String s1, String s2) {
-			final Role r1 = UserListPanel.this.activeUserHash.get(s1);
-			final Role r2 = UserListPanel.this.activeUserHash.get(s2);
+		public int compare(User s1, User s2) {
+			return s1.compareTo(s2);
+		}
+	}
 
-			if (r1.equals(r2))
-				return s1.compareTo(s2);
-			else
-				return r1.compareTo(r2);
-
+	/**
+	 * Sort user names based on role.
+	 *
+	 */
+	public class CompareIdleUsers implements Comparator<User> {
+		@Override
+		public int compare(User s1, User s2) {
+			return s1.getUserName().compareTo(s2.getUserName());
 		}
 	}
 
@@ -204,8 +221,12 @@ public class UserListPanel extends TriviaMainPanel {
 			this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
 
 			// Determine color based on the user role
-			if (UserListPanel.this.activeUserHash.get(value) != null) {
-				switch (UserListPanel.this.activeUserHash.get(value)) {
+			if (UserListPanel.this.userHash.get(value) != null) {
+				Date now = new Date();
+				int activeWindow = UserListPanel.this.client.getTimeToIdle() * 1000;
+				User user = UserListPanel.this.userHash.get(value);
+
+				switch (user.getRole()) {
 					case CALLER:
 						color = callerColor;
 						icon = callerIcon;
@@ -221,25 +242,14 @@ public class UserListPanel extends TriviaMainPanel {
 						color = idleColor;
 						break;
 				}
+
+				if (now.getTime() - activeWindow > user.getLastActive().getTime()) {
+					// Idle User
+					color = idleColor;
+				}
 			} else {
 				color = idleColor;
-				if (UserListPanel.this.idleUserHash.get(value) != null) {
-					switch (UserListPanel.this.idleUserHash.get(value)) {
-						case CALLER:
-							icon = callerIcon;
-							break;
-						case TYPIST:
-							icon = pencilIcon;
-							break;
-						case RESEARCHER:
-							break;
-						default:
-							break;
-					}
-				}
-				if (index == UserListPanel.this.activeUserHash.size()) {
-					this.setHorizontalAlignment(CENTER);
-				}
+				this.setHorizontalAlignment(CENTER);
 			}
 
 			// Set the color

@@ -2,6 +2,7 @@ package net.bubbaland.trivia;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.websocket.DecodeException;
@@ -18,8 +19,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.bubbaland.trivia.Trivia.Role;
+import net.bubbaland.trivia.User.Role;
 
+@SuppressWarnings("unused")
 public class ServerMessage {
 
 	// public static class Coder extends JSONCoder<ServerMessage> {
@@ -31,16 +33,14 @@ public class ServerMessage {
 		UPDATE_R_NUMBER, UPDATE_ROUND, UPDATE_TRIVIA, UPDATE_USER_LISTS, LIST_SAVES
 	};
 
-	private ServerCommand					command;
-	private int								rNumber;
-	private Round[]							rounds;
-	private Hashtable<String, Trivia.Role>	activeUserList, idleUserList;
-	private Trivia							trivia;
-	private String[]						saves;
-
+	private ServerCommand	command;
+	private int				rNumber;
+	private Round[]			rounds;
+	private User[]			userList;
+	private Trivia			trivia;
+	private String[]		saves;
 
 	private ServerMessage() {
-
 	}
 
 	private ServerMessage(ServerCommand command) {
@@ -80,31 +80,8 @@ public class ServerMessage {
 	/**
 	 * @return the activeUserList
 	 */
-	public Hashtable<String, Role> getActiveUserList() {
-		return this.activeUserList;
-	}
-
-	/**
-	 * @param activeUserList
-	 *            the activeUserList to set
-	 */
-	private void setActiveUserList(Hashtable<String, Role> activeUserList) {
-		this.activeUserList = activeUserList;
-	}
-
-	/**
-	 * @return the idleUserList
-	 */
-	public Hashtable<String, Role> getIdleUserList() {
-		return this.idleUserList;
-	}
-
-	/**
-	 * @param idleUserList
-	 *            the idleUserList to set
-	 */
-	private void setIdleUserList(Hashtable<String, Role> idleUserList) {
-		this.idleUserList = idleUserList;
+	public User[] getUserList() {
+		return this.userList;
 	}
 
 	/**
@@ -140,33 +117,31 @@ public class ServerMessage {
 	public static class ServerMessageFactory {
 
 		public static ServerMessage updateRoundNumber(int rNumber) {
-			final ServerMessage message = new ServerMessage(ServerMessage.ServerCommand.UPDATE_R_NUMBER);
+			final ServerMessage message = new ServerMessage(ServerCommand.UPDATE_R_NUMBER);
 			message.setRNumber(rNumber);
 			return message;
 		}
 
 		public static ServerMessage updateRounds(Round[] newRounds) {
-			final ServerMessage message = new ServerMessage(ServerMessage.ServerCommand.UPDATE_ROUND);
+			final ServerMessage message = new ServerMessage(ServerCommand.UPDATE_ROUND);
 			message.setRounds(newRounds);
 			return message;
 		}
 
 		public static ServerMessage updateTrivia(Trivia trivia) {
-			final ServerMessage message = new ServerMessage(ServerMessage.ServerCommand.UPDATE_TRIVIA);
+			final ServerMessage message = new ServerMessage(ServerCommand.UPDATE_TRIVIA);
 			message.setTrivia(trivia);
 			return message;
 		}
 
-		public static ServerMessage updateUserLists(Hashtable<String, Role> activeUserList,
-				Hashtable<String, Role> idleUserList) {
-			final ServerMessage message = new ServerMessage(ServerMessage.ServerCommand.UPDATE_USER_LISTS);
-			message.setActiveUserList(activeUserList);
-			message.setIdleUserList(idleUserList);
+		public static ServerMessage updateUserList(User[] userList) {
+			final ServerMessage message = new ServerMessage(ServerCommand.UPDATE_USER_LISTS);
+			message.setUserList(userList);
 			return message;
 		}
 
 		public static ServerMessage sendSaveList(String[] savefiles) {
-			final ServerMessage message = new ServerMessage(ServerMessage.ServerCommand.LIST_SAVES);
+			final ServerMessage message = new ServerMessage(ServerCommand.LIST_SAVES);
 			message.setSaves(savefiles);
 			return message;
 		}
@@ -191,7 +166,6 @@ public class ServerMessage {
 				jsonGen = jsonFactory.createGenerator(writer);
 				mapper.writeValue(jsonGen, message);
 			} catch (final IOException exception) {
-				// TODO Auto-generated catch block
 				exception.printStackTrace();
 			}
 			return writer.toString();
@@ -219,7 +193,6 @@ public class ServerMessage {
 			try {
 				message = mapper.readValue(str, ServerMessage.class);
 			} catch (final IOException exception) {
-				// TODO Auto-generated catch block
 				exception.printStackTrace();
 			}
 			// System.out.println("Decoded ServerMessage with command " + message.getCommand());
@@ -236,6 +209,10 @@ public class ServerMessage {
 		@Override
 		public void destroy() {
 		}
+	}
+
+	private void setUserList(User[] userList) {
+		this.userList = userList;
 	}
 
 }
