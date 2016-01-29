@@ -155,7 +155,7 @@ public class UserListPanel extends TriviaMainPanel {
 
 		for (User user : this.client.getUserList()) {
 			userHash.put(user.getUserName(), user);
-			if (activeWindow == 0 || now.getTime() - activeWindow > user.getLastActive().getTime()) {
+			if (activeWindow != 0 && now.getTime() - activeWindow > user.getLastActive().getTime()) {
 				idleUsers.add(user);
 			} else {
 				activeUsers.add(user);
@@ -240,7 +240,7 @@ public class UserListPanel extends TriviaMainPanel {
 						break;
 				}
 
-				if (now.getTime() - activeWindow > user.getLastActive().getTime()) {
+				if (activeWindow != 0 && now.getTime() - activeWindow > user.getLastActive().getTime()) {
 					// Idle User
 					color = idleColor;
 				}
