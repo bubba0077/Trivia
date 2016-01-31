@@ -200,7 +200,6 @@ public class Question implements Serializable {
 	 */
 	public void markIncorrect() {
 		this.correct = false;
-		this.isOpen = true;
 		this.answer = "";
 		this.submitter = "";
 	}

@@ -156,7 +156,7 @@ public class Round implements Serializable {
 		answer.callIn(caller);
 		final int qNumber = answer.getQNumber();
 		if (oldStatus == Answer.Status.CORRECT) {
-			this.questions[qNumber - 1].markIncorrect();
+			this.questions[qNumber - 1].reopen();
 		}
 		this.version++;
 	}
@@ -166,8 +166,6 @@ public class Round implements Serializable {
 	 *
 	 * @param qNumber
 	 *            The question number
-	 * @param answer
-	 *            TODO
 	 */
 	public synchronized void close(int qNumber) {
 		this.questions[qNumber - 1].close();
@@ -867,7 +865,7 @@ public class Round implements Serializable {
 		answer.markIncorrect(caller);
 		final int qNumber = answer.getQNumber();
 		if (oldStatus == Answer.Status.CORRECT) {
-			this.questions[qNumber - 1].markIncorrect();
+			this.questions[qNumber - 1].reopen();
 		}
 		this.version++;
 	}
@@ -886,7 +884,7 @@ public class Round implements Serializable {
 		answer.markPartial(caller);
 		final int qNumber = answer.getQNumber();
 		if (oldStatus == Answer.Status.CORRECT) {
-			this.questions[qNumber - 1].markIncorrect();
+			this.questions[qNumber - 1].reopen();
 		}
 		this.version++;
 	}
@@ -904,7 +902,7 @@ public class Round implements Serializable {
 		answer.markUncalled();
 		final int qNumber = answer.getQNumber();
 		if (oldStatus == Answer.Status.CORRECT) {
-			this.questions[qNumber - 1].markIncorrect();
+			this.questions[qNumber - 1].reopen();
 		}
 		this.version++;
 	}
