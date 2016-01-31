@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
@@ -41,6 +42,10 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.text.DefaultCaret;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 
 import net.bubbaland.trivia.Answer;
 import net.bubbaland.trivia.Answer.Agreement;
@@ -577,9 +582,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		 * GUI elements that will be updated
 		 */
 		final private ArrayList<JLabel>				queuenumberLabels, timestampLabels, qNumberLabels, confidenceLabels,
-				agreementLabels, submitterLabels, operatorLabels, callerLabels;
+				agreementLabels, submitterLabels, callerLabels;
 		final private ArrayList<JComboBox<String>>	statusComboBoxes;
 		final private ArrayList<JTextArea>			answerTextAreas;
+		final private ArrayList<JTextPane>			operatorTextPanes;
 		final private ArrayList<JToggleButton>		agreeButtons, disagreeButtons;
 		final private ArrayList<ButtonGroup>		buttonGroups;
 		private final JPopupMenu					contextMenu;
@@ -630,7 +636,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.disagreeButtons = new ArrayList<JToggleButton>(0);
 			this.buttonGroups = new ArrayList<ButtonGroup>(0);
 			this.submitterLabels = new ArrayList<JLabel>(0);
-			this.operatorLabels = new ArrayList<JLabel>(0);
+			this.operatorTextPanes = new ArrayList<JTextPane>(0);
 			this.callerLabels = new ArrayList<JLabel>(0);
 			this.statusComboBoxes = new ArrayList<JComboBox<String>>(0);
 			this.answerTextAreas = new ArrayList<JTextArea>(0);
@@ -1023,10 +1029,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					this.submitterLabels.get(a).getParent().setBackground(bColor);
 					this.submitterLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
-					this.operatorLabels.get(a).setText(newOperator);
-					this.operatorLabels.get(a).setForeground(color);
-					this.operatorLabels.get(a).getParent().setBackground(bColor);
-					this.operatorLabels.get(a).setName("" + ( newQueueNumber - 1 ));
+					this.operatorTextPanes.get(a).setText(newOperator);
+					this.operatorTextPanes.get(a).setForeground(color);
+					this.operatorTextPanes.get(a).setBackground(bColor);
+					this.operatorTextPanes.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					this.callerLabels.get(a).setText(newCaller);
 					this.callerLabels.get(a).setForeground(color);
@@ -1064,7 +1070,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.agreeButtons.get(a).setVisible(false);
 						this.disagreeButtons.get(a).setVisible(false);
 						this.submitterLabels.get(a).setVisible(false);
-						this.operatorLabels.get(a).setVisible(false);
+						this.operatorTextPanes.get(a).setVisible(false);
 						this.callerLabels.get(a).setVisible(false);
 						this.statusComboBoxes.get(a).setVisible(false);
 
@@ -1078,7 +1084,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.agreeButtons.get(a).getParent().setVisible(false);
 						this.disagreeButtons.get(a).getParent().setVisible(false);
 						this.submitterLabels.get(a).getParent().setVisible(false);
-						this.operatorLabels.get(a).getParent().setVisible(false);
+						this.operatorTextPanes.get(a).getParent().getParent().setVisible(false);
 						this.callerLabels.get(a).getParent().setVisible(false);
 						this.statusComboBoxes.get(a).getParent().setVisible(false);
 					} else {
@@ -1099,7 +1105,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							this.disagreeButtons.get(a).setVisible(false);
 						}
 						this.submitterLabels.get(a).setVisible(true);
-						this.operatorLabels.get(a).setVisible(true);
+						this.operatorTextPanes.get(a).setVisible(true);
 						this.callerLabels.get(a).setVisible(true);
 						this.statusComboBoxes.get(a).setVisible(true);
 
@@ -1113,7 +1119,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.agreeButtons.get(a).getParent().setVisible(true);
 						this.disagreeButtons.get(a).getParent().setVisible(true);
 						this.submitterLabels.get(a).getParent().setVisible(true);
-						this.operatorLabels.get(a).getParent().setVisible(true);
+						this.operatorTextPanes.get(a).getParent().getParent().setVisible(true);
 						this.callerLabels.get(a).getParent().setVisible(true);
 						this.statusComboBoxes.get(a).getParent().setVisible(true);
 					}
@@ -1133,7 +1139,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.agreeButtons.get(a).setVisible(false);
 				this.disagreeButtons.get(a).setVisible(false);
 				this.submitterLabels.get(a).setVisible(false);
-				this.operatorLabels.get(a).setVisible(false);
+				this.operatorTextPanes.get(a).setVisible(false);
 				this.callerLabels.get(a).setVisible(false);
 				this.statusComboBoxes.get(a).setVisible(false);
 
@@ -1147,7 +1153,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.agreeButtons.get(a).getParent().setVisible(false);
 				this.disagreeButtons.get(a).getParent().setVisible(false);
 				this.submitterLabels.get(a).getParent().setVisible(false);
-				this.operatorLabels.get(a).getParent().setVisible(false);
+				this.operatorTextPanes.get(a).getParent().setVisible(false);
 				this.callerLabels.get(a).getParent().setVisible(false);
 				this.statusComboBoxes.get(a).getParent().setVisible(false);
 
@@ -1174,13 +1180,13 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				setPanelProperties((JPanel) this.disagreeButtons.get(a).getParent(), agreementWidth, rowHeight / 2,
 						null);
 				setLabelProperties(this.submitterLabels.get(a), subCallerWidth, rowHeight / 2, null, null, fontSize);
-				setLabelProperties(this.operatorLabels.get(a), operatorWidth, rowHeight, null, null, fontSize);
+				setTextPaneProperties(this.operatorTextPanes.get(a), operatorWidth, rowHeight, null, null, fontSize);
+				setPanelProperties((JPanel) this.operatorTextPanes.get(a).getParent(), operatorWidth, rowHeight, null);
 				setLabelProperties(this.callerLabels.get(a), subCallerWidth, rowHeight / 2, null, null, fontSize);
 
 				setPanelProperties((JPanel) this.statusComboBoxes.get(a).getParent(), statusWidth, rowHeight, null);
 				this.statusComboBoxes.get(a).setFont(this.statusComboBoxes.get(a).getFont().deriveFont(fontSize));
 			}
-
 		}
 
 		/**
@@ -1310,9 +1316,15 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 			constraints.gridx = 6;
 			constraints.gridy = 2 * a;
-			this.operatorLabels.add(this.enclosedLabel("", operatorWidth, rowHeight, null, null, constraints, fontSize,
-					SwingConstants.CENTER, SwingConstants.CENTER));
-			this.operatorLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
+			this.operatorTextPanes.add(this.scrollableTextPane("", operatorWidth, rowHeight, null, null, constraints,
+					fontSize, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER));
+			this.operatorTextPanes.get(a).setEditable(false);
+			StyleConstants.setAlignment(( (StyledDocument) this.operatorTextPanes.get(a).getDocument() )
+					.getStyle(StyleContext.DEFAULT_STYLE), StyleConstants.ALIGN_CENTER);
+			DefaultCaret caret = (DefaultCaret) this.operatorTextPanes.get(a).getCaret();
+			caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+			this.operatorTextPanes.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
 			constraints.gridx = 7;
 			constraints.gridy = 2 * a;

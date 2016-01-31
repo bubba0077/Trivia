@@ -198,6 +198,48 @@ public abstract class TriviaPanel extends JPanel {
 	 *
 	 * @param string
 	 *            The initial string for the text area
+	 * @param width
+	 *            The width
+	 * @param height
+	 *            The height
+	 * @param foreground
+	 *            The foreground color
+	 * @param background
+	 *            The background color
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param fontSize
+	 *            The font size
+	 * @param horizontalScroll
+	 *            The horizontal scroll bar policy (JScrollPane constants)
+	 * @param verticalScroll
+	 *            The vertical scroll bar policy (JScrollPane constants)
+	 * @return The text area inside the scroll pane
+	 */
+	public JTextPane scrollableTextPane(String string, int width, int height, Color foreground, Color background,
+			GridBagConstraints constraints, float fontSize, int horizontalScroll, int verticalScroll) {
+
+		final InternalScrollPane pane = new InternalScrollPane(verticalScroll, horizontalScroll);
+		pane.setPreferredSize(new Dimension(width, height));
+		pane.setBorder(BorderFactory.createEmptyBorder());
+		this.add(pane, constraints);
+		final JTextPane textPane = new JTextPane(new DefaultStyledDocument());
+		textPane.setBorder(BorderFactory.createEmptyBorder());
+		final DefaultCaret caret = (DefaultCaret) textPane.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		pane.setViewportView(textPane);
+
+		TriviaPanel.setTextPaneProperties(textPane, width, height, foreground, background, fontSize);
+
+		return textPane;
+	}
+
+	/**
+	 * Adds a word-wrapping text area inside of a scrollable pane to the panel. A reference to the text area is returned
+	 * so the text can be read/changed later.
+	 *
+	 * @param string
+	 *            The initial string for the text area
 	 * @param constraints
 	 *            The GridBag constraints
 	 * @param horizontalScroll
