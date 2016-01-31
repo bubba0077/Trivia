@@ -38,7 +38,11 @@ public class Trivia implements Serializable {
 
 	// The number of teams in the contest
 	@JsonProperty("nTeams")
-	private int					nTeams;
+	private volatile int		nTeams;
+
+	// Number of visual trivias
+	@JsonProperty("nVisual")
+	private volatile int		nVisual;
 
 	// The current round
 	// private volatile Round currentRound;
@@ -70,13 +74,14 @@ public class Trivia implements Serializable {
 		}
 		this.rNumber = 1;
 		this.nTeams = 100;
+		this.nVisual = 20;
 	}
 
 	@JsonCreator
 	private Trivia(@JsonProperty("teamName") String teamName, @JsonProperty("nRounds") int nRounds,
 			@JsonProperty("nQuestions") int nQuestions, @JsonProperty("nQuestionsSpeed") int nQuestionsSpeed,
-			@JsonProperty("nTeams") int nTeams, @JsonProperty("rNumber") int rNumber,
-			@JsonProperty("rounds") Round[] rounds) {
+			@JsonProperty("nTeams") int nTeams, @JsonProperty("nVisual") int nVisuals,
+			@JsonProperty("rNumber") int rNumber, @JsonProperty("rounds") Round[] rounds) {
 		this.teamName = teamName;
 		this.nRounds = nRounds;
 		this.nQuestions = nQuestions;
@@ -84,6 +89,7 @@ public class Trivia implements Serializable {
 		this.nTeams = nTeams;
 		this.rNumber = rNumber;
 		this.rounds = rounds;
+		this.nVisual = nVisuals;
 	}
 
 
@@ -119,8 +125,6 @@ public class Trivia implements Serializable {
 	 *            The round number
 	 * @param qNumber
 	 *            The question number
-	 * @param answer
-	 *            TODO
 	 */
 	public void close(int rNumber, int qNumber) {
 		this.rounds[rNumber - 1].close(qNumber);
@@ -131,8 +135,6 @@ public class Trivia implements Serializable {
 	 *
 	 * @param qNumber
 	 *            The question number
-	 * @param answer
-	 *            TODO
 	 */
 	public void close(int qNumber) {
 		this.getCurrentRound().close(qNumber);
@@ -1142,6 +1144,14 @@ public class Trivia implements Serializable {
 	 */
 	public void setNTeams(int nTeams) {
 		this.nTeams = nTeams;
+	}
+
+	public void setNVisual(int nVisual) {
+		this.nVisual = nVisual;
+	}
+
+	public int getNVisual() {
+		return this.nVisual;
 	}
 
 	public void setQuestionText(int qNumber, String qText) {

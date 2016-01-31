@@ -202,10 +202,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			final JMenu idleMenu = new JMenu("Adjust time-to-idle");
 			this.idleSpinner = new SpinnerMenuItem(new SpinnerNumberModel(
 					Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("UserList.timeToIdle")), 0, 3600, 60));
-			// this.idleSlider.setMajorTickSpacing(10);
-			// this.idleSlider.setMinorTickSpacing(5);
-			// this.idleSlider.setPaintLabels(true);
-			// this.idleSlider.setPaintTicks(true);
 			this.idleSpinner.addChangeListener(this);
 			idleMenu.add(this.idleSpinner);
 			menu.add(idleMenu);
@@ -404,6 +400,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menu.setMnemonic(KeyEvent.VK_A);
 			menuBar.add(menu);
 
+			menuItem = new JMenuItem("Set N Visual Trivia", KeyEvent.VK_V);
+			menuItem.setActionCommand("Set N Visual Trivia");
+			menuItem.addActionListener(this);
+			menu.add(menuItem);
+
 			menuItem = new JMenuItem("Restart Timer", KeyEvent.VK_T);
 			menuItem.setActionCommand("Restart Timer");
 			menuItem.addActionListener(this);
@@ -596,6 +597,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			case "Exit":
 				// Tell client to exit the program
 				this.gui.endProgram();
+				break;
+			case "Set N Visual Trivia":
+				new NVisualTriviaDialog(this.client, this.client.getTrivia().getNVisual());
 				break;
 		}
 	}

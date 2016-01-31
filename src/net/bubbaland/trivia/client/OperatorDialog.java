@@ -44,7 +44,6 @@ public class OperatorDialog extends TriviaDialogPanel {
 
 		this.client = client;
 		this.queueIndex = queueIndex;
-		// this.statusComboBox = statusComboBox;
 		this.previousStatus = previousStatus;
 
 		// Set up layout constraints

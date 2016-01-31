@@ -203,25 +203,25 @@ public class TriviaServer {
 				break;
 			case CHANGE_AGREEMENT:
 				this.trivia.changeAgreement(user.getUserName(), message.getQueueIndex(), message.getAgreement());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case CALL_IN:
 				this.trivia.callIn(message.getQueueIndex(), user.getUserName());
 				this.log(user.getUserName() + " is calling in item " + message.getQueueIndex()
 						+ " in the answer queue.");
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case CHANGE_USER:
 				this.trivia.changeName(user.getUserName(), message.getUser());
 				user.setUserName(message.getUser());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				this.broadcastUsers();
 				break;
 			case CLOSE_QUESTION:
 				this.trivia.close(message.getqNumber());
 				this.log("Question " + message.getqNumber() + " closed, "
 						+ this.trivia.getValue(this.trivia.getCurrentRoundNumber(), message.getqNumber()));
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case EDIT_QUESTION:
 				if (message.getaText() == null) {
@@ -233,14 +233,14 @@ public class TriviaServer {
 				}
 				this.log("Round " + message.getrNumber() + " Question " + message.getqNumber() + " edited by "
 						+ user.getUserName());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case LIST_SAVES:
 				this.sendMessage(session, ServerMessageFactory.sendSaveList(this.listSaves()));
 				break;
 			case LOAD_STATE:
 				this.loadState(user.getUserName(), message.getSaveFilename());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case MARK_CORRECT:
 				this.trivia.markCorrect(message.getQueueIndex(), user.getUserName());
@@ -249,59 +249,59 @@ public class TriviaServer {
 								+ this.trivia.getValue(this.trivia.getCurrentRoundNumber(),
 										this.trivia.getAnswerQueueQNumbers()[message.getQueueIndex()])
 						+ " points earned!");
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case MARK_DUPLICATE:
 				this.trivia.markDuplicate(message.getQueueIndex());
 				this.log("Item " + message.getQueueIndex() + " marked as duplicate.");
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case MARK_INCORRECT:
 				this.trivia.markIncorrect(message.getQueueIndex(), user.getUserName());
 				this.log("Item " + message.getQueueIndex() + " in the queue is incorrect.");
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case MARK_PARTIAL:
 				this.trivia.markPartial(message.getQueueIndex(), user.getUserName());
 				this.log("Item " + message.getQueueIndex() + " in the queue is partially correct.");
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case MARK_UNCALLED:
 				this.trivia.markUncalled(message.getQueueIndex());
 				this.log("Item " + message.getQueueIndex() + " status reset to uncalled.");
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case OPEN_QUESTION:
 				final int qNumber = message.getqNumber();
 				this.trivia.open(user.getUserName(), qNumber);
 				this.log("Question " + qNumber + " is being typed in by " + user.getUserName() + "...");
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case PROPOSE_ANSWER:
 				this.trivia.proposeAnswer(message.getqNumber(), message.getaText(), user.getUserName(),
 						message.getConfidence());
 				this.log(user.getUserName() + " submitted an answer for Q" + message.getqNumber()
 						+ " with a confidence of " + message.getConfidence() + ":\n" + message.getaText());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case REMAP_QUESTION:
 				this.trivia.remapQuestion(message.getOldQNumber(), message.getqNumber());
 				this.log(user.getUserName() + " remapped Q" + message.getOldQNumber() + " to Q" + message.getqNumber());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case REOPEN_QUESTION:
 				this.trivia.reopen(message.getqNumber());
 				this.log("Q" + message.getqNumber() + " re-opened by " + user.getUserName());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case RESET_QUESTION:
 				this.trivia.resetQuestion(message.getqNumber());
 				this.log(user.getUserName() + " reset Q" + message.getqNumber());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case SET_DISCREPENCY_TEXT:
 				this.trivia.setDiscrepencyText(message.getrNumber(), message.getDiscrepancyText());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case SET_ROLE:
 				user.setUserName(message.getUser());
@@ -315,24 +315,24 @@ public class TriviaServer {
 				} else {
 					this.log("Making round " + this.trivia.getCurrentRoundNumber() + " not a speed round");
 				}
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case SET_OPERATOR:
 				this.trivia.setOperator(message.getQueueIndex(), message.getOperator());
 				this.log("Operator for queue index " + message.getQueueIndex() + " set by " + user.getUserName()
 						+ " to " + message.getOperator());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case SET_QUESTION:
 				this.trivia.setQuestionText(message.getqNumber(), message.getqText());
 				this.trivia.setQuestionValue(message.getqNumber(), message.getqValue());
 				this.log("Question #" + message.getqNumber() + " set to " + message.getqText() + "with a value of "
 						+ message.getqValue() + " by " + user.getUserName());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case SET_ANSWER:
 				this.trivia.setAnswer(message.getQueueIndex(), message.getaText());
-				this.broadcastTrivia();
+				this.broadcastChangedRounds();
 				break;
 			case FETCH_TRIVIA:
 				final Trivia trivia = this.trivia;
@@ -341,6 +341,11 @@ public class TriviaServer {
 				break;
 			case RESTART_TIMER:
 				this.restartTimer();
+				break;
+			case SET_N_VISUAL:
+				this.trivia.setNVisual(message.getNVisual());
+				this.broadcastNVisual();
+				this.log("Number of visual trivia set to " + message.getNVisual() + " by " + user.getUserName());
 				break;
 			default:
 				this.log("Unknown message received by server!" + message.toString());
@@ -491,7 +496,7 @@ public class TriviaServer {
 		for (int r = 1; r < trivia.getCurrentRoundNumber(); r++) {
 			// For each past round, try to get announced standings if we don't have them
 			if (!trivia.isAnnounced(r)) {
-				final ScoreEntry[] standings = this.getStandings(r);
+				final ScoreEntry[] standings = this.fetchStandings(r);
 				if (standings != null) {
 					trivia.setStandings(r, standings);
 				}
@@ -505,7 +510,7 @@ public class TriviaServer {
 
 		// Notify clients of the updated data
 		this.broadcastRoundNumber();
-		this.broadcastTrivia();
+		this.broadcastChangedRounds();
 	}
 
 	/**
@@ -536,7 +541,7 @@ public class TriviaServer {
 	 *            The round number
 	 * @return Array of ScoreEntry that have the standing data
 	 */
-	private ScoreEntry[] getStandings(int rNumber) {
+	private ScoreEntry[] fetchStandings(int rNumber) {
 
 		final ArrayList<ScoreEntry> standingsList = new ArrayList<ScoreEntry>(0);
 
@@ -618,9 +623,10 @@ public class TriviaServer {
 					for (int r = 1; r < TriviaServer.this.trivia.getCurrentRoundNumber(); r++) {
 						// For each past round, try to get announced standings if we don't have them
 						if (!TriviaServer.this.trivia.isAnnounced(r)) {
-							final ScoreEntry[] standings = TriviaServer.this.getStandings(r);
+							final ScoreEntry[] standings = TriviaServer.this.fetchStandings(r);
 							if (standings != null) {
 								TriviaServer.this.trivia.setStandings(r, standings);
+								TriviaServer.this.broadcastNTeams();
 							}
 						}
 					}
@@ -978,7 +984,7 @@ public class TriviaServer {
 	/**
 	 * Send updated trivia information to each connected client
 	 */
-	private void broadcastTrivia() {
+	private void broadcastChangedRounds() {
 		final Set<Session> sessions = this.sessionList.keySet();
 		for (final Session session : sessions) {
 			if (session != null) {
@@ -987,6 +993,26 @@ public class TriviaServer {
 				if (newRounds.length != 0) {
 					this.sendMessage(session, ServerMessageFactory.updateRounds(newRounds));
 				}
+			}
+		}
+	}
+
+	private void broadcastNTeams() {
+		final int nTeams = this.trivia.getNTeams();
+		final Set<Session> sessions = this.sessionList.keySet();
+		for (final Session session : sessions) {
+			if (session != null) {
+				this.sendMessage(session, ServerMessageFactory.updateNTeams(nTeams));
+			}
+		}
+	}
+
+	private void broadcastNVisual() {
+		final int nTeams = this.trivia.getNTeams();
+		final Set<Session> sessions = this.sessionList.keySet();
+		for (final Session session : sessions) {
+			if (session != null) {
+				this.sendMessage(session, ServerMessageFactory.updateNVisual(nTeams));
 			}
 		}
 	}

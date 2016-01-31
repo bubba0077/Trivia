@@ -26,11 +26,11 @@ public class ClientMessage {
 	protected static JsonFactory jsonFactory = new JsonFactory();
 
 	public static enum ClientCommand {
-		CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA, RESTART_TIMER, SET_OPERATOR, SET_ANSWER, SET_QUESTION
+		SET_N_VISUAL, CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA, RESTART_TIMER, SET_OPERATOR, SET_ANSWER, SET_QUESTION
 	};
 
 	private ClientCommand	command;
-	private int				rNumber, qNumber, oldQNumber, queueIndex, qValue, confidence, timeToIdle;
+	private int				rNumber, qNumber, oldQNumber, queueIndex, qValue, confidence, timeToIdle, nVisual;
 	private String			user, qText, aText, operator, saveFilename, discrepancyText;
 	private boolean			correct, speed;
 	private User.Role		role;
@@ -43,6 +43,10 @@ public class ClientMessage {
 	private ClientMessage(ClientCommand command) {
 		super();
 		this.command = command;
+	}
+
+	public int getNVisual() {
+		return this.nVisual;
 	}
 
 	/**
@@ -194,6 +198,12 @@ public class ClientMessage {
 		public static ClientMessage callIn(int queueIndex) {
 			final ClientMessage message = new ClientMessage(ClientCommand.CALL_IN);
 			message.queueIndex = queueIndex;
+			return message;
+		}
+
+		public static ClientMessage setNVisual(int nVisual) {
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_N_VISUAL);
+			message.nVisual = nVisual;
 			return message;
 		}
 
@@ -582,7 +592,6 @@ public class ClientMessage {
 				jsonGen = jsonFactory.createGenerator(writer);
 				mapper.writeValue(jsonGen, message);
 			} catch (final IOException exception) {
-				// TODO Auto-generated catch block
 				exception.printStackTrace();
 			}
 			return writer.toString();
@@ -610,7 +619,6 @@ public class ClientMessage {
 			try {
 				message = mapper.readValue(str, ClientMessage.class);
 			} catch (final IOException exception) {
-				// TODO Auto-generated catch block
 				exception.printStackTrace();
 			}
 			// System.out.println("Decoded ClientMessage with command " + message.getCommand());

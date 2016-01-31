@@ -30,7 +30,7 @@ public class ServerMessage {
 	protected static JsonFactory jsonFactory = new JsonFactory();
 
 	public static enum ServerCommand {
-		UPDATE_R_NUMBER, UPDATE_ROUND, UPDATE_TRIVIA, UPDATE_USER_LISTS, LIST_SAVES
+		UPDATE_R_NUMBER, UPDATE_ROUND, UPDATE_TRIVIA, UPDATE_USER_LISTS, LIST_SAVES, UPDATE_N_TEAMS, UPDATE_N_VISUAL
 	};
 
 	private ServerCommand	command;
@@ -39,6 +39,8 @@ public class ServerMessage {
 	private User[]			userList;
 	private Trivia			trivia;
 	private String[]		saves;
+	public int				nTeams;
+	public int				nVisual;
 
 	private ServerMessage() {
 	}
@@ -114,6 +116,14 @@ public class ServerMessage {
 		this.saves = saves;
 	}
 
+	public int getNTeams() {
+		return this.nTeams;
+	}
+
+	public int getNVisual() {
+		return this.nVisual;
+	}
+
 	public static class ServerMessageFactory {
 
 		public static ServerMessage updateRoundNumber(int rNumber) {
@@ -143,6 +153,18 @@ public class ServerMessage {
 		public static ServerMessage sendSaveList(String[] savefiles) {
 			final ServerMessage message = new ServerMessage(ServerCommand.LIST_SAVES);
 			message.setSaves(savefiles);
+			return message;
+		}
+
+		public static ServerMessage updateNTeams(int nTeams) {
+			final ServerMessage message = new ServerMessage(ServerCommand.UPDATE_N_TEAMS);
+			message.nTeams = nTeams;
+			return message;
+		}
+
+		public static ServerMessage updateNVisual(int nVisual) {
+			final ServerMessage message = new ServerMessage(ServerCommand.UPDATE_N_VISUAL);
+			message.nVisual = nVisual;
 			return message;
 		}
 
