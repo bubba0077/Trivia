@@ -191,7 +191,6 @@ public class TriviaGUI implements WindowListener {
 					}
 				});
 			} catch (InvocationTargetException | InterruptedException exception) {
-				// TODO Auto-generated catch block
 				exception.printStackTrace();
 			}
 		} else {
@@ -228,7 +227,6 @@ public class TriviaGUI implements WindowListener {
 				}
 			});
 		} catch (InvocationTargetException | InterruptedException exception) {
-			// TODO Auto-generated catch block
 			exception.printStackTrace();
 		}
 		this.log("Welcome " + this.client.getUser());

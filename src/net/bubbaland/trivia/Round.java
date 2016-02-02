@@ -64,17 +64,49 @@ public class Round implements Serializable {
 	@JsonProperty("standings")
 	private volatile ScoreEntry[]		standings;
 
-	// Our team name
-	@JsonProperty("teamName")
-	private final String				teamName;
-
 	// The answer queue for this round
 	@JsonProperty("answerQueue")
 	private volatile ArrayList<Answer>	answerQueue;
 
 	// The discrepancy text for this round, used if the announced score does not match the calculated score
 	@JsonProperty("discrepancyText")
-	private String						discrepancyText;
+	private volatile String				discrepancyText;
+
+	@JsonProperty("showName")
+	private volatile String				showName;
+
+	/**
+	 * @return the showName
+	 */
+	public String getShowName() {
+		return this.showName;
+	}
+
+	/**
+	 * @param showName
+	 *            the showName to set
+	 */
+	public void setShowName(String showName) {
+		this.showName = showName;
+	}
+
+	/**
+	 * @return the showHost
+	 */
+	public String getShowHost() {
+		return this.showHost;
+	}
+
+	/**
+	 * @param showHost
+	 *            the showHost to set
+	 */
+	public void setShowHost(String showHost) {
+		this.showHost = showHost;
+	}
+
+	@JsonProperty("showHost")
+	private volatile String showHost;
 
 	/**
 	 * Creates a new round.
@@ -86,9 +118,8 @@ public class Round implements Serializable {
 	 * @param nQuestions
 	 *            The number of questions in a normal round
 	 */
-	public Round(String teamName, int rNumber, int nQuestionsSpeed, int nQuestions) {
+	public Round(int rNumber, int nQuestionsSpeed, int nQuestions) {
 
-		this.teamName = teamName;
 		this.speed = false;
 		this.rNumber = rNumber;
 		this.nQuestionsSpeed = nQuestionsSpeed;
@@ -98,6 +129,8 @@ public class Round implements Serializable {
 		this.announcedPoints = 0;
 		this.place = 1;
 		this.discrepancyText = "";
+		this.showName = "";
+		this.showHost = "";
 		this.version = 0;
 
 		for (int q = 0; q < nQuestionsSpeed; q++) {
@@ -113,8 +146,8 @@ public class Round implements Serializable {
 			@JsonProperty("questions") Question[] questions, @JsonProperty("speed") boolean speed,
 			@JsonProperty("announced") boolean announced, @JsonProperty("announcedPoints") int announcedPoints,
 			@JsonProperty("place") int place, @JsonProperty("standings") ScoreEntry[] standings,
-			@JsonProperty("teamName") String teamName, @JsonProperty("answerQueue") ArrayList<Answer> answerQueue,
-			@JsonProperty("discrepancyText") String discrepancyText) {
+			@JsonProperty("answerQueue") ArrayList<Answer> answerQueue, @JsonProperty("showName") String showName,
+			@JsonProperty("showHost") String showHost, @JsonProperty("discrepancyText") String discrepancyText) {
 		this.version = version;
 		this.rNumber = rNumber;
 		this.nQuestionsSpeed = nQuestionsSpeed;
@@ -125,8 +158,9 @@ public class Round implements Serializable {
 		this.announcedPoints = announcedPoints;
 		this.place = place;
 		this.standings = standings;
-		this.teamName = teamName;
 		this.answerQueue = answerQueue;
+		this.showName = showName;
+		this.showHost = showHost;
 		this.discrepancyText = discrepancyText;
 	}
 
@@ -1165,11 +1199,11 @@ public class Round implements Serializable {
 	 * @param standings
 	 *            Array of ScoreEntry representing each team's score this round
 	 */
-	public synchronized void setStandings(ScoreEntry[] standings) {
+	public synchronized void setStandings(ScoreEntry[] standings, String teamName) {
 		this.announced = true;
 		this.standings = standings;
 		for (final ScoreEntry entry : standings) {
-			if (entry.getTeamName().equalsIgnoreCase(this.teamName)) {
+			if (entry.getTeamName().equalsIgnoreCase(teamName)) {
 				this.announcedPoints = entry.getScore();
 				this.place = entry.getPlace();
 			}
@@ -1213,7 +1247,7 @@ public class Round implements Serializable {
 
 	public String toString() {
 		String s = "=== Data for round " + this.rNumber + " ===\n";
-		s = s + "Team name: " + this.teamName + "\n";
+		// s = s + "Team name: " + this.teamName + "\n";
 		s = s + "Version: " + this.version + " nQuestions: " + this.nQuestions + " nQuestions(speed): "
 				+ this.nQuestionsSpeed + "\n";
 		s = s + "Speed Round: " + this.speed + "\n";

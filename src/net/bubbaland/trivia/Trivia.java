@@ -70,7 +70,7 @@ public class Trivia implements Serializable {
 		this.nQuestionsSpeed = nQuestionsSpeed;
 		this.rounds = new Round[nRounds];
 		for (int r = 0; r < nRounds; r++) {
-			this.rounds[r] = new Round(teamName, r + 1, nQuestionsSpeed, nQuestions);
+			this.rounds[r] = new Round(r + 1, nQuestionsSpeed, nQuestions);
 		}
 		this.rNumber = 1;
 		this.nTeams = 100;
@@ -1061,7 +1061,7 @@ public class Trivia implements Serializable {
 	 */
 	public void reset() {
 		for (int r = 0; r < this.nRounds; r++) {
-			this.rounds[r] = new Round(this.teamName, r + 1, this.nQuestionsSpeed, this.nQuestions);
+			this.rounds[r] = new Round(r + 1, this.nQuestionsSpeed, this.nQuestions);
 		}
 	}
 
@@ -1194,7 +1194,7 @@ public class Trivia implements Serializable {
 	 */
 	public void setStandings(int rNumber, ScoreEntry[] standings) {
 		this.nTeams = standings.length;
-		this.rounds[rNumber - 1].setStandings(standings);
+		this.rounds[rNumber - 1].setStandings(standings, this.teamName);
 	}
 
 	/**
@@ -1246,6 +1246,38 @@ public class Trivia implements Serializable {
 
 	public Agreement getAgreement(String user, int queueIndex) {
 		return this.getCurrentRound().getAgreement(user, queueIndex);
+	}
+
+	public void setShowName(int rNumber, String showName) {
+		this.rounds[rNumber - 1].setShowName(showName);
+	}
+
+	public void setShowName(String showName) {
+		this.getCurrentRound().setShowName(showName);
+	}
+
+	public String getShowName(int rNumber) {
+		return this.rounds[rNumber - 1].getShowName();
+	}
+
+	public String getShowName() {
+		return this.getCurrentRound().getShowName();
+	}
+
+	public void setShowHost(int rNumber, String showHost) {
+		this.rounds[rNumber - 1].setShowHost(showHost);
+	}
+
+	public void setShowHost(String showHost) {
+		this.getCurrentRound().setShowHost(showHost);
+	}
+
+	public String getShowHost(int rNumber) {
+		return this.rounds[rNumber - 1].getShowHost();
+	}
+
+	public String getShowHost() {
+		return this.getCurrentRound().getShowHost();
 	}
 
 	public String toString() {
