@@ -103,6 +103,8 @@ public class TriviaServer {
 			"yyyy MMM dd HH:mm:ss");
 	// The team name
 	private String										teamName;
+	// The team number
+	private int											teamNumber;
 	// The Trivia object that holds all of the contest data
 	private Trivia										trivia;
 
@@ -160,6 +162,7 @@ public class TriviaServer {
 		this.nQuestionsNormal = Integer.parseInt(this.properties.getProperty("nQuestionsNormal"));
 		this.nQuestionsSpeed = Integer.parseInt(this.properties.getProperty("nQuestionsSpeed"));
 		this.teamName = this.properties.getProperty("TeamName");
+		this.teamNumber = Integer.parseInt(this.properties.getProperty("TeamNumber"));
 		this.serverURL = this.properties.getProperty("ServerURL");
 		this.serverPort = Integer.parseInt(this.properties.getProperty("Server.Port"));
 		this.saveFrequency = Integer.parseInt(this.properties.getProperty("SaveFrequency"));
@@ -174,7 +177,8 @@ public class TriviaServer {
 		/**
 		 * Create a new trivia data object and list of connected clients
 		 */
-		this.trivia = new Trivia(this.teamName, this.nRounds, this.nQuestionsNormal, this.nQuestionsSpeed);
+		this.trivia = new Trivia(this.teamName, this.teamNumber, this.nRounds, this.nQuestionsNormal,
+				this.nQuestionsSpeed);
 		this.sessionList = new Hashtable<Session, TriviaServerEndpoint>(0);
 		this.isRunning = false;
 

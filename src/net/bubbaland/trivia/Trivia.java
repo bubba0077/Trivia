@@ -24,6 +24,10 @@ public class Trivia implements Serializable {
 	@JsonProperty("teamName")
 	final private String		teamName;
 
+	// The team number
+	@JsonProperty("teamNumber")
+	private int					teamNumber;
+
 	// The number of rounds
 	@JsonProperty("nRounds")
 	final private int			nRounds;
@@ -63,8 +67,9 @@ public class Trivia implements Serializable {
 	 * @param nQuestionsSpeed
 	 *            The number of questions in a speed round
 	 */
-	public Trivia(String teamName, int nRounds, int nQuestions, int nQuestionsSpeed) {
+	public Trivia(String teamName, int teamNumber, int nRounds, int nQuestions, int nQuestionsSpeed) {
 		this.teamName = teamName;
+		this.teamNumber = teamNumber;
 		this.nRounds = nRounds;
 		this.nQuestions = nQuestions;
 		this.nQuestionsSpeed = nQuestionsSpeed;
@@ -78,11 +83,13 @@ public class Trivia implements Serializable {
 	}
 
 	@JsonCreator
-	private Trivia(@JsonProperty("teamName") String teamName, @JsonProperty("nRounds") int nRounds,
-			@JsonProperty("nQuestions") int nQuestions, @JsonProperty("nQuestionsSpeed") int nQuestionsSpeed,
-			@JsonProperty("nTeams") int nTeams, @JsonProperty("nVisual") int nVisuals,
-			@JsonProperty("rNumber") int rNumber, @JsonProperty("rounds") Round[] rounds) {
+	private Trivia(@JsonProperty("teamName") String teamName, @JsonProperty("teamNumber") int teamNumber,
+			@JsonProperty("nRounds") int nRounds, @JsonProperty("nQuestions") int nQuestions,
+			@JsonProperty("nQuestionsSpeed") int nQuestionsSpeed, @JsonProperty("nTeams") int nTeams,
+			@JsonProperty("nVisual") int nVisuals, @JsonProperty("rNumber") int rNumber,
+			@JsonProperty("rounds") Round[] rounds) {
 		this.teamName = teamName;
+		this.teamNumber = teamNumber;
 		this.nRounds = nRounds;
 		this.nQuestions = nQuestions;
 		this.nQuestionsSpeed = nQuestionsSpeed;
@@ -776,6 +783,14 @@ public class Trivia implements Serializable {
 	 */
 	public String getTeamName() {
 		return this.teamName;
+	}
+
+	public int getTeamNumber() {
+		return this.teamNumber;
+	}
+
+	public void setTeamNumber(int teamNumber) {
+		this.teamNumber = teamNumber;
 	}
 
 	/**
