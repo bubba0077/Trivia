@@ -437,6 +437,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.showNameTextField.setText(this.client.getTrivia().getShowName(currentRound));
 		this.showHostLabel.setText("Host: " + this.client.getTrivia().getShowHost(currentRound));
 		this.showHostTextField.setText(this.client.getTrivia().getShowHost(currentRound));
+		this.roundEarnedLabel.setText("" + trivia.getCurrentRoundEarned());
 		this.totalEarnedLabel.setText("" + trivia.getEarned());
 		this.roundValueLabel.setText("" + trivia.getCurrentRoundValue());
 		this.totalValueLabel.setText("" + trivia.getValue());
