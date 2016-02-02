@@ -88,6 +88,7 @@ public class Round implements Serializable {
 	 */
 	public void setShowName(String showName) {
 		this.showName = showName;
+		this.version++;
 	}
 
 	/**
@@ -103,6 +104,7 @@ public class Round implements Serializable {
 	 */
 	public void setShowHost(String showHost) {
 		this.showHost = showHost;
+		this.version++;
 	}
 
 	@JsonProperty("showHost")

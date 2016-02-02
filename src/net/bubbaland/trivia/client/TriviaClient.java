@@ -226,6 +226,9 @@ public class TriviaClient implements Runnable {
 			case UPDATE_N_VISUAL:
 				this.trivia.setNVisual(message.getNVisual());
 				break;
+			case UPDATE_TEAM_NUMBER:
+				this.trivia.setTeamNumber(message.getTeamNumber());
+				break;
 			default:
 				System.out.println("Unknown command received: " + command);
 				break;

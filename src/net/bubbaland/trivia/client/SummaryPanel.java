@@ -51,7 +51,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	private final JLabel		roundEarnedLabel, roundValueLabel, totalEarnedLabel;
 	private final JLabel		totalValueLabel, announcedLabel, placeLabel;
 	private final JLabel		announcedBannerLabel, scoreTextLabel, placeTextLabel;
-	private final JLabel		currentHourLabel;
+	private final JLabel		currentHourLabel, showNameLabel, showHostLabel;
 	private final JToggleButton	speedButton;
 	private final JButton		newRoundButton, conflictButton;
 	private final UserListPanel	userListPanel;
@@ -99,11 +99,12 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 		constraints.gridx = 4;
 		constraints.gridy = 0;
+		constraints.gridwidth = 2;
 		constraints.weightx = 1.0;
 		this.teamNameLabel = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
-		constraints.gridx = 5;
+		constraints.gridx = 6;
 		constraints.gridy = 0;
 		constraints.gridwidth = 2;
 		this.announcedBannerLabel = this.enclosedLabel("Last Round ", constraints, SwingConstants.RIGHT,
@@ -135,13 +136,20 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 		constraints.gridx = 4;
 		constraints.gridy = 1;
+		constraints.weightx = 0.5;
 		this.currentHourLabel = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 5;
 		constraints.gridy = 1;
-		this.scoreTextLabel = this.enclosedLabel("Points ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+		constraints.weightx = 0.5;
+		this.showNameLabel = this.enclosedLabel("Show: ", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		constraints.weightx = 0.0;
 
 		constraints.gridx = 6;
+		constraints.gridy = 1;
+		this.scoreTextLabel = this.enclosedLabel("Points ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+
+		constraints.gridx = 7;
 		constraints.gridy = 1;
 		this.announcedLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
@@ -162,7 +170,6 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 		constraints.gridx = 4;
 		constraints.gridy = 2;
-
 		// Put both the speed button and new round button in the same place, we'll hide the one we don't need
 		this.buttonPanel = new JPanel(new GridBagLayout());
 		this.add(this.buttonPanel, constraints);
@@ -179,15 +186,20 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.buttonPanel.add(this.newRoundButton, buttonConstraints);
 		this.newRoundButton.addActionListener(this);
 
+
 		constraints.gridx = 5;
 		constraints.gridy = 2;
-		this.placeTextLabel = this.enclosedLabel("Place ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+		this.showHostLabel = this.enclosedLabel("Host: ", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 6;
 		constraints.gridy = 2;
-		this.placeLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+		this.placeTextLabel = this.enclosedLabel("Place ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		constraints.gridx = 7;
+		constraints.gridy = 2;
+		this.placeLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+
+		constraints.gridx = 8;
 		constraints.gridy = 0;
 		constraints.gridheight = 3;
 		this.userListPanel = new UserListPanel(client, parent);
@@ -281,6 +293,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		final int col3width = Integer.parseInt(properties.getProperty("Summary.Col3.Width"));
 		final int col4width = Integer.parseInt(properties.getProperty("Summary.Col4.Width"));
 		final int col5width = Integer.parseInt(properties.getProperty("Summary.Col5.Width"));
+		final int col6width = Integer.parseInt(properties.getProperty("Summary.Col6.Width"));
 
 		/**
 		 * Font sizes
@@ -299,8 +312,9 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		setPanelProperties(this.emptyPanel, col0width, topRowHeight, backgroundColor);
 		setLabelProperties(this.roundHeaderLabel, col1width, topRowHeight, labelColor, backgroundColor, labelFontSize);
 		setLabelProperties(this.totalHeaderLabel, col2width, topRowHeight, labelColor, backgroundColor, labelFontSize);
-		setLabelProperties(this.teamNameLabel, col3width, topRowHeight, labelColor, backgroundColor, labelFontSize);
-		setLabelProperties(this.announcedBannerLabel, col4width + col5width, topRowHeight, announcedColor,
+		setLabelProperties(this.teamNameLabel, col3width + col4width, topRowHeight, labelColor, backgroundColor,
+				labelFontSize);
+		setLabelProperties(this.announcedBannerLabel, col5width + col6width, topRowHeight, announcedColor,
 				backgroundColor, labelFontSize);
 
 		setLabelProperties(this.earnedRowLabel, col0width, middleRowHeight, earnedColor, backgroundColor,
@@ -311,9 +325,10 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				scoreFontSize);
 		setLabelProperties(this.currentHourLabel, col3width, middleRowHeight, labelColor, backgroundColor,
 				labelFontSize);
-		setLabelProperties(this.scoreTextLabel, col4width, middleRowHeight, announcedColor, backgroundColor,
+		setLabelProperties(this.showNameLabel, col4width, middleRowHeight, labelColor, backgroundColor, labelFontSize);
+		setLabelProperties(this.scoreTextLabel, col5width, middleRowHeight, announcedColor, backgroundColor,
 				labelFontSize);
-		setLabelProperties(this.announcedLabel, col5width, middleRowHeight, announcedColor, backgroundColor,
+		setLabelProperties(this.announcedLabel, col6width, middleRowHeight, announcedColor, backgroundColor,
 				labelFontSize);
 
 		setLabelProperties(this.valueRowLabel, col0width, bottomRowHeight, valueColor, backgroundColor, labelFontSize);
@@ -321,16 +336,18 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				scoreFontSize);
 		setLabelProperties(this.totalValueLabel, col2width, bottomRowHeight, valueColor, backgroundColor,
 				scoreFontSize);
+
 		setPanelProperties(this.buttonPanel, col3width, bottomRowHeight, backgroundColor);
-
-		setLabelProperties(this.placeTextLabel, col4width, bottomRowHeight, announcedColor, backgroundColor,
-				labelFontSize);
-		setLabelProperties(this.placeLabel, col5width, bottomRowHeight, announcedColor, backgroundColor, labelFontSize);
-
 		setButtonProperties(this.speedButton, centerButtonWidth, centerButtonHeight, null, labelFontSize);
 		setButtonProperties(this.newRoundButton, centerButtonWidth, centerButtonHeight, null, labelFontSize);
 		this.newRoundButton.setBackground(newRoundColor);
 		setButtonProperties(this.conflictButton, conflictButtonWidth, conflictButtonHeight, null, labelFontSize);
+
+		setLabelProperties(this.showHostLabel, col4width, bottomRowHeight, labelColor, backgroundColor, labelFontSize);
+		setLabelProperties(this.placeTextLabel, col5width, bottomRowHeight, announcedColor, backgroundColor,
+				labelFontSize);
+		setLabelProperties(this.placeLabel, col6width, bottomRowHeight, announcedColor, backgroundColor, labelFontSize);
+
 
 		this.userListPanel.setBackground(backgroundColor);
 		this.emptyPanel2.setBackground(backgroundColor);
@@ -350,7 +367,10 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		final int currentRound = trivia.getCurrentRoundNumber();
 
 		// Update all the labels to match the current data
-		this.teamNameLabel.setText(this.client.getTrivia().getTeamName());
+		this.teamNameLabel.setText(
+				this.client.getTrivia().getTeamName() + " (# " + this.client.getTrivia().getTeamNumber() + ")");
+		this.showNameLabel.setText("Show: " + this.client.getTrivia().getShowName(currentRound));
+		this.showHostLabel.setText("Host: " + this.client.getTrivia().getShowHost(currentRound));
 		this.roundEarnedLabel.setText("" + trivia.getCurrentRoundEarned());
 		this.totalEarnedLabel.setText("" + trivia.getEarned());
 		this.roundValueLabel.setText("" + trivia.getCurrentRoundValue());

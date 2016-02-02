@@ -400,6 +400,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menu.setMnemonic(KeyEvent.VK_A);
 			menuBar.add(menu);
 
+			menuItem = new JMenuItem("Set Team Number", KeyEvent.VK_N);
+			menuItem.setActionCommand("Set Team Number");
+			menuItem.addActionListener(this);
+			menu.add(menuItem);
+
 			menuItem = new JMenuItem("Set N Visual Trivia", KeyEvent.VK_V);
 			menuItem.setActionCommand("Set N Visual Trivia");
 			menuItem.addActionListener(this);
@@ -599,7 +604,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				this.gui.endProgram();
 				break;
 			case "Set N Visual Trivia":
-				new NVisualTriviaDialog(this.client, this.client.getTrivia().getNVisual());
+				new NVisualTriviaDialog(this.client);
+				break;
+			case "Set Team Number":
+				new TeamNumberDialog(this.client);
 				break;
 		}
 	}

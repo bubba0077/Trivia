@@ -26,7 +26,7 @@ public class ClientMessage {
 	protected static JsonFactory jsonFactory = new JsonFactory();
 
 	public static enum ClientCommand {
-		SET_N_VISUAL, CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA, RESTART_TIMER, SET_OPERATOR, SET_ANSWER, SET_QUESTION
+		SET_SHOW_NAME, SET_SHOW_HOST, SET_N_VISUAL, CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA, RESTART_TIMER, SET_OPERATOR, SET_ANSWER, SET_QUESTION, SET_TEAM_NUMBER
 	};
 
 	private ClientCommand	command;
@@ -35,6 +35,9 @@ public class ClientMessage {
 	private boolean			correct, speed;
 	private User.Role		role;
 	private Agreement		agreement;
+	private int				teamNumber;
+	private String			showName;
+	private String			showHost;
 
 	private ClientMessage() {
 
@@ -183,6 +186,18 @@ public class ClientMessage {
 		return result.toString();
 	}
 
+	public int getTeamNumber() {
+		return this.teamNumber;
+	}
+
+	public String getShowName() {
+		return this.showName;
+	}
+
+	public String getShowHost() {
+		return this.showHost;
+	}
+
 	public static class ClientMessageFactory {
 
 		/**
@@ -204,6 +219,18 @@ public class ClientMessage {
 		public static ClientMessage setNVisual(int nVisual) {
 			final ClientMessage message = new ClientMessage(ClientCommand.SET_N_VISUAL);
 			message.nVisual = nVisual;
+			return message;
+		}
+
+		public static ClientMessage setShowName(String showName) {
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_SHOW_NAME);
+			message.showName = showName;
+			return message;
+		}
+
+		public static ClientMessage setShowHost(String showHost) {
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_SHOW_HOST);
+			message.showHost = showHost;
 			return message;
 		}
 
@@ -569,6 +596,12 @@ public class ClientMessage {
 
 		public static ClientMessage fetchTrivia() {
 			final ClientMessage message = new ClientMessage(ClientCommand.FETCH_TRIVIA);
+			return message;
+		}
+
+		public static ClientMessage setTeamNumber(int teamNumber) {
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_TEAM_NUMBER);
+			message.teamNumber = teamNumber;
 			return message;
 		}
 

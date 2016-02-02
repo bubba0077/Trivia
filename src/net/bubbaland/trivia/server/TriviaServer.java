@@ -351,6 +351,23 @@ public class TriviaServer {
 				this.broadcastNVisual();
 				this.log("Number of visual trivia set to " + message.getNVisual() + " by " + user.getUserName());
 				break;
+			case SET_TEAM_NUMBER:
+				this.trivia.setTeamNumber(message.getTeamNumber());
+				this.broadcastTeamNumber();
+				this.log("Team number set to " + message.getTeamNumber() + " by " + user.getUserName());
+				break;
+			case SET_SHOW_NAME:
+				this.trivia.setShowName(message.getrNumber(), message.getShowName());
+				this.broadcastChangedRounds();
+				this.log("Show name for round " + message.getrNumber() + " set to " + message.getShowName() + " by "
+						+ user.getUserName());
+				break;
+			case SET_SHOW_HOST:
+				this.trivia.setShowHost(message.getrNumber(), message.getShowHost());
+				this.broadcastChangedRounds();
+				this.log("Show host for round " + message.getrNumber() + " set to " + message.getShowHost() + " by "
+						+ user.getUserName());
+				break;
 			default:
 				this.log("Unknown message received by server!" + message.toString());
 				break;
@@ -1007,6 +1024,16 @@ public class TriviaServer {
 		for (final Session session : sessions) {
 			if (session != null) {
 				this.sendMessage(session, ServerMessageFactory.updateNTeams(nTeams));
+			}
+		}
+	}
+
+	private void broadcastTeamNumber() {
+		final int teamNumber = this.trivia.getTeamNumber();
+		final Set<Session> sessions = this.sessionList.keySet();
+		for (final Session session : sessions) {
+			if (session != null) {
+				this.sendMessage(session, ServerMessageFactory.updateTeamNumber(teamNumber));
 			}
 		}
 	}

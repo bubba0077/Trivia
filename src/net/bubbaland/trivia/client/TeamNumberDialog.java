@@ -11,14 +11,14 @@ import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
-public class NVisualTriviaDialog extends TriviaDialogPanel {
+public class TeamNumberDialog extends TriviaDialogPanel {
 
 	/**
 	 * 
 	 */
 	private static final long	serialVersionUID	= 6302510179287469396L;
 	private final TriviaClient	client;
-	private final JSpinner		nVisualTriviaSpinner;
+	private final JSpinner		teamNumberSpinner;
 
 	/**
 	 * Creates a new dialog box and prompts for response
@@ -32,7 +32,7 @@ public class NVisualTriviaDialog extends TriviaDialogPanel {
 	 * @param statusComboBox
 	 *            The status combo box for this answer, so it can be reverted to previous state if dialog is cancelled
 	 */
-	public NVisualTriviaDialog(TriviaClient client) {
+	public TeamNumberDialog(TriviaClient client) {
 		super();
 
 		this.client = client;
@@ -47,7 +47,7 @@ public class NVisualTriviaDialog extends TriviaDialogPanel {
 		// Prompt for the operator
 		c.gridx = 0;
 		c.gridy = 1;
-		final JLabel label = new JLabel("Number of Visual Trivia: ");
+		final JLabel label = new JLabel("Team Number: ");
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, c);
 
@@ -55,13 +55,13 @@ public class NVisualTriviaDialog extends TriviaDialogPanel {
 		c.gridy = 1;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
-		this.nVisualTriviaSpinner = new JSpinner(new SpinnerNumberModel(client.getTrivia().getNVisual(), 1, 100, 1));
-		this.nVisualTriviaSpinner.setFont(this.nVisualTriviaSpinner.getFont().deriveFont(fontSize));
-		this.nVisualTriviaSpinner.addAncestorListener(this);
-		this.add(this.nVisualTriviaSpinner, c);
+		this.teamNumberSpinner = new JSpinner(new SpinnerNumberModel(client.getTrivia().getTeamNumber(), 0, 100, 1));
+		this.teamNumberSpinner.setFont(this.teamNumberSpinner.getFont().deriveFont(fontSize));
+		this.teamNumberSpinner.addAncestorListener(this);
+		this.add(this.teamNumberSpinner, c);
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(null, "Set Number of Visual Trivia", this, JOptionPane.PLAIN_MESSAGE,
+		this.dialog = new TriviaDialog(null, "Set Team Number", this, JOptionPane.PLAIN_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
 	}
@@ -75,8 +75,8 @@ public class NVisualTriviaDialog extends TriviaDialogPanel {
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					NVisualTriviaDialog.this.client.sendMessage(ClientMessageFactory.setNVisual(
-							( (Integer) NVisualTriviaDialog.this.nVisualTriviaSpinner.getValue() ).intValue()));
+					TeamNumberDialog.this.client.sendMessage(ClientMessageFactory.setTeamNumber(
+							( (Integer) TeamNumberDialog.this.teamNumberSpinner.getValue() ).intValue()));
 					return null;
 				}
 
@@ -90,3 +90,4 @@ public class NVisualTriviaDialog extends TriviaDialogPanel {
 	}
 
 }
+
