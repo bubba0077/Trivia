@@ -222,15 +222,17 @@ public class ClientMessage {
 			return message;
 		}
 
-		public static ClientMessage setShowName(String showName) {
+		public static ClientMessage setShowName(int rNumber, String showName) {
 			final ClientMessage message = new ClientMessage(ClientCommand.SET_SHOW_NAME);
 			message.showName = showName;
+			message.rNumber = rNumber;
 			return message;
 		}
 
-		public static ClientMessage setShowHost(String showHost) {
+		public static ClientMessage setShowHost(int rNumber, String showHost) {
 			final ClientMessage message = new ClientMessage(ClientCommand.SET_SHOW_HOST);
 			message.showHost = showHost;
+			message.rNumber = rNumber;
 			return message;
 		}
 

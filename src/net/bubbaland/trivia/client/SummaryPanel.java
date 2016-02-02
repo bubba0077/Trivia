@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigInteger;
 import java.util.Properties;
 
@@ -14,6 +16,8 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
@@ -52,9 +56,11 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	private final JLabel		totalValueLabel, announcedLabel, placeLabel;
 	private final JLabel		announcedBannerLabel, scoreTextLabel, placeTextLabel;
 	private final JLabel		currentHourLabel, showNameLabel, showHostLabel;
+	private final JTextField	showNameTextField, showHostTextField;
 	private final JToggleButton	speedButton;
 	private final JButton		newRoundButton, conflictButton;
 	private final UserListPanel	userListPanel;
+	private final JPopupMenu	showNameMenu, showHostMenu;
 
 	/**
 	 * Instantiates a new header panel.
@@ -65,6 +71,25 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	public SummaryPanel(TriviaClient client, TriviaFrame parent) {
 
 		super(client, parent);
+
+		/**
+		 * Build context menu
+		 */
+		this.showNameMenu = new JPopupMenu();
+		this.showNameTextField = new JTextField();
+		this.showNameTextField.setPreferredSize(new Dimension(100, 25));
+		this.showNameTextField.setActionCommand("Set Show Name");
+		this.showNameTextField.addActionListener(this);
+		this.showNameMenu.add(this.showNameTextField);
+		this.add(this.showNameMenu);
+
+		this.showHostMenu = new JPopupMenu();
+		this.showHostTextField = new JTextField();
+		this.showHostTextField.setPreferredSize(new Dimension(100, 25));
+		this.showHostTextField.setActionCommand("Set Show Host");
+		this.showHostTextField.addActionListener(this);
+		this.showHostMenu.add(this.showHostTextField);
+		this.add(this.showHostMenu);
 
 		// Set up layout constraints
 		final GridBagConstraints buttonConstraints = new GridBagConstraints();
@@ -114,6 +139,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.conflictButton.setMargin(new Insets(0, 0, 0, 0));
 		this.conflictButton.setVisible(false);
 		this.announcedBannerLabel.getParent().add(this.conflictButton, buttonConstraints);
+		this.conflictButton.setActionCommand("Conflict");
 		this.conflictButton.addActionListener(this);
 
 		constraints.gridwidth = 1;
@@ -138,11 +164,13 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		constraints.gridy = 1;
 		constraints.weightx = 0.5;
 		this.currentHourLabel = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		constraints.weightx = 0.0;
 
 		constraints.gridx = 5;
 		constraints.gridy = 1;
 		constraints.weightx = 0.5;
-		this.showNameLabel = this.enclosedLabel("Show: ", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.showNameLabel = this.enclosedLabel("Show: ", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
+		this.showNameLabel.addMouseListener(new PopupListener(this.showNameMenu));
 		constraints.weightx = 0.0;
 
 		constraints.gridx = 6;
@@ -178,18 +206,20 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.speedButton.setMargin(new Insets(0, 0, 0, 0));
 		this.speedButton.setVisible(true);
 		this.buttonPanel.add(this.speedButton, buttonConstraints);
+		this.speedButton.setActionCommand("Change Speed");
 		this.speedButton.addActionListener(this);
 
 		this.newRoundButton = new JButton("New Round");
 		this.newRoundButton.setMargin(new Insets(0, 0, 0, 0));
 		this.newRoundButton.setVisible(false);
 		this.buttonPanel.add(this.newRoundButton, buttonConstraints);
+		this.newRoundButton.setActionCommand("New Round");
 		this.newRoundButton.addActionListener(this);
-
 
 		constraints.gridx = 5;
 		constraints.gridy = 2;
-		this.showHostLabel = this.enclosedLabel("Host: ", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.showHostLabel = this.enclosedLabel("Host: ", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
+		this.showHostLabel.addMouseListener(new PopupListener(this.showHostMenu));
 
 		constraints.gridx = 6;
 		constraints.gridy = 2;
@@ -222,45 +252,80 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	 */
 	@Override
 	public synchronized void actionPerformed(ActionEvent event) {
-		final JComponent source = (JComponent) event.getSource();
-		if (source.equals(this.speedButton)) {
-			( new SwingWorker<Void, Void>() {
-				@Override
-				public Void doInBackground() {
-					SummaryPanel.this.client
-							.sendMessage(ClientMessageFactory.setSpeed(SummaryPanel.this.speedButton.isSelected()));
-					return null;
-				}
+		switch (event.getActionCommand()) {
+			case "Change Speed":
+				( new SwingWorker<Void, Void>() {
+					@Override
+					public Void doInBackground() {
+						SummaryPanel.this.client
+								.sendMessage(ClientMessageFactory.setSpeed(SummaryPanel.this.speedButton.isSelected()));
+						return null;
+					}
 
-				@Override
-				public void done() {
+					@Override
+					public void done() {
 
+					}
+				} ).execute();
+				if (this.speedButton.isSelected()) {
+					this.client.log("Made this a speed round.");
+				} else {
+					this.client.log("Made this a normal round");
 				}
-			} ).execute();
-			// Speed button changed
-			if (this.speedButton.isSelected()) {
-				this.client.log("Made this a speed round.");
-			} else {
-				this.client.log("Made this a normal round");
-			}
-		} else if (source.equals(this.newRoundButton)) {
-			( new SwingWorker<Void, Void>() {
-				@Override
-				public Void doInBackground() {
-					SummaryPanel.this.client.sendMessage(ClientMessageFactory.advanceRound());
-					return null;
-				}
+				break;
+			case "New Round":
+				( new SwingWorker<Void, Void>() {
+					@Override
+					public Void doInBackground() {
+						SummaryPanel.this.client.sendMessage(ClientMessageFactory.advanceRound());
+						return null;
+					}
 
-				@Override
-				public void done() {
+					@Override
+					public void done() {
 
-				}
-			} ).execute();
-			this.client.log("Started new round");
-		} else if (source.equals(this.conflictButton)) {
-			new ConflictDialog(this.client);
+					}
+				} ).execute();
+				this.client.log("Started new round");
+				break;
+			case "Conflict":
+				new ConflictDialog(this.client);
+				break;
+			case "Set Show Name":
+				final String showName = this.showNameTextField.getText();
+				( new SwingWorker<Void, Void>() {
+					@Override
+					public Void doInBackground() {
+						SummaryPanel.this.client.sendMessage(ClientMessageFactory
+								.setShowName(SummaryPanel.this.client.getTrivia().getCurrentRoundNumber(), showName));
+						return null;
+					}
+
+					@Override
+					public void done() {
+
+					}
+				} ).execute();
+				this.client.log("Changed show name to " + showName);
+				break;
+			case "Set Show Host":
+				final String showHost = this.showHostTextField.getText();
+				( new SwingWorker<Void, Void>() {
+					@Override
+					public Void doInBackground() {
+						SummaryPanel.this.client.sendMessage(ClientMessageFactory
+								.setShowHost(SummaryPanel.this.client.getTrivia().getCurrentRoundNumber(), showHost));
+						return null;
+					}
+
+					@Override
+					public void done() {
+
+					}
+				} ).execute();
+				this.client.log("Changed host name to " + showHost);
+				break;
 		}
-
 	}
 
 	@Override
@@ -348,7 +413,6 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				labelFontSize);
 		setLabelProperties(this.placeLabel, col6width, bottomRowHeight, announcedColor, backgroundColor, labelFontSize);
 
-
 		this.userListPanel.setBackground(backgroundColor);
 		this.emptyPanel2.setBackground(backgroundColor);
 	}
@@ -370,8 +434,9 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.teamNameLabel.setText(
 				this.client.getTrivia().getTeamName() + " (# " + this.client.getTrivia().getTeamNumber() + ")");
 		this.showNameLabel.setText("Show: " + this.client.getTrivia().getShowName(currentRound));
+		this.showNameTextField.setText(this.client.getTrivia().getShowName(currentRound));
 		this.showHostLabel.setText("Host: " + this.client.getTrivia().getShowHost(currentRound));
-		this.roundEarnedLabel.setText("" + trivia.getCurrentRoundEarned());
+		this.showHostTextField.setText(this.client.getTrivia().getShowHost(currentRound));
 		this.totalEarnedLabel.setText("" + trivia.getEarned());
 		this.roundValueLabel.setText("" + trivia.getCurrentRoundValue());
 		this.totalValueLabel.setText("" + trivia.getValue());
@@ -433,6 +498,37 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 			}
 		}
 		this.userListPanel.updateGUI(force);
+	}
+
+	private class PopupListener extends MouseAdapter {
+
+		private final JPopupMenu menu;
+
+		public PopupListener(JPopupMenu menu) {
+			this.menu = menu;
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			this.checkForPopup(e);
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			this.checkForPopup(e);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			this.checkForPopup(e);
+		}
+
+		private void checkForPopup(MouseEvent event) {
+			final JComponent source = (JComponent) event.getSource();
+			if (event.isPopupTrigger()) {
+				this.menu.show(source, event.getX(), event.getY());
+			}
+		}
 
 	}
 
