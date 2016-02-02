@@ -170,6 +170,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		final JScrollPane scrollPane = new JScrollPane(this.internalScrollPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
+		scrollPane.getVerticalScrollBar().setUnitIncrement(3);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(scrollPane, constraints);
 
