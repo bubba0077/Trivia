@@ -38,7 +38,7 @@ public class TeamComparisonPanel extends TriviaMainPanel {
 			this.lastAnnounced++;
 		}
 
-		if (change) {
+		if (force || change) {
 			// Make a new team comparison chart
 			final JFreeChart chart = TriviaChartFactory.makeTeamComparisonChart(trivia);
 
