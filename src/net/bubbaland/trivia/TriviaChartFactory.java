@@ -353,14 +353,6 @@ public class TriviaChartFactory {
 		int lastAnnounced = 0;
 		final ArrayList<ScoreEntry[]> scores = new ArrayList<ScoreEntry[]>(0);
 
-		// Load standings from announced rounds
-		// while (trivia.isAnnounced(lastAnnounced + 1)) {
-		// lastAnnounced++;
-		// final ScoreEntry roundStandings[] = trivia.getStandings(lastAnnounced);
-		// Arrays.sort(roundStandings);
-		// scores.add(roundStandings);
-		// }
-
 		for (int r = 1; r <= trivia.getNRounds(); r++) {
 			if (trivia.isAnnounced(r)) {
 				lastAnnounced = r;
@@ -373,7 +365,8 @@ public class TriviaChartFactory {
 		}
 
 		// If no rounds have been announced, don't make a plot
-		if (scores.size() < 1) return null;
+		if (scores.get(0) == null) return null;
+		System.out.println(scores);
 		final int nTeams = scores.get(0).length;
 
 		// Create a new dataset
@@ -382,7 +375,6 @@ public class TriviaChartFactory {
 		final JFreeChart chart = ChartFactory.createXYLineChart("Team Comparison", "Round", "Point Differential",
 				dataset, PlotOrientation.VERTICAL, false, true, false);
 		// Get the plot renderer
-		// final DeviationRenderer renderer = (DeviationRenderer) chart.getXYPlot().getRenderer();
 		final DeviationRenderer renderer = new DeviationRenderer(true, false);
 		chart.getXYPlot().setRenderer(renderer);
 		for (int t = 0; t < nTeams; t++) {
