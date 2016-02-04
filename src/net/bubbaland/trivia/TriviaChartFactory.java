@@ -366,7 +366,6 @@ public class TriviaChartFactory {
 
 		// If no rounds have been announced, don't make a plot
 		if (scores.get(0) == null) return null;
-		System.out.println(scores);
 		final int nTeams = scores.get(0).length;
 
 		// Create a new dataset

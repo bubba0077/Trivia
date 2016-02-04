@@ -1084,6 +1084,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.agreeButtons.get(a).getParent().setVisible(false);
 						this.disagreeButtons.get(a).getParent().setVisible(false);
 						this.submitterLabels.get(a).getParent().setVisible(false);
+						this.operatorTextPanes.get(a).getParent().setVisible(false);
 						this.operatorTextPanes.get(a).getParent().getParent().setVisible(false);
 						this.callerLabels.get(a).getParent().setVisible(false);
 						this.statusComboBoxes.get(a).getParent().setVisible(false);
@@ -1094,7 +1095,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.qNumberLabels.get(a).setVisible(true);
 						this.answerTextAreas.get(a).setVisible(true);
 						this.answerTextAreas.get(a).getParent().setVisible(true);
-						this.answerTextAreas.get(a).getParent().getParent().setVisible(true);
+						this.answerTextAreas.get(a).getParent().setVisible(true);
 						this.confidenceLabels.get(a).setVisible(true);
 						this.agreementLabels.get(a).setVisible(true);
 						if (AnswerQueuePanel.this.live) {
@@ -1119,6 +1120,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						this.agreeButtons.get(a).getParent().setVisible(true);
 						this.disagreeButtons.get(a).getParent().setVisible(true);
 						this.submitterLabels.get(a).getParent().setVisible(true);
+						this.operatorTextPanes.get(a).getParent().setVisible(true);
 						this.operatorTextPanes.get(a).getParent().getParent().setVisible(true);
 						this.callerLabels.get(a).getParent().setVisible(true);
 						this.statusComboBoxes.get(a).getParent().setVisible(true);
@@ -1154,9 +1156,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.disagreeButtons.get(a).getParent().setVisible(false);
 				this.submitterLabels.get(a).getParent().setVisible(false);
 				this.operatorTextPanes.get(a).getParent().setVisible(false);
+				this.operatorTextPanes.get(a).getParent().getParent().setVisible(false);
 				this.callerLabels.get(a).getParent().setVisible(false);
 				this.statusComboBoxes.get(a).getParent().setVisible(false);
-
 			}
 
 		}
