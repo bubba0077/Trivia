@@ -90,6 +90,8 @@ public class SaveMediator {
 			// Read/set the trivia parameters
 			trivia.setNTeams(
 					Integer.parseInt(triviaElement.getElementsByTagName("Number_of_Teams").item(0).getTextContent()));
+			trivia.setNVisual(Integer
+					.parseInt(triviaElement.getElementsByTagName("Number_of_Visual_Trivia").item(0).getTextContent()));
 			trivia.setCurrentRound(
 					Integer.parseInt(triviaElement.getElementsByTagName("Current_Round").item(0).getTextContent()));
 
@@ -106,6 +108,9 @@ public class SaveMediator {
 				final boolean isSpeed = roundElement.getElementsByTagName("Speed").item(0).getTextContent()
 						.equals("true");
 				trivia.setSpeed(rNumber, isSpeed);
+
+				trivia.setShowName(rNumber, roundElement.getElementsByTagName("Show_Name").item(0).getTextContent());
+				trivia.setShowHost(rNumber, roundElement.getElementsByTagName("Show_Host").item(0).getTextContent());
 
 				trivia.setDiscrepencyText(rNumber,
 						roundElement.getElementsByTagName("Discrepancy_Text").item(0).getTextContent());
@@ -214,6 +219,11 @@ public class SaveMediator {
 			element.appendChild(doc.createTextNode(trivia.getNTeams() + ""));
 			triviaElement.appendChild(element);
 
+			// Save the number of visual trivia
+			element = doc.createElement("Number_of_Visual_Trivia");
+			element.appendChild(doc.createTextNode(trivia.getNVisual() + ""));
+			triviaElement.appendChild(element);
+
 			// Save the current round number
 			element = doc.createElement("Current_Round");
 			element.appendChild(doc.createTextNode(trivia.getCurrentRoundNumber() + ""));
@@ -247,6 +257,14 @@ public class SaveMediator {
 				// The announced place for this round
 				element = doc.createElement("Announced_Place");
 				element.appendChild(doc.createTextNode(r.getPlace() + ""));
+				roundElement.appendChild(element);
+
+				element = doc.createElement("Show_Name");
+				element.appendChild(doc.createTextNode(r.getShowName() + ""));
+				roundElement.appendChild(element);
+
+				element = doc.createElement("Show_Host");
+				element.appendChild(doc.createTextNode(r.getShowHost() + ""));
 				roundElement.appendChild(element);
 
 				// The discrepancy text for this round
