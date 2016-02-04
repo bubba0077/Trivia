@@ -115,9 +115,11 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	private Color						headerBackgroundColor;
 
 	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame, int rNumber) {
-		this(client, frame);
-		this.rNumber = rNumber;
-		this.live = false;
+		this(client, frame, rNumber, false);
+	}
+
+	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame) {
+		this(client, frame, client.getTrivia().getCurrentRoundNumber(), true);
 	}
 
 	/**
@@ -128,11 +130,10 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	 * @param frame
 	 *            The parent top-level frame
 	 */
-	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame) {
-
+	public AnswerQueuePanel(TriviaClient client, TriviaFrame frame, int rNumber, boolean isLive) {
 		super(client, frame);
-		this.live = true;
-		this.rNumber = client.getTrivia().getCurrentRoundNumber();
+		this.live = isLive;
+		this.rNumber = rNumber;
 		this.blinkTimer = new Timer(blinkSpeed, this);
 		this.blinkTimer.setActionCommand("Blink");
 		this.blink = false;
