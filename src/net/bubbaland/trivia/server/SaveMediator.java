@@ -90,8 +90,12 @@ public class SaveMediator {
 			// Read/set the trivia parameters
 			trivia.setNTeams(
 					Integer.parseInt(triviaElement.getElementsByTagName("Number_of_Teams").item(0).getTextContent()));
-			trivia.setNVisual(Integer
-					.parseInt(triviaElement.getElementsByTagName("Number_of_Visual_Trivia").item(0).getTextContent()));
+			try {
+				trivia.setNVisual(Integer.parseInt(
+						triviaElement.getElementsByTagName("Number_of_Visual_Trivia").item(0).getTextContent()));
+			} catch (NullPointerException e) {
+				trivia.setNVisual(0);
+			}
 			trivia.setCurrentRound(
 					Integer.parseInt(triviaElement.getElementsByTagName("Current_Round").item(0).getTextContent()));
 
@@ -109,8 +113,18 @@ public class SaveMediator {
 						.equals("true");
 				trivia.setSpeed(rNumber, isSpeed);
 
-				trivia.setShowName(rNumber, roundElement.getElementsByTagName("Show_Name").item(0).getTextContent());
-				trivia.setShowHost(rNumber, roundElement.getElementsByTagName("Show_Host").item(0).getTextContent());
+				try {
+					trivia.setShowName(rNumber,
+							roundElement.getElementsByTagName("Show_Name").item(0).getTextContent());
+				} catch (NullPointerException e) {
+					trivia.setShowName("");
+				}
+				try {
+					trivia.setShowHost(rNumber,
+							roundElement.getElementsByTagName("Show_Host").item(0).getTextContent());
+				} catch (NullPointerException e) {
+					trivia.setShowHost("");
+				}
 
 				trivia.setDiscrepencyText(rNumber,
 						roundElement.getElementsByTagName("Discrepancy_Text").item(0).getTextContent());
