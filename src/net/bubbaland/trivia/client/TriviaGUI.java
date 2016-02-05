@@ -59,7 +59,7 @@ public class TriviaGUI implements WindowListener {
 	// File name to store window positions
 	final static private String		SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String		SETTINGS_VERSION			= "21";
+	final static private String		SETTINGS_VERSION			= "22";
 	// Calendar to track date
 	final static private Calendar	TIME						= Calendar.getInstance();
 	// Format for log timestamps
@@ -167,15 +167,12 @@ public class TriviaGUI implements WindowListener {
 
 	public TriviaGUI(final String serverURL) {
 		// Initialize list to hold open windows
-		// this.serverURL = serverURL;
 		this.windowList = new ArrayList<TriviaFrame>(0);
-
-		this.client = new TriviaClient(serverURL, this);
-		this.client.run();
-
 		this.filterTextPattern = Pattern.compile("");
 		this.qNumberFilter = new ArrayList<Integer>();
 
+		this.client = new TriviaClient(serverURL, this);
+		this.client.run();
 
 		this.loadProperties();
 
@@ -527,7 +524,6 @@ public class TriviaGUI implements WindowListener {
 	 * Display disconnected dialog box and prompt for action
 	 */
 	public synchronized void disconnected() {
-
 		final String message = "Communication with server interrupted!";
 
 		final Object[] options = { "Retry", "Exit" };

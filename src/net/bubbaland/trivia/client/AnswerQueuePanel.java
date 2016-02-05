@@ -885,8 +885,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			}
 
 			if (AnswerQueuePanel.this.live && this.answerQueue.length != newAnswerQueue.length) {
-				AnswerQueuePanel.this.frame.playNewAnswerSound();
-				AnswerQueuePanel.this.blink();
+				boolean madeNoise = false;
+				for (int i = this.answerQueue.length; i < newAnswerQueue.length && !madeNoise; i++) {
+					if (!newAnswerQueue[i].getStatusString().equals("Duplicate")) {
+						AnswerQueuePanel.this.frame.playNewAnswerSound();
+						AnswerQueuePanel.this.blink();
+						madeNoise = true;
+					}
+				}
 			}
 
 			this.answerQueue = newAnswerQueue;
