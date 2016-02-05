@@ -489,6 +489,7 @@ public class TriviaServer {
 							if (standings != null) {
 								TriviaServer.this.trivia.setStandings(r, standings);
 								TriviaServer.this.broadcastNTeams();
+								TriviaServer.this.broadcastChangedRounds();
 							}
 						}
 					}

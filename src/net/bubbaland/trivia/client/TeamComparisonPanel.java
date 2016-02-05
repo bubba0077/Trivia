@@ -34,8 +34,8 @@ public class TeamComparisonPanel extends TriviaMainPanel {
 	public synchronized void updateGUI(boolean force) {
 		final Trivia trivia = this.client.getTrivia();
 		boolean change;
-		for (change = false; trivia.isAnnounced(this.lastAnnounced + 1); change = true) {
-			this.lastAnnounced++;
+		for (change = false; trivia.isAnnounced(this.lastAnnounced + 1); this.lastAnnounced++) {
+			change = true;
 		}
 
 		if (force || change) {
