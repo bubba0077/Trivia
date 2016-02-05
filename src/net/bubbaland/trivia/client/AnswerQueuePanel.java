@@ -992,12 +992,16 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					this.qNumberLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					this.answerTextAreas.get(a).setText(newAnswer);
-					// this.answerTextAreas.get(a).setToolTipText(newAnswer);
 					this.answerTextAreas.get(a).setForeground(color);
 					this.answerTextAreas.get(a).setBackground(bColor);
 					this.answerTextAreas.get(a).setName("" + ( newQueueNumber - 1 ));
 
-					this.confidenceLabels.get(a).setText(newConfidence + "");
+					if (newConfidence == 0) {
+						this.confidenceLabels.get(a).setText("—");
+					} else {
+						this.confidenceLabels.get(a).setText(newConfidence + "");
+					}
+
 					this.confidenceLabels.get(a).setForeground(color);
 					this.confidenceLabels.get(a).getParent().setBackground(bColor);
 					this.confidenceLabels.get(a).setName("" + ( newQueueNumber - 1 ));
@@ -1258,8 +1262,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.confidenceLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
 
-			constraints.gridx = 3;
-			constraints.gridy = 2 * a + 1;
+			constraints.gridx = 4;
+			constraints.gridy = 2 * a;
 			this.agreementLabels.add(this.enclosedLabel("", confidenceWidth, rowHeight / 2, null, null, constraints,
 					fontSize, SwingConstants.CENTER, SwingConstants.CENTER));
 			this.agreementLabels.get(a).addMouseListener(new PopupListener(this.contextMenu));
@@ -1278,7 +1282,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			});
 
 			constraints.gridx = 4;
-			constraints.gridy = 2 * a;
+			constraints.gridy = 2 * a + 1;
 			JPanel buttonPanel = new JPanel(new GridBagLayout());
 			buttonPanel.setPreferredSize(new Dimension(agreementWidth, rowHeight / 2));
 			buttonPanel.setMinimumSize(new Dimension(agreementWidth, rowHeight / 2));
@@ -1297,7 +1301,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			buttonPanel.add(this.agreeButtons.get(a), buttonConstraints);
 			this.buttonGroups.get(a).add(this.agreeButtons.get(a));
 
-			constraints.gridx = 4;
+			constraints.gridx = 3;
 			constraints.gridy = 2 * a + 1;
 			buttonPanel = new JPanel(new GridBagLayout());
 			buttonPanel.setPreferredSize(new Dimension(agreementWidth, rowHeight / 2));

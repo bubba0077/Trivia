@@ -133,9 +133,10 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		constraints.gridx = 1;
 		constraints.gridy = 5;
 		constraints.insets = new Insets(sliderPaddingBottom, sliderPaddingLeft, sliderPaddingRight, sliderPaddingTop);
-		this.confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 1, 5, 2);
+		this.confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 5, 0);
 		this.confidenceSlider.setMajorTickSpacing(1);
 		final Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+		labelTable.put(new Integer(0), new JLabel("—"));
 		labelTable.put(new Integer(1), new JLabel("Guess"));
 		labelTable.put(new Integer(5), new JLabel("Sure"));
 		this.confidenceSlider.setLabelTable(labelTable);

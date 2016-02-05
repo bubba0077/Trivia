@@ -864,9 +864,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 		}
 
-		this.qFilterTextField.setText(this.gui.getFilterTextPattern().toString());
-		this.hiddenQFilterTextField.setText(this.gui.getFilterTextPattern().toString());
-
+		if (this.gui.getFilterTextPattern() == null) {
+			this.qFilterTextField.setText("");
+			this.hiddenQFilterTextField.setText("");
+		} else {
+			this.qFilterTextField.setText(this.gui.getFilterTextPattern().toString());
+			this.hiddenQFilterTextField.setText(this.gui.getFilterTextPattern().toString());
+		}
 		// Propagate update to tabs
 		while (this.tabbedPane == null) {
 			// System.out.println("Awaiting tabbed pane");
