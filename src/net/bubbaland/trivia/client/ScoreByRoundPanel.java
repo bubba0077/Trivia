@@ -18,10 +18,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
 /**
  * A panel that displays the scores from each round.
@@ -29,6 +32,7 @@ import net.bubbaland.trivia.Trivia;
  * @author Walter Kolczynski
  *
  */
+@SuppressWarnings("unused")
 public class ScoreByRoundPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
@@ -289,7 +293,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		final private JLabel[]		roundLabels, earnedLabels, valueLabels, percentLabels, cumulativeEarnedLabels,
 				cumulativeValueLabels, percentTotalLabels, announcedScoreLabels, placeLabels, spacerLabels,
 				discrepancyLabels;
-		private final JMenuItem		editItem;
+		private final JTextField	discrepancyTextField;
 		private final JPopupMenu	contextMenu;
 		private final JPanel		spacer;
 
@@ -313,10 +317,11 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 			 * Build context menu
 			 */
 			this.contextMenu = new JPopupMenu();
-			this.editItem = new JMenuItem("Edit");
-			this.editItem.setActionCommand("Edit");
-			this.editItem.addActionListener(this);
-			this.contextMenu.add(this.editItem);
+			this.discrepancyTextField = new JTextField("");
+			this.discrepancyTextField.setPreferredSize(new Dimension(200, 25));
+			this.discrepancyTextField.setActionCommand("Edit Discrepancy");
+			this.discrepancyTextField.addActionListener(this);
+			this.contextMenu.add(this.discrepancyTextField);
 			this.add(this.contextMenu);
 
 			// Set up layout constraints
@@ -416,7 +421,26 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 		@Override
 		public void actionPerformed(ActionEvent event) {
 			final int rNumber = Integer.parseInt(this.contextMenu.getName());
-			new DiscrepancyDialog(this.client, rNumber);
+			// this.discrepencyTextField.setText(this.client.getTrivia().getDiscrepancyText(rNumber));
+			switch (event.getActionCommand()) {
+				case "Edit Discrepancy":
+					final String discrepancyText = this.discrepancyTextField.getText();
+					( new SwingWorker<Void, Void>() {
+						@Override
+						public Void doInBackground() {
+							ScoreByRoundPanel.this.client
+									.sendMessage(ClientMessageFactory.setDiscrepancyText(rNumber, discrepancyText));
+							return null;
+						}
+
+						@Override
+						public void done() {
+
+						}
+					} ).execute();
+					this.client.log("Changed show name to " + discrepancyText);
+					break;
+			}
 		}
 
 		/*
@@ -601,6 +625,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 				final JComponent source = (JComponent) event.getSource();
 				final Trivia trivia = InternalScrollPanel.this.client.getTrivia();
 				final int rNumber = Integer.parseInt(source.getName());
+				InternalScrollPanel.this.discrepancyTextField.setText(trivia.getDiscrepancyText(rNumber));
 				if (event.isPopupTrigger() && trivia.isAnnounced(rNumber)) {
 					this.menu.setName(source.getName());
 					this.menu.show(source, event.getX(), event.getY());

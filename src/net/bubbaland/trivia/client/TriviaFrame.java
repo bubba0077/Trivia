@@ -6,6 +6,8 @@ import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.dnd.DropTargetDropEvent;
@@ -27,8 +29,10 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.MenuElement;
 import javax.swing.MenuSelectionManager;
@@ -75,6 +79,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final private TriviaGUI				gui;
 
 	final private DnDTabbedPane			tabbedPane;
+
+	private JTextField					qFilterTextField, hiddenQFilterTextField;
+
+	private JPopupMenu					hiddenMenu;
 
 	/**
 	 * Creates a new frame based on a drag-drop event from the tabbed pane in another frame. This is done when a tab is
@@ -233,7 +241,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.muteMenuItem.addActionListener(this);
 			menu.add(this.muteMenuItem);
 
-
 			final JMenu filter = new JMenu("Filter...");
 			filter.setMnemonic(KeyEvent.VK_F);
 			menu.add(filter);
@@ -263,13 +270,21 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menu.add(menuItem);
 			filter.add(menuItem);
 
-			menuItem = new JMenuItem("Filter by Text", KeyEvent.VK_T);
-			menuItem.setActionCommand("Filter by Text");
-			menuItem.setAccelerator(
-					KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			menuItem.addActionListener(this);
-			menu.add(menuItem);
-			filter.add(menuItem);
+			JMenu subMenu = new JMenu("Filter by Text");
+			subMenu.setMnemonic(KeyEvent.VK_T);
+			this.qFilterTextField = new JTextField("");
+			this.qFilterTextField.setPreferredSize(new Dimension(200, 25));
+			this.qFilterTextField.setActionCommand("Set Filter Text");
+			this.qFilterTextField.addActionListener(this);
+			subMenu.add(this.qFilterTextField);
+			filter.add(subMenu);
+
+			this.hiddenMenu = new JPopupMenu();
+			this.hiddenQFilterTextField = new JTextField("");
+			this.hiddenQFilterTextField.setPreferredSize(new Dimension(200, 25));
+			this.hiddenQFilterTextField.setActionCommand("Hidden Set Filter Text");
+			this.hiddenQFilterTextField.addActionListener(this);
+			this.hiddenMenu.add(this.hiddenQFilterTextField);
 
 			final JMenu sortMenu = new JMenu("Sort by...");
 			sortMenu.setMnemonic(KeyEvent.VK_S);
@@ -443,6 +458,22 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		// Create drag & drop tabbed pane
 		this.tabbedPane = new DnDTabbedPane(this.client, this.gui, this);
 
+
+		KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		kfm.addKeyEventDispatcher(new KeyEventDispatcher() {
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				KeyStroke keyStroke = KeyStroke.getKeyStrokeForEvent(e);
+				if (keyStroke.equals(
+						KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()))) {
+
+					TriviaFrame.this.actionPerformed(new ActionEvent(this, 0, "Show Filter Text"));
+					return true;
+				}
+				return false;
+			}
+		});
+
 		// Setup layout constraints
 		constraints.gridx = 0;
 		constraints.gridy = 0;
@@ -514,8 +545,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			case "Filter by Number":
 				this.gui.showNumberFilterDialog();
 				break;
-			case "Filter by Text":
-				this.gui.showTextFilterDialog();
+			case "Show Filter Text":
+				this.hiddenMenu.show(this.getJMenuBar(), this.getMousePosition().x, this.getMousePosition().y);
+				break;
+			case "Hidden Set Filter Text":
+				this.gui.setTextFilter(this.hiddenQFilterTextField.getText());
+				break;
+			case "Set Filter Text":
+				this.gui.setTextFilter(this.qFilterTextField.getText());
 				break;
 			case "Mute":
 				this.gui.setMute(( (JCheckBoxMenuItem) e.getSource() ).isSelected());

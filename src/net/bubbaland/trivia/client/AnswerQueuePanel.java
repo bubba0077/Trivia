@@ -27,11 +27,13 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.ListCellRenderer;
@@ -76,6 +78,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	private static int						nBlinks;
 	private static int						blinkSpeed;
+	final private JTextField				qFilterTextField;
 
 	// Set up layout constraints
 	private static final GridBagConstraints	buttonConstraints	= new GridBagConstraints();
@@ -149,10 +152,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		menuItem.addActionListener(this);
 		this.contextMenu.add(menuItem);
 
-		menuItem = new JMenuItem("Filter by Text");
-		menuItem.setActionCommand("FilterText");
-		menuItem.addActionListener(this);
-		this.contextMenu.add(menuItem);
+		JMenu subMenu = new JMenu("Filter by Text");
+		this.qFilterTextField = new JTextField("");
+		this.qFilterTextField.setPreferredSize(new Dimension(200, 25));
+		this.qFilterTextField.setActionCommand("Set Filter Text");
+		this.qFilterTextField.addActionListener(this);
+		this.contextMenu.add(this.qFilterTextField);
+		subMenu.add(this.qFilterTextField);
+		this.contextMenu.add(subMenu);
 
 		menuItem = new JMenuItem("Clear Q# Filters");
 		menuItem.setActionCommand("Clear Q# Filters");
@@ -322,7 +329,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.gui.showNumberFilterDialog();
 				break;
 			case "FilterText":
-				this.gui.showTextFilterDialog();
+				this.gui.setTextFilter(this.qFilterTextField.getText());
 				break;
 			case "Clear Q# Filters":
 				this.gui.resetNumberFilter();

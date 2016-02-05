@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
@@ -638,10 +637,6 @@ public class TriviaGUI implements WindowListener {
 		new NumberFilterDialog();
 	}
 
-	void showTextFilterDialog() {
-		new TextFilterDialog(this.filterText.toString());
-	}
-
 	public TriviaGUI.QueueSort getQueueSort() {
 		return this.queueSort;
 	}
@@ -784,49 +779,9 @@ public class TriviaGUI implements WindowListener {
 		}
 	}
 
-	private class TextFilterDialog extends TriviaDialogPanel {
-
-		private static final long	serialVersionUID	= -3726819964211373465L;
-
-		final private JTextField	textField;
-
-		public TextFilterDialog(String startingFilter) {
-			super();
-
-			final GridBagConstraints constraints = new GridBagConstraints();
-			constraints.fill = GridBagConstraints.BOTH;
-			constraints.anchor = GridBagConstraints.CENTER;
-
-			final JLabel label = new JLabel("Filter answers by", SwingConstants.LEFT);
-			constraints.gridx = 0;
-			constraints.gridy = 0;
-			constraints.weightx = 1.0;
-			constraints.weighty = 0.5;
-			this.add(label, constraints);
-
-			constraints.gridx = 0;
-			constraints.gridy = 1;
-			this.textField = new JTextField();
-			this.textField.setText(startingFilter);
-			this.add(this.textField, constraints);
-
-			// Display the dialog box
-			this.dialog = new TriviaDialog(null, "Set Answer Filter", this, JOptionPane.PLAIN_MESSAGE,
-					JOptionPane.OK_CANCEL_OPTION);
-			this.dialog.setName("Filter Answers by Text (regex allowed)");
-			this.dialog.setVisible(true);
-		}
-
-		@Override
-		public void windowClosed(WindowEvent event) {
-			super.windowClosed(event);
-			// If the OK button was pressed, add the proposed answer to the queue
-			final int option = ( (Integer) this.dialog.getValue() ).intValue();
-			if (option == JOptionPane.OK_OPTION) {
-				TriviaGUI.this.filterText = Pattern.compile(this.textField.getText());
-				TriviaGUI.this.updateGUI(true);
-			}
-		}
+	public void setTextFilter(String filterText) {
+		this.filterText = Pattern.compile(filterText);
+		TriviaGUI.this.updateGUI(true);
 	}
 
 	// Queue sort option

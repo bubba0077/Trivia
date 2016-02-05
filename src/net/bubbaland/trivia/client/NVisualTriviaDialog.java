@@ -55,7 +55,7 @@ public class NVisualTriviaDialog extends TriviaDialogPanel {
 		c.gridy = 1;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
-		this.nVisualTriviaSpinner = new JSpinner(new SpinnerNumberModel(client.getTrivia().getNVisual(), 1, 100, 1));
+		this.nVisualTriviaSpinner = new JSpinner(new SpinnerNumberModel(client.getTrivia().getNVisual(), 0, 100, 1));
 		this.nVisualTriviaSpinner.setFont(this.nVisualTriviaSpinner.getFont().deriveFont(fontSize));
 		this.nVisualTriviaSpinner.addAncestorListener(this);
 		this.add(this.nVisualTriviaSpinner, c);
