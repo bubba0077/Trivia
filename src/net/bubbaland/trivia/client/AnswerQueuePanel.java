@@ -328,7 +328,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			case "FilterQ#":
 				this.gui.showNumberFilterDialog();
 				break;
-			case "FilterText":
+			case "Set Filter Text":
 				this.gui.setTextFilter(this.qFilterTextField.getText());
 				break;
 			case "Clear Q# Filters":
@@ -438,12 +438,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.qNumberLabel.setText("Q#*");
 		}
 
+		this.qFilterTextField.setText(this.gui.getFilterTextPattern().toString());
+
 		final int queueSize = this.client.getTrivia().getAnswerQueueSize(this.rNumber);
 		this.queueSizeLabel.setText(queueSize + "");
-		if (this.gui.getFilterText().pattern().equals("")) {
+		if (this.gui.getFilterTextPattern().pattern().equals("")) {
 			this.answerLabel.setText("Proposed Answer");
 		} else {
-			this.answerLabel.setText("Proposed Answer (filtered by: \"" + this.gui.getFilterText() + "\")");
+			this.answerLabel.setText("Proposed Answer (filtered by: \"" + this.gui.getFilterTextPattern() + "\")");
 		}
 		this.answerQueueSubPanel.updateGUI(force);
 		final QueueSort sortMethod = this.frame.getQueueSort();
@@ -922,8 +924,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				}
 
 				final boolean filtered = this.gui.getFilterNumbers().contains(newQNumber)
-						|| !( AnswerQueuePanel.this.gui.getFilterText().pattern().equals("")
-								|| AnswerQueuePanel.this.gui.getFilterText().matcher(newAnswer).find() );
+						|| !( AnswerQueuePanel.this.gui.getFilterTextPattern().pattern().equals("")
+								|| AnswerQueuePanel.this.gui.getFilterTextPattern().matcher(newAnswer).find() );
 
 				final boolean showRow = !( ( hideClosed && closed )
 						|| ( hideDuplicates && newStatus.equals("Duplicate") ) || filtered );

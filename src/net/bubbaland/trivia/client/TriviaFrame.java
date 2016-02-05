@@ -458,7 +458,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		// Create drag & drop tabbed pane
 		this.tabbedPane = new DnDTabbedPane(this.client, this.gui, this);
 
-
 		KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		kfm.addKeyEventDispatcher(new KeyEventDispatcher() {
 			@Override
@@ -549,10 +548,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				this.hiddenMenu.show(this.getJMenuBar(), this.getMousePosition().x, this.getMousePosition().y);
 				break;
 			case "Hidden Set Filter Text":
-				this.gui.setTextFilter(this.hiddenQFilterTextField.getText());
+				String filterText = this.hiddenQFilterTextField.getText();
+				this.gui.setTextFilter(filterText);
+				this.qFilterTextField.setText(filterText);
 				break;
 			case "Set Filter Text":
-				this.gui.setTextFilter(this.qFilterTextField.getText());
+				filterText = this.qFilterTextField.getText();
+				this.gui.setTextFilter(filterText);
+				this.hiddenQFilterTextField.setText(filterText);
 				break;
 			case "Mute":
 				this.gui.setMute(( (JCheckBoxMenuItem) e.getSource() ).isSelected());
@@ -860,6 +863,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			default:
 				break;
 		}
+
+		this.qFilterTextField.setText(this.gui.getFilterTextPattern().toString());
+		this.hiddenQFilterTextField.setText(this.gui.getFilterTextPattern().toString());
 
 		// Propagate update to tabs
 		while (this.tabbedPane == null) {

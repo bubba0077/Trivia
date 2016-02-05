@@ -161,7 +161,7 @@ public class TriviaGUI implements WindowListener {
 	final private TriviaClient				client;
 	private final WaitDialog				waitDialog;
 	private ArrayList<Integer>				qNumberFilter;
-	private Pattern							filterText;
+	private Pattern							filterTextPattern;
 	private volatile TriviaGUI.QueueSort	queueSort;
 
 
@@ -173,7 +173,7 @@ public class TriviaGUI implements WindowListener {
 		this.client = new TriviaClient(serverURL, this);
 		this.client.run();
 
-		this.filterText = Pattern.compile("");
+		this.filterTextPattern = Pattern.compile("");
 		this.qNumberFilter = new ArrayList<Integer>();
 
 
@@ -621,12 +621,12 @@ public class TriviaGUI implements WindowListener {
 	}
 
 	void resetTextFilter() {
-		this.filterText = Pattern.compile("");
+		this.filterTextPattern = Pattern.compile("");
 		this.updateGUI(true);
 	}
 
-	public Pattern getFilterText() {
-		return this.filterText;
+	public Pattern getFilterTextPattern() {
+		return this.filterTextPattern;
 	}
 
 	public ArrayList<Integer> getFilterNumbers() {
@@ -780,7 +780,7 @@ public class TriviaGUI implements WindowListener {
 	}
 
 	public void setTextFilter(String filterText) {
-		this.filterText = Pattern.compile(filterText);
+		this.filterTextPattern = Pattern.compile(filterText);
 		TriviaGUI.this.updateGUI(true);
 	}
 
