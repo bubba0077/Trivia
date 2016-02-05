@@ -84,6 +84,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 	private JPopupMenu					hiddenMenu;
 
+	private boolean						initComplete;
+
 	/**
 	 * Creates a new frame based on a drag-drop event from the tabbed pane in another frame. This is done when a tab is
 	 * dragged outside of all other TriviaFrames.
@@ -488,6 +490,8 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 		// Load the properties
 		this.loadProperties();
+
+		this.initComplete = true;
 	}
 
 	/**
@@ -841,6 +845,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	}
 
 	public void updateGUI(boolean forceUpdate) {
+		while (!this.initComplete) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException exception) {
+			}
+		}
+
 		// Update role
 		final User.Role role = this.client.getRole();
 		while (this.researcherMenuItem == null | this.callerMenuItem == null | this.typistMenuItem == null) {
@@ -864,13 +875,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				break;
 		}
 
-		if (this.gui.getFilterTextPattern() == null) {
-			this.qFilterTextField.setText("");
-			this.hiddenQFilterTextField.setText("");
-		} else {
-			this.qFilterTextField.setText(this.gui.getFilterTextPattern().toString());
-			this.hiddenQFilterTextField.setText(this.gui.getFilterTextPattern().toString());
-		}
+		this.qFilterTextField.setText(this.gui.getFilterTextPattern().toString());
+		this.hiddenQFilterTextField.setText(this.gui.getFilterTextPattern().toString());
+
 		// Propagate update to tabs
 		while (this.tabbedPane == null) {
 			// System.out.println("Awaiting tabbed pane");

@@ -204,8 +204,14 @@ public class TriviaGUI implements WindowListener {
 				System.exit(2);
 			}
 		}
+
 		if (this.waitDialog != null) {
-			this.waitDialog.dispose();
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					TriviaGUI.this.waitDialog.dispose();
+				}
+			});
 		}
 
 		// Create startup frames
