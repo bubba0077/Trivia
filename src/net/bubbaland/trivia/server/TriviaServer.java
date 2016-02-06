@@ -182,6 +182,8 @@ public class TriviaServer {
 		final ClientCommand command = message.getCommand();
 		final TriviaServerEndpoint userConnection = this.sessionList.get(session);
 		final User user = userConnection.getUser();
+		user.updateActivity();
+		broadcastUsers();
 		switch (command) {
 			case ADVANCE_ROUND:
 				this.trivia.newRound();

@@ -15,12 +15,19 @@ public class User {
 	// Time changed to current role
 	private Date	lastRollChange;
 
+	// final public static User IDLE_USER = new User();
+	//
+	// static {
+	// IDLE_USER.setUserName("Idle");
+	// IDLE_USER.setRole(Role.IDLE);
+	// }
+
 	public User() {
-		this.lastActive = null;
+		this.lastActive = new Date();
 		this.userName = "";
-		this.role = null;
+		this.role = Role.RESEARCHER;
 		this.roundVersions = null;
-		this.lastRollChange = null;
+		this.lastRollChange = new Date();
 	}
 
 	public User(int nRounds) {
@@ -89,7 +96,7 @@ public class User {
 	}
 
 	public enum Role {
-		TYPIST, CALLER, RESEARCHER
+		TYPIST, CALLER, RESEARCHER, IDLE
 	}
 
 	public int compareTo(User otherUser) {
@@ -101,6 +108,10 @@ public class User {
 	}
 
 	public String toString() {
+		return this.userName;
+	}
+
+	public String fullString() {
 		return this.userName + " Role: " + this.role + " Last Active: " + this.lastActive;
 	}
 
