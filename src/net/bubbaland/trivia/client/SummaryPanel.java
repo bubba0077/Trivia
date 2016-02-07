@@ -73,7 +73,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		super(client, parent);
 
 		/**
-		 * Build context menu
+		 * Build context menus
 		 */
 		this.showNameMenu = new JPopupMenu();
 		this.showNameTextField = new JTextField();

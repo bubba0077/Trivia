@@ -2,23 +2,33 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigInteger;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 
 /**
  * A panel to select and display any round.
@@ -30,7 +40,7 @@ import net.bubbaland.trivia.Trivia;
  * @author Walter Kolczynski
  *
  */
-public class HistoryPanel extends TriviaMainPanel implements ItemListener {
+public class HistoryPanel extends TriviaMainPanel implements ItemListener, ActionListener {
 
 	/** The Constant serialVersionUID. */
 	final private static long			serialVersionUID	= -5094201314926851039L;
@@ -43,6 +53,8 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 	private final AnswerQueuePanel		answerQueuePanel;
 	private final JLabel				roundScoreLabel, totalScoreLabel, placeScoreLabel, roundLabel, totalLabel,
 			placeLabel, blank0, blank1, showLabel, showNameLabel, hostLabel, showHostLabel;
+	private final JPopupMenu			showNameMenu, showHostMenu;
+	private final JTextField			showNameTextField, showHostTextField;
 
 	/**
 	 * Data
@@ -64,6 +76,25 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 
 		this.roundQuestionPanel = new RoundQuestionsPanel(client, parent, false, 1);
 		this.answerQueuePanel = new AnswerQueuePanel(client, parent, 1);
+
+		/**
+		 * Build context menus
+		 */
+		this.showNameMenu = new JPopupMenu();
+		this.showNameTextField = new JTextField();
+		this.showNameTextField.setPreferredSize(new Dimension(100, 25));
+		this.showNameTextField.setActionCommand("Set Show Name");
+		this.showNameTextField.addActionListener(this);
+		this.showNameMenu.add(this.showNameTextField);
+		this.add(this.showNameMenu);
+
+		this.showHostMenu = new JPopupMenu();
+		this.showHostTextField = new JTextField();
+		this.showHostTextField.setPreferredSize(new Dimension(100, 25));
+		this.showHostTextField.setActionCommand("Set Show Host");
+		this.showHostTextField.addActionListener(this);
+		this.showHostMenu.add(this.showHostTextField);
+		this.add(this.showHostMenu);
 
 		// Set up layout constraints
 		final GridBagConstraints solo = new GridBagConstraints();
@@ -139,21 +170,25 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		this.showLabel = this.enclosedLabel("Show: ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+		this.showLabel.addMouseListener(new PopupListener(this.showNameMenu));
 
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		constraints.gridwidth = 3;
 		this.showNameLabel = this.enclosedLabel("", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
+		this.showNameLabel.addMouseListener(new PopupListener(this.showNameMenu));
 		constraints.gridwidth = 1;
 
 		constraints.gridx = 4;
 		constraints.gridy = 1;
 		this.hostLabel = this.enclosedLabel("Host: ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+		this.hostLabel.addMouseListener(new PopupListener(this.showHostMenu));
 
 		constraints.gridx = 5;
 		constraints.gridy = 1;
 		constraints.gridwidth = 4;
 		this.showHostLabel = this.enclosedLabel("", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
+		this.showHostLabel.addMouseListener(new PopupListener(this.showHostMenu));
 		constraints.gridwidth = 1;
 
 		/**
@@ -282,6 +317,50 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		this.roundQuestionPanel.loadProperties(properties);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	@Override
+	public synchronized void actionPerformed(ActionEvent event) {
+		final int rNumber = Integer.parseInt((String) HistoryPanel.this.roundSelector.getSelectedItem());
+		switch (event.getActionCommand()) {
+			case "Set Show Name":
+				final String showName = this.showNameTextField.getText();
+				( new SwingWorker<Void, Void>() {
+					@Override
+					public Void doInBackground() {
+						HistoryPanel.this.client.sendMessage(ClientMessageFactory.setShowName(rNumber, showName));
+						return null;
+					}
+
+					@Override
+					public void done() {
+
+					}
+				} ).execute();
+				this.client.log("Changed show name to " + showName + " for round " + rNumber);
+				break;
+			case "Set Show Host":
+				final String showHost = this.showHostTextField.getText();
+				( new SwingWorker<Void, Void>() {
+					@Override
+					public Void doInBackground() {
+						HistoryPanel.this.client.sendMessage(ClientMessageFactory.setShowHost(rNumber, showHost));
+						return null;
+					}
+
+					@Override
+					public void done() {
+
+					}
+				} ).execute();
+				this.client.log("Changed host name to " + showHost);
+				break;
+		}
+	}
+
 	@Override
 	public void changeFrame(TriviaFrame newFrame) {
 		super.changeFrame(newFrame);
@@ -313,5 +392,40 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 			}
 			return renderer;
 		}
+	}
+
+	private class PopupListener extends MouseAdapter {
+
+		private final JPopupMenu menu;
+
+		public PopupListener(JPopupMenu menu) {
+			this.menu = menu;
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			this.checkForPopup(e);
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			this.checkForPopup(e);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			this.checkForPopup(e);
+		}
+
+		private void checkForPopup(MouseEvent event) {
+			final JComponent source = (JComponent) event.getSource();
+			final int rNumber = Integer.parseInt((String) HistoryPanel.this.roundSelector.getSelectedItem());
+			HistoryPanel.this.showNameTextField.setText(HistoryPanel.this.client.getTrivia().getShowName(rNumber));
+			HistoryPanel.this.showHostTextField.setText(HistoryPanel.this.client.getTrivia().getShowHost(rNumber));
+			if (event.isPopupTrigger()) {
+				this.menu.show(source, event.getX(), event.getY());
+			}
+		}
+
 	}
 }
