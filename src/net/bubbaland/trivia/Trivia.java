@@ -679,6 +679,16 @@ public class Trivia implements Serializable {
 		return this.nRounds;
 	}
 
+	public int getLastAnnounced() {
+		int nAnnounced = 0;
+		for (Round round : this.rounds) {
+			if (round.isAnnounced()) {
+				nAnnounced = round.getRoundNumber();
+			}
+		}
+		return nAnnounced;
+	}
+
 	/**
 	 * Gets the number of teams in the trivia contest
 	 *

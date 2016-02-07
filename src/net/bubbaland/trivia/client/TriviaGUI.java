@@ -59,7 +59,7 @@ public class TriviaGUI implements WindowListener {
 	// File name to store window positions
 	final static private String		SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String		SETTINGS_VERSION			= "22";
+	final static private String		SETTINGS_VERSION			= "23";
 	// Calendar to track date
 	final static private Calendar	TIME						= Calendar.getInstance();
 	// Format for log timestamps
@@ -148,6 +148,7 @@ public class TriviaGUI implements WindowListener {
 		TAB_DESCRIPTION_HASH.put("Current", "Tab showing question data for the current round.");
 		TAB_DESCRIPTION_HASH.put("History", "Tab that can show question data for any round.");
 		TAB_DESCRIPTION_HASH.put("By Round", "Tab that displays score information for every round.");
+		TAB_DESCRIPTION_HASH.put("Standings", "Tab that displays standings information for any round");
 		TAB_DESCRIPTION_HASH.put("Place Chart", "Chart showing the team's place in time");
 		TAB_DESCRIPTION_HASH.put("Score Chart", "Chart showing the team's score in each round.");
 		TAB_DESCRIPTION_HASH.put("Cumul. Score Chart", "Chart showing the team's total score in time.");
@@ -297,6 +298,9 @@ public class TriviaGUI implements WindowListener {
 				break;
 			case "By Round":
 				panel = new ScoreByRoundPanel(this.client, frame);
+				break;
+			case "Standings":
+				panel = new StandingsPanel(this.client, frame);
 				break;
 			case "Place Chart":
 				panel = new PlaceChartPanel(this.client, frame);

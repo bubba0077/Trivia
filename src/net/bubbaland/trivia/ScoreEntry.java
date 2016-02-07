@@ -1,6 +1,8 @@
 package net.bubbaland.trivia;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,7 +35,23 @@ public class ScoreEntry implements Comparable<ScoreEntry>, Serializable {
 
 	@Override
 	public int compareTo(ScoreEntry o) {
-		return this.teamName.compareTo(o.getTeamName());
+		if (this.place == o.place) {
+			return this.teamName.compareTo(o.getTeamName());
+		} else {
+			return ( (Integer) this.place ).compareTo(o.place);
+		}
+	}
+
+	public static ScoreEntry[] alphabetize(ScoreEntry[] standings) {
+		Arrays.sort(standings, new TeamNameComparator());
+		return standings;
+	}
+
+	private static class TeamNameComparator implements Comparator<ScoreEntry> {
+		@Override
+		public int compare(ScoreEntry o1, ScoreEntry o2) {
+			return o1.teamName.compareTo(o2.teamName);
+		}
 	}
 
 	public int getPlace() {

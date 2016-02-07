@@ -33,7 +33,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 	private final JComboBox<String>		tabSelector;
 	private final JTextArea				descriptionLabel;
 	private final TriviaFrame			frame;
-	private final TriviaGUI				client;
+	private final TriviaGUI				gui;
 
 	// Get the list of tab names and sort them
 	private static final Set<String>	tabNameSet			= TriviaGUI.getTabNames();
@@ -47,7 +47,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 	public AddTabDialog(TriviaGUI client, TriviaFrame frame) {
 		super();
 
-		this.client = client;
+		this.gui = client;
 		this.frame = frame;
 
 		// Set up layout constraints
@@ -111,12 +111,13 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 			SORT_ORDER.put("Current", 1);
 			SORT_ORDER.put("History", 2);
 			SORT_ORDER.put("By Round", 3);
-			SORT_ORDER.put("Place Chart", 4);
-			SORT_ORDER.put("Score Chart", 5);
-			SORT_ORDER.put("Cumul. Score Chart", 6);
-			SORT_ORDER.put("Team Comparison", 7);
-			SORT_ORDER.put("*Open Questions", 8);
-			SORT_ORDER.put("*Answer Queue", 9);
+			SORT_ORDER.put("Standings", 4);
+			SORT_ORDER.put("Place Chart", 5);
+			SORT_ORDER.put("Score Chart", 6);
+			SORT_ORDER.put("Cumul. Score Chart", 7);
+			SORT_ORDER.put("Team Comparison", 8);
+			SORT_ORDER.put("*Open Questions", 9);
+			SORT_ORDER.put("*Answer Queue", 10);
 		}
 
 		@Override
@@ -166,7 +167,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 				i++;
 			}
 			// Add the tab to the tabbed pane
-			this.frame.getTabbedPane().addTab(altName, this.client.getTab(this.frame, tabName));
+			this.frame.getTabbedPane().addTab(altName, this.gui.getTab(this.frame, tabName));
 			// Make the new tab the selected one
 			final int tabLocation = pane.indexOfTab(altName);
 			pane.setSelectedIndex(tabLocation);

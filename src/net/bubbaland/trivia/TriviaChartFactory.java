@@ -8,7 +8,6 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Properties;
 
 import org.jfree.chart.ChartFactory;
@@ -356,8 +355,7 @@ public class TriviaChartFactory {
 		for (int r = 1; r <= trivia.getNRounds(); r++) {
 			if (trivia.isAnnounced(r)) {
 				lastAnnounced = r;
-				final ScoreEntry roundStandings[] = trivia.getStandings(r);
-				Arrays.sort(roundStandings);
+				final ScoreEntry roundStandings[] = ScoreEntry.alphabetize(trivia.getStandings(r));
 				scores.add(roundStandings);
 			} else {
 				scores.add(null);

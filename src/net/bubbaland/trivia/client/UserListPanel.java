@@ -9,7 +9,6 @@ import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
@@ -145,12 +144,10 @@ public class UserListPanel extends TriviaMainPanel {
 	public void updateGUI(boolean force) {
 		ArrayList<User> activeUsers = new ArrayList<User>();
 		ArrayList<User> idleUsers = new ArrayList<User>();
-		Hashtable<String, User> userHash = new Hashtable<String, User>();
 		Date now = new Date();
 		int activeWindow = this.client.getTimeToIdle() * 1000;
 
 		for (User user : this.client.getUserList()) {
-			userHash.put(user.getUserName(), user);
 			if (activeWindow != 0 && now.getTime() - activeWindow > user.getLastActive().getTime()) {
 				idleUsers.add(user);
 			} else {
