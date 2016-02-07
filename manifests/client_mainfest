@@ -3,4 +3,4 @@ Sealed: true
 Main-Class: net.bubbaland.trivia.client.TriviaGUI
 Permissions: all-permissions
 Application-Name: Trivia Client
-Codebase: trivia.bgsh.org www.bubbaland.org
+Codebase: trivia.bgsh.org www.bubbaland.net
