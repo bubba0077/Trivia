@@ -42,7 +42,7 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 	private final RoundQuestionsPanel	roundQuestionPanel;
 	private final AnswerQueuePanel		answerQueuePanel;
 	private final JLabel				roundScoreLabel, totalScoreLabel, placeScoreLabel, roundLabel, totalLabel,
-			placeLabel, blank0, blank1;
+			placeLabel, blank0, blank1, showLabel, showNameLabel, hostLabel, showHostLabel;
 
 	/**
 	 * Data
@@ -136,11 +136,31 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		constraints.gridy = 0;
 		this.placeScoreLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		this.showLabel = this.enclosedLabel("Show: ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+
+		constraints.gridx = 1;
+		constraints.gridy = 1;
+		constraints.gridwidth = 3;
+		this.showNameLabel = this.enclosedLabel("", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
+		constraints.gridwidth = 1;
+
+		constraints.gridx = 4;
+		constraints.gridy = 1;
+		this.hostLabel = this.enclosedLabel("Host: ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+
+		constraints.gridx = 5;
+		constraints.gridy = 1;
+		constraints.gridwidth = 4;
+		this.showHostLabel = this.enclosedLabel("", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
+		constraints.gridwidth = 1;
+
 		/**
 		 * Add a question list panel to show the selected round data
 		 */
 		constraints.gridx = 0;
-		constraints.gridy = 1;
+		constraints.gridy = 2;
 		constraints.gridwidth = 9;
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
@@ -187,6 +207,9 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		} else {
 			this.placeScoreLabel.setText("-- / " + trivia.getNTeams() + " ");
 		}
+
+		this.showNameLabel.setText(trivia.getShowName(rNumber));
+		this.showHostLabel.setText(trivia.getShowHost(rNumber));
 
 		this.roundQuestionPanel.updateGUI(force);
 		this.answerQueuePanel.updateGUI(force);
@@ -245,6 +268,15 @@ public class HistoryPanel extends TriviaMainPanel implements ItemListener {
 		setLabelProperties(this.blank1, -1, headerHeight, roundColor, headerBackgroundColor, headerFontSize);
 
 		setComboBoxProperties(this.roundSelector, selectorWidth, selectorHeight, selectorColor, selectorBackgroundColor,
+				headerBackgroundColor, headerFontSize);
+
+		setLabelProperties(this.showLabel, roundLabelWidth, headerHeight, roundColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.showNameLabel, selectorWidth + roundScoreWidth, headerHeight, roundColor,
+				headerBackgroundColor, headerFontSize);
+		setLabelProperties(this.hostLabel, totalScoreWidth, headerHeight, roundColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.showHostLabel, placeLabelWidth + placeWidth, headerHeight, roundColor,
 				headerBackgroundColor, headerFontSize);
 
 		this.roundQuestionPanel.loadProperties(properties);

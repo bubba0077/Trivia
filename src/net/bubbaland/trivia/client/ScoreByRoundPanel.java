@@ -14,7 +14,6 @@ import java.util.Properties;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -32,7 +31,6 @@ import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
  * @author Walter Kolczynski
  *
  */
-@SuppressWarnings("unused")
 public class ScoreByRoundPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
