@@ -434,9 +434,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.teamNameLabel.setText(
 				this.client.getTrivia().getTeamName() + " (# " + this.client.getTrivia().getTeamNumber() + ")");
 		this.showNameLabel.setText("Show: " + this.client.getTrivia().getShowName(currentRound));
-		this.showNameTextField.setText(this.client.getTrivia().getShowName(currentRound));
 		this.showHostLabel.setText("Host: " + this.client.getTrivia().getShowHost(currentRound));
-		this.showHostTextField.setText(this.client.getTrivia().getShowHost(currentRound));
 		this.roundEarnedLabel.setText("" + trivia.getCurrentRoundEarned());
 		this.totalEarnedLabel.setText("" + trivia.getEarned());
 		this.roundValueLabel.setText("" + trivia.getCurrentRoundValue());
@@ -526,6 +524,8 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 		private void checkForPopup(MouseEvent event) {
 			final JComponent source = (JComponent) event.getSource();
+			SummaryPanel.this.showNameTextField.setText(SummaryPanel.this.client.getTrivia().getShowName());
+			SummaryPanel.this.showHostTextField.setText(SummaryPanel.this.client.getTrivia().getShowHost());
 			if (event.isPopupTrigger()) {
 				this.menu.show(source, event.getX(), event.getY());
 			}

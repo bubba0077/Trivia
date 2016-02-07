@@ -438,8 +438,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.qNumberLabel.setText("Q#*");
 		}
 
-		this.qFilterTextField.setText(this.gui.getFilterTextPattern().toString());
-
 		final int queueSize = this.client.getTrivia().getAnswerQueueSize(this.rNumber);
 		this.queueSizeLabel.setText(queueSize + "");
 		if (this.gui.getFilterTextPattern().pattern().equals("")) {
@@ -1462,6 +1460,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 			private void checkForPopup(MouseEvent event) {
 				final JComponent source = (JComponent) event.getSource();
+				AnswerQueuePanel.this.qFilterTextField
+						.setText(AnswerQueuePanel.this.gui.getFilterTextPattern().toString());
 				if (event.isPopupTrigger() && !source.getName().equals("")) {
 					this.menu.setName(source.getName());
 					this.menu.show(source, event.getX(), event.getY());
