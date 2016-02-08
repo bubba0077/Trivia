@@ -483,8 +483,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 					this.qNumberButtons[q].setToolTipText(lastEffortString);
 					this.qNumberButtons[q].setText(openQuestionNumbers[q] + "");
 					this.qNumberButtons[q].setEnabled(true);
-					System.out.println(this.client.getUser().getEffort() + " " + openQuestionNumbers[q] + " "
-							+ ( this.client.getUser().getEffort() == openQuestionNumbers[q] ));
 					this.qNumberButtons[q].setSelected(this.client.getUser().getEffort() == openQuestionNumbers[q]);
 					this.qValueLabels[q].setText(openQuestionValues[q]);
 					this.qTextPanes[q].setText(openQuestionText[q]);
