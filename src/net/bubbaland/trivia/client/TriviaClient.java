@@ -31,27 +31,23 @@ import net.bubbaland.trivia.User;
 @ClientEndpoint(decoders = { ServerMessage.MessageDecoder.class }, encoders = { ClientMessage.MessageEncoder.class })
 public class TriviaClient implements Runnable {
 
-	// The user's name
-	private volatile String		user;
-	// The user's role
-	private volatile User.Role	role;
-
+	private volatile User	user;
 
 	// Hashtable of active users and roles
-	private volatile User[]		userList;
+	private volatile User[]	userList;
 
 	// Time to idle in seconds
-	private volatile int		timeToIdle;
+	private volatile int	timeToIdle;
 
 	// The remote server
-	private Session				session;
+	private Session			session;
 
 	// The local trivia object holding all contest data
-	private volatile Trivia		trivia;
+	private volatile Trivia	trivia;
 
-	private final TriviaGUI		gui;
+	private final TriviaGUI	gui;
 
-	private final String		serverURL;
+	private final String	serverURL;
 
 	/**
 	 * Creates a new trivia client
@@ -60,9 +56,8 @@ public class TriviaClient implements Runnable {
 		this.gui = gui;
 		this.serverURL = serverURL;
 		this.session = null;
+		this.user = new User();
 		this.userList = new User[0];
-		this.user = null;
-		this.role = User.Role.RESEARCHER;
 		this.trivia = null;
 		this.timeToIdle = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("UserList.timeToIdle"));
 	}
@@ -75,7 +70,7 @@ public class TriviaClient implements Runnable {
 		} catch (DeploymentException | IOException exception) {
 			this.gui.disconnected();
 		}
-		this.setUser(this.user);
+		this.setUserName(this.user.getUserName());
 	}
 
 	public int getTimeToIdle() {
@@ -107,13 +102,8 @@ public class TriviaClient implements Runnable {
 		});
 	}
 
-	/**
-	 * Get the current user role.
-	 *
-	 * @return The user's role
-	 */
-	public User.Role getRole() {
-		return this.role;
+	public User getUser() {
+		return this.user;
 	}
 
 	/**
@@ -136,41 +126,18 @@ public class TriviaClient implements Runnable {
 	}
 
 	/**
-	 * Gets the user name.
-	 *
-	 * @return The user name
-	 */
-	public String getUser() {
-		return this.user;
-	}
-
-	/**
-	 * Sets the user name.
-	 *
-	 * @param user
-	 *            The new user name
-	 */
-	public void setUser(String user) {
-		if (this.user == null) {
-			this.sendMessage(ClientMessageFactory.setRole(user, this.role));
-		} else {
-			this.sendMessage(ClientMessageFactory.changeUser(user));
-		}
-		this.user = user;
-	}
-
-	/**
 	 * Change the user's role.
 	 *
 	 * @param role
 	 */
 	protected void setRole(User.Role role) {
-		if (this.user != null) {
-			this.sendMessage(ClientMessageFactory.setRole(this.user, role));
-		} else {
-			this.gui.log("Couldn't set role yet, no user name specified");
-		}
-		this.role = role;
+		this.user.setRole(role);
+		this.sendMessage(ClientMessageFactory.setRole(this.user.getRole()));
+	}
+
+	public void setUserName(String userName) {
+		this.user.setUserName(userName);
+		this.sendMessage(ClientMessageFactory.changeUser(this.user.getUserName()));
 	}
 
 	public void sendMessage(ClientMessage message) {

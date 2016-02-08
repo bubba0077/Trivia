@@ -1,6 +1,7 @@
 package net.bubbaland.trivia;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -287,6 +288,21 @@ public class Question implements Serializable {
 		if (this.submitter.equals(oldName)) {
 			this.submitter = newName;
 		}
+	}
+
+	public User[] getEffort(User[] userList) {
+		ArrayList<User> userEffortList = new ArrayList<User>();
+		for (User user : userList) {
+			if (user.getEffort() == this.qNumber) {
+				userEffortList.add(user);
+			}
+		}
+		if (userEffortList.size() == 0) {
+			return null;
+		}
+		User[] userEffort = new User[userEffortList.size()];
+		userEffortList.toArray(userEffort);
+		return userEffort;
 	}
 
 	public String toString() {

@@ -853,7 +853,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 
 		// Update role
-		final User.Role role = this.client.getRole();
+		final User.Role role = this.client.getUser().getRole();
 		while (this.researcherMenuItem == null | this.callerMenuItem == null | this.typistMenuItem == null) {
 			// System.out.println("Awaiting menu items");
 			try {

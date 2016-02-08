@@ -178,8 +178,8 @@ public class TriviaGUI implements WindowListener {
 		this.loadProperties();
 
 		// Create a prompt requesting the user name
-		final String user = PROPERTIES.getProperty("UserName");
-		if (user == null) {
+		final String userName = PROPERTIES.getProperty("UserName");
+		if (userName == null) {
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
 					@Override
@@ -191,7 +191,7 @@ public class TriviaGUI implements WindowListener {
 				exception.printStackTrace();
 			}
 		} else {
-			this.client.setUser(user);
+			this.client.setUserName(userName);
 		}
 
 		this.waitDialog = new WaitDialog(TriviaGUI.this);
@@ -232,7 +232,7 @@ public class TriviaGUI implements WindowListener {
 		} catch (InvocationTargetException | InterruptedException exception) {
 			exception.printStackTrace();
 		}
-		this.log("Welcome " + this.client.getUser());
+		this.log("Welcome " + this.client.getUser().getUserName());
 	}
 
 	public static SimpleDateFormat getTimestampFormat() {
@@ -562,8 +562,8 @@ public class TriviaGUI implements WindowListener {
 			this.windowList.get(f).saveProperties();
 			TriviaGUI.savePosition(this.windowList.get(f));
 		}
-		if (this.client.getUser() != null) {
-			PROPERTIES.setProperty("UserName", this.client.getUser());
+		if (this.client.getUser().getUserName() != null) {
+			PROPERTIES.setProperty("UserName", this.client.getUser().getUserName());
 		}
 		TriviaGUI.savePropertyFile();
 		System.exit(0);

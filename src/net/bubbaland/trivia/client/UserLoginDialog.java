@@ -55,7 +55,7 @@ public class UserLoginDialog extends TriviaDialogPanel {
 		this.add(this.userTextField, c);
 		this.userTextField.addAncestorListener(this);
 
-		final String userName = client.getUser();
+		final String userName = client.getUser().getUserName();
 		int options;
 		if (userName == null) {
 			options = JOptionPane.DEFAULT_OPTION;
@@ -78,12 +78,12 @@ public class UserLoginDialog extends TriviaDialogPanel {
 
 			if (option != JOptionPane.CLOSED_OPTION) {
 				if (user.toCharArray().length != 0) {
-					client.setUser(user);
+					client.setUserName(user);
 				} else {
 					new UserLoginDialog(client);
 				}
 			} else {
-				if (client.getUser() == null) {
+				if (client.getUser().getUserName() == null) {
 					System.exit(0);
 				}
 			}
@@ -113,7 +113,8 @@ public class UserLoginDialog extends TriviaDialogPanel {
 			}
 			if (this.client.getUserNameList().contains(userName)) {
 				final int confirm = JOptionPane.showConfirmDialog(null,
-						"The name \"" + userName + "\" has been connected recently. Do you still want to use this name?",
+						"The name \"" + userName
+								+ "\" has been connected recently. Do you still want to use this name?",
 						"Name Conflict", JOptionPane.YES_NO_OPTION);
 				if (confirm == JOptionPane.NO_OPTION) {
 					new UserLoginDialog(this.client);
@@ -122,12 +123,12 @@ public class UserLoginDialog extends TriviaDialogPanel {
 			}
 
 			if (userName.toCharArray().length != 0) {
-				this.client.setUser(userName);
+				this.client.setUserName(userName);
 			} else {
 				new UserLoginDialog(this.client);
 			}
 		} else {
-			if (this.client.getUser() == null) {
+			if (this.client.getUser().getUserName() == null) {
 				System.exit(0);
 			}
 		}

@@ -26,7 +26,7 @@ public class ClientMessage {
 	protected static JsonFactory jsonFactory = new JsonFactory();
 
 	public static enum ClientCommand {
-		SET_SHOW_NAME, SET_SHOW_HOST, SET_N_VISUAL, CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA, RESTART_TIMER, SET_OPERATOR, SET_ANSWER, SET_QUESTION, SET_TEAM_NUMBER
+		SET_SHOW_NAME, SET_SHOW_HOST, SET_N_VISUAL, CALL_IN, CHANGE_USER, CLOSE_QUESTION, EDIT_QUESTION, LIST_SAVES, LOAD_STATE, MARK_CORRECT, MARK_DUPLICATE, MARK_INCORRECT, MARK_PARTIAL, MARK_UNCALLED, ADVANCE_ROUND, OPEN_QUESTION, REOPEN_QUESTION, PROPOSE_ANSWER, REMAP_QUESTION, RESET_QUESTION, SET_DISCREPENCY_TEXT, SET_ROLE, SET_SPEED, CHANGE_AGREEMENT, SET_IDLE_TIME, FETCH_TRIVIA, RESTART_TIMER, SET_OPERATOR, SET_ANSWER, SET_QUESTION, SET_TEAM_NUMBER, SET_EFFORT
 	};
 
 	private ClientCommand	command;
@@ -213,6 +213,12 @@ public class ClientMessage {
 		public static ClientMessage callIn(int queueIndex) {
 			final ClientMessage message = new ClientMessage(ClientCommand.CALL_IN);
 			message.queueIndex = queueIndex;
+			return message;
+		}
+
+		public static ClientMessage setEffort(int qNumber) {
+			final ClientMessage message = new ClientMessage(ClientCommand.SET_EFFORT);
+			message.qNumber = qNumber;
 			return message;
 		}
 
@@ -563,9 +569,8 @@ public class ClientMessage {
 		 *            The new role
 		 * @throws RemoteException
 		 */
-		public static ClientMessage setRole(String user, User.Role role) {
+		public static ClientMessage setRole(User.Role role) {
 			final ClientMessage message = new ClientMessage(ClientCommand.SET_ROLE);
-			message.user = user;
 			message.role = role;
 			return message;
 		}

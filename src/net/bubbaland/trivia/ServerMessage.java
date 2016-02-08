@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.bubbaland.trivia.User.Role;
+import net.bubbaland.trivia.server.TriviaServerEndpoint;
 
 @SuppressWarnings("unused")
 public class ServerMessage {
@@ -151,7 +152,7 @@ public class ServerMessage {
 
 		public static ServerMessage updateUserList(User[] userList) {
 			final ServerMessage message = new ServerMessage(ServerCommand.UPDATE_USER_LISTS);
-			message.setUserList(userList);
+			message.userList = userList;
 			return message;
 		}
 

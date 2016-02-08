@@ -207,7 +207,7 @@ public class TriviaServer {
 				this.broadcastUsers();
 				break;
 			case CLOSE_QUESTION:
-				this.trivia.close(message.getqNumber());
+				this.trivia.close(message.getqNumber(), this.getUserList());
 				TriviaServer.log("Question " + message.getqNumber() + " closed, "
 						+ this.trivia.getValue(this.trivia.getCurrentRoundNumber(), message.getqNumber()));
 				this.broadcastChangedRounds();
@@ -247,7 +247,7 @@ public class TriviaServer {
 				this.broadcastChangedRounds();
 				break;
 			case MARK_CORRECT:
-				this.trivia.markCorrect(message.getQueueIndex(), user.getUserName());
+				this.trivia.markCorrect(message.getQueueIndex(), user.getUserName(), this.getUserList());
 				TriviaServer
 						.log("Item " + message.getQueueIndex() + " in the queue is correct, "
 								+ this.trivia.getValue(this.trivia.getCurrentRoundNumber(),
@@ -336,7 +336,7 @@ public class TriviaServer {
 				this.broadcastChangedRounds();
 				break;
 			case SET_ANSWER:
-				this.trivia.setAnswer(message.getQueueIndex(), message.getaText());
+				this.trivia.setAnswer(message.getqNumber(), message.getaText());
 				this.broadcastChangedRounds();
 				break;
 			case FETCH_TRIVIA:
@@ -369,6 +369,11 @@ public class TriviaServer {
 				this.broadcastChangedRounds();
 				TriviaServer.log("Show host for round " + message.getrNumber() + " set to " + message.getShowHost()
 						+ " by " + user.getUserName());
+				break;
+			case SET_EFFORT:
+				user.setEffort(message.getqNumber());
+				this.broadcastUsers();
+				TriviaServer.log(user.getUserName() + " started working on Q#" + message.getqNumber());
 				break;
 			default:
 				TriviaServer.log("Unknown message received by server!" + message.toString());

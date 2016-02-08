@@ -155,7 +155,7 @@ public class SaveMediator {
 						trivia.open("From file", rNumber, qNumber);
 						trivia.editQuestion(rNumber, qNumber, value, question, answer, isCorrect, submitter);
 						if (!isOpen) {
-							trivia.close(rNumber, qNumber);
+							trivia.close(rNumber, qNumber, null);
 						}
 					}
 				}

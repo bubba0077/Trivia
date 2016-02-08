@@ -902,7 +902,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.makeNewRow();
 			}
 
-			final String user = this.client.getUser();
+			final String user = this.client.getUser().getUserName();
 
 			for (int a = 0; a < queueSize; a++) {
 
@@ -1012,17 +1012,20 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					this.agreementLabels.get(a).getParent().setBackground(bColor);
 					this.agreementLabels.get(a).setName("" + ( newQueueNumber - 1 ));
 
-					String concurList = "<html>";
-					if (newAgreerList != null) {
-						concurList = concurList + "Agreers:";
+					String concurList = "<html><div align=center>Agreers</div>";
+					if (newAgreerList == null) {
+						concurList = concurList + "none" + "<BR/>";
+					} else {
 						for (String agreer : newAgreerList) {
-							concurList = concurList + "<BR/>" + agreer;
+							concurList = concurList + agreer + "<BR/>";
 						}
 					}
-					if (newDisagreerList != null) {
-						concurList = concurList + "<BR/>" + "Disagreers:";
+					concurList = concurList + "<BR/>" + "<div align=center>Disagreers</div>";
+					if (newDisagreerList == null) {
+						concurList = concurList + "none" + "<BR/>";
+					} else {
 						for (String disagreer : newDisagreerList) {
-							concurList = concurList + "<BR/>" + disagreer;
+							concurList = concurList + disagreer + "<BR/>";
 						}
 					}
 					concurList = concurList + "</html>";

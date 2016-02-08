@@ -133,8 +133,8 @@ public class Trivia implements Serializable {
 	 * @param qNumber
 	 *            The question number
 	 */
-	public void close(int rNumber, int qNumber) {
-		this.rounds[rNumber - 1].close(qNumber);
+	public void close(int rNumber, int qNumber, User[] userList) {
+		this.rounds[rNumber - 1].close(qNumber, userList);
 	}
 
 	/**
@@ -143,8 +143,8 @@ public class Trivia implements Serializable {
 	 * @param qNumber
 	 *            The question number
 	 */
-	public void close(int qNumber) {
-		this.getCurrentRound().close(qNumber);
+	public void close(int qNumber, User[] userList) {
+		this.getCurrentRound().close(qNumber, userList);
 	}
 
 	/**
@@ -716,6 +716,10 @@ public class Trivia implements Serializable {
 		return this.getCurrentRound().getOpenQuestionText();
 	}
 
+	public Question[] getOpenQuestions() {
+		return this.getCurrentRound().getOpenQuestions();
+	}
+
 	/**
 	 * Gets the currently open questions' values
 	 *
@@ -950,8 +954,8 @@ public class Trivia implements Serializable {
 	 * @param operator
 	 *            The operator who accepted the answer
 	 */
-	public void markCorrect(int queueIndex, String caller) {
-		this.getCurrentRound().markCorrect(queueIndex, caller);
+	public void markCorrect(int queueIndex, String caller, User[] userList) {
+		this.getCurrentRound().markCorrect(queueIndex, caller, userList);
 	}
 
 	/**
@@ -1131,8 +1135,8 @@ public class Trivia implements Serializable {
 		this.rounds[rNumber - 1].setAnswer(qNumber, answer, submitter, confidence, status, caller, operator, timestamp);
 	}
 
-	public void setAnswer(int queueIndex, String answer) {
-		getCurrentRound().setAnswerText(getCurrentRound().getAnswerQueueQNumber(queueIndex), answer);
+	public void setAnswer(int qNumber, String answer) {
+		getCurrentRound().getQuestion(qNumber).setAnswerText(answer);
 	}
 
 	public void setOperator(int queueIndex, String operator) {

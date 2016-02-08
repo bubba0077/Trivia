@@ -5,22 +5,17 @@ import java.util.Date;
 public class User {
 
 	// Array of the last round versions sent to this client
-	private int[]	roundVersions;
+	private volatile int[]	roundVersions;
 	// User name for this client
-	private String	userName;
+	private volatile String	userName;
 	// Role of this client
-	private Role	role;
+	private volatile Role	role;
 	// Last time this client sent a command
-	private Date	lastActive;
+	private volatile Date	lastActive;
 	// Time changed to current role
-	private Date	lastRollChange;
+	private volatile Date	lastRollChange;
 
-	// final public static User IDLE_USER = new User();
-	//
-	// static {
-	// IDLE_USER.setUserName("Idle");
-	// IDLE_USER.setRole(Role.IDLE);
-	// }
+	private volatile int	currentEffort;
 
 	public User() {
 		this.lastActive = new Date();
@@ -28,12 +23,11 @@ public class User {
 		this.role = Role.RESEARCHER;
 		this.roundVersions = null;
 		this.lastRollChange = new Date();
+		this.currentEffort = 0;
 	}
 
 	public User(int nRounds) {
-		this.lastActive = new Date();
-		this.userName = "";
-		this.setRole(Role.RESEARCHER);
+		this();
 		this.roundVersions = new int[nRounds];
 	}
 
@@ -43,6 +37,20 @@ public class User {
 
 	public Date getLastActive() {
 		return this.lastActive;
+	}
+
+	public void setEffort(int qNumber) {
+		this.currentEffort = qNumber;
+	}
+
+	public int getEffort() {
+		return this.currentEffort;
+	}
+
+	public void endEffort(int qNumber) {
+		if (this.currentEffort == qNumber) {
+			this.currentEffort = 0;
+		}
 	}
 
 	public void updateActivity() {

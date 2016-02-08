@@ -202,9 +202,15 @@ public class Round implements Serializable {
 	 *
 	 * @param qNumber
 	 *            The question number
+	 * @param userList
 	 */
-	public synchronized void close(int qNumber) {
+	public synchronized void close(int qNumber, User[] userList) {
 		this.questions[qNumber - 1].close();
+		if (userList != null) {
+			for (User user : userList) {
+				user.endEffort(qNumber);
+			}
+		}
 		this.version++;
 	}
 
@@ -822,17 +828,23 @@ public class Round implements Serializable {
 	 *            The index of the answer in the queue
 	 * @param caller
 	 *            The user calling the answer in
+	 * @param userList
 	 * @param operator
 	 *            The operator who accepted the correct answer
 	 *
 	 */
-	public synchronized void markCorrect(int queueIndex, String caller) {
+	public synchronized void markCorrect(int queueIndex, String caller, User[] userList) {
 		final Answer answer = this.answerQueue.get(queueIndex);
 		answer.markCorrect(caller);
 		final int qNumber = answer.getQNumber();
 		final String answerText = answer.getAnswer();
 		final String submitter = answer.getSubmitter();
 		this.questions[qNumber - 1].markCorrect(answerText, submitter);
+		if (userList != null) {
+			for (User user : userList) {
+				user.endEffort(qNumber);
+			}
+		}
 		this.version++;
 	}
 
@@ -1322,7 +1334,7 @@ public class Round implements Serializable {
 	 *
 	 * @return Array of the open Questions
 	 */
-	private Question[] getOpenQuestions() {
+	public Question[] getOpenQuestions() {
 		final int nOpen = this.nOpen();
 		final Question[] questions = new Question[nOpen];
 		int q1 = 0;
