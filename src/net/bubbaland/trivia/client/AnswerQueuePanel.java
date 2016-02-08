@@ -918,6 +918,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				final String newOperator = this.answerQueue[a].getOperator();
 				final String newCaller = this.answerQueue[a].getCaller();
 				final String newStatus = this.answerQueue[a].getStatusString();
+				final String[] newAgreerList = this.answerQueue[a].getConcurList(Answer.Agreement.AGREE);
+				final String[] newDisagreerList = this.answerQueue[a].getConcurList(Answer.Agreement.DISAGREE);
 
 				this.lastStatus.set(a, newStatus);
 				final boolean closed;
@@ -1009,6 +1011,23 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					this.agreementLabels.get(a).setForeground(color);
 					this.agreementLabels.get(a).getParent().setBackground(bColor);
 					this.agreementLabels.get(a).setName("" + ( newQueueNumber - 1 ));
+
+					String concurList = "<html>";
+					if (newAgreerList != null) {
+						concurList = concurList + "Agreers:";
+						for (String agreer : newAgreerList) {
+							concurList = concurList + "<BR/>" + agreer;
+						}
+					}
+					if (newDisagreerList != null) {
+						concurList = concurList + "<BR/>" + "Disagreers:";
+						for (String disagreer : newDisagreerList) {
+							concurList = concurList + "<BR/>" + disagreer;
+						}
+					}
+					concurList = concurList + "</html>";
+
+					this.agreementLabels.get(a).setToolTipText(concurList);
 
 					switch (myAgreement) {
 						case AGREE:

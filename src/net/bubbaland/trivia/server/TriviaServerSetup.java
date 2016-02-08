@@ -406,14 +406,6 @@ public class TriviaServerSetup {
 			attribute.setValue("true");
 			element.setAttributeNode(attribute);
 
-			// for (String lib : LIBS) {
-			// element = doc.createElement("extension");
-			// resElement.appendChild(element);
-			// attribute = doc.createAttribute("href");
-			// attribute.setValue(lib + ".jnlp");
-			// element.setAttributeNode(attribute);
-			// }
-
 			final Element descElement = doc.createElement("application-desc");
 			jnlpElem.appendChild(descElement);
 
@@ -510,7 +502,6 @@ public class TriviaServerSetup {
 		properties.setProperty("Server.Port", port + "");
 		properties.setProperty("SaveDir", triviaDirPath + "/saves");
 		properties.setProperty("ChartDir", triviaDirPath + "/charts");
-
 
 		final File file = new File(System.getProperty("user.home") + "/" + SETTINGS_FILENAME);
 		try {

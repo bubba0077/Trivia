@@ -2,6 +2,7 @@ package net.bubbaland.trivia;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -304,6 +305,21 @@ public class Answer implements Serializable {
 	public int getAgreement() {
 		return Collections.frequency(this.agreement.values(), Agreement.AGREE)
 				- Collections.frequency(this.agreement.values(), Agreement.DISAGREE);
+	}
+
+	public String[] getConcurList(Agreement agreeType) {
+		ArrayList<String> agreerList = new ArrayList<String>();
+		for (String user : this.agreement.keySet()) {
+			if (this.agreement.get(user) == agreeType) {
+				agreerList.add(user);
+			}
+		}
+		if (!agreerList.isEmpty()) {
+			String[] agreers = new String[agreerList.size()];
+			agreerList.toArray(agreers);
+			return agreers;
+		}
+		return null;
 	}
 
 	public Agreement getAgreement(String user) {
