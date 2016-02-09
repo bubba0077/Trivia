@@ -134,6 +134,21 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 					CloseQuestionDialog.this.client.log("Closed Question #" + CloseQuestionDialog.this.qNumber);
 				}
 			} ).execute();
+		} else {
+			( new SwingWorker<Void, Void>() {
+				@Override
+				public Void doInBackground() {
+					CloseQuestionDialog.this.client
+							.sendMessage(ClientMessageFactory.reopen(CloseQuestionDialog.this.qNumber));
+					return null;
+				}
+
+				@Override
+				public void done() {
+					CloseQuestionDialog.this.client
+							.log("Cancelled closing of Question #" + CloseQuestionDialog.this.qNumber);
+				}
+			} ).execute();
 		}
 	}
 
