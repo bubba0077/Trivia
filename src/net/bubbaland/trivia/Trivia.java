@@ -513,7 +513,7 @@ public class Trivia implements Serializable {
 		return this.rNumber;
 	}
 
-	private Round getCurrentRound() {
+	public Round getCurrentRound() {
 		return this.rounds[this.rNumber - 1];
 	}
 
@@ -1181,6 +1181,18 @@ public class Trivia implements Serializable {
 
 	public int getNVisual() {
 		return this.nVisual;
+	}
+
+	public boolean[] getVisualTriviaUsed() {
+		boolean[] visualTriviaUsed = new boolean[this.nVisual];
+		for (Round r : rounds) {
+			for (Question q : r.getQuestions()) {
+				if (q.getVisualTrivia() != 0) {
+					visualTriviaUsed[q.getVisualTrivia() - 1] = true;
+				}
+			}
+		}
+		return visualTriviaUsed;
 	}
 
 	public void setQuestionText(int qNumber, String qText) {

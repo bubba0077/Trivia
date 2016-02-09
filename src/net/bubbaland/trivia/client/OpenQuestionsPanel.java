@@ -45,9 +45,14 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	/** The Constant serialVersionUID. */
 	private static final long				serialVersionUID	= 6049067322505905668L;
 
-	private final JLabel					qNumberLabel, valueLabel, questionLabel;
+	private final JLabel					qNumberLabel, valueLabel, questionLabel, visualTriviaLabel;
 	private final JLabel[]					statusLabels;
+
+	private JLabel							spacerLabel;
+	private JLabel[]						visualTriviaLabels;
+
 	private final JScrollPane				scrollPane;
+	private final TriviaPanel				visualTriviaPanel;
 
 	// Set up layout constraints
 	private static final GridBagConstraints	buttonConstraints	= new GridBagConstraints();
@@ -65,7 +70,11 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 	/** Sub-panel that will hold the open questions */
 	private final OpenQuestionsSubPanel	openQuestionsSubPanel;
-	private final Color					headerColor, headerBackgroundColor, correctColor, incorrectColor;
+	private Color						headerColor, headerBackgroundColor, footerBackgroundColor, correctColor,
+			incorrectColor, usedColor, unusedColor, activeColor;
+
+	private int							footerHeight, statusWidth, visualStatusWidth;
+	private float						footerFontSize;
 
 	/**
 	 * Instantiates a new workflow question list panel.
@@ -123,16 +132,31 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		this.scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(this.scrollPane, constraints);
 
+		constraints.gridwidth = 1;
+		constraints.weighty = 0.0;
+
+		/**
+		 * Create the footer row
+		 */
+		constraints.gridx = 0;
+		constraints.gridy = 2;
+		constraints.gridwidth = 3 + nQuestions;
+		this.visualTriviaPanel = new TriviaPanel(new GridBagLayout());
+		this.add(visualTriviaPanel, constraints);
+
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.gridwidth = 1;
+		this.visualTriviaLabel = visualTriviaPanel.enclosedLabel(" Visual Trivia:", constraints, SwingConstants.LEFT,
+				SwingConstants.CENTER);
+		this.visualTriviaLabels = null;
+
+		constraints.gridx = 1;
+		constraints.gridy = 0;
+		constraints.weightx = 1.0;
+		this.spacerLabel = visualTriviaPanel.enclosedLabel("", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
+
 		this.loadProperties(TriviaGUI.PROPERTIES);
-		this.headerColor = new Color(
-				new BigInteger(TriviaGUI.PROPERTIES.getProperty("OpenQuestions.Header.Color"), 16).intValue());
-		this.headerBackgroundColor = new Color(
-				new BigInteger(TriviaGUI.PROPERTIES.getProperty("OpenQuestions.Header.BackgroundColor"), 16)
-						.intValue());
-		this.correctColor = new Color(
-				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
-		this.incorrectColor = new Color(
-				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
 	}
 
 	/*
@@ -150,6 +174,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		for (int q = 0; q < diff; q++) {
 			this.statusLabels[q].setText("");
 		}
+
 		for (int q = diff; q < nMaxQuestions; q++) {
 			final int qNumber = q + 1 - diff;
 			this.statusLabels[q].setText(qNumber + "");
@@ -167,6 +192,56 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				this.statusLabels[q].setForeground(this.headerBackgroundColor);
 			}
 		}
+
+		final boolean[] visualTriviaUsed = trivia.getVisualTriviaUsed();
+		final int nVisualTrivia = trivia.getNVisual();
+		if (this.visualTriviaLabels == null || visualTriviaUsed.length != this.visualTriviaLabels.length) {
+			if (this.visualTriviaLabels != null) {
+				for (JLabel label : this.visualTriviaLabels) {
+					this.visualTriviaPanel.remove(label);
+					this.visualTriviaPanel.remove(label.getParent());
+				}
+			}
+
+			this.visualTriviaPanel.remove(this.spacerLabel);
+			this.visualTriviaPanel.remove(this.spacerLabel.getParent());
+
+			this.visualTriviaLabels = new JLabel[nVisualTrivia];
+			final GridBagConstraints constraints = new GridBagConstraints();
+			constraints.fill = GridBagConstraints.BOTH;
+			constraints.anchor = GridBagConstraints.NORTH;
+			constraints.weightx = 0.0;
+			constraints.weighty = 0.0;
+
+			for (int v = 0; v < nVisualTrivia; v++) {
+				constraints.gridx = 1 + v;
+				constraints.gridy = 0;
+				this.visualTriviaLabels[v] = this.visualTriviaPanel.enclosedLabel(( v + 1 ) + "",
+						this.visualStatusWidth, this.footerHeight, this.unusedColor, this.footerBackgroundColor,
+						constraints, this.footerFontSize, SwingConstants.RIGHT, SwingConstants.CENTER);
+			}
+
+			constraints.gridx = nVisualTrivia + 1;
+			constraints.gridy = 0;
+			constraints.weightx = 1.0;
+			this.spacerLabel = visualTriviaPanel.enclosedLabel("", 0, this.footerHeight, this.footerBackgroundColor,
+					this.footerBackgroundColor, constraints, this.footerFontSize, SwingConstants.LEFT,
+					SwingConstants.CENTER);
+			this.visualTriviaPanel.updateUI();
+		}
+
+		for (int v = 0; v < nVisualTrivia; v++) {
+			Color color = visualTriviaUsed[v] ? this.usedColor : this.unusedColor;
+			for (Question q : trivia.getCurrentRound().getOpenQuestions()) {
+				if (q.getVisualTrivia() == v + 1) {
+					color = this.activeColor;
+				}
+			}
+
+			this.visualTriviaLabels[v].setForeground(color);
+
+		}
+
 		this.openQuestionsSubPanel.updateGUI(force);
 	}
 
@@ -175,10 +250,18 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		/**
 		 * Colors
 		 */
-		final Color headerColor = new Color(
+		this.headerColor = new Color(
 				new BigInteger(properties.getProperty("OpenQuestions.Header.Color"), 16).intValue());
-		final Color headerBackgroundColor = new Color(
+		this.headerBackgroundColor = new Color(
 				new BigInteger(properties.getProperty("OpenQuestions.Header.BackgroundColor"), 16).intValue());
+		this.usedColor = new Color(
+				new BigInteger(properties.getProperty("OpenQuestions.Footer.Used.Color"), 16).intValue());
+		this.unusedColor = new Color(
+				new BigInteger(properties.getProperty("OpenQuestions.Footer.Unused.Color"), 16).intValue());
+		this.activeColor = new Color(
+				new BigInteger(properties.getProperty("OpenQuestions.Footer.Active.Color"), 16).intValue());
+		this.footerBackgroundColor = new Color(
+				new BigInteger(properties.getProperty("OpenQuestions.Footer.BackgroundColor"), 16).intValue());
 
 		/**
 		 * Sizes
@@ -189,11 +272,18 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		final int qNumWidth = Integer.parseInt(properties.getProperty("OpenQuestions.QNumber.Width"));
 		final int valueWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Value.Width"));
 		final int questionWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Question.Width"));
+		this.statusWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Header.Status.Width"));
+		final int visualTriviaWidth = Integer
+				.parseInt(properties.getProperty("OpenQuestions.Footer.VisualTrivia.Width"));
+		this.visualStatusWidth = Integer
+				.parseInt(properties.getProperty("OpenQuestions.Footer.VisualTrivia.Status.Width"));
 
 		/**
 		 * Font sizes
 		 */
-		final float headerFontSize = Float.parseFloat(properties.getProperty("OpenQuestions.Header.FontSize"));
+				final float headerFontSize = Float.parseFloat(properties.getProperty("OpenQuestions.Header.FontSize"));
+		this.footerFontSize = Float.parseFloat(properties.getProperty("OpenQuestions.Footer.FontSize"));
+
 
 		/** The number of open questions to show at one time */
 		final int questionsShow = Integer.parseInt(properties.getProperty("OpenQuestions.QuestionsShow"));
@@ -204,8 +294,12 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				headerFontSize);
 		setLabelProperties(this.questionLabel, questionWidth, headerHeight, headerColor, headerBackgroundColor,
 				headerFontSize);
+		setPanelProperties(this.visualTriviaPanel, 5, headerHeight, headerBackgroundColor);
+		setLabelProperties(this.visualTriviaLabel, visualTriviaWidth, headerHeight, unusedColor, footerBackgroundColor,
+				footerFontSize);
 		for (final JLabel label : this.statusLabels) {
-			setLabelProperties(label, 18, headerHeight, headerBackgroundColor, headerBackgroundColor, headerFontSize);
+			setLabelProperties(label, this.statusWidth, footerHeight, footerBackgroundColor, footerBackgroundColor,
+					footerFontSize);
 		}
 		this.scrollPane.setPreferredSize(new Dimension(0, questionsShow * rowHeight + 3));
 		this.scrollPane.setMinimumSize(new Dimension(0, rowHeight + 3));

@@ -2,6 +2,8 @@ package net.bubbaland.trivia;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Question implements Serializable {
 
 	private static final long	serialVersionUID	= 5230169250657519692L;
+
+	public final Pattern		visualPattern		= Pattern.compile("([Vv]isual )([Tt]rivia )?(#)?([0-9]+)");
 
 	// The question number
 	@JsonProperty("qNumber")
@@ -50,6 +54,9 @@ public class Question implements Serializable {
 	@JsonProperty("correct")
 	private volatile boolean	correct;
 
+	@JsonProperty("visualTrivia")
+	private volatile int		visualTrivia;
+
 	/**
 	 * Creates a new question.
 	 *
@@ -59,14 +66,7 @@ public class Question implements Serializable {
 	 *            The question number
 	 */
 	public Question(int qNumber) {
-		this.qNumber = qNumber;
-		this.value = 0;
-		this.question = "";
-		this.answer = "";
-		this.submitter = "";
-		this.isOpen = false;
-		this.beenOpen = false;
-		this.correct = false;
+		this(qNumber, 0, "", "", "", "", false, false, false, 0);
 	}
 
 	@JsonCreator
@@ -74,7 +74,7 @@ public class Question implements Serializable {
 			@JsonProperty("question") String question, @JsonProperty("answer") String answer,
 			@JsonProperty("operator") String operator, @JsonProperty("submitter") String submitter,
 			@JsonProperty("isOpen") boolean open, @JsonProperty("beenOpen") boolean beenOpen,
-			@JsonProperty("correct") boolean correct) {
+			@JsonProperty("correct") boolean correct, @JsonProperty("visualTrivia") int visualTrivia) {
 		this.qNumber = qNumber;
 		this.value = value;
 		this.question = question;
@@ -83,6 +83,7 @@ public class Question implements Serializable {
 		this.isOpen = open;
 		this.beenOpen = beenOpen;
 		this.correct = correct;
+		this.visualTrivia = visualTrivia;
 	}
 
 	/**
@@ -252,6 +253,11 @@ public class Question implements Serializable {
 	 */
 	public void setQuestionText(String question) {
 		this.question = question;
+		Matcher matcher = visualPattern.matcher(this.question);
+		this.visualTrivia = matcher.find() ? Integer.parseInt(matcher.group(4)) : 0;
+		if (this.visualTrivia != 0) {
+			System.out.println("Visual trivia " + this.visualTrivia + " detected");
+		}
 	}
 
 	/**
@@ -305,10 +311,14 @@ public class Question implements Serializable {
 		return userEffort;
 	}
 
+	public int getVisualTrivia() {
+		return this.visualTrivia;
+	}
+
 	public String toString() {
 		return ( "Q#" + this.qNumber + " worth " + this.value + "\n" + "Open: " + this.isOpen + " Been Open: "
 				+ this.beenOpen + " Correct: " + this.correct + "(" + this.submitter + ")" + "\n" + "Q: "
-				+ this.question + "\n" + "A: " + this.answer + "\n" );
+				+ this.question + "\n" + "A: " + this.answer + "\n" + "Visual Trivia: " + this.visualTrivia + "\n" );
 	}
 
 }

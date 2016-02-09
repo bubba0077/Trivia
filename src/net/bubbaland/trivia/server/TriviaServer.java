@@ -577,11 +577,11 @@ public class TriviaServer {
 	}
 
 	private void broadcastNVisual() {
-		final int nTeams = this.trivia.getNTeams();
+		final int nVisual = this.trivia.getNVisual();
 		final Set<Session> sessions = this.sessionList.keySet();
 		for (final Session session : sessions) {
 			if (session != null) {
-				this.sendMessage(session, ServerMessageFactory.updateNVisual(nTeams));
+				this.sendMessage(session, ServerMessageFactory.updateNVisual(nVisual));
 			}
 		}
 	}

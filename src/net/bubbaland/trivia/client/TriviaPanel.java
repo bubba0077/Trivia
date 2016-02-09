@@ -36,7 +36,7 @@ import javax.swing.text.StyledDocument;
  * @author Walter Kolczynski
  *
  */
-public abstract class TriviaPanel extends JPanel {
+public class TriviaPanel extends JPanel {
 
 	private static final long serialVersionUID = 7023089773420890665L;
 
