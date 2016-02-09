@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.function.IntPredicate;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -461,7 +462,12 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			}
 
 
-			if (!Arrays.stream(openQuestionNumbers).anyMatch(i -> i == this.client.getUser().getEffort())) {
+			if (!Arrays.stream(openQuestionNumbers).anyMatch(new IntPredicate() {
+				@Override
+				public boolean test(int i) {
+					return i == OpenQuestionsSubPanel.this.client.getUser().getEffort();
+				}
+			})) {
 				this.client.getUser().setEffort(0);
 			}
 

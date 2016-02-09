@@ -26,7 +26,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 	private final int			qNumber;
 	private final JTextArea		answerTextArea;
 
-	public CloseQuestionDialog(TriviaClient client, int qNumber) {
+	public CloseQuestionDialog(TriviaClient client, final int qNumber) {
 
 		super();
 
