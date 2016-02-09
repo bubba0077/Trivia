@@ -6,9 +6,9 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
 import java.awt.Insets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
@@ -144,19 +144,24 @@ public class UserListPanel extends TriviaMainPanel {
 	public void updateGUI(boolean force) {
 		ArrayList<User> activeUsers = new ArrayList<User>();
 		ArrayList<User> idleUsers = new ArrayList<User>();
-		Date now = new Date();
-		int activeWindow = this.client.getTimeToIdle() * 1000;
+
+		Duration timeSinceLastActive = this.client.getUser().timeSinceLastActive();
+		Duration activeWindow = Duration.ofSeconds(UserListPanel.this.client.getTimeToIdle());
 
 		for (User user : this.client.getUserList()) {
-			if (activeWindow != 0 && now.getTime() - activeWindow > user.getLastActive().getTime()) {
+			if (!activeWindow.isZero() && timeSinceLastActive.compareTo(activeWindow) > 0) {
 				idleUsers.add(user);
 			} else {
 				activeUsers.add(user);
 			}
 		}
 		this.header.setText("Active (" + activeUsers.size() + ")");
-		activeUsers.sort(new CompareActiveUsers());
-		idleUsers.sort(new CompareIdleUsers());
+		if (!activeUsers.isEmpty()) {
+			activeUsers.sort(new CompareActiveUsers());
+		}
+		if (!idleUsers.isEmpty()) {
+			idleUsers.sort(new CompareIdleUsers());
+		}
 
 		this.userListModel.removeAllElements();
 		for (final User user : activeUsers) {
@@ -213,8 +218,7 @@ public class UserListPanel extends TriviaMainPanel {
 			this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
 
 			// Determine color based on the user role
-			Date now = new Date();
-			int activeWindow = UserListPanel.this.client.getTimeToIdle() * 1000;
+			// int activeWindow = UserListPanel.this.client.getTimeToIdle() * 1000;
 			User user = (User) userName;
 
 			switch (user.getRole()) {
@@ -238,16 +242,20 @@ public class UserListPanel extends TriviaMainPanel {
 					break;
 			}
 
-			if (activeWindow != 0 && now.getTime() - activeWindow > user.getLastActive().getTime()) {
+			Duration timeSinceLastActive = user.timeSinceLastActive();
+			Duration timeSinceLastRollChange = user.timeSinceLastRollChange();
+			Duration activeWindow = Duration.ofSeconds(UserListPanel.this.client.getTimeToIdle());
+
+			if (!activeWindow.isZero() && timeSinceLastActive.compareTo(activeWindow) > 0) {
 				// Idle User
 				color = idleColor;
 			}
 
-			final String activeTimestamp = TriviaGUI.getTimestampFormat().format(user.getLastActive().getTime());
-			final String rollTimestamp = TriviaGUI.getTimestampFormat().format(user.getLastRollChange().getTime());
+			final String activeTimestamp = durationToString(timeSinceLastActive);
+			final String rollTimestamp = durationToString(timeSinceLastRollChange);
 
-			this.setToolTipText("<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Last activity: "
-					+ activeTimestamp + "<BR>In roll since: " + rollTimestamp + "</html>");
+			this.setToolTipText("<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Idle for " + activeTimestamp
+					+ "<BR>In role for " + rollTimestamp + "</html>");
 
 			// Set the color
 			this.setForeground(color);
@@ -256,6 +264,17 @@ public class UserListPanel extends TriviaMainPanel {
 
 			return this;
 		}
+	}
+
+	private static String durationToString(Duration duration) {
+		String durationString = duration.getSeconds() % 60 + "s";
+		if (duration.toMinutes() > 0) {
+			durationString = duration.toMinutes() % 60 + "m " + durationString;
+			if (duration.toHours() > 0) {
+				durationString = duration.toHours() + "h " + durationString;
+			}
+		}
+		return durationString;
 	}
 
 }

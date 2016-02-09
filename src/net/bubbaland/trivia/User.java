@@ -1,42 +1,80 @@
 package net.bubbaland.trivia;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
-public class User {
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+
+public class User implements Serializable {
+
+	private static final long		serialVersionUID	= 1932880137949465272L;
 
 	// Array of the last round versions sent to this client
-	private volatile int[]	roundVersions;
+	@JsonProperty("roundVersions")
+	private volatile int[]			roundVersions;
 	// User name for this client
-	private volatile String	userName;
+	@JsonProperty("userName")
+	private volatile String			userName;
 	// Role of this client
-	private volatile Role	role;
+	@JsonProperty("role")
+	private volatile Role			role;
 	// Last time this client sent a command
-	private volatile Date	lastActive;
+	@JsonSerialize(using = LocalDateTimeSerializer.class)
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	@JsonProperty("lastActive")
+	private volatile LocalDateTime	lastActive;
 	// Time changed to current role
-	private volatile Date	lastRollChange;
-
-	private volatile int	currentEffort;
+	@JsonSerialize(using = LocalDateTimeSerializer.class)
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	@JsonProperty("lastRoleChange")
+	private volatile LocalDateTime	lastRoleChange;
+	// Question user is working on
+	@JsonProperty("currentEffort")
+	private volatile int			currentEffort;
 
 	public User() {
-		this.lastActive = new Date();
-		this.userName = "";
-		this.role = Role.RESEARCHER;
-		this.roundVersions = null;
-		this.lastRollChange = new Date();
-		this.currentEffort = 0;
+		this("", Role.RESEARCHER, null, LocalDateTime.now(ZoneOffset.UTC), LocalDateTime.now(ZoneOffset.UTC), 0);
+	}
+
+	@JsonCreator
+	public User(@JsonProperty("userName") String userName, @JsonProperty("role") Role role,
+			@JsonProperty("roundVersions") int[] roundVersions, @JsonProperty("lastActive") LocalDateTime lastActive,
+			@JsonProperty("lastRoleChange") LocalDateTime lastRoleChange,
+			@JsonProperty("currentEffort") int currentEffort) {
+		this.userName = userName;
+		this.role = role;
+		this.roundVersions = roundVersions;
+		this.lastActive = lastActive;
+		this.lastRoleChange = lastRoleChange;
+		this.currentEffort = currentEffort;
 	}
 
 	public User(int nRounds) {
-		this();
-		this.roundVersions = new int[nRounds];
+		this("", Role.RESEARCHER, new int[nRounds], LocalDateTime.now(ZoneOffset.UTC),
+				LocalDateTime.now(ZoneOffset.UTC), 0);
 	}
 
-	public Date getLastRollChange() {
-		return this.lastRollChange;
+	public LocalDateTime getLastRollChange() {
+		return this.lastRoleChange;
 	}
 
-	public Date getLastActive() {
+	public LocalDateTime getLastActive() {
 		return this.lastActive;
+	}
+
+	public Duration timeSinceLastActive() {
+		return Duration.between(this.lastActive, LocalDateTime.now(ZoneOffset.UTC));
+	}
+
+	public Duration timeSinceLastRollChange() {
+		return Duration.between(this.lastRoleChange, LocalDateTime.now(ZoneOffset.UTC));
 	}
 
 	public void setEffort(int qNumber) {
@@ -54,7 +92,7 @@ public class User {
 	}
 
 	public void updateActivity() {
-		this.lastActive = new Date();
+		this.lastActive = LocalDateTime.now(ZoneOffset.UTC);
 	}
 
 	/**
@@ -100,7 +138,7 @@ public class User {
 	 */
 	public void setRole(User.Role role) {
 		this.role = role;
-		this.lastRollChange = new Date();
+		this.lastRoleChange = LocalDateTime.now(ZoneOffset.UTC);
 	}
 
 	public enum Role {
@@ -108,10 +146,10 @@ public class User {
 	}
 
 	public int compareTo(User otherUser) {
-		if (this.getUserName().equals(otherUser.getUserName())) {
-			return this.getRole().compareTo(otherUser.getRole());
-		} else {
+		if (this.getRole() == otherUser.getRole()) {
 			return this.getUserName().compareTo(otherUser.getUserName());
+		} else {
+			return this.getRole().compareTo(otherUser.getRole());
 		}
 	}
 
@@ -122,5 +160,6 @@ public class User {
 	public String fullString() {
 		return this.userName + " Role: " + this.role + " Last Active: " + this.lastActive;
 	}
+
 
 }

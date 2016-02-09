@@ -111,7 +111,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		 */
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		this.emptyPanel = new JPanel(new GridBagLayout());
+		this.emptyPanel = new JPanel();
 		this.add(this.emptyPanel, constraints);
 
 		constraints.gridx = 1;

@@ -309,7 +309,6 @@ public class TriviaServer {
 				this.broadcastChangedRounds();
 				break;
 			case SET_ROLE:
-				user.setUserName(message.getUser());
 				user.setRole(message.getRole());
 				this.broadcastUsers();
 				break;
