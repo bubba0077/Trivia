@@ -70,7 +70,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final private JMenuItem				sortStatusAscendingMenuItem;
 	final private JMenuItem				sortStatusDescendingMenuItem;
 	final private JMenuItem				muteMenuItem;
-	final private SpinnerMenuItem		idleSpinner;
+	final private SpinnerMenuItem		idleSpinner, nVisualSpinner, teamNumberSpinner;
 
 	// The status bar at the bottom
 	final private JLabel				statusBar;
@@ -212,6 +212,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			final JMenu idleMenu = new JMenu("Adjust time-to-idle");
 			this.idleSpinner = new SpinnerMenuItem(new SpinnerNumberModel(
 					Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("UserList.timeToIdle")), 0, 3600, 60));
+			this.idleSpinner.setName("Idle Spinner");
 			this.idleSpinner.addChangeListener(this);
 			idleMenu.add(this.idleSpinner);
 			menu.add(idleMenu);
@@ -417,15 +418,21 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menu.setMnemonic(KeyEvent.VK_A);
 			menuBar.add(menu);
 
-			menuItem = new JMenuItem("Set Team Number", KeyEvent.VK_N);
-			menuItem.setActionCommand("Set Team Number");
-			menuItem.addActionListener(this);
-			menu.add(menuItem);
+			final JMenu teamNumberMenu = new JMenu("Set Team Number");
+			this.teamNumberSpinner = new SpinnerMenuItem(
+					new SpinnerNumberModel(this.client.getTrivia().getTeamNumber(), 0, 150, 1));
+			this.teamNumberSpinner.setName("Team Number Spinner");
+			this.teamNumberSpinner.addChangeListener(this);
+			teamNumberMenu.add(this.teamNumberSpinner);
+			menu.add(teamNumberMenu);
 
-			menuItem = new JMenuItem("Set N Visual Trivia", KeyEvent.VK_V);
-			menuItem.setActionCommand("Set N Visual Trivia");
-			menuItem.addActionListener(this);
-			menu.add(menuItem);
+			final JMenu nVisualMenu = new JMenu("Set # Visual Trivia");
+			this.nVisualSpinner = new SpinnerMenuItem(
+					new SpinnerNumberModel(this.client.getTrivia().getNVisual(), 0, 100, 1));
+			this.nVisualSpinner.setName("nVisual Spinner");
+			this.nVisualSpinner.addChangeListener(this);
+			nVisualMenu.add(this.nVisualSpinner);
+			menu.add(nVisualMenu);
 
 			menuItem = new JMenuItem("Restart Timer", KeyEvent.VK_T);
 			menuItem.setActionCommand("Restart Timer");
@@ -459,6 +466,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 		// Create drag & drop tabbed pane
 		this.tabbedPane = new DnDTabbedPane(this.client, this.gui, this);
+		this.tabbedPane.setName("Tabbed Pane");
 
 		KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		kfm.addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -647,12 +655,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				// Tell client to exit the program
 				this.gui.endProgram();
 				break;
-			case "Set N Visual Trivia":
-				new NVisualTriviaDialog(this.client);
-				break;
-			case "Set Team Number":
-				new TeamNumberDialog(this.client);
-				break;
 		}
 	}
 
@@ -817,31 +819,92 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		if (e.getSource().equals(this.tabbedPane)) {
-			if (this.tabbedPane.getTabCount() == 1) {
-				// If there are no tabs left, hide the frame
-				this.setVisible(false);
-				// Wait 100 ms to see if the tab is added back, then close if there are still no tabs
-				final Timer timer = new Timer(100, new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if (!TriviaFrame.this.isVisible()) {
-							DnDTabbedPane.unregisterTabbedPane(TriviaFrame.this.tabbedPane);
-							TriviaFrame.this.gui.unregisterWindow(TriviaFrame.this);
-							TriviaFrame.this.dispose();
+		String name = ( (Component) e.getSource() ).getName();
+
+		switch (name) {
+			case "Tabbed Pane":
+				if (this.tabbedPane.getTabCount() == 1) {
+					// If there are no tabs left, hide the frame
+					this.setVisible(false);
+					// Wait 100 ms to see if the tab is added back, then close if there are still no tabs
+					final Timer timer = new Timer(100, new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							if (!TriviaFrame.this.isVisible()) {
+								DnDTabbedPane.unregisterTabbedPane(TriviaFrame.this.tabbedPane);
+								TriviaFrame.this.gui.unregisterWindow(TriviaFrame.this);
+								TriviaFrame.this.dispose();
+							}
 						}
+					});
+					timer.setRepeats(false);
+					timer.start();
+				} else {
+					this.setVisible(true);
+				}
+				break;
+			case "Idle Spinner":
+				final int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue();
+				TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
+				this.client.setIdleTime(timeToIdle);
+				break;
+			case "Team Number Spinner":
+				final int teamNumber = ( (Integer) this.teamNumberSpinner.getValue() ).intValue();
+				( new SwingWorker<Void, Void>() {
+					@Override
+					public Void doInBackground() {
+						TriviaFrame.this.client.sendMessage(ClientMessageFactory.setTeamNumber(teamNumber));
+						return null;
 					}
-				});
-				timer.setRepeats(false);
-				timer.start();
-			} else {
-				this.setVisible(true);
-			}
-		} else if (e.getSource().equals(this.idleSpinner)) {
-			final int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue();
-			TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
-			this.client.setIdleTime(timeToIdle);
+
+					@Override
+					public void done() {
+					}
+				} ).execute();
+				break;
+			case "nVisual Spinner":
+				final int nVisual = ( (Integer) this.nVisualSpinner.getValue() ).intValue();
+				( new SwingWorker<Void, Void>() {
+					@Override
+					public Void doInBackground() {
+						TriviaFrame.this.client.sendMessage(ClientMessageFactory.setTeamNumber(nVisual));
+						return null;
+					}
+
+					@Override
+					public void done() {
+					}
+				} ).execute();
+				break;
+			default:
+				this.gui.log("Unknown state change registered in TriviaFrame");
 		}
+
+		// if (e.getSource().equals(this.tabbedPane)) {
+		// if (this.tabbedPane.getTabCount() == 1) {
+		// // If there are no tabs left, hide the frame
+		// this.setVisible(false);
+		// // Wait 100 ms to see if the tab is added back, then close if there are still no tabs
+		// final Timer timer = new Timer(100, new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		// if (!TriviaFrame.this.isVisible()) {
+		// DnDTabbedPane.unregisterTabbedPane(TriviaFrame.this.tabbedPane);
+		// TriviaFrame.this.gui.unregisterWindow(TriviaFrame.this);
+		// TriviaFrame.this.dispose();
+		// }
+		// }
+		// });
+		// timer.setRepeats(false);
+		// timer.start();
+		// } else {
+		// this.setVisible(true);
+		// }
+		// } else if (e.getSource().equals(this.idleSpinner)) {
+		// final int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue();
+		// TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
+		// this.client.setIdleTime(timeToIdle);
+		// }
 	}
 
 	public void updateGUI(boolean forceUpdate) {
