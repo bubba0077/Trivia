@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.DeploymentException;
 import javax.websocket.EncodeException;
@@ -130,14 +131,37 @@ public class TriviaClient implements Runnable {
 	 *
 	 * @param role
 	 */
-	protected void setRole(User.Role role) {
+	protected void setRole(final User.Role role) {
 		this.user.setRole(role);
-		this.sendMessage(ClientMessageFactory.setRole(this.user.getRole()));
+		( new SwingWorker<Void, Void>() {
+			@Override
+			public Void doInBackground() {
+				TriviaClient.this.sendMessage(ClientMessageFactory.setRole(role));
+				;
+				return null;
+			}
+
+			@Override
+			public void done() {
+
+			}
+		} ).execute();
 	}
 
-	public void setUserName(String userName) {
+	public void setUserName(final String userName) {
 		this.user.setUserName(userName);
-		this.sendMessage(ClientMessageFactory.changeUser(this.user.getUserName()));
+		( new SwingWorker<Void, Void>() {
+			@Override
+			public Void doInBackground() {
+				TriviaClient.this.sendMessage(ClientMessageFactory.changeUser(userName));
+				return null;
+			}
+
+			@Override
+			public void done() {
+
+			}
+		} ).execute();
 	}
 
 	public void sendMessage(ClientMessage message) {
