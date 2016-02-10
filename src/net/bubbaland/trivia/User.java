@@ -157,5 +157,4 @@ public class User implements Serializable {
 		return this.userName + " Role: " + this.role + " Last Active: " + this.lastActive;
 	}
 
-
 }

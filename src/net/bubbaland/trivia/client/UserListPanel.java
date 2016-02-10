@@ -8,6 +8,7 @@ import java.awt.Image;
 import java.awt.Insets;
 // import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Properties;
 
@@ -143,38 +144,38 @@ public class UserListPanel extends TriviaMainPanel {
 	 */
 	@Override
 	public void updateGUI(boolean force) {
-		ArrayList<User> activeUsers = new ArrayList<User>();
-		ArrayList<User> idleUsers = new ArrayList<User>();
+		ArrayList<User> activeUsersList = new ArrayList<User>();
+		ArrayList<User> idleUsersList = new ArrayList<User>();
 
 		Duration timeSinceLastActive = this.client.getUser().timeSinceLastActive();
 		Duration activeWindow = Duration.standardSeconds(UserListPanel.this.client.getTimeToIdle());
 
 		for (User user : this.client.getUserList()) {
 			if (activeWindow != Duration.ZERO && timeSinceLastActive.isLongerThan(activeWindow)) {
-				idleUsers.add(user);
+				idleUsersList.add(user);
 			} else {
-				activeUsers.add(user);
+				activeUsersList.add(user);
 			}
 		}
-		this.header.setText("Active (" + activeUsers.size() + ")");
-		if (!activeUsers.isEmpty()) {
-			activeUsers.sort(new CompareActiveUsers());
+		this.header.setText("Active (" + activeUsersList.size() + ")");
+		if (!activeUsersList.isEmpty()) {
+			Collections.sort(activeUsersList, new CompareActiveUsers());
 		}
-		if (!idleUsers.isEmpty()) {
-			idleUsers.sort(new CompareIdleUsers());
+		if (!idleUsersList.isEmpty()) {
+			Collections.sort(idleUsersList, new CompareIdleUsers());
 		}
 
 		this.userListModel.removeAllElements();
-		for (final User user : activeUsers) {
+		for (final User user : activeUsersList) {
 			this.userListModel.addElement(user);
 		}
 
 		User idleUser = new User();
-		idleUser.setUserName("Idle (" + idleUsers.size() + ")");
+		idleUser.setUserName("Idle (" + idleUsersList.size() + ")");
 		idleUser.setRole(Role.IDLE);
 		this.userListModel.addElement(idleUser);
 
-		for (final User user : idleUsers) {
+		for (final User user : idleUsersList) {
 			this.userListModel.addElement(user);
 		}
 	}
