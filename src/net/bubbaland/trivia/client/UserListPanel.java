@@ -6,7 +6,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
 import java.awt.Insets;
-import java.time.Duration;
+// import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Properties;
@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
+import org.joda.time.Duration;
 import net.bubbaland.trivia.User;
 import net.bubbaland.trivia.User.Role;
 
@@ -146,10 +147,10 @@ public class UserListPanel extends TriviaMainPanel {
 		ArrayList<User> idleUsers = new ArrayList<User>();
 
 		Duration timeSinceLastActive = this.client.getUser().timeSinceLastActive();
-		Duration activeWindow = Duration.ofSeconds(UserListPanel.this.client.getTimeToIdle());
+		Duration activeWindow = Duration.standardSeconds(UserListPanel.this.client.getTimeToIdle());
 
 		for (User user : this.client.getUserList()) {
-			if (!activeWindow.isZero() && timeSinceLastActive.compareTo(activeWindow) > 0) {
+			if (activeWindow != Duration.ZERO && timeSinceLastActive.isLongerThan(activeWindow)) {
 				idleUsers.add(user);
 			} else {
 				activeUsers.add(user);
@@ -244,9 +245,9 @@ public class UserListPanel extends TriviaMainPanel {
 
 			Duration timeSinceLastActive = user.timeSinceLastActive();
 			Duration timeSinceLastRollChange = user.timeSinceLastRollChange();
-			Duration activeWindow = Duration.ofSeconds(UserListPanel.this.client.getTimeToIdle());
+			Duration activeWindow = Duration.standardSeconds(UserListPanel.this.client.getTimeToIdle());
 
-			if (!activeWindow.isZero() && timeSinceLastActive.compareTo(activeWindow) > 0) {
+			if (activeWindow != Duration.ZERO && timeSinceLastActive.isLongerThan(activeWindow)) {
 				// Idle User
 				color = idleColor;
 			}
@@ -269,11 +270,11 @@ public class UserListPanel extends TriviaMainPanel {
 	}
 
 	private static String durationToString(Duration duration) {
-		String durationString = duration.getSeconds() % 60 + "s";
-		if (duration.toMinutes() > 0) {
-			durationString = duration.toMinutes() % 60 + "m " + durationString;
-			if (duration.toHours() > 0) {
-				durationString = duration.toHours() + "h " + durationString;
+		String durationString = duration.getStandardSeconds() + "s";
+		if (duration.getStandardMinutes() > 0) {
+			durationString = duration.getStandardMinutes() % 60 + "m " + durationString;
+			if (duration.getStandardHours() > 0) {
+				durationString = duration.getStandardHours() + "h " + durationString;
 			}
 		}
 		return durationString;
