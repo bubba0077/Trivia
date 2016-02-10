@@ -66,8 +66,6 @@ public class User implements Serializable {
 	}
 
 	public Duration timeSinceLastActive() {
-		System.out.println(this.lastActive + " " + DateTime.now(DateTimeZone.UTC));
-		System.out.println("Duration: " + new Duration(this.lastActive, DateTime.now(DateTimeZone.UTC)));
 		return new Duration(this.lastActive, DateTime.now(DateTimeZone.UTC));
 	}
 

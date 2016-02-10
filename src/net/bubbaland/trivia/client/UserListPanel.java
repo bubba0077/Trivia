@@ -270,7 +270,7 @@ public class UserListPanel extends TriviaMainPanel {
 	}
 
 	private static String durationToString(Duration duration) {
-		String durationString = duration.getStandardSeconds() + "s";
+		String durationString = duration.getStandardSeconds() % 60 + "s";
 		if (duration.getStandardMinutes() > 0) {
 			durationString = duration.getStandardMinutes() % 60 + "m " + durationString;
 			if (duration.getStandardHours() > 0) {
