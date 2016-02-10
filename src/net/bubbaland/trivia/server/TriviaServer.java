@@ -345,6 +345,7 @@ public class TriviaServer {
 				break;
 			case RESTART_TIMER:
 				this.restartTimer();
+				TriviaServer.log("Timers restarted by " + user.getUserName());
 				break;
 			case SET_N_VISUAL:
 				this.trivia.setNVisual(message.getNVisual());

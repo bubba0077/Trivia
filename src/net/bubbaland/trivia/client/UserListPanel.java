@@ -254,8 +254,10 @@ public class UserListPanel extends TriviaMainPanel {
 			final String activeTimestamp = durationToString(timeSinceLastActive);
 			final String rollTimestamp = durationToString(timeSinceLastRollChange);
 
-			this.setToolTipText("<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Idle for " + activeTimestamp
-					+ "<BR>In role for " + rollTimestamp + "</html>");
+			if (user.getRole() != Role.IDLE) {
+				this.setToolTipText("<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Idle for "
+						+ activeTimestamp + "<BR>In role for " + rollTimestamp + "</html>");
+			}
 
 			// Set the color
 			this.setForeground(color);
