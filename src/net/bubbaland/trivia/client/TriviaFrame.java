@@ -867,7 +867,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						TriviaFrame.this.client.sendMessage(ClientMessageFactory.setTeamNumber(nVisual));
+						TriviaFrame.this.client.sendMessage(ClientMessageFactory.setNVisual(nVisual));
 						return null;
 					}
 
@@ -879,32 +879,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			default:
 				this.gui.log("Unknown state change registered in TriviaFrame");
 		}
-
-		// if (e.getSource().equals(this.tabbedPane)) {
-		// if (this.tabbedPane.getTabCount() == 1) {
-		// // If there are no tabs left, hide the frame
-		// this.setVisible(false);
-		// // Wait 100 ms to see if the tab is added back, then close if there are still no tabs
-		// final Timer timer = new Timer(100, new ActionListener() {
-		// @Override
-		// public void actionPerformed(ActionEvent e) {
-		// if (!TriviaFrame.this.isVisible()) {
-		// DnDTabbedPane.unregisterTabbedPane(TriviaFrame.this.tabbedPane);
-		// TriviaFrame.this.gui.unregisterWindow(TriviaFrame.this);
-		// TriviaFrame.this.dispose();
-		// }
-		// }
-		// });
-		// timer.setRepeats(false);
-		// timer.start();
-		// } else {
-		// this.setVisible(true);
-		// }
-		// } else if (e.getSource().equals(this.idleSpinner)) {
-		// final int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue();
-		// TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
-		// this.client.setIdleTime(timeToIdle);
-		// }
 	}
 
 	public void updateGUI(boolean forceUpdate) {
