@@ -262,6 +262,10 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				new BigInteger(properties.getProperty("OpenQuestions.Footer.Active.Color"), 16).intValue());
 		this.footerBackgroundColor = new Color(
 				new BigInteger(properties.getProperty("OpenQuestions.Footer.BackgroundColor"), 16).intValue());
+		this.correctColor = new Color(
+				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
+		this.incorrectColor = new Color(
+				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
 
 		/**
 		 * Sizes
