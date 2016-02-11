@@ -456,7 +456,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		// Put the status bar at the bottom and do not adjust the size of the status bar
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		constraints.weightx = 0.0;
+		constraints.weightx = 1.0;
 		constraints.weighty = 0.0;
 
 		/**
@@ -752,6 +752,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		final int height = Integer.parseInt(this.loadProperty(id, "StatusBar.Height"));
 		final float fontSize = Float.parseFloat(this.loadProperty(id, "StatusBar.FontSize"));
 		this.statusBar.getParent().setPreferredSize(new Dimension(0, height));
+		this.statusBar.getParent().setMinimumSize(new Dimension(0, height));
 		this.statusBar.setFont(this.statusBar.getFont().deriveFont(fontSize));
 
 		// Apply colors to role menu items
