@@ -79,7 +79,7 @@ public class Trivia implements Serializable {
 		}
 		this.rNumber = 1;
 		this.nTeams = 100;
-		this.nVisual = 20;
+		this.nVisual = 50;
 	}
 
 	@JsonCreator
@@ -1187,7 +1187,8 @@ public class Trivia implements Serializable {
 		boolean[] visualTriviaUsed = new boolean[this.nVisual];
 		for (Round r : rounds) {
 			for (Question q : r.getQuestions()) {
-				if (q.getVisualTrivia() != 0) {
+				if (q.getVisualTrivia() != 0 && q.getVisualTrivia() <= this.nVisual) {
+
 					visualTriviaUsed[q.getVisualTrivia() - 1] = true;
 				}
 			}
