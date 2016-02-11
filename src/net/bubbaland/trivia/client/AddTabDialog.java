@@ -167,7 +167,9 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 				i++;
 			}
 			// Add the tab to the tabbed pane
-			this.frame.getTabbedPane().addTab(altName, this.gui.getTab(this.frame, tabName));
+			TriviaMainPanel newTab = this.gui.getTab(this.frame, tabName);
+			this.frame.getTabbedPane().addTab(altName, newTab);
+			newTab.updateGUI(true);
 			// Make the new tab the selected one
 			final int tabLocation = pane.indexOfTab(altName);
 			pane.setSelectedIndex(tabLocation);

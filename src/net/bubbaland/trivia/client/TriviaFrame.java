@@ -118,7 +118,9 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		this(client, gui);
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		for (final String tabName : initialTabs) {
-			this.tabbedPane.addTab(tabName, gui.getTab(this, tabName.replaceFirst(" \\([0-9]*\\)", "")));
+			TriviaMainPanel newTab = gui.getTab(this, tabName.replaceFirst(" \\([0-9]*\\)", ""));
+			this.tabbedPane.addTab(tabName, newTab);
+			newTab.updateGUI(true);
 		}
 		this.tabbedPane.setSelectedIndex(0);
 		this.tabbedPane.addChangeListener(this);
