@@ -11,10 +11,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigInteger;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.function.IntPredicate;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -560,12 +560,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			}
 
 
-			if (!Arrays.stream(openQuestionNumbers).anyMatch(new IntPredicate() {
-				@Override
-				public boolean test(int i) {
-					return i == OpenQuestionsSubPanel.this.client.getUser().getEffort();
-				}
-			})) {
+			if (!Arrays.asList(IntBuffer.wrap(openQuestionNumbers))
+					.contains((Integer) OpenQuestionsSubPanel.this.client.getUser().getEffort())) {
 				this.client.getUser().setEffort(0);
 			}
 
@@ -605,7 +601,11 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			}
 
 			// Blank unused lines and hide buttons (except one Open button)
-			for (int q = nOpen; q < this.nQuestionsMax; q++) {
+			for (
+
+			int q = nOpen; q < this.nQuestionsMax; q++)
+
+			{
 				this.qValueLabels[q].setText("");
 				this.answerButtons[q].setText("");
 				this.answerButtons[q].setName("");
@@ -628,12 +628,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				this.qTextPanes[q].setName("");
 			}
 
-			int nQuestionsShow;
-			if (trivia.nUnopened() > 0) {
-				nQuestionsShow = nOpen + 1;
-			} else {
-				nQuestionsShow = nOpen;
-			}
+			int nQuestionsShow = trivia.nUnopened() > 0 ? nOpen + 1 : nOpen;
 
 			// Show rows equal to the greater of the number of questions to show and the number of open questions
 			for (int q = 0; q < nQuestionsShow; q++) {
