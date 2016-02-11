@@ -1188,7 +1188,6 @@ public class Trivia implements Serializable {
 		for (Round r : rounds) {
 			for (Question q : r.getQuestions()) {
 				if (q.getVisualTrivia() != 0 && q.getVisualTrivia() <= this.nVisual) {
-
 					visualTriviaUsed[q.getVisualTrivia() - 1] = true;
 				}
 			}

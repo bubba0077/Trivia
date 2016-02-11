@@ -20,12 +20,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -60,8 +59,6 @@ public class TriviaGUI implements WindowListener {
 	final static private String		SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
 	final static private String		SETTINGS_VERSION			= "24";
-	// Calendar to track date
-	final static private Calendar	TIME						= Calendar.getInstance();
 	// Format for log timestamps
 	static private SimpleDateFormat	TIMESTAMP_FORMAT;
 
@@ -342,7 +339,7 @@ public class TriviaGUI implements WindowListener {
 	 *            Message to log
 	 */
 	public void log(String message) {
-		final String timestamp = TIMESTAMP_FORMAT.format(TIME.getTime());
+		final String timestamp = TIMESTAMP_FORMAT.format(new Date());
 		for (final TriviaFrame panel : this.windowList) {
 			// Display message in status bar
 			panel.log(timestamp + " " + message);
