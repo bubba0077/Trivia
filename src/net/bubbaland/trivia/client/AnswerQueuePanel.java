@@ -1223,7 +1223,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						null);
 				setLabelProperties(this.submitterLabels.get(a), subCallerWidth, rowHeight / 2, null, null, fontSize);
 				setTextPaneProperties(this.operatorTextPanes.get(a), operatorWidth, rowHeight, null, null, fontSize);
-				setPanelProperties((JPanel) this.operatorTextPanes.get(a).getParent(), operatorWidth, rowHeight, null);
 				setLabelProperties(this.callerLabels.get(a), subCallerWidth, rowHeight / 2, null, null, fontSize);
 
 				setPanelProperties((JPanel) this.statusComboBoxes.get(a).getParent(), statusWidth, rowHeight, null);

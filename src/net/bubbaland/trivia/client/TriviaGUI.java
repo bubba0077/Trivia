@@ -58,7 +58,7 @@ public class TriviaGUI implements WindowListener {
 	// File name to store window positions
 	final static private String		SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String		SETTINGS_VERSION			= "24";
+	final static private String		SETTINGS_VERSION			= "25";
 	// Format for log timestamps
 	static private SimpleDateFormat	TIMESTAMP_FORMAT;
 
@@ -382,6 +382,7 @@ public class TriviaGUI implements WindowListener {
 	public void resetProperties() {
 		loadDefaults();
 		this.loadProperties();
+		this.updateGUI(true);
 	}
 
 	/**
