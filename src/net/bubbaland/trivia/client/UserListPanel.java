@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -56,6 +59,8 @@ public class UserListPanel extends TriviaMainPanel {
 	private final DefaultListModel<User>	userListModel;
 	private final JList<User>				userList;
 
+	private ScheduledExecutorService		timer;
+
 	public UserListPanel(TriviaClient client, TriviaFrame parent) {
 		super(client, parent);
 
@@ -96,6 +101,14 @@ public class UserListPanel extends TriviaMainPanel {
 		this.add(pane, constraints);
 
 		this.loadProperties(TriviaGUI.PROPERTIES);
+
+		this.timer = Executors.newSingleThreadScheduledExecutor();
+		this.timer.scheduleWithFixedDelay(new Runnable() {
+			@Override
+			public void run() {
+				UserListPanel.this.updateGUI();
+			}
+		}, 5, 5, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -247,18 +260,24 @@ public class UserListPanel extends TriviaMainPanel {
 			Duration timeSinceLastRollChange = user.timeSinceLastRollChange();
 			Duration activeWindow = Duration.standardSeconds(UserListPanel.this.client.getTimeToIdle());
 
-			if (activeWindow != Duration.ZERO && timeSinceLastActive.isLongerThan(activeWindow)) {
-				// Idle User
-				color = idleColor;
-			}
-
 			final String activeTimestamp = durationToString(timeSinceLastActive);
 			final String rollTimestamp = durationToString(timeSinceLastRollChange);
 
+			String tooltipText = null;
+
 			if (user.getRole() != Role.IDLE) {
-				this.setToolTipText("<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Idle for "
-						+ activeTimestamp + "<BR>In role for " + rollTimestamp + "</html>");
+				// Don't set tooltip for dummy user idle separator
+				if (activeWindow != Duration.ZERO && timeSinceLastActive.isLongerThan(activeWindow)) {
+					// Idle User
+					tooltipText = "<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Idle for "
+							+ activeTimestamp + "<BR>In role for " + rollTimestamp + "</html>";
+					color = idleColor;
+				} else {
+					tooltipText = "<html>" + userName + "<BR>Idle for " + activeTimestamp + "</html>";
+				}
 			}
+
+			this.setToolTipText(tooltipText);
 
 			// Set the color
 			this.setForeground(color);
