@@ -582,8 +582,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 					this.lastEffort.set(q, openQuestions[q].getEffort(userList));
 					final int nEffort = openQuestions[q].getEffort(userList) == null ? 0 : openQuestions[q]
 							.getEffort(userList).length;
-					String lastEffortString = "<html><div align=center>" + nEffort + " Users Working on Q"
-							+ openQuestionNumbers[q] + "</div>";
+					String lastEffortString = "<html><div align=center>" + nEffort + ( nEffort == 1 ? "User" : "Users" )
+							+ " Working on Q" + openQuestionNumbers[q] + "</div>";
 					if (this.lastEffort.get(q) != null) {
 						for (User user : this.lastEffort.get(q)) {
 							lastEffortString = lastEffortString + user.getUserName() + "<BR/>";
