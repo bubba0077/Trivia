@@ -329,7 +329,7 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 	public void updateGUI(boolean forceUpdate) {
 		if (this.client.getTrivia().getLastAnnounced() != this.lastAnnounced) {
 			this.lastAnnounced = this.client.getTrivia().getLastAnnounced();
-			this.roundSpinner.setValue(this.lastAnnounced - 1);
+			this.roundSpinner.setValue(this.lastAnnounced);
 			forceUpdate = true;
 		}
 		this.standingsSubPanel.updateGUI(forceUpdate);
