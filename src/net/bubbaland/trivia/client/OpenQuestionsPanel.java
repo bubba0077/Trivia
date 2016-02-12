@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigInteger;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
@@ -559,9 +558,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				anyUpdate = anyUpdate || qUpdated[q];
 			}
 
-
-			if (!Arrays.asList(IntBuffer.wrap(openQuestionNumbers))
-					.contains((Integer) OpenQuestionsSubPanel.this.client.getUser().getEffort())) {
+			if (Arrays.binarySearch(openQuestionNumbers, OpenQuestionsSubPanel.this.client.getUser().getEffort()) < 0) {
 				this.client.getUser().setEffort(0);
 			}
 
@@ -601,11 +598,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			}
 
 			// Blank unused lines and hide buttons (except one Open button)
-			for (
-
-			int q = nOpen; q < this.nQuestionsMax; q++)
-
-			{
+			for (int q = nOpen; q < this.nQuestionsMax; q++) {
 				this.qValueLabels[q].setText("");
 				this.answerButtons[q].setText("");
 				this.answerButtons[q].setName("");
