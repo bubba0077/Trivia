@@ -478,7 +478,6 @@ public class TriviaServer {
 					e.printStackTrace();
 				}
 			}
-			// }, 10, 10, TimeUnit.SECONDS);
 		}, this.saveFrequency, this.saveFrequency, TimeUnit.SECONDS);
 
 		this.standingsTimer = Executors.newSingleThreadScheduledExecutor();
