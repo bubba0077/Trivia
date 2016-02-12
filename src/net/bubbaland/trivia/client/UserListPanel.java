@@ -147,10 +147,10 @@ public class UserListPanel extends TriviaMainPanel {
 		ArrayList<User> activeUsersList = new ArrayList<User>();
 		ArrayList<User> idleUsersList = new ArrayList<User>();
 
-		Duration timeSinceLastActive = this.client.getUser().timeSinceLastActive();
-		Duration activeWindow = Duration.standardSeconds(UserListPanel.this.client.getTimeToIdle());
+		final Duration activeWindow = Duration.standardSeconds(UserListPanel.this.client.getTimeToIdle());
 
 		for (User user : this.client.getUserList()) {
+			final Duration timeSinceLastActive = this.client.getUser().timeSinceLastActive();
 			if (activeWindow != Duration.ZERO && timeSinceLastActive.isLongerThan(activeWindow)) {
 				idleUsersList.add(user);
 			} else {
@@ -220,7 +220,6 @@ public class UserListPanel extends TriviaMainPanel {
 			this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
 
 			// Determine color based on the user role
-			// int activeWindow = UserListPanel.this.client.getTimeToIdle() * 1000;
 			User user = (User) userName;
 
 			switch (user.getRole()) {
