@@ -17,7 +17,6 @@ TeamNumber=0
 ServerURL=www.bubbaland.net
 SaveFrequency=300
 StandingsFrequency=60
-IdleFrequency=30
 SaveDir=saves
 ChartDir=charts
 StandingsURL=http://www.kvsc.org/trivia/points/hour

@@ -45,7 +45,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	/** The Constant serialVersionUID. */
 	private static final long				serialVersionUID	= 6049067322505905668L;
 
-	private final JLabel					qNumberLabel, valueLabel, questionLabel, visualTriviaLabel;
+	private final JLabel					qNumberLabel, effortLabel, valueLabel, questionLabel, visualTriviaLabel;
 	private final JLabel[]					statusLabels;
 
 	private JLabel							spacerLabel;
@@ -58,7 +58,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	private static final GridBagConstraints	buttonConstraints	= new GridBagConstraints();
 
 	static {
-		buttonConstraints.fill = GridBagConstraints.BOTH;
 		buttonConstraints.anchor = GridBagConstraints.CENTER;
 		buttonConstraints.weightx = 1.0;
 		buttonConstraints.weighty = 1.0;
@@ -102,9 +101,13 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 		constraints.gridx = 1;
 		constraints.gridy = 0;
-		this.valueLabel = this.enclosedLabel("Value", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.effortLabel = this.enclosedLabel("W", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 2;
+		constraints.gridy = 0;
+		this.valueLabel = this.enclosedLabel("Value", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+
+		constraints.gridx = 3;
 		constraints.gridy = 0;
 		constraints.weightx = 1.0;
 		this.questionLabel = this.enclosedLabel("Question", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
@@ -113,14 +116,14 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		final int nQuestions = this.client.getTrivia().getMaxQuestions();
 		this.statusLabels = new JLabel[nQuestions];
 		for (int q = 1; q <= nQuestions; q++) {
-			constraints.gridx = 2 + q;
+			constraints.gridx = 3 + q;
 			this.statusLabels[q - 1] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
 					SwingConstants.CENTER);
 		}
 
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		constraints.gridwidth = 3 + nQuestions;
+		constraints.gridwidth = 4 + nQuestions;
 		constraints.weighty = 1.0;
 
 		/**
@@ -140,7 +143,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		 */
 		constraints.gridx = 0;
 		constraints.gridy = 2;
-		constraints.gridwidth = 3 + nQuestions;
+		constraints.gridwidth = 4 + nQuestions;
 		this.visualTriviaPanel = new TriviaPanel(new GridBagLayout());
 		this.add(visualTriviaPanel, constraints);
 
@@ -270,10 +273,12 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		/**
 		 * Sizes
 		 */
-				final int headerHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Header.Height"));
+
+		final int headerHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Header.Height"));
 		final int rowHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Row.Height"));
 
 		final int qNumWidth = Integer.parseInt(properties.getProperty("OpenQuestions.QNumber.Width"));
+		final int effortWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Effort.Width"));
 		final int valueWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Value.Width"));
 		final int questionWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Question.Width"));
 		this.statusWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Header.Status.Width"));
@@ -293,6 +298,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		final int questionsShow = Integer.parseInt(properties.getProperty("OpenQuestions.QuestionsShow"));
 
 		setLabelProperties(this.qNumberLabel, qNumWidth, headerHeight, headerColor, headerBackgroundColor,
+				headerFontSize);
+		setLabelProperties(this.effortLabel, effortWidth, headerHeight, headerColor, headerBackgroundColor,
 				headerFontSize);
 		setLabelProperties(this.valueLabel, valueWidth, headerHeight, headerColor, headerBackgroundColor,
 				headerFontSize);
@@ -325,6 +332,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		/**
 		 * GUI Elements that will need to be updated
 		 */
+		private final JLabel[]			effortLabels;
 		private final JLabel[]			qValueLabels;
 		private final QuestionPane[]	qTextPanes;
 		private final JButton[]			answerButtons, closeButtons;
@@ -390,6 +398,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			 * Create the GUI elements
 			 */
 			this.qNumberButtons = new JToggleButton[this.nQuestionsMax];
+			this.effortLabels = new JLabel[this.nQuestionsMax];
 			this.qValueLabels = new JLabel[this.nQuestionsMax];
 			this.qTextPanes = new QuestionPane[this.nQuestionsMax];
 			this.answerButtons = new JButton[this.nQuestionsMax];
@@ -410,11 +419,16 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 				constraints.gridx = 1;
 				constraints.gridy = q;
+				this.effortLabels[q] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
+						SwingConstants.BOTTOM);
+
+				constraints.gridx = 2;
+				constraints.gridy = q;
 				this.qValueLabels[q] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
 						SwingConstants.CENTER);
 				this.qValueLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
-				constraints.gridx = 2;
+				constraints.gridx = 3;
 				constraints.gridy = q;
 				constraints.weightx = 1.0;
 				this.qTextPanes[q] = this.hyperlinkedTextPane(this.client, "", constraints,
@@ -424,7 +438,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				this.qTextPanes[q].addMouseListener(new PopupListener(this.contextMenu));
 				constraints.weightx = 0.0;
 
-				constraints.gridx = 3;
+				constraints.gridx = 4;
 				constraints.gridy = q;
 				panel = new JPanel(new GridBagLayout());
 				this.add(panel, constraints);
@@ -435,7 +449,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				this.answerButtons[q].setActionCommand("Answer");
 				this.answerButtons[q].addActionListener(this);
 
-				constraints.gridx = 4;
+				constraints.gridx = 5;
 				constraints.gridy = q;
 				panel = new JPanel(new GridBagLayout());
 				this.add(panel, constraints);
@@ -453,7 +467,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			 */
 			constraints.gridx = 0;
 			constraints.gridy = this.nQuestionsMax;
-			constraints.gridwidth = 5;
+			constraints.gridwidth = 6;
 			constraints.weightx = 1.0;
 			constraints.weighty = 1.0;
 			this.spacer = new JPanel();
@@ -573,21 +587,22 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			for (int q = 0; q < nOpen; q++) {
 				if (qUpdated[q] || force) {
 					this.lastEffort.set(q, openQuestions[q].getEffort(userList));
-					String lastEffortString = "<html><div align=center>Users Working on Q" + openQuestionNumbers[q]
-							+ "</div>";
+					final int nEffort = openQuestions[q].getEffort(userList) == null ? 0 : openQuestions[q]
+							.getEffort(userList).length;
+					String lastEffortString = "<html><div align=center>" + nEffort + " Users Working on Q"
+							+ openQuestionNumbers[q] + "</div>";
 					if (this.lastEffort.get(q) != null) {
 						for (User user : this.lastEffort.get(q)) {
 							lastEffortString = lastEffortString + user.getUserName() + "<BR/>";
 						}
-					} else {
-						lastEffortString = lastEffortString + "none" + "<BR/>";
 					}
 					lastEffortString = lastEffortString + "</html>";
 
-					this.qNumberButtons[q].setToolTipText(lastEffortString);
 					this.qNumberButtons[q].setText(openQuestionNumbers[q] + "");
 					this.qNumberButtons[q].setEnabled(true);
 					this.qNumberButtons[q].setSelected(this.client.getUser().getEffort() == openQuestionNumbers[q]);
+					this.effortLabels[q].setText(nEffort + "");
+					this.effortLabels[q].setToolTipText(lastEffortString);
 					this.qValueLabels[q].setText(openQuestionValues[q]);
 					this.qTextPanes[q].setText(openQuestionText[q]);
 					this.answerButtons[q].setText("Answer");
@@ -606,6 +621,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 			// Blank unused lines and hide buttons (except one Open button)
 			for (int q = nOpen; q < this.nQuestionsMax; q++) {
+				this.effortLabels[q].setText("");
 				this.qValueLabels[q].setText("");
 				this.answerButtons[q].setText("");
 				this.answerButtons[q].setName("");
@@ -616,6 +632,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				this.qNumberButtons[q].setEnabled(false);
 				if (q == nOpen && trivia.nUnopened() > 0) {
 					this.qNumberButtons[q].setText(trivia.nextToOpen() + "");
+					this.effortLabels[q].setToolTipText(null);
 					this.qTextPanes[q].setText("Next to open");
 					this.closeButtons[q].setVisible(true);
 				} else {
@@ -638,10 +655,12 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			// Show rows equal to the greater of the number of questions to show and the number of open questions
 			for (int q = 0; q < nQuestionsShow; q++) {
 				this.qNumberButtons[q].setVisible(true);
+				this.effortLabels[q].setVisible(true);
 				this.qValueLabels[q].setVisible(true);
 				this.qTextPanes[q].setVisible(true);
 
 				this.qNumberButtons[q].getParent().setVisible(true);
+				this.effortLabels[q].getParent().setVisible(true);
 				this.qValueLabels[q].getParent().setVisible(true);
 				this.qTextPanes[q].setVisible(true);
 				this.qTextPanes[q].getParent().setVisible(true);
@@ -653,10 +672,12 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			// Hide the rest of the rows
 			for (int q = nQuestionsShow; q < this.nQuestionsMax; q++) {
 				this.qNumberButtons[q].setVisible(false);
+				this.effortLabels[q].setVisible(false);
 				this.qValueLabels[q].setVisible(false);
 				this.qTextPanes[q].setVisible(false);
 
 				this.qNumberButtons[q].getParent().setVisible(false);
+				this.effortLabels[q].getParent().setVisible(false);
 				this.qValueLabels[q].getParent().setVisible(false);
 				this.qTextPanes[q].setVisible(false);
 				this.qTextPanes[q].getParent().setVisible(false);
@@ -686,8 +707,10 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			/**
 			 * Sizes
 			 */
-					final int rowHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Row.Height"));
+
+			final int rowHeight = Integer.parseInt(properties.getProperty("OpenQuestions.Row.Height"));
 			final int qNumWidth = Integer.parseInt(properties.getProperty("OpenQuestions.QNumber.Width"));
+			final int effortWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Effort.Width"));
 			final int questionWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Question.Width"));
 			final int valueWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Value.Width"));
 			final int answerWidth = Integer.parseInt(properties.getProperty("OpenQuestions.AnswerCol.Width"));
@@ -706,6 +729,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			 * Font sizes
 			 */
 			final float qNumFontSize = Float.parseFloat(properties.getProperty("OpenQuestions.QNumber.FontSize"));
+			final float effortFontSize = Float.parseFloat(properties.getProperty("OpenQuestions.Effort.FontSize"));
 			final float valueFontSize = Float.parseFloat(properties.getProperty("OpenQuestions.Value.FontSize"));
 			final float questionFontSize = Float.parseFloat(properties.getProperty("OpenQuestions.Question.FontSize"));
 
@@ -721,6 +745,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 				setPanelProperties((JPanel) this.qNumberButtons[q].getParent(), qNumWidth, rowHeight, bColor);
 				setButtonProperties(this.qNumberButtons[q], qNumWidth, rowHeight, null, qNumFontSize);
+				setLabelProperties(this.effortLabels[q], effortWidth, rowHeight, color, bColor, effortFontSize);
 				setLabelProperties(this.qValueLabels[q], valueWidth, rowHeight, color, bColor, valueFontSize);
 				setTextPaneProperties(this.qTextPanes[q], questionWidth, rowHeight, color, bColor, questionFontSize);
 				setPanelProperties((JPanel) this.answerButtons[q].getParent(), answerWidth, rowHeight, bColor);
