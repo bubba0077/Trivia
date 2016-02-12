@@ -3,6 +3,8 @@ package net.bubbaland.trivia.client;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Random;
+
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.websocket.ClientEndpoint;
@@ -58,6 +60,7 @@ public class TriviaClient implements Runnable {
 		this.serverURL = serverURL;
 		this.session = null;
 		this.user = new User();
+		this.setUserName("User" + String.format("%05d", new Random().nextInt(99999)));
 		this.userList = new User[0];
 		this.trivia = null;
 		this.timeToIdle = Integer.parseInt(TriviaGUI.PROPERTIES.getProperty("UserList.timeToIdle"));
@@ -162,6 +165,7 @@ public class TriviaClient implements Runnable {
 
 			}
 		} ).execute();
+		this.gui.log("Name set to " + userName);
 	}
 
 	public void sendMessage(ClientMessage message) {

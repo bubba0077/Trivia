@@ -96,13 +96,13 @@ public class UserLoginDialog extends TriviaDialogPanel {
 	@Override
 	public void windowClosed(WindowEvent event) {
 		super.windowClosed(event);
+
 		// Set the user name to input value
 		final String userName = this.userTextField.getText();
 
-		// If the OK button was pressed, add the proposed answer to the queue
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 
-		if (option != JOptionPane.CLOSED_OPTION) {
+		if (option == JOptionPane.OK_OPTION) {
 			// Check if name is already being used
 			while (this.client.getUserList() == null) {
 				try {
@@ -111,6 +111,7 @@ public class UserLoginDialog extends TriviaDialogPanel {
 					// Nothing to do
 				}
 			}
+
 			if (this.client.getUserNameList().contains(userName)) {
 				final int confirm = JOptionPane.showConfirmDialog(null,
 						"The name \"" + userName
@@ -127,12 +128,7 @@ public class UserLoginDialog extends TriviaDialogPanel {
 			} else {
 				new UserLoginDialog(this.client);
 			}
-		} else {
-			if (this.client.getUser().getUserName() == null) {
-				System.exit(0);
-			}
 		}
-
 	}
 
 }
