@@ -183,10 +183,6 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 					this.teamLabels[t].setText("");
 					this.scoreLabels[t].setText("");
 					this.pointsBackLabels[t].setText("");
-					this.placeLabels[t].setForeground(this.foregroundColor);
-					this.teamLabels[t].setForeground(this.foregroundColor);
-					this.scoreLabels[t].setForeground(this.foregroundColor);
-					this.pointsBackLabels[t].setForeground(this.foregroundColor);
 				}
 				return;
 			}
@@ -195,10 +191,10 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 
 			final int maxScore = standings[0].getScore();
 
-			for (int t = 0; t < nTeams; t++) {
+			for (int t = 0; t < this.nTeams; t++) {
 				ScoreEntry entry = standings[t];
 				String teamName = entry.getTeamName();
-				int score = entry.getScore();
+				final int score = entry.getScore();
 				if (t > 0 && entry.getPlace() == standings[t - 1].getPlace()) {
 					this.placeLabels[t].setText("");
 				} else {
@@ -206,7 +202,7 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 				}
 				this.teamLabels[t].setText(teamName);
 				this.scoreLabels[t].setText(score + "");
-				int pointsBack = maxScore - score;
+				final int pointsBack = maxScore - score;
 				this.pointsBackLabels[t].setText(pointsBack + "");
 				if (teamName.equalsIgnoreCase(StandingsPanel.this.client.getTrivia().getTeamName())) {
 					this.placeLabels[t].setForeground(this.highlightColor);
@@ -219,8 +215,8 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 					this.scoreLabels[t].setForeground(this.foregroundColor);
 					this.pointsBackLabels[t].setForeground(this.foregroundColor);
 				}
-
 			}
+
 
 		}
 
@@ -229,25 +225,25 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 
 			if (this.placeLabels != null) {
 				for (JLabel placeLabel : this.placeLabels) {
-					this.remove(placeLabel);
+					this.remove(placeLabel.getParent());
 				}
 			}
 
 			if (this.teamLabels != null) {
 				for (JLabel teamLabel : this.teamLabels) {
-					this.remove(teamLabel);
+					this.remove(teamLabel.getParent());
 				}
 			}
 
 			if (this.scoreLabels != null) {
 				for (JLabel scoreLabel : this.scoreLabels) {
-					this.remove(scoreLabel);
+					this.remove(scoreLabel.getParent());
 				}
 			}
 
 			if (this.pointsBackLabels != null) {
 				for (JLabel pointsBackLabel : this.pointsBackLabels) {
-					this.remove(pointsBackLabel);
+					this.remove(pointsBackLabel.getParent());
 				}
 			}
 
@@ -365,7 +361,7 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		updateGUI(false);
+		this.updateGUI(false);
 	}
 
 	@Override
