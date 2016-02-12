@@ -267,11 +267,11 @@ public class UserListPanel extends TriviaMainPanel {
 				// Don't set tooltip for dummy user idle separator
 				if (!activeWindow.isZero() && timeSinceLastActive.compareTo(activeWindow) > 0) {
 					// Idle User
-					tooltipText = "<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Idle for "
-							+ activeTimestamp + "<BR>In role for " + rollTimestamp + "</html>";
+					tooltipText = "<html>" + userName + "<BR>Idle for " + activeTimestamp + "</html>";
 					color = idleColor;
 				} else {
-					tooltipText = "<html>" + userName + "<BR>Idle for " + activeTimestamp + "</html>";
+					tooltipText = "<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Idle for "
+							+ activeTimestamp + "<BR>In role for " + rollTimestamp + "</html>";
 				}
 			}
 
