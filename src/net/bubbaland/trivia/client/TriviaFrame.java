@@ -850,6 +850,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				final int timeToIdle = ( (Integer) this.idleSpinner.getValue() ).intValue();
 				TriviaGUI.PROPERTIES.setProperty("UserList.timeToIdle", timeToIdle + "");
 				this.client.setIdleTime(timeToIdle);
+				this.gui.log("Idle threshold changed to " + timeToIdle + "s");
 				break;
 			case "Team Number Spinner":
 				final int teamNumber = ( (Integer) this.teamNumberSpinner.getValue() ).intValue();
@@ -857,6 +858,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 					@Override
 					public Void doInBackground() {
 						TriviaFrame.this.client.sendMessage(ClientMessageFactory.setTeamNumber(teamNumber));
+						TriviaFrame.this.gui.log("Team number changed to " + teamNumber);
 						return null;
 					}
 
@@ -871,6 +873,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 					@Override
 					public Void doInBackground() {
 						TriviaFrame.this.client.sendMessage(ClientMessageFactory.setNVisual(nVisual));
+						TriviaFrame.this.gui.log("Number of visual trivia changed to " + nVisual);
 						return null;
 					}
 
