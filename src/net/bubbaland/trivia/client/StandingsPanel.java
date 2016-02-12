@@ -1,29 +1,27 @@
 package net.bubbaland.trivia.client;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
+import javax.swing.JSpinner;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.bubbaland.trivia.ScoreEntry;
 
-public class StandingsPanel extends TriviaMainPanel implements ItemListener {
+public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 
 	/** The Constant serialVersionUID. */
 	final private static long		serialVersionUID	= -5094201314926851039L;
@@ -32,7 +30,7 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 	 * GUI Elements that will need to be updated
 	 */
 	private final JLabel			roundLabel, placeLabel, teamNameLabel, scoreLabel, pointsBackLabel, spacer;
-	private final JComboBox<String>	roundSelector;
+	private final JSpinner			roundSpinner;
 	private final StandingsSubPanel	standingsSubPanel;
 	private final JScrollPane		scrollPane;
 
@@ -41,7 +39,6 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 	 */
 	private int						nRounds, lastAnnounced;
 
-	@SuppressWarnings("unchecked")
 	public StandingsPanel(TriviaClient client, TriviaFrame parent) {
 		super(client, parent);
 
@@ -80,17 +77,14 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 		for (int r = 0; r < this.nRounds; r++) {
 			rNumbers[r] = ( r + 1 ) + "";
 		}
-		this.roundSelector = new JComboBox<String>(rNumbers);
-		this.roundSelector
-				.setRenderer(new RoundCellRenderer((ListCellRenderer<String>) this.roundSelector.getRenderer()));
-		this.roundSelector.setSelectedIndex(0);
-		this.roundSelector.addItemListener(this);
-		panel.add(this.roundSelector, solo);
+		this.roundSpinner = new JSpinner(new SpinnerNumberModel(1, 1, this.nRounds, 1));
+		this.roundSpinner.addChangeListener(this);
+		panel.add(this.roundSpinner, solo);
 		constraints.gridwidth = 1;
 
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		this.placeLabel = this.enclosedLabel("Pl.", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+		this.placeLabel = this.enclosedLabel("Pl", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 1;
 		constraints.gridy = 1;
@@ -169,7 +163,7 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 				resetRows();
 			}
 
-			final int rNumber = Integer.parseInt((String) StandingsPanel.this.roundSelector.getSelectedItem());
+			final int rNumber = ( (Integer) StandingsPanel.this.roundSpinner.getValue() ).intValue();
 
 			if (rNumber == this.lastRNumber && !forceUpdate) {
 				return;
@@ -183,10 +177,6 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 					this.teamLabels[t].setText("");
 					this.scoreLabels[t].setText("");
 					this.pointsBackLabels[t].setText("");
-					this.placeLabels[t].setForeground(this.foregroundColor);
-					this.teamLabels[t].setForeground(this.foregroundColor);
-					this.scoreLabels[t].setForeground(this.foregroundColor);
-					this.pointsBackLabels[t].setForeground(this.foregroundColor);
 				}
 				return;
 			}
@@ -195,10 +185,10 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 
 			final int maxScore = standings[0].getScore();
 
-			for (int t = 0; t < nTeams; t++) {
+			for (int t = 0; t < this.nTeams; t++) {
 				ScoreEntry entry = standings[t];
 				String teamName = entry.getTeamName();
-				int score = entry.getScore();
+				final int score = entry.getScore();
 				if (t > 0 && entry.getPlace() == standings[t - 1].getPlace()) {
 					this.placeLabels[t].setText("");
 				} else {
@@ -206,7 +196,7 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 				}
 				this.teamLabels[t].setText(teamName);
 				this.scoreLabels[t].setText(score + "");
-				int pointsBack = maxScore - score;
+				final int pointsBack = maxScore - score;
 				this.pointsBackLabels[t].setText(pointsBack + "");
 				if (teamName.equalsIgnoreCase(StandingsPanel.this.client.getTrivia().getTeamName())) {
 					this.placeLabels[t].setForeground(this.highlightColor);
@@ -219,8 +209,8 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 					this.scoreLabels[t].setForeground(this.foregroundColor);
 					this.pointsBackLabels[t].setForeground(this.foregroundColor);
 				}
-
 			}
+
 
 		}
 
@@ -229,25 +219,25 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 
 			if (this.placeLabels != null) {
 				for (JLabel placeLabel : this.placeLabels) {
-					this.remove(placeLabel);
+					this.remove(placeLabel.getParent());
 				}
 			}
 
 			if (this.teamLabels != null) {
 				for (JLabel teamLabel : this.teamLabels) {
-					this.remove(teamLabel);
+					this.remove(teamLabel.getParent());
 				}
 			}
 
 			if (this.scoreLabels != null) {
 				for (JLabel scoreLabel : this.scoreLabels) {
-					this.remove(scoreLabel);
+					this.remove(scoreLabel.getParent());
 				}
 			}
 
 			if (this.pointsBackLabels != null) {
 				for (JLabel pointsBackLabel : this.pointsBackLabels) {
-					this.remove(pointsBackLabel);
+					this.remove(pointsBackLabel.getParent());
 				}
 			}
 
@@ -335,44 +325,11 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 		}
 	}
 
-	private class RoundCellRenderer implements ListCellRenderer<String> {
-		private final ListCellRenderer<String> wrapped;
-
-		public RoundCellRenderer(ListCellRenderer<String> listCellRenderer) {
-			this.wrapped = listCellRenderer;
-		}
-
-		@Override
-		public Component getListCellRendererComponent(JList<? extends String> list, String value, int index,
-				boolean isSelected, boolean cellHasFocus) {
-			final String displayName = String.valueOf(value); // customize here
-			final Component renderer = this.wrapped.getListCellRendererComponent(list, displayName, index, isSelected,
-					cellHasFocus);
-			if (renderer instanceof JLabel) {
-				( (JLabel) renderer ).setHorizontalAlignment(SwingConstants.RIGHT);
-				if (isSelected) {
-					( (JLabel) renderer ).setForeground(StandingsPanel.this.roundSelector.getBackground());
-					( (JLabel) renderer ).setBackground(StandingsPanel.this.roundSelector.getForeground());
-				} else {
-					( (JLabel) renderer ).setForeground(StandingsPanel.this.roundSelector.getForeground());
-					( (JLabel) renderer ).setBackground(StandingsPanel.this.roundSelector.getBackground());
-				}
-			}
-			return renderer;
-		}
-
-	}
-
-	@Override
-	public void itemStateChanged(ItemEvent e) {
-		updateGUI(false);
-	}
-
 	@Override
 	public void updateGUI(boolean forceUpdate) {
 		if (this.client.getTrivia().getLastAnnounced() != this.lastAnnounced) {
 			this.lastAnnounced = this.client.getTrivia().getLastAnnounced();
-			this.roundSelector.setSelectedIndex(this.lastAnnounced - 1);
+			this.roundSpinner.setValue(this.lastAnnounced - 1);
 			forceUpdate = true;
 		}
 		this.standingsSubPanel.updateGUI(forceUpdate);
@@ -387,10 +344,6 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 				new BigInteger(properties.getProperty("Standings.Header.ForegroundColor"), 16).intValue());
 		final Color headerBackgroundColor = new Color(
 				new BigInteger(properties.getProperty("Standings.Header.BackgroundColor"), 16).intValue());
-		final Color selectorColor = new Color(
-				new BigInteger(properties.getProperty("Standings.Header.Selector.Color"), 16).intValue());
-		final Color selectorBackgroundColor = new Color(
-				new BigInteger(properties.getProperty("Standings.Header.Selector.BackgroundColor"), 16).intValue());
 
 		/**
 		 * Sizes
@@ -403,7 +356,6 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 		final int teamWidth = Integer.parseInt(properties.getProperty("Standings.Team.Width"));
 		final int pointsBackWidth = Integer.parseInt(properties.getProperty("Standings.PointsBack.Width"));
 
-		final int selectorHeight = Integer.parseInt(properties.getProperty("Standings.Header.Selector.Height"));
 		final int selectorWidth = Integer.parseInt(properties.getProperty("Standings.Header.Selector.Width"));
 
 		/**
@@ -421,6 +373,9 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 				headerFontSize);
 		setLabelProperties(this.pointsBackLabel, pointsBackWidth, headerHeight / 2, foregroundColor,
 				headerBackgroundColor, headerFontSize);
+		this.roundSpinner.setFont(this.roundSpinner.getFont().deriveFont(headerFontSize));
+		setPanelProperties((JPanel) this.roundSpinner.getParent(), selectorWidth, headerHeight / 2,
+				headerBackgroundColor);
 
 		final int scrollBarWidth;
 		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
@@ -428,14 +383,16 @@ public class StandingsPanel extends TriviaMainPanel implements ItemListener {
 		} else {
 			scrollBarWidth = ( (Integer) UIManager.get("ScrollBar.width") ).intValue();
 		}
-		setLabelProperties(this.spacer, scrollBarWidth, headerHeight, foregroundColor, headerBackgroundColor,
+		setLabelProperties(this.spacer, scrollBarWidth, headerHeight / 2, foregroundColor, headerBackgroundColor,
 				headerFontSize);
-
-		setComboBoxProperties(this.roundSelector, selectorWidth, selectorHeight, selectorColor, selectorBackgroundColor,
-				headerBackgroundColor, headerFontSize);
 
 		this.standingsSubPanel.loadProperties(properties);
 
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		this.updateGUI(false);
 	}
 
 
