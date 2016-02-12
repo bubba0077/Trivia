@@ -36,7 +36,6 @@ import net.bubbaland.trivia.User;
 
 public class TriviaServer {
 
-	private ScheduledExecutorService					idleTimer;
 	private ScheduledExecutorService					saveTimer;
 	private ScheduledExecutorService					standingsTimer;
 	private InputStream									defaults;
@@ -55,8 +54,6 @@ public class TriviaServer {
 	private int											chartWidth;
 	// Date format to use for backup file names
 	public static final SimpleDateFormat				fileDateFormat		= new SimpleDateFormat("yyyy_MMM_dd_HHmm");
-	// Frequency to check for standings (milliseconds)
-	private int											idleFrequency;
 	// Boolean that tracks whether the server is running
 	private boolean										isRunning;
 	// The number of questions in a normal round
@@ -67,7 +64,7 @@ public class TriviaServer {
 	private int											nRounds;
 	// Directory to hold backups (must exist)
 	private String										saveDirectory;
-	// Frequency of backups (milliseconds)
+	// Frequency of backups (seconds)
 	private int											saveFrequency;
 	// Port to use for the server (must be open to internet)
 	private int											serverPort;
@@ -150,7 +147,6 @@ public class TriviaServer {
 		this.serverPort = Integer.parseInt(this.properties.getProperty("Server.Port"));
 		this.saveFrequency = Integer.parseInt(this.properties.getProperty("SaveFrequency"));
 		this.standingsFrequency = Integer.parseInt(this.properties.getProperty("StandingsFrequency"));
-		this.idleFrequency = Integer.parseInt(this.properties.getProperty("IdleFrequency"));
 		this.saveDirectory = this.properties.getProperty("SaveDir");
 		this.chartDirectory = this.properties.getProperty("ChartDir");
 		this.chartWidth = Integer.parseInt(this.properties.getProperty("Chart.Width"));
@@ -482,6 +478,7 @@ public class TriviaServer {
 					e.printStackTrace();
 				}
 			}
+			// }, 10, 10, TimeUnit.SECONDS);
 		}, this.saveFrequency, this.saveFrequency, TimeUnit.SECONDS);
 
 		this.standingsTimer = Executors.newSingleThreadScheduledExecutor();
@@ -505,18 +502,6 @@ public class TriviaServer {
 				}
 			}
 		}, this.standingsFrequency, this.standingsFrequency, TimeUnit.SECONDS);
-
-		this.idleTimer = Executors.newSingleThreadScheduledExecutor();
-		this.idleTimer.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					TriviaServer.this.broadcastUsers();
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}, this.idleFrequency, this.idleFrequency, TimeUnit.SECONDS);
 	}
 
 	/**
@@ -600,11 +585,13 @@ public class TriviaServer {
 	public void addUser(Session session, TriviaServerEndpoint user) {
 		TriviaServer.log("New client connecting...");
 		this.sessionList.put(session, user);
+		this.broadcastUsers();
 	}
 
 	public void removeUser(Session session) {
 		TriviaServer.log(this.sessionList.get(session).getUser() + " disconnected");
 		this.sessionList.remove(session);
+		this.broadcastUsers();
 	}
 
 	public void communicationsError(Session session, Throwable throwable) {
