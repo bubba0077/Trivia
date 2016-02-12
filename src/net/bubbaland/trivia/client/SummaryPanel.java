@@ -431,8 +431,8 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		final int currentRound = trivia.getCurrentRoundNumber();
 
 		// Update all the labels to match the current data
-		this.teamNameLabel.setText(
-				this.client.getTrivia().getTeamName() + " (# " + this.client.getTrivia().getTeamNumber() + ")");
+		this.teamNameLabel
+				.setText(this.client.getTrivia().getTeamName() + " (#" + this.client.getTrivia().getTeamNumber() + ")");
 		this.showNameLabel.setText("Show: " + this.client.getTrivia().getShowName(currentRound));
 		this.showHostLabel.setText("Host: " + this.client.getTrivia().getShowHost(currentRound));
 		this.roundEarnedLabel.setText("" + trivia.getCurrentRoundEarned());
