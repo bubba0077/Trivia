@@ -42,13 +42,15 @@ import net.bubbaland.trivia.client.TristateCheckBox.TristateState;
 public class TriviaGUI implements WindowListener {
 
 	// URL for Wiki
-	final static protected String	WIKI_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/Home";
+	final static protected String	WIKI_URL					=
+			"https://sites.google.com/a/kneedeepintheses.org/information/Home";
 	// URL for Issues
 	final static protected String	ISSUES_URL					= "https://github.com/bubba0077/Trivia/issues";
 	// URL for KVSC
 	final static protected String	KVSC_URL					= "http://www.kvsc.org/trivia_news.php";
 	// URL base for Visual Trivia Pages
-	final static protected String	VISUAL_URL					= "https://sites.google.com/a/kneedeepintheses.org/information/visual-trivia-2016/visual-trivia-";
+	final static protected String	VISUAL_URL					=
+			"https://sites.google.com/a/kneedeepintheses.org/information/visual-trivia-2017/visual-trivia-";
 	// URL for audio trivia
 	final static protected String	AUDIO_URL					= "http://trivia.bgsh.org/audio";
 	// File name of font
@@ -164,6 +166,8 @@ public class TriviaGUI implements WindowListener {
 
 
 	public TriviaGUI(final String serverURL) {
+		System.out.println("serverURL: " + serverURL);
+
 		// Initialize list to hold open windows
 		this.windowList = new ArrayList<TriviaFrame>(0);
 		this.filterTextPattern = Pattern.compile("");
@@ -411,12 +415,10 @@ public class TriviaGUI implements WindowListener {
 	}
 
 	@Override
-	public void windowActivated(WindowEvent e) {
-	}
+	public void windowActivated(WindowEvent e) {}
 
 	@Override
-	public void windowClosed(WindowEvent e) {
-	}
+	public void windowClosed(WindowEvent e) {}
 
 	/**
 	 * When one of the windows tries to close, save the properties and position of the window first. Then exit the
@@ -442,20 +444,16 @@ public class TriviaGUI implements WindowListener {
 	}
 
 	@Override
-	public void windowDeactivated(WindowEvent e) {
-	}
+	public void windowDeactivated(WindowEvent e) {}
 
 	@Override
-	public void windowDeiconified(WindowEvent e) {
-	}
+	public void windowDeiconified(WindowEvent e) {}
 
 	@Override
-	public void windowIconified(WindowEvent e) {
-	}
+	public void windowIconified(WindowEvent e) {}
 
 	@Override
-	public void windowOpened(WindowEvent e) {
-	}
+	public void windowOpened(WindowEvent e) {}
 
 	/**
 	 * Get the description associated with a tab name
@@ -790,6 +788,7 @@ public class TriviaGUI implements WindowListener {
 
 	// Queue sort option
 	public static enum QueueSort {
-		TIMESTAMP_ASCENDING, QNUMBER_ASCENDING, STATUS_ASCENDING, TIMESTAMP_DESCENDING, QNUMBER_DESCENDING, STATUS_DESCENDING
+		TIMESTAMP_ASCENDING, QNUMBER_ASCENDING, STATUS_ASCENDING, TIMESTAMP_DESCENDING, QNUMBER_DESCENDING,
+		STATUS_DESCENDING
 	}
 }
