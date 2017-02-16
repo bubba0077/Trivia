@@ -1,5 +1,7 @@
 package net.bubbaland.trivia.server;
 
+import java.util.Random;
+
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -34,6 +36,7 @@ public class TriviaServerEndpoint {
 	 */
 	public TriviaServerEndpoint() {
 		this.user = new User(server.getTrivia().getNRounds());
+		this.user.setUserName("User" + String.format("%05d", new Random().nextInt(99999)));
 	}
 
 	public User getUser() {

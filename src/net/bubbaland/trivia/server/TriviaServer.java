@@ -539,6 +539,7 @@ public class TriviaServer {
 				int qNumber = message.getQuestionNumber();
 				user.setEffort(qNumber);
 				this.broadcastChangedRounds();
+				this.broadcastMessage(new UserListMessage(this.getUserList()));
 				log(userName + " changed hir current effort to round " + rNumber + " question " + qNumber);
 				break;
 			}
@@ -947,7 +948,7 @@ public class TriviaServer {
 	// }
 
 	public void addUser(Session session, TriviaServerEndpoint user) {
-		TriviaServer.log("New client connecting...");
+		TriviaServer.log("New client connecting... temporarily named " + user.getUser().getUserName());
 		this.sessionList.put(session, user);
 		this.broadcastMessage(new UserListMessage(this.getUserList()));
 	}

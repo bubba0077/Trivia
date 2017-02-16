@@ -83,7 +83,6 @@ public class TriviaClient implements Runnable {
 		} catch (DeploymentException | IOException exception) {
 			this.gui.disconnected();
 		}
-		this.setUserName(this.user.getUserName());
 	}
 
 	public int getTimeToIdle() {
