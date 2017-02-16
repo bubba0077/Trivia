@@ -784,7 +784,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			final int rNumber = trivia.getCurrentRoundNumber();
 
 			if (trivia.getRound(rNumber).isSpeed() && nextToOpen > 1) {
-				new NewQuestionDialog(this.client, nQuestions, nextToOpen,
+				new NewQuestionDialog(this.client, rNumber, nQuestions, nextToOpen,
 						trivia.getRound(rNumber).getValue(nextToOpen - 1), true);
 			} else {
 				new NewQuestionDialog(this.client, rNumber, nQuestions, nextToOpen, true);

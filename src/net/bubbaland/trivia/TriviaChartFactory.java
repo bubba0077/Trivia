@@ -391,7 +391,7 @@ public class TriviaChartFactory {
 				renderer.setSeriesFillPaint(t, Color.GRAY);
 			} else {
 				for (int r = 0; r < lastAnnounced; r++) {
-					if (scores.get(r) == null) {
+					if (scores.get(r) == null || scores.get(r).length == 0) {
 						continue;
 					}
 					final int scoreDiff = scores.get(r)[t].getScore() - trivia.getRound(r + 1).getAnnouncedPoints();

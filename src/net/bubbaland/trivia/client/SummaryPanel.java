@@ -282,7 +282,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 					@Override
 					public Void doInBackground() {
 						SummaryPanel.this.client.sendMessage(
-								new SetRoundMessage(SummaryPanel.this.client.getTrivia().getCurrentRoundNumber()));
+								new SetRoundMessage(SummaryPanel.this.client.getTrivia().getCurrentRoundNumber() + 1));
 						return null;
 					}
 
