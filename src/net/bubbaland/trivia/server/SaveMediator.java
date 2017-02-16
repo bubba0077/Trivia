@@ -96,6 +96,14 @@ public class SaveMediator {
 			} catch (NullPointerException e) {
 				trivia.setNVisual(0);
 			}
+
+			try {
+				trivia.setTeamNumber(
+						Integer.parseInt(triviaElement.getElementsByTagName("Team_Number").item(0).getTextContent()));
+			} catch (NullPointerException e) {
+				trivia.setTeamNumber(0);
+			}
+
 			trivia.setCurrentRound(
 					Integer.parseInt(triviaElement.getElementsByTagName("Current_Round").item(0).getTextContent()));
 
@@ -230,6 +238,11 @@ public class SaveMediator {
 			// Save the number of teams
 			Element element = doc.createElement("Number_of_Teams");
 			element.appendChild(doc.createTextNode(trivia.getNTeams() + ""));
+			triviaElement.appendChild(element);
+
+			// Save the team number
+			element = doc.createElement("Team_Number");
+			element.appendChild(doc.createTextNode(trivia.getTeamNumber() + ""));
 			triviaElement.appendChild(element);
 
 			// Save the number of visual trivia

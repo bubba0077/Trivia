@@ -212,7 +212,6 @@ public class TriviaServer {
 		final User user = userConnection.getUser();
 		final String userName = user.getUserName();
 		user.updateActivity();
-		this.broadcastMessage(new UserListMessage(this.getUserList()));
 
 		switch (messageType) {
 			case "GetSaveListMessage": {
@@ -262,7 +261,6 @@ public class TriviaServer {
 				String newUserName = message.getNewUserName();
 				user.setUserName(newUserName);
 				this.trivia.changeName(userName, newUserName);
-				this.broadcastMessage(new UserListMessage(this.getUserList()));
 				log(userName + " changed hir name to " + newUserName);
 				break;
 			}
@@ -270,7 +268,6 @@ public class TriviaServer {
 				SetRoleMessage message = (SetRoleMessage) genericMessage;
 				Role newRole = message.getNewRole();
 				user.setRole(newRole);
-				this.broadcastMessage(new UserListMessage(this.getUserList()));
 				log(userName + " changed hir role to " + newRole);
 				break;
 			}
@@ -539,11 +536,13 @@ public class TriviaServer {
 				int qNumber = message.getQuestionNumber();
 				user.setEffort(qNumber);
 				this.broadcastChangedRounds();
-				this.broadcastMessage(new UserListMessage(this.getUserList()));
 				log(userName + " changed hir current effort to round " + rNumber + " question " + qNumber);
 				break;
 			}
 		}
+
+		this.broadcastMessage(new UserListMessage(this.getUserList()));
+
 		// switch (command) {
 		// case SET_ROUND:
 		// this.trivia.setCurrentRound(message.getrNumber());
