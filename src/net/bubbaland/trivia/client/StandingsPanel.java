@@ -190,7 +190,7 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 				String teamName = entry.getTeamName();
 				final int score = entry.getScore();
 				if (t > 0 && entry.getPlace() == standings[t - 1].getPlace()) {
-					this.placeLabels[t].setText("");
+					this.placeLabels[t].setText("—");
 				} else {
 					this.placeLabels[t].setText(entry.getPlace() + "");
 				}
