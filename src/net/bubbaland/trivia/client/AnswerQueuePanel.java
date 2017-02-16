@@ -789,8 +789,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							@Override
 							public void done() {}
 						} ).execute();
-						new OperatorDialog(this.client, "Marking Answer Incorrect", rNumber, queueIndex,
-								( (JComboBox<String>) source ), lastStatus);
+						new OperatorDialog(this.client,
+								"Marking Round " + rNumber + " Answer #" + ( queueIndex + 1 ) + " Incorrect", rNumber,
+								queueIndex, ( (JComboBox<String>) source ), lastStatus);
 						break;
 					case "Partial":
 						( new SwingWorker<Void, Void>() {
@@ -804,8 +805,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							@Override
 							public void done() {}
 						} ).execute();
-						new OperatorDialog(this.client, "Marking Answer Partially Correct", rNumber, queueIndex,
-								( (JComboBox<String>) source ), lastStatus);
+						new OperatorDialog(this.client,
+								"Marking Round " + rNumber + " Answer #" + ( queueIndex + 1 ) + " Partially Correct",
+								rNumber, queueIndex, ( (JComboBox<String>) source ), lastStatus);
 						break;
 					case "Correct":
 						( new SwingWorker<Void, Void>() {
@@ -819,8 +821,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							@Override
 							public void done() {}
 						} ).execute();
-						new OperatorDialog(this.client, "Marking Answer Correct", rNumber, queueIndex,
-								( (JComboBox<String>) source ), lastStatus);
+						new OperatorDialog(this.client,
+								"Marking Round " + rNumber + " Answer #" + ( queueIndex + 1 ) + " Correct", rNumber,
+								queueIndex, ( (JComboBox<String>) source ), lastStatus);
 						break;
 					default:
 						break;
