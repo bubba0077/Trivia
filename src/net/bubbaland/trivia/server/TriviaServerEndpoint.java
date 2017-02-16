@@ -8,9 +8,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import net.bubbaland.trivia.ClientMessage;
-import net.bubbaland.trivia.ServerMessage;
 import net.bubbaland.trivia.User;
+import net.bubbaland.trivia.messages.Message;
 
 /**
  * The main server that coordinates the trivia contest.
@@ -23,8 +22,7 @@ import net.bubbaland.trivia.User;
  * loading a previous state. The save files are stored in <code>SAVE_DIR</code>, which much exist on the server.
  *
  */
-@ServerEndpoint(decoders = { ClientMessage.MessageDecoder.class }, encoders = {
-		ServerMessage.MessageEncoder.class }, value = "/")
+@ServerEndpoint(decoders = { Message.MessageDecoder.class }, encoders = { Message.MessageEncoder.class }, value = "/")
 public class TriviaServerEndpoint {
 
 	private static TriviaServer	server	= new TriviaServer();
@@ -60,7 +58,7 @@ public class TriviaServerEndpoint {
 	 * @param session
 	 */
 	@OnMessage
-	public void onMessage(ClientMessage message, Session session) {
+	public void onMessage(Message message, Session session) {
 		TriviaServerEndpoint.server.processIncomingMessage(message, session);
 	}
 

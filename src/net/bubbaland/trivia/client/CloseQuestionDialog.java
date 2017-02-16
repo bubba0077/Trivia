@@ -11,8 +11,10 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingWorker;
 
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.messages.CloseQuestionMessage;
+import net.bubbaland.trivia.messages.ReopenQuestionMessage;
+import net.bubbaland.trivia.messages.SetQuestionAnswerMessage;
 
 /**
  * Creates a dialog box that prompts user for the correct answer when closing a question.
@@ -23,35 +25,36 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 	private static final long	serialVersionUID	= 8533094210282632603L;
 
 	private final TriviaClient	client;
-	private final int			qNumber;
+	private final int			rNumber, qNumber;
 	private final JTextArea		answerTextArea;
 
-	public CloseQuestionDialog(TriviaClient client, final int qNumber) {
+	public CloseQuestionDialog(TriviaClient client, final int rNumber, final int qNumber) {
 
 		super();
+
+		// Retrieve current trivia data object
+		final Trivia trivia = client.getTrivia();
 
 		// Open the question on the server temporarily
 		( new SwingWorker<Void, Void>() {
 			@Override
 			public Void doInBackground() {
-				CloseQuestionDialog.this.client.sendMessage(ClientMessageFactory.close(qNumber));
+				CloseQuestionDialog.this.client
+						.sendMessage(new CloseQuestionMessage(trivia.getCurrentRoundNumber(), qNumber));
 				return null;
 			}
 
 			@Override
-			public void done() {
-			}
+			public void done() {}
 		} ).execute();
 
 
 		this.client = client;
+		this.rNumber = rNumber;
 		this.qNumber = qNumber;
 
-		// Retrieve current trivia data object
-		final Trivia trivia = client.getTrivia();
-
 		// Get the question text
-		final String qText = trivia.getQuestionText(qNumber);
+		final String qText = trivia.getCurrentRound().getQuestionText(qNumber);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -124,8 +127,8 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					CloseQuestionDialog.this.client
-							.sendMessage(ClientMessageFactory.setAnswer(CloseQuestionDialog.this.qNumber, answer));
+					CloseQuestionDialog.this.client.sendMessage(new SetQuestionAnswerMessage(
+							CloseQuestionDialog.this.rNumber, CloseQuestionDialog.this.qNumber, answer));
 					return null;
 				}
 
@@ -138,8 +141,8 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					CloseQuestionDialog.this.client
-							.sendMessage(ClientMessageFactory.reopen(CloseQuestionDialog.this.qNumber));
+					CloseQuestionDialog.this.client.sendMessage(new ReopenQuestionMessage(
+							CloseQuestionDialog.this.rNumber, CloseQuestionDialog.this.qNumber));
 					return null;
 				}
 

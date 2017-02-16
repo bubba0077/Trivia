@@ -20,8 +20,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingWorker;
 
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.messages.EditQuestionMessage;
 
 public class EditQuestionDialog extends TriviaDialogPanel implements ActionListener {
 
@@ -45,17 +45,17 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		this.client = client;
 		this.rNumber = rNumber;
 		this.qNumber = qNumber;
-		this.correctColor = new Color(
-				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
+		this.correctColor =
+				new Color(new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
 
 		// Get all of the current data for the question
 		final Trivia trivia = client.getTrivia();
 
-		final boolean existingCorrect = trivia.isCorrect(rNumber, qNumber);
-		int existingValue = trivia.getValue(rNumber, qNumber);
-		final String existingQText = trivia.getQuestionText(rNumber, qNumber);
-		final String existingAText = trivia.getAnswerText(rNumber, qNumber);
-		final String existingSubmitter = trivia.getSubmitter(rNumber, qNumber);
+		final boolean existingCorrect = trivia.getRound(rNumber).isCorrect(qNumber);
+		int existingValue = trivia.getRound(rNumber).getValue(qNumber);
+		final String existingQText = trivia.getRound(rNumber).getQuestionText(qNumber);
+		final String existingAText = trivia.getRound(rNumber).getAnswerText(qNumber);
+		final String existingSubmitter = trivia.getRound(rNumber).getSubmitter(qNumber);
 		// final String existingOperator = trivia.getOperator(rNumber, qNumber);
 
 		// Set up layout constraints
@@ -189,8 +189,8 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		}
 
 		// Display the dialog box
-		this.dialog = new TriviaDialog(null, "Edit Question", this, JOptionPane.PLAIN_MESSAGE,
-				JOptionPane.OK_CANCEL_OPTION);
+		this.dialog =
+				new TriviaDialog(null, "Edit Question", this, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 		this.dialog.setVisible(true);
 	}
 
@@ -228,9 +228,8 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					EditQuestionDialog.this.client
-							.sendMessage(ClientMessageFactory.editQuestion(EditQuestionDialog.this.rNumber,
-									EditQuestionDialog.this.qNumber, qValue, qText, aText, submitter, isCorrect));
+					EditQuestionDialog.this.client.sendMessage(new EditQuestionMessage(EditQuestionDialog.this.rNumber,
+							EditQuestionDialog.this.qNumber, qText, qValue, aText, isCorrect, submitter));
 					return null;
 				}
 

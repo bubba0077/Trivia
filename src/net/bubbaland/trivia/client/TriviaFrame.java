@@ -45,8 +45,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import javazoom.jl.player.Player;
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.User;
+import net.bubbaland.trivia.messages.GetSaveListMessage;
+import net.bubbaland.trivia.messages.RestartTimerMessage;
+import net.bubbaland.trivia.messages.SetNVisualMessage;
+import net.bubbaland.trivia.messages.SetTeamNumberMessage;
 
 /**
  * Creates a top-level window for displaying the trivia GUI.
@@ -154,12 +157,10 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			private static final long serialVersionUID = -3431542881790392652L;
 
 			@Override
-			public void updateGUI(boolean forceUpdate) {
-			}
+			public void updateGUI(boolean forceUpdate) {}
 
 			@Override
-			protected void loadProperties(Properties properties) {
-			}
+			protected void loadProperties(Properties properties) {}
 		};
 
 		/**
@@ -421,16 +422,16 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			menuBar.add(menu);
 
 			final JMenu teamNumberMenu = new JMenu("Set Team Number");
-			this.teamNumberSpinner = new SpinnerMenuItem(
-					new SpinnerNumberModel(this.client.getTrivia().getTeamNumber(), 0, 150, 1));
+			this.teamNumberSpinner =
+					new SpinnerMenuItem(new SpinnerNumberModel(this.client.getTrivia().getTeamNumber(), 0, 150, 1));
 			this.teamNumberSpinner.setName("Team Number Spinner");
 			this.teamNumberSpinner.addChangeListener(this);
 			teamNumberMenu.add(this.teamNumberSpinner);
 			menu.add(teamNumberMenu);
 
 			final JMenu nVisualMenu = new JMenu("Set # Visual Trivia");
-			this.nVisualSpinner = new SpinnerMenuItem(
-					new SpinnerNumberModel(this.client.getTrivia().getNVisual(), 0, 100, 1));
+			this.nVisualSpinner =
+					new SpinnerMenuItem(new SpinnerNumberModel(this.client.getTrivia().getNVisual(), 0, 100, 1));
 			this.nVisualSpinner.setName("nVisual Spinner");
 			this.nVisualSpinner.addChangeListener(this);
 			nVisualMenu.add(this.nVisualSpinner);
@@ -520,7 +521,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						TriviaFrame.this.client.sendMessage(ClientMessageFactory.listSaves());
+						TriviaFrame.this.client.sendMessage(new GetSaveListMessage());
 						return null;
 					}
 
@@ -535,7 +536,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						TriviaFrame.this.client.sendMessage(ClientMessageFactory.restartTimer());
+						TriviaFrame.this.client.sendMessage(new RestartTimerMessage());
 						return null;
 					}
 
@@ -857,14 +858,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						TriviaFrame.this.client.sendMessage(ClientMessageFactory.setTeamNumber(teamNumber));
+						TriviaFrame.this.client.sendMessage(new SetTeamNumberMessage(teamNumber));
 						TriviaFrame.this.gui.log("Team number changed to " + teamNumber);
 						return null;
 					}
 
 					@Override
-					public void done() {
-					}
+					public void done() {}
 				} ).execute();
 				break;
 			case "nVisual Spinner":
@@ -872,14 +872,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						TriviaFrame.this.client.sendMessage(ClientMessageFactory.setNVisual(nVisual));
+						TriviaFrame.this.client.sendMessage(new SetNVisualMessage(nVisual));
 						TriviaFrame.this.gui.log("Number of visual trivia changed to " + nVisual);
 						return null;
 					}
 
 					@Override
-					public void done() {
-					}
+					public void done() {}
 				} ).execute();
 				break;
 			default:
@@ -891,8 +890,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		while (!this.initComplete) {
 			try {
 				Thread.sleep(10);
-			} catch (InterruptedException exception) {
-			}
+			} catch (InterruptedException exception) {}
 		}
 
 		// Update role
@@ -901,8 +899,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			// System.out.println("Awaiting menu items");
 			try {
 				Thread.sleep(50);
-			} catch (final InterruptedException exception) {
-			}
+			} catch (final InterruptedException exception) {}
 		}
 		switch (role) {
 			case RESEARCHER:
@@ -926,8 +923,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			// System.out.println("Awaiting tabbed pane");
 			try {
 				Thread.sleep(50);
-			} catch (final InterruptedException exception) {
-			}
+			} catch (final InterruptedException exception) {}
 		}
 		for (final String tabName : this.tabbedPane.getTabNames()) {
 			final int index = this.tabbedPane.indexOfTab(tabName);
@@ -1014,16 +1010,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 
 		@Override
-		public void menuSelectionChanged(boolean isIncluded) {
-		}
+		public void menuSelectionChanged(boolean isIncluded) {}
 
 		@Override
-		public void processKeyEvent(KeyEvent e, MenuElement path[], MenuSelectionManager manager) {
-		}
+		public void processKeyEvent(KeyEvent e, MenuElement path[], MenuSelectionManager manager) {}
 
 		@Override
-		public void processMouseEvent(MouseEvent e, MenuElement path[], MenuSelectionManager manager) {
-		}
+		public void processMouseEvent(MouseEvent e, MenuElement path[], MenuSelectionManager manager) {}
 	}
 
 	private static class TriviaAudio {

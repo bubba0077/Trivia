@@ -63,8 +63,8 @@ public class WorkflowPanel extends TriviaMainPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 
-		final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.workflowQlistPanel,
-				this.workflowQueuePanel);
+		final JSplitPane splitPane =
+				new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.workflowQlistPanel, this.workflowQueuePanel);
 		splitPane.setResizeWeight(0.0);
 		splitPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(splitPane, constraints);
@@ -78,9 +78,9 @@ public class WorkflowPanel extends TriviaMainPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				final Trivia trivia = client.getTrivia();
-				final int nQuestions = trivia.getNQuestions();
-				final int nextToOpen = trivia.nextToOpen();
-				new NewQuestionDialog(client, nQuestions, nextToOpen, true);
+				final int nQuestions = trivia.getCurrentRound().getNQuestions();
+				final int nextToOpen = trivia.getCurrentRound().nextToOpen();
+				new NewQuestionDialog(client, client.getCurrentRoundNumber(), nQuestions, nextToOpen, true);
 			}
 		});
 	}

@@ -92,8 +92,8 @@ public class TriviaChartFactory {
 		final int[] values = new int[nRounds];
 		final int[] earneds = new int[nRounds];
 		for (int r = 0; r < nRounds; r++) {
-			values[r] = trivia.getValue(r + 1);
-			earneds[r] = trivia.getEarned(r + 1);
+			values[r] = trivia.getRound(r + 1).getValue();
+			earneds[r] = trivia.getRound(r + 1).getEarned();
 		}
 
 		// Create a new dataset
@@ -183,8 +183,8 @@ public class TriviaChartFactory {
 		final int[] places = new int[nRounds];
 		final boolean[] announced = new boolean[nRounds];
 		for (int r = 0; r < nRounds; r++) {
-			places[r] = trivia.getAnnouncedPlace(r + 1);
-			announced[r] = trivia.isAnnounced(r + 1);
+			places[r] = trivia.getRound(r + 1).getPlace();
+			announced[r] = trivia.getRound(r + 1).isAnnounced();
 		}
 
 		// Create a new dataset
@@ -265,8 +265,8 @@ public class TriviaChartFactory {
 		final int[] values = new int[nRounds];
 		final int[] earneds = new int[nRounds];
 		for (int r = 0; r < nRounds; r++) {
-			values[r] = trivia.getValue(r + 1);
-			earneds[r] = trivia.getEarned(r + 1);
+			values[r] = trivia.getRound(r + 1).getValue();
+			earneds[r] = trivia.getRound(r + 1).getEarned();
 		}
 
 		// Create a new dataset
@@ -353,9 +353,9 @@ public class TriviaChartFactory {
 		final ArrayList<ScoreEntry[]> scores = new ArrayList<ScoreEntry[]>(0);
 
 		for (int r = 1; r <= trivia.getNRounds(); r++) {
-			if (trivia.isAnnounced(r)) {
+			if (trivia.getRound(r).isAnnounced()) {
 				lastAnnounced = r;
-				final ScoreEntry roundStandings[] = ScoreEntry.alphabetize(trivia.getStandings(r));
+				final ScoreEntry roundStandings[] = ScoreEntry.alphabetize(trivia.getRound(r).getStandings());
 				scores.add(roundStandings);
 			} else {
 				scores.add(null);
@@ -383,7 +383,7 @@ public class TriviaChartFactory {
 					if (scores.get(r) == null) {
 						continue;
 					}
-					final int ourScore = trivia.getAnnouncedPoints(r + 1);
+					final int ourScore = trivia.getRound(r + 1).getAnnouncedPoints();
 					series.add(r + 1, 0, -ourScore, trivia.getCumulativeValue(r + 1) - ourScore);
 				}
 				renderer.setSeriesStroke(t, new BasicStroke(3F));
@@ -394,7 +394,7 @@ public class TriviaChartFactory {
 					if (scores.get(r) == null) {
 						continue;
 					}
-					final int scoreDiff = scores.get(r)[t].getScore() - trivia.getAnnouncedPoints(r + 1);
+					final int scoreDiff = scores.get(r)[t].getScore() - trivia.getRound(r + 1).getAnnouncedPoints();
 					series.add(r + 1, scoreDiff, scoreDiff, scoreDiff);
 				}
 			}

@@ -13,18 +13,19 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
+import net.bubbaland.trivia.messages.ResetQuestionMessage;
 
 public class ResetQuestionDialog extends TriviaDialogPanel {
 
 	private static final long	serialVersionUID	= 6166214835080640219L;
 
 	private final TriviaClient	client;
-	private final int			qNumber;
+	private final int			rNumber, qNumber;
 
-	public ResetQuestionDialog(TriviaClient client, int qNumber, int qValue, String qText) {
+	public ResetQuestionDialog(TriviaClient client, int rNumber, int qNumber, int qValue, String qText) {
 
 		this.client = client;
+		this.rNumber = rNumber;
 		this.qNumber = qNumber;
 
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -81,8 +82,8 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					ResetQuestionDialog.this.client
-							.sendMessage(ClientMessageFactory.resetQuestion(ResetQuestionDialog.this.qNumber));
+					ResetQuestionDialog.this.client.sendMessage(new ResetQuestionMessage(
+							ResetQuestionDialog.this.rNumber, ResetQuestionDialog.this.qNumber));
 					return null;
 				}
 

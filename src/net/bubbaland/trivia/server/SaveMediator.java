@@ -109,24 +109,24 @@ public class SaveMediator {
 				TriviaServer.log("Reading data for round " + rNumber);
 
 				// Read/set if the round is a speed round
-				final boolean isSpeed = roundElement.getElementsByTagName("Speed").item(0).getTextContent()
-						.equals("true");
-				trivia.setSpeed(rNumber, isSpeed);
+				final boolean isSpeed =
+						roundElement.getElementsByTagName("Speed").item(0).getTextContent().equals("true");
+				trivia.getRound(rNumber).setSpeed(isSpeed);
 
 				try {
-					trivia.setShowName(rNumber,
-							roundElement.getElementsByTagName("Show_Name").item(0).getTextContent());
+					trivia.getRound(rNumber)
+							.setShowName(roundElement.getElementsByTagName("Show_Name").item(0).getTextContent());
 				} catch (NullPointerException e) {
-					trivia.setShowName("");
+					trivia.getRound(rNumber).setShowName("");
 				}
 				try {
-					trivia.setShowHost(rNumber,
-							roundElement.getElementsByTagName("Show_Host").item(0).getTextContent());
+					trivia.getRound(rNumber)
+							.setShowHost(roundElement.getElementsByTagName("Show_Host").item(0).getTextContent());
 				} catch (NullPointerException e) {
-					trivia.setShowHost("");
+					trivia.getRound(rNumber).setShowHost("");
 				}
 
-				trivia.setDiscrepencyText(rNumber,
+				trivia.getRound(rNumber).setDiscrepencyText(
 						roundElement.getElementsByTagName("Discrepancy_Text").item(0).getTextContent());
 
 				// Get a list of the question elements in this round
@@ -138,24 +138,24 @@ public class SaveMediator {
 					final int qNumber = Integer.parseInt(questionElement.getAttribute("number"));
 
 					// Read/set question parameters
-					final boolean beenOpen = questionElement.getElementsByTagName("Been_Open").item(0).getTextContent()
-							.equals("true");
-					final boolean isOpen = questionElement.getElementsByTagName("Is_Open").item(0).getTextContent()
-							.equals("true");
-					final boolean isCorrect = questionElement.getElementsByTagName("Is_Correct").item(0)
-							.getTextContent().equals("true");
-					final int value = Integer
-							.parseInt(questionElement.getElementsByTagName("Value").item(0).getTextContent());
-					final String question = questionElement.getElementsByTagName("Question_Text").item(0)
-							.getTextContent();
+					final boolean beenOpen =
+							questionElement.getElementsByTagName("Been_Open").item(0).getTextContent().equals("true");
+					final boolean isOpen =
+							questionElement.getElementsByTagName("Is_Open").item(0).getTextContent().equals("true");
+					final boolean isCorrect =
+							questionElement.getElementsByTagName("Is_Correct").item(0).getTextContent().equals("true");
+					final int value =
+							Integer.parseInt(questionElement.getElementsByTagName("Value").item(0).getTextContent());
+					final String question =
+							questionElement.getElementsByTagName("Question_Text").item(0).getTextContent();
 					final String answer = questionElement.getElementsByTagName("Answer_Text").item(0).getTextContent();
 					final String submitter = questionElement.getElementsByTagName("Submitter").item(0).getTextContent();
 
 					if (beenOpen) {
-						trivia.open("From file", rNumber, qNumber);
-						trivia.editQuestion(rNumber, qNumber, value, question, answer, isCorrect, submitter);
+						trivia.getRound(rNumber).open("From file", qNumber);
+						trivia.getRound(rNumber).editQuestion(qNumber, value, question, answer, isCorrect, submitter);
 						if (!isOpen) {
-							trivia.close(rNumber, qNumber, null);
+							trivia.getRound(rNumber).close(qNumber, null);
 						}
 					}
 				}
@@ -173,25 +173,24 @@ public class SaveMediator {
 						final int qNumber = Integer.parseInt(
 								answerElement.getElementsByTagName("Question_Number").item(0).getTextContent());
 						final String status = answerElement.getElementsByTagName("Status").item(0).getTextContent();
-						final String timestamp = answerElement.getElementsByTagName("Timestamp").item(0)
-								.getTextContent();
-						final String answer = answerElement.getElementsByTagName("Answer_Text").item(0)
-								.getTextContent();
-						final String submitter = answerElement.getElementsByTagName("Submitter").item(0)
-								.getTextContent();
+						final String timestamp =
+								answerElement.getElementsByTagName("Timestamp").item(0).getTextContent();
+						final String answer =
+								answerElement.getElementsByTagName("Answer_Text").item(0).getTextContent();
+						final String submitter =
+								answerElement.getElementsByTagName("Submitter").item(0).getTextContent();
 						final int confidence = Integer
 								.parseInt(answerElement.getElementsByTagName("Confidence").item(0).getTextContent());
 						final String caller = answerElement.getElementsByTagName("Caller").item(0).getTextContent();
 						final String operator = answerElement.getElementsByTagName("Operator").item(0).getTextContent();
 
-						trivia.setAnswer(rNumber, qNumber, answer, submitter, confidence, status, caller, operator,
-								timestamp);
+						trivia.getRound(rNumber).setAnswer(qNumber, answer, submitter, confidence, status, caller,
+								operator, timestamp);
 					}
 				}
 			}
 
-		} catch (final ParserConfigurationException | SAXException | IOException e) {
-		}
+		} catch (final ParserConfigurationException | SAXException | IOException e) {}
 
 		return trivia;
 	}
@@ -208,8 +207,8 @@ public class SaveMediator {
 		final String roundString = "Rd" + String.format("%02d", trivia.getCurrentRoundNumber());
 
 		// Timestamp used as part of the filename (no spaces, descending precision)
-		String filename = this.saveDirectory + "/" + roundString + "_" + TriviaServer.fileDateFormat.format(time)
-				+ ".xml";
+		String filename =
+				this.saveDirectory + "/" + roundString + "_" + TriviaServer.fileDateFormat.format(time) + ".xml";
 		// Timestamp used in the save file
 		final String createTime = TriviaServer.stringDateFormat.format(time);
 
@@ -265,7 +264,7 @@ public class SaveMediator {
 
 				// The announced score for this round
 				element = doc.createElement("Announced_Score");
-				element.appendChild(doc.createTextNode(r.getAnnounced() + ""));
+				element.appendChild(doc.createTextNode(r.getAnnouncedPoints() + ""));
 				roundElement.appendChild(element);
 
 				// The announced place for this round
@@ -296,7 +295,7 @@ public class SaveMediator {
 
 					// The question number
 					attribute = doc.createAttribute("number");
-					attribute.setValue(q.getNumber() + "");
+					attribute.setValue(q.getQuestionNumber() + "");
 					questionElement.setAttributeNode(attribute);
 
 					// Whether the question has been open
@@ -311,7 +310,7 @@ public class SaveMediator {
 
 					// The value of the question
 					element = doc.createElement("Value");
-					element.appendChild(doc.createTextNode(q.getValue() + ""));
+					element.appendChild(doc.createTextNode(q.getQuestionValue() + ""));
 					questionElement.appendChild(element);
 
 					// The question text
@@ -369,7 +368,7 @@ public class SaveMediator {
 
 					// The proposed answer
 					element = doc.createElement("Answer_Text");
-					element.appendChild(doc.createTextNode(a.getAnswer()));
+					element.appendChild(doc.createTextNode(a.getAnswerText()));
 					answerElement.appendChild(element);
 
 					// The submitter of this answer
@@ -413,7 +412,7 @@ public class SaveMediator {
 
 		final String roundString = "Rd" + String.format("%02d", trivia.getCurrentRoundNumber());
 
-		if (trivia.isAnnounced(1)) {
+		if (trivia.getRound(1).isAnnounced()) {
 			// Save place chart
 			String filename = this.chartDirectory + "/" + roundString + "_placeChart.png";
 			try {

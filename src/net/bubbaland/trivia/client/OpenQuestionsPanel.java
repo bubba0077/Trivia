@@ -31,7 +31,7 @@ import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.User;
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
+import net.bubbaland.trivia.messages.SetEffortMessage;
 import net.bubbaland.trivia.Question;
 
 /**
@@ -117,8 +117,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		this.statusLabels = new JLabel[nQuestions];
 		for (int q = 1; q <= nQuestions; q++) {
 			constraints.gridx = 3 + q;
-			this.statusLabels[q - 1] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
-					SwingConstants.CENTER);
+			this.statusLabels[q - 1] =
+					this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		}
 
 		constraints.gridx = 0;
@@ -172,7 +172,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		final Trivia trivia = this.client.getTrivia();
 		final int currentRound = trivia.getCurrentRoundNumber();
 		final int nMaxQuestions = trivia.getMaxQuestions();
-		final int nQuestions = trivia.getNQuestions();
+		final int nQuestions = trivia.getCurrentRound().getNQuestions();
 		final int diff = nMaxQuestions - nQuestions;
 		for (int q = 0; q < diff; q++) {
 			this.statusLabels[q].setText("");
@@ -181,11 +181,11 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		for (int q = diff; q < nMaxQuestions; q++) {
 			final int qNumber = q + 1 - diff;
 			this.statusLabels[q].setText(qNumber + "");
-			if (trivia.beenOpen(currentRound, qNumber)) {
-				if (trivia.isOpen(qNumber)) {
+			if (trivia.getCurrentRound().getQuestion(qNumber).beenOpen()) {
+				if (trivia.getCurrentRound().isOpen(qNumber)) {
 					this.statusLabels[q].setForeground(this.headerColor);
 				} else {
-					if (trivia.isCorrect(currentRound, qNumber)) {
+					if (trivia.getCurrentRound().isCorrect(qNumber)) {
 						this.statusLabels[q].setForeground(this.correctColor);
 					} else {
 						this.statusLabels[q].setForeground(this.incorrectColor);
@@ -253,20 +253,20 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		/**
 		 * Colors
 		 */
-		this.headerColor = new Color(
-				new BigInteger(properties.getProperty("OpenQuestions.Header.Color"), 16).intValue());
+		this.headerColor =
+				new Color(new BigInteger(properties.getProperty("OpenQuestions.Header.Color"), 16).intValue());
 		this.headerBackgroundColor = new Color(
 				new BigInteger(properties.getProperty("OpenQuestions.Header.BackgroundColor"), 16).intValue());
-		this.usedColor = new Color(
-				new BigInteger(properties.getProperty("OpenQuestions.Footer.Used.Color"), 16).intValue());
-		this.unusedColor = new Color(
-				new BigInteger(properties.getProperty("OpenQuestions.Footer.Unused.Color"), 16).intValue());
-		this.activeColor = new Color(
-				new BigInteger(properties.getProperty("OpenQuestions.Footer.Active.Color"), 16).intValue());
+		this.usedColor =
+				new Color(new BigInteger(properties.getProperty("OpenQuestions.Footer.Used.Color"), 16).intValue());
+		this.unusedColor =
+				new Color(new BigInteger(properties.getProperty("OpenQuestions.Footer.Unused.Color"), 16).intValue());
+		this.activeColor =
+				new Color(new BigInteger(properties.getProperty("OpenQuestions.Footer.Active.Color"), 16).intValue());
 		this.footerBackgroundColor = new Color(
 				new BigInteger(properties.getProperty("OpenQuestions.Footer.BackgroundColor"), 16).intValue());
-		this.correctColor = new Color(
-				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
+		this.correctColor =
+				new Color(new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
 		this.incorrectColor = new Color(
 				new BigInteger(TriviaGUI.PROPERTIES.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
 
@@ -282,15 +282,15 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		final int valueWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Value.Width"));
 		final int questionWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Question.Width"));
 		this.statusWidth = Integer.parseInt(properties.getProperty("OpenQuestions.Header.Status.Width"));
-		final int visualTriviaWidth = Integer
-				.parseInt(properties.getProperty("OpenQuestions.Footer.VisualTrivia.Width"));
-		this.visualStatusWidth = Integer
-				.parseInt(properties.getProperty("OpenQuestions.Footer.VisualTrivia.Status.Width"));
+		final int visualTriviaWidth =
+				Integer.parseInt(properties.getProperty("OpenQuestions.Footer.VisualTrivia.Width"));
+		this.visualStatusWidth =
+				Integer.parseInt(properties.getProperty("OpenQuestions.Footer.VisualTrivia.Status.Width"));
 
 		/**
 		 * Font sizes
 		 */
-				final float headerFontSize = Float.parseFloat(properties.getProperty("OpenQuestions.Header.FontSize"));
+		final float headerFontSize = Float.parseFloat(properties.getProperty("OpenQuestions.Header.FontSize"));
 		this.footerFontSize = Float.parseFloat(properties.getProperty("OpenQuestions.Footer.FontSize"));
 
 
@@ -419,13 +419,13 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 				constraints.gridx = 1;
 				constraints.gridy = q;
-				this.effortLabels[q] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
-						SwingConstants.BOTTOM);
+				this.effortLabels[q] =
+						this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.BOTTOM);
 
 				constraints.gridx = 2;
 				constraints.gridy = q;
-				this.qValueLabels[q] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
-						SwingConstants.CENTER);
+				this.qValueLabels[q] =
+						this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.qValueLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 3;
@@ -494,28 +494,28 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 					break;
 				case "Close":
 					qNumber = Integer.parseInt(( (Component) event.getSource() ).getName());
-					new CloseQuestionDialog(this.client, qNumber);
+					new CloseQuestionDialog(this.client, rNumber, qNumber);
 					break;
 				case "Open":
 					this.open();
 					break;
 				case "Edit":
 					qNumber = Integer.parseInt(this.contextMenu.getName());
-					int qValue = trivia.getValue(rNumber, qNumber);
-					String qText = trivia.getQuestionText(rNumber, qNumber);
-					final int nQuestions = trivia.getNQuestions();
-					new NewQuestionDialog(this.client, nQuestions, qNumber, qValue, qText, false);
+					int qValue = trivia.getRound(rNumber).getValue(qNumber);
+					String qText = trivia.getRound(rNumber).getQuestionText(qNumber);
+					final int nQuestions = trivia.getRound(rNumber).getNQuestions();
+					new NewQuestionDialog(this.client, rNumber, nQuestions, qNumber, qValue, qText, false);
 					break;
 				case "Delete":
 					qNumber = Integer.parseInt(this.contextMenu.getName());
-					qValue = trivia.getValue(rNumber, qNumber);
-					qText = trivia.getQuestionText(rNumber, qNumber);
-					new ResetQuestionDialog(this.client, qNumber, qValue, qText);
+					qValue = trivia.getRound(rNumber).getValue(qNumber);
+					qText = trivia.getRound(rNumber).getQuestionText(qNumber);
+					new ResetQuestionDialog(this.client, rNumber, qNumber, qValue, qText);
 					break;
 				case "View":
 					qNumber = Integer.parseInt(this.contextMenu.getName());
-					qValue = trivia.getValue(rNumber, qNumber);
-					qText = trivia.getQuestionText(rNumber, qNumber);
+					qValue = trivia.getRound(rNumber).getValue(qNumber);
+					qText = trivia.getRound(rNumber).getQuestionText(qNumber);
 					new ViewQuestionDialog(rNumber, qNumber, qValue, qText);
 					break;
 				case "Set Effort":
@@ -526,14 +526,15 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 					( new SwingWorker<Void, Void>() {
 						@Override
 						public Void doInBackground() {
-							OpenQuestionsPanel.this.client.sendMessage(ClientMessageFactory.setEffort(qNumber));
+							OpenQuestionsPanel.this.client.sendMessage(new SetEffortMessage(rNumber, qNumber));
 							return null;
 						}
 
 						@Override
 						public void done() {
-							String logMessage = qNumber == 0 ? "Stopped working on Question" : "Started working on Question #"
-									+ qNumber;
+							String logMessage =
+									qNumber == 0 ? "Stopped working on Question" : "Started working on Question #"
+											+ qNumber;
 							OpenQuestionsPanel.this.client.log(logMessage);
 						}
 					} ).execute();
@@ -555,10 +556,10 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			final Trivia trivia = this.client.getTrivia();
 
 			// Get the data for any open questions
-			final int[] openQuestionNumbers = trivia.getOpenQuestionNumbers();
-			final String[] openQuestionText = trivia.getOpenQuestionText();
-			final String[] openQuestionValues = trivia.getOpenQuestionValues();
-			final Question[] openQuestions = trivia.getOpenQuestions();
+			final int[] openQuestionNumbers = trivia.getCurrentRound().getOpenQuestionNumbers();
+			final String[] openQuestionText = trivia.getCurrentRound().getOpenQuestionText();
+			final String[] openQuestionValues = trivia.getCurrentRound().getOpenQuestionValues();
+			final Question[] openQuestions = trivia.getCurrentRound().getOpenQuestions();
 			final User[] userList = client.getUserList();
 			final int nOpen = openQuestionNumbers.length;
 
@@ -589,9 +590,9 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 					this.lastEffort.set(q, openQuestions[q].getEffort(userList));
 					final int nEffort = openQuestions[q].getEffort(userList) == null ? 0 : openQuestions[q]
 							.getEffort(userList).length;
-					String lastEffortString = "<html><div align=center>" + nEffort
-							+ ( nEffort == 1 ? " User" : " Users" ) + " Working on Q" + openQuestionNumbers[q]
-							+ "</div>";
+					String lastEffortString =
+							"<html><div align=center>" + nEffort + ( nEffort == 1 ? " User" : " Users" )
+									+ " Working on Q" + openQuestionNumbers[q] + "</div>";
 					if (this.lastEffort.get(q) != null) {
 						for (User user : this.lastEffort.get(q)) {
 							lastEffortString = lastEffortString + user.getUserName() + "<BR/>";
@@ -631,8 +632,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				this.closeButtons[q].setActionCommand("Open");
 				this.closeButtons[q].setName("");
 				this.qNumberButtons[q].setEnabled(false);
-				if (q == nOpen && trivia.nUnopened() > 0) {
-					this.qNumberButtons[q].setText(trivia.nextToOpen() + "");
+				if (q == nOpen && trivia.getCurrentRound().nUnopened() > 0) {
+					this.qNumberButtons[q].setText(trivia.getCurrentRound().nextToOpen() + "");
 					this.effortLabels[q].setToolTipText(null);
 					this.qTextPanes[q].setText("Next to open");
 					this.closeButtons[q].setVisible(true);
@@ -647,7 +648,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			}
 
 			int nQuestionsShow;
-			if (trivia.nUnopened() > 0) {
+			if (trivia.getCurrentRound().nUnopened() > 0) {
 				nQuestionsShow = nOpen + 1;
 			} else {
 				nQuestionsShow = nOpen;
@@ -696,10 +697,10 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			 */
 			final Color headerBackgroundColor = new Color(
 					new BigInteger(properties.getProperty("OpenQuestions.Header.BackgroundColor"), 16).intValue());
-			final Color oddRowColor = new Color(
-					new BigInteger(properties.getProperty("OpenQuestions.OddRow.Color"), 16).intValue());
-			final Color evenRowColor = new Color(
-					new BigInteger(properties.getProperty("OpenQuestions.EvenRow.Color"), 16).intValue());
+			final Color oddRowColor =
+					new Color(new BigInteger(properties.getProperty("OpenQuestions.OddRow.Color"), 16).intValue());
+			final Color evenRowColor =
+					new Color(new BigInteger(properties.getProperty("OpenQuestions.EvenRow.Color"), 16).intValue());
 			final Color oddRowBackgroundColor = new Color(
 					new BigInteger(properties.getProperty("OpenQuestions.OddRow.BackgroundColor"), 16).intValue());
 			final Color evenRowBackgroundColor = new Color(
@@ -720,8 +721,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			/**
 			 * Button sizes
 			 */
-			final int answerButtonHeight = Integer
-					.parseInt(properties.getProperty("OpenQuestions.AnswerButton.Height"));
+			final int answerButtonHeight =
+					Integer.parseInt(properties.getProperty("OpenQuestions.AnswerButton.Height"));
 			final int answerButtonWidth = Integer.parseInt(properties.getProperty("OpenQuestions.AnswerButton.Width"));
 			final int closeButtonHeight = Integer.parseInt(properties.getProperty("OpenQuestions.CloseButton.Height"));
 			final int closeButtonWidth = Integer.parseInt(properties.getProperty("OpenQuestions.CloseButton.Width"));
@@ -767,7 +768,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		 *            the question number
 		 */
 		private void answerQuestion(int qNumber) {
-			new AnswerEntryPanel(this.client, qNumber, this.client.getUser().getUserName());
+			new AnswerEntryPanel(this.client, this.client.getCurrentRoundNumber(), qNumber,
+					this.client.getUser().getUserName());
 		}
 
 		/**
@@ -777,15 +779,15 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 			final Trivia trivia = this.client.getTrivia();
 
-			final int nQuestions = trivia.getNQuestions();
-			final int nextToOpen = trivia.nextToOpen();
+			final int nQuestions = trivia.getCurrentRound().getNQuestions();
+			final int nextToOpen = trivia.getCurrentRound().nextToOpen();
 			final int rNumber = trivia.getCurrentRoundNumber();
 
-			if (trivia.isSpeed(rNumber) && nextToOpen > 1) {
-				new NewQuestionDialog(this.client, nQuestions, nextToOpen, trivia.getValue(rNumber, nextToOpen - 1),
-						true);
+			if (trivia.getRound(rNumber).isSpeed() && nextToOpen > 1) {
+				new NewQuestionDialog(this.client, nQuestions, nextToOpen,
+						trivia.getRound(rNumber).getValue(nextToOpen - 1), true);
 			} else {
-				new NewQuestionDialog(this.client, nQuestions, nextToOpen, true);
+				new NewQuestionDialog(this.client, rNumber, nQuestions, nextToOpen, true);
 			}
 
 		}

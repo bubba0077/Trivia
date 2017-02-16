@@ -14,8 +14,11 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingWorker;
 
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.messages.OpenQuestionMessage;
+import net.bubbaland.trivia.messages.RemapQuestionMessage;
+import net.bubbaland.trivia.messages.ResetQuestionMessage;
+import net.bubbaland.trivia.messages.SetQuestionMessage;
 
 /**
  * Creates a prompt to enter new question data.
@@ -29,6 +32,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	private static final long	serialVersionUID	= 8250659442772286086L;
 
 	private final TriviaClient	client;
+	private final int			rNumber;
 	private final int			nQuestions;
 	private final int			qNumberStart;
 	private final JSpinner		qNumberSpinner;
@@ -47,8 +51,9 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	 * @param qNumberStart
 	 *            the default question number
 	 */
-	public NewQuestionDialog(TriviaClient client, int nQuestions, int qNumberStart, final boolean newOpen) {
-		this(client, nQuestions, qNumberStart, 10, "", newOpen);
+	public NewQuestionDialog(TriviaClient client, int rNumber, int nQuestions, int qNumberStart,
+			final boolean newOpen) {
+		this(client, rNumber, nQuestions, qNumberStart, 10, "", newOpen);
 	}
 
 	/**
@@ -63,9 +68,9 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	 * @param qValueStart
 	 *            the default question value
 	 */
-	public NewQuestionDialog(final TriviaClient client, int nQuestions, int qNumberStart, int qValueStart,
+	public NewQuestionDialog(final TriviaClient client, int rNumber, int nQuestions, int qNumberStart, int qValueStart,
 			final boolean newOpen) {
-		this(client, nQuestions, qNumberStart, qValueStart, "", newOpen);
+		this(client, rNumber, nQuestions, qNumberStart, qValueStart, "", newOpen);
 	}
 
 	/**
@@ -82,12 +87,13 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 	 * @param qTextStart
 	 *            the initial question text
 	 */
-	public NewQuestionDialog(final TriviaClient client, final int nQuestions, final int qNumberStart,
+	public NewQuestionDialog(final TriviaClient client, final int rNumber, final int nQuestions, final int qNumberStart,
 			final int qValueStart, final String qTextStart, final boolean newOpen) {
 		super();
 
 		this.client = client;
 		this.nQuestions = nQuestions;
+		this.rNumber = rNumber;
 		this.qNumberStart = qNumberStart;
 		this.newOpen = newOpen;
 
@@ -96,7 +102,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.open(qNumberStart));
+					NewQuestionDialog.this.client.sendMessage(new OpenQuestionMessage(rNumber, qNumberStart));
 					return null;
 				}
 
@@ -193,8 +199,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			final String qText = this.qTextArea.getText();
 
 			// Get the existing question data
-			final int existingQValue = trivia.getValue(currentRound, qNumber);
-			final String existingQText = trivia.getQuestionText(currentRound, qNumber);
+			final int existingQValue = trivia.getRound(currentRound).getValue(qNumber);
+			final String existingQText = trivia.getRound(currentRound).getQuestionText(qNumber);
 
 			if (this.qNumberStart == qNumber) {
 				// Open question
@@ -202,7 +208,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 					@Override
 					public Void doInBackground() {
 						NewQuestionDialog.this.client
-								.sendMessage(ClientMessageFactory.setQuestion(qNumber, qValue, qText));
+								.sendMessage(new SetQuestionMessage(rNumber, qNumber, qText, qValue));
 						return null;
 					}
 
@@ -212,7 +218,7 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 					}
 				} ).execute();
 			} else {
-				if (trivia.beenOpen(currentRound, qNumber)) {
+				if (trivia.getCurrentRound().getQuestion(qNumber).beenOpen()) {
 					// Overwrite
 					this.confirmOverwrite(qNumber, existingQValue, existingQText, qValue, qText);
 				} else {
@@ -224,8 +230,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					NewQuestionDialog.this.client
-							.sendMessage(ClientMessageFactory.resetQuestion(NewQuestionDialog.this.qNumberStart));
+					NewQuestionDialog.this.client.sendMessage(new ResetQuestionMessage(NewQuestionDialog.this.rNumber,
+							NewQuestionDialog.this.qNumberStart));
 					return null;
 				}
 
@@ -258,7 +264,8 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 		final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
 		if (confirm != JOptionPane.OK_OPTION) {
-			new NewQuestionDialog(this.client, this.nQuestions, qNumberStart, qValue, qText, this.newOpen);
+			new NewQuestionDialog(this.client, this.rNumber, this.nQuestions, qNumberStart, qValue, qText,
+					this.newOpen);
 			return;
 		}
 
@@ -266,10 +273,10 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		( new SwingWorker<Void, Void>() {
 			@Override
 			public Void doInBackground() {
-				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
+				NewQuestionDialog.this.client.sendMessage(new ResetQuestionMessage(rNumber, qNumber));
 				NewQuestionDialog.this.client
-						.sendMessage(ClientMessageFactory.remapQuestion(NewQuestionDialog.this.qNumberStart, qNumber));
-				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.setQuestion(qNumber, qValue, qText));
+						.sendMessage(new RemapQuestionMessage(rNumber, NewQuestionDialog.this.qNumberStart, qNumber));
+				NewQuestionDialog.this.client.sendMessage(new SetQuestionMessage(rNumber, qNumber, qText, qValue));
 				return null;
 			}
 
@@ -364,17 +371,17 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 
 		final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
 		if (confirm != JOptionPane.OK_OPTION) {
-			new NewQuestionDialog(this.client, this.nQuestions, qNumber, qValue, qText, this.newOpen);
+			new NewQuestionDialog(this.client, this.rNumber, this.nQuestions, qNumber, qValue, qText, this.newOpen);
 			return;
 		}
 
 		( new SwingWorker<Void, Void>() {
 			@Override
 			public Void doInBackground() {
-				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.resetQuestion(qNumber));
+				NewQuestionDialog.this.client.sendMessage(new ResetQuestionMessage(rNumber, qNumber));
 				NewQuestionDialog.this.client
-						.sendMessage(ClientMessageFactory.remapQuestion(NewQuestionDialog.this.qNumberStart, qNumber));
-				NewQuestionDialog.this.client.sendMessage(ClientMessageFactory.setQuestion(qNumber, qValue, qText));
+						.sendMessage(new RemapQuestionMessage(rNumber, NewQuestionDialog.this.qNumberStart, qNumber));
+				NewQuestionDialog.this.client.sendMessage(new SetQuestionMessage(rNumber, qNumber, qText, qValue));
 				return null;
 			}
 

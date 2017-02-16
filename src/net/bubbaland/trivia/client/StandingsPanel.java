@@ -63,8 +63,8 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 		constraints.gridy = 0;
 		constraints.gridwidth = 3;
 		constraints.weightx = 1.0;
-		this.roundLabel = this.enclosedLabel("Standings for Round ", constraints, SwingConstants.RIGHT,
-				SwingConstants.CENTER);
+		this.roundLabel =
+				this.enclosedLabel("Standings for Round ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 		constraints.gridwidth = 1;
 
@@ -169,7 +169,7 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 				return;
 			}
 
-			ScoreEntry[] standings = StandingsPanel.this.client.getTrivia().getStandings(rNumber);
+			ScoreEntry[] standings = StandingsPanel.this.client.getTrivia().getRound(rNumber).getStandings();
 
 			if (standings == null) {
 				for (int t = 0; t < nTeams; t++) {
@@ -255,8 +255,8 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 			for (int r = 0; r < nTeams; r++) {
 				constraints.gridx = 0;
 				constraints.gridy = r;
-				this.placeLabels[r] = this.enclosedLabel("" + ( r + 1 ), constraints, SwingConstants.CENTER,
-						SwingConstants.CENTER);
+				this.placeLabels[r] =
+						this.enclosedLabel("" + ( r + 1 ), constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 				constraints.gridx = 1;
 				constraints.gridy = r;
@@ -270,8 +270,8 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 
 				constraints.gridx = 3;
 				constraints.gridy = r;
-				this.pointsBackLabels[r] = this.enclosedLabel("", constraints, SwingConstants.RIGHT,
-						SwingConstants.CENTER);
+				this.pointsBackLabels[r] =
+						this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 				final Color bColor = ( ( r + 1 ) % altColorInterval == 0 ) ? altBackgroundColor : backgroundColor;
 				setLabelProperties(this.placeLabels[r], placeWidth, rowHeight, foregroundColor, bColor, fontSize);
@@ -287,14 +287,14 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 			/**
 			 * Colors
 			 */
-			this.foregroundColor = new Color(
-					new BigInteger(properties.getProperty("Standings.ForegroundColor"), 16).intValue());
-			this.highlightColor = new Color(
-					new BigInteger(properties.getProperty("Standings.HighlightColor"), 16).intValue());
-			this.backgroundColor = new Color(
-					new BigInteger(properties.getProperty("Standings.BackgroundColor"), 16).intValue());
-			this.altBackgroundColor = new Color(
-					new BigInteger(properties.getProperty("Standings.AltBackgroundColor"), 16).intValue());
+			this.foregroundColor =
+					new Color(new BigInteger(properties.getProperty("Standings.ForegroundColor"), 16).intValue());
+			this.highlightColor =
+					new Color(new BigInteger(properties.getProperty("Standings.HighlightColor"), 16).intValue());
+			this.backgroundColor =
+					new Color(new BigInteger(properties.getProperty("Standings.BackgroundColor"), 16).intValue());
+			this.altBackgroundColor =
+					new Color(new BigInteger(properties.getProperty("Standings.AltBackgroundColor"), 16).intValue());
 
 			/**
 			 * Sizes
@@ -340,10 +340,10 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 		/**
 		 * Colors
 		 */
-		final Color foregroundColor = new Color(
-				new BigInteger(properties.getProperty("Standings.Header.ForegroundColor"), 16).intValue());
-		final Color headerBackgroundColor = new Color(
-				new BigInteger(properties.getProperty("Standings.Header.BackgroundColor"), 16).intValue());
+		final Color foregroundColor =
+				new Color(new BigInteger(properties.getProperty("Standings.Header.ForegroundColor"), 16).intValue());
+		final Color headerBackgroundColor =
+				new Color(new BigInteger(properties.getProperty("Standings.Header.BackgroundColor"), 16).intValue());
 
 		/**
 		 * Sizes

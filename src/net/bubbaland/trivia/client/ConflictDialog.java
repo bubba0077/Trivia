@@ -25,7 +25,7 @@ public class ConflictDialog extends TriviaDialogPanel {
 		final Trivia trivia = client.getTrivia();
 		final int currentRound = trivia.getCurrentRoundNumber();
 		final int calculated = trivia.getCumulativeEarned(currentRound - 1);
-		final int announced = trivia.getAnnouncedPoints(currentRound - 1);
+		final int announced = trivia.getRound(currentRound - 1).getAnnouncedPoints();
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -101,8 +101,8 @@ public class ConflictDialog extends TriviaDialogPanel {
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 
-		this.dialog = new TriviaDialog(null, "Score Conflict", this, JOptionPane.PLAIN_MESSAGE,
-				JOptionPane.DEFAULT_OPTION);
+		this.dialog =
+				new TriviaDialog(null, "Score Conflict", this, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION);
 		this.dialog.setVisible(true);
 	}
 

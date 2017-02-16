@@ -101,7 +101,7 @@ public class Question implements Serializable {
 	 * @param answer
 	 *            TODO
 	 */
-	public void close() {
+	protected void closeQuestion() {
 		this.isOpen = false;
 	}
 
@@ -131,7 +131,7 @@ public class Question implements Serializable {
 	 *
 	 * @return The question number
 	 */
-	public int getNumber() {
+	public int getQuestionNumber() {
 		return this.qNumber;
 	}
 
@@ -158,7 +158,7 @@ public class Question implements Serializable {
 	 *
 	 * @return The question's value
 	 */
-	public int getValue() {
+	public int getQuestionValue() {
 		return this.value;
 	}
 
@@ -190,7 +190,7 @@ public class Question implements Serializable {
 	 * @param operator
 	 *            The operator who accepted the correct answer
 	 */
-	public void markCorrect(String answer, String submitter) {
+	protected void markQuestionCorrect(String answer, String submitter) {
 		this.correct = true;
 		this.isOpen = false;
 		this.answer = answer;
@@ -200,7 +200,7 @@ public class Question implements Serializable {
 	/**
 	 * Mark this question as incorrect
 	 */
-	public void markIncorrect() {
+	protected void markQuestionIncorrect() {
 		this.correct = false;
 		this.answer = "";
 		this.submitter = "";
@@ -209,23 +209,20 @@ public class Question implements Serializable {
 	/**
 	 * Open this question
 	 */
-	public void open(String user) {
+	protected void openQuestion(String user) {
 		if (this.beenOpen == false) {
-			this.isOpen = true;
+			this.question = "Question " + this.qNumber + " is being typed in by " + user + "...";
 		}
-		this.beenOpen = true;
-		this.question = "Question " + this.qNumber + " is being typed in by " + user + "...";
-	}
-
-	public void reopen() {
 		this.isOpen = true;
+		this.beenOpen = true;
 		this.correct = false;
+		this.submitter = "";
 	}
 
 	/**
 	 * Reset the question
 	 */
-	public void reset() {
+	protected void resetQuestion() {
 		this.value = 0;
 		this.question = "";
 		this.answer = "";
@@ -241,7 +238,7 @@ public class Question implements Serializable {
 	 * @param answer
 	 *            The new answer text
 	 */
-	public void setAnswerText(String answer) {
+	protected void setAnswerText(String answer) {
 		this.answer = answer;
 	}
 
@@ -251,7 +248,7 @@ public class Question implements Serializable {
 	 * @param question
 	 *            The new question text
 	 */
-	public void setQuestionText(String question) {
+	protected void setQuestionText(String question) {
 		this.question = question;
 		Matcher matcher = visualPattern.matcher(this.question);
 		this.visualTrivia = matcher.find() ? Integer.parseInt(matcher.group(4)) : 0;
@@ -266,7 +263,7 @@ public class Question implements Serializable {
 	 * @param submitter
 	 *            The new submitter
 	 */
-	public void setSubmitter(String submitter) {
+	protected void setSubmitter(String submitter) {
 		this.submitter = submitter;
 	}
 
@@ -276,7 +273,7 @@ public class Question implements Serializable {
 	 * @param value
 	 *            The new value for this question
 	 */
-	public void setValue(int value) {
+	protected void setValue(int value) {
 		this.value = value;
 	}
 

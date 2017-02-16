@@ -16,8 +16,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.messages.ProposeAnswerMessage;
 
 /**
  * Creates a dialog box that prompts user to propose an answer.
@@ -29,7 +29,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 	private static final long	serialVersionUID	= -5797789908178154492L;
 
 	private final String		user;
-	private final int			qNumber;
+	private final int			rNumber, qNumber;
 	private final JTextArea		answerTextArea;
 	private final JCheckBox		bruteForceCheckbox;
 	private final JSlider		confidenceSlider;
@@ -45,11 +45,12 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 	 * @param user
 	 *            The user's name
 	 */
-	public AnswerEntryPanel(TriviaClient client, int qNumber, String user) {
+	public AnswerEntryPanel(TriviaClient client, int rNumber, int qNumber, String user) {
 
 		super();
 
 		this.client = client;
+		this.rNumber = rNumber;
 		this.qNumber = qNumber;
 		this.user = user;
 
@@ -57,7 +58,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		final Trivia trivia = client.getTrivia();
 
 		// Get the question text
-		final String qText = trivia.getQuestionText(qNumber);
+		final String qText = trivia.getCurrentRound().getQuestionText(qNumber);
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();
@@ -155,8 +156,8 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		( new SwingWorker<Void, Void>() {
 			@Override
 			public Void doInBackground() {
-				AnswerEntryPanel.this.client.sendMessage(
-						ClientMessageFactory.proposeAnswer(AnswerEntryPanel.this.qNumber, answer, confidence));
+				AnswerEntryPanel.this.client.sendMessage(new ProposeAnswerMessage(AnswerEntryPanel.this.rNumber,
+						AnswerEntryPanel.this.qNumber, answer, confidence));
 				return null;
 			}
 
@@ -177,7 +178,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 			final int confidence = this.confidenceSlider.getValue();
 
 			if (answer.equals("")) {
-				new AnswerEntryPanel(this.client, this.qNumber, this.user);
+				new AnswerEntryPanel(this.client, this.rNumber, this.qNumber, this.user);
 				return;
 			}
 

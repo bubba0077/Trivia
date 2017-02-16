@@ -22,8 +22,11 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.messages.SetRoundMessage;
+import net.bubbaland.trivia.messages.SetShowHostMessage;
+import net.bubbaland.trivia.messages.SetShowNameMessage;
+import net.bubbaland.trivia.messages.SetSpeedRoundMessage;
 
 /**
  * A panel which displays summary information of the trivia contest.
@@ -132,8 +135,8 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		constraints.gridx = 6;
 		constraints.gridy = 0;
 		constraints.gridwidth = 2;
-		this.announcedBannerLabel = this.enclosedLabel("Last Round ", constraints, SwingConstants.RIGHT,
-				SwingConstants.CENTER);
+		this.announcedBannerLabel =
+				this.enclosedLabel("Last Round ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		this.conflictButton = new JButton("Conflict!");
 		this.conflictButton.setMargin(new Insets(0, 0, 0, 0));
@@ -257,8 +260,9 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						SummaryPanel.this.client
-								.sendMessage(ClientMessageFactory.setSpeed(SummaryPanel.this.speedButton.isSelected()));
+						SummaryPanel.this.client.sendMessage(
+								new SetSpeedRoundMessage(SummaryPanel.this.client.getTrivia().getCurrentRoundNumber(),
+										SummaryPanel.this.speedButton.isSelected()));
 						return null;
 					}
 
@@ -277,7 +281,8 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						SummaryPanel.this.client.sendMessage(ClientMessageFactory.advanceRound());
+						SummaryPanel.this.client.sendMessage(
+								new SetRoundMessage(SummaryPanel.this.client.getTrivia().getCurrentRoundNumber()));
 						return null;
 					}
 
@@ -296,8 +301,8 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						SummaryPanel.this.client.sendMessage(ClientMessageFactory
-								.setShowName(SummaryPanel.this.client.getTrivia().getCurrentRoundNumber(), showName));
+						SummaryPanel.this.client.sendMessage(new SetShowNameMessage(
+								SummaryPanel.this.client.getTrivia().getCurrentRoundNumber(), showName));
 						return null;
 					}
 
@@ -313,8 +318,8 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						SummaryPanel.this.client.sendMessage(ClientMessageFactory
-								.setShowHost(SummaryPanel.this.client.getTrivia().getCurrentRoundNumber(), showHost));
+						SummaryPanel.this.client.sendMessage(new SetShowHostMessage(
+								SummaryPanel.this.client.getTrivia().getCurrentRoundNumber(), showHost));
 						return null;
 					}
 
@@ -334,15 +339,15 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		 * Colors
 		 */
 		backgroundColor = new Color(new BigInteger(properties.getProperty("Summary.BackgroundColor"), 16).intValue());
-		final Color labelColor = new Color(
-				new BigInteger(properties.getProperty("Summary.Label.Color"), 16).intValue());
+		final Color labelColor =
+				new Color(new BigInteger(properties.getProperty("Summary.Label.Color"), 16).intValue());
 		final Color earnedColor = new Color(new BigInteger(properties.getProperty("Earned.Color"), 16).intValue());
 		final Color valueColor = new Color(new BigInteger(properties.getProperty("Value.Color"), 16).intValue());
-		final Color announcedColor = new Color(
-				new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
+		final Color announcedColor =
+				new Color(new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
 		speedColor = new Color(new BigInteger(properties.getProperty("Summary.Speed.Color"), 16).intValue());
-		final Color newRoundColor = new Color(
-				new BigInteger(properties.getProperty("Summary.NewRound.Color"), 16).intValue());
+		final Color newRoundColor =
+				new Color(new BigInteger(properties.getProperty("Summary.NewRound.Color"), 16).intValue());
 		conflictColor = new Color(new BigInteger(properties.getProperty("Summary.Conflict.Color"), 16).intValue());
 
 		/**
@@ -433,19 +438,19 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		// Update all the labels to match the current data
 		this.teamNameLabel
 				.setText(this.client.getTrivia().getTeamName() + " (#" + this.client.getTrivia().getTeamNumber() + ")");
-		this.showNameLabel.setText("Show: " + this.client.getTrivia().getShowName(currentRound));
-		this.showHostLabel.setText("Host: " + this.client.getTrivia().getShowHost(currentRound));
-		this.roundEarnedLabel.setText("" + trivia.getCurrentRoundEarned());
+		this.showNameLabel.setText("Show: " + this.client.getTrivia().getRound(currentRound).getShowName());
+		this.showHostLabel.setText("Host: " + this.client.getTrivia().getRound(currentRound).getShowHost());
+		this.roundEarnedLabel.setText("" + trivia.getCurrentRound().getEarned());
 		this.totalEarnedLabel.setText("" + trivia.getEarned());
-		this.roundValueLabel.setText("" + trivia.getCurrentRoundValue());
+		this.roundValueLabel.setText("" + trivia.getCurrentRound().getValue());
 		this.totalValueLabel.setText("" + trivia.getValue());
 		this.currentHourLabel.setText("Current Round: " + currentRound);
 
 		// Only show announced values once they've been announced
-		if (trivia.isAnnounced(currentRound - 1)) {
-			final int announcedPoints = trivia.getAnnouncedPoints(currentRound - 1);
+		if (currentRound > 1 && trivia.getRound(currentRound - 1).isAnnounced()) {
+			final int announcedPoints = trivia.getRound(currentRound - 1).getAnnouncedPoints();
 			this.announcedLabel.setText("" + announcedPoints);
-			this.placeLabel.setText("" + TriviaGUI.ordinalize(trivia.getAnnouncedPlace(currentRound - 1)));
+			this.placeLabel.setText("" + TriviaGUI.ordinalize(trivia.getRound(currentRound - 1).getPlace()));
 			if (announcedPoints != trivia.getCumulativeEarned(currentRound - 1)) {
 				this.announcedBannerLabel.getParent().setBackground(conflictColor);
 				this.scoreTextLabel.getParent().setBackground(conflictColor);
@@ -480,13 +485,13 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		}
 
 		// If the round is over, hide speed round button and show new round button
-		if (trivia.roundOver() && trivia.getCurrentRoundNumber() < trivia.getNRounds()) {
+		if (trivia.getCurrentRound().roundOver() && trivia.getCurrentRoundNumber() < trivia.getNRounds()) {
 			this.speedButton.setVisible(false);
 			this.newRoundButton.setVisible(true);
 		} else {
 			this.speedButton.setVisible(true);
 			this.newRoundButton.setVisible(false);
-			if (trivia.isCurrentSpeed()) {
+			if (trivia.getCurrentRound().isSpeed()) {
 				this.speedButton.setText("Speed");
 				this.speedButton.setSelected(true);
 				this.speedButton.setForeground(speedColor);
@@ -524,8 +529,10 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 		private void checkForPopup(MouseEvent event) {
 			final JComponent source = (JComponent) event.getSource();
-			SummaryPanel.this.showNameTextField.setText(SummaryPanel.this.client.getTrivia().getShowName());
-			SummaryPanel.this.showHostTextField.setText(SummaryPanel.this.client.getTrivia().getShowHost());
+			SummaryPanel.this.showNameTextField
+					.setText(SummaryPanel.this.client.getTrivia().getCurrentRound().getShowName());
+			SummaryPanel.this.showHostTextField
+					.setText(SummaryPanel.this.client.getTrivia().getCurrentRound().getShowHost());
 			if (event.isPopupTrigger()) {
 				this.menu.show(source, event.getX(), event.getY());
 			}

@@ -61,7 +61,7 @@ public class PlaceChartPanel extends TriviaMainPanel {
 		final int[] newPlaces = new int[nRounds];
 		boolean change = false;
 		for (int r = 0; r < nRounds; r++) {
-			newPlaces[r] = trivia.getAnnouncedPlace(r + 1);
+			newPlaces[r] = trivia.getRound(r + 1).getPlace();
 			change = change || ( newPlaces[r] != this.places[r] );
 		}
 
@@ -94,8 +94,7 @@ public class PlaceChartPanel extends TriviaMainPanel {
 	}
 
 	@Override
-	protected void loadProperties(Properties properties) {
-	}
+	protected void loadProperties(Properties properties) {}
 
 
 }

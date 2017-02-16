@@ -51,9 +51,15 @@ import javax.swing.text.StyledDocument;
 
 import net.bubbaland.trivia.Answer;
 import net.bubbaland.trivia.Answer.Agreement;
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.client.TriviaGUI.QueueSort;
+import net.bubbaland.trivia.messages.AgreementMessage;
+import net.bubbaland.trivia.messages.CallInAnswerMessage;
+import net.bubbaland.trivia.messages.MarkAnswerCorrectMessage;
+import net.bubbaland.trivia.messages.MarkAnswerDuplicateMessage;
+import net.bubbaland.trivia.messages.MarkAnswerIncorrectMessage;
+import net.bubbaland.trivia.messages.MarkAnswerPartialMessage;
+import net.bubbaland.trivia.messages.MarkAnswerUncalledMessage;
 
 /**
  * A panel that shows the submitted answers for the current round.
@@ -67,14 +73,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	private static final long				serialVersionUID	= 784049314825719490L;
 
 	/** Valid statuses for queue items */
-	private static final String[]			STATUSES			= { "Duplicate", "Not Called In", "Calling",
-			"Incorrect", "Partial", "Correct" };
+	private static final String[]			STATUSES			=
+			{ "Duplicate", "Not Called In", "Calling", "Incorrect", "Partial", "Correct" };
 
 	/** Sort icons */
-	private static final ImageIcon			upArrow				= new ImageIcon(
-			AnswerQueuePanel.class.getResource("images/upArrow.png"));
-	private static final ImageIcon			downArrow			= new ImageIcon(
-			AnswerQueuePanel.class.getResource("images/downArrow.png"));
+	private static final ImageIcon			upArrow				=
+			new ImageIcon(AnswerQueuePanel.class.getResource("images/upArrow.png"));
+	private static final ImageIcon			downArrow			=
+			new ImageIcon(AnswerQueuePanel.class.getResource("images/downArrow.png"));
 
 	private static int						nBlinks;
 	private static int						blinkSpeed;
@@ -205,8 +211,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		constraints.gridx = 2;
 		constraints.gridy = 0;
 		constraints.weightx = 1.0;
-		this.answerLabel = this.enclosedLabel("Proposed Answer", constraints, SwingConstants.LEFT,
-				SwingConstants.CENTER);
+		this.answerLabel =
+				this.enclosedLabel("Proposed Answer", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
 		this.answerLabel.addMouseListener(new PopupListener(this.contextMenu));
 		constraints.weightx = 0.0;
 
@@ -216,8 +222,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		constraints.gridx = 4;
 		constraints.gridy = 0;
-		this.subCallerLabel = this.enclosedLabel("Sub/Caller", constraints, SwingConstants.CENTER,
-				SwingConstants.CENTER);
+		this.subCallerLabel =
+				this.enclosedLabel("Sub/Caller", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 5;
 		constraints.gridy = 0;
@@ -404,20 +410,16 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent event) {
-	}
+	public void mouseEntered(MouseEvent event) {}
 
 	@Override
-	public void mouseExited(MouseEvent event) {
-	}
+	public void mouseExited(MouseEvent event) {}
 
 	@Override
-	public void mousePressed(MouseEvent event) {
-	}
+	public void mousePressed(MouseEvent event) {}
 
 	@Override
-	public void mouseReleased(MouseEvent event) {
-	}
+	public void mouseReleased(MouseEvent event) {}
 
 	/*
 	 * (non-Javadoc)
@@ -438,7 +440,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			this.qNumberLabel.setText("Q#*");
 		}
 
-		final int queueSize = this.client.getTrivia().getAnswerQueueSize(this.rNumber);
+		final int queueSize = this.client.getTrivia().getCurrentRound().getAnswerQueueSize();
 		this.queueSizeLabel.setText(queueSize + "");
 		if (this.gui.getFilterTextPattern().pattern().equals("")) {
 			this.answerLabel.setText("Proposed Answer");
@@ -491,19 +493,19 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		 * Colors
 		 */
 		this.headerColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Header.Color"), 16).intValue());
-		this.headerBackgroundColor = new Color(
-				new BigInteger(properties.getProperty("AnswerQueue.Header.BackgroundColor"), 16).intValue());
-		oddRowBackgroundColor = new Color(
-				new BigInteger(properties.getProperty("AnswerQueue.OddRow.BackgroundColor"), 16).intValue());
-		evenRowBackgroundColor = new Color(
-				new BigInteger(properties.getProperty("AnswerQueue.EvenRow.BackgroundColor"), 16).intValue());
-		duplicateColor = new Color(
-				new BigInteger(properties.getProperty("AnswerQueue.Duplicate.Color"), 16).intValue());
-		notCalledInColor = new Color(
-				new BigInteger(properties.getProperty("AnswerQueue.NotCalledIn.Color"), 16).intValue());
+		this.headerBackgroundColor =
+				new Color(new BigInteger(properties.getProperty("AnswerQueue.Header.BackgroundColor"), 16).intValue());
+		oddRowBackgroundColor =
+				new Color(new BigInteger(properties.getProperty("AnswerQueue.OddRow.BackgroundColor"), 16).intValue());
+		evenRowBackgroundColor =
+				new Color(new BigInteger(properties.getProperty("AnswerQueue.EvenRow.BackgroundColor"), 16).intValue());
+		duplicateColor =
+				new Color(new BigInteger(properties.getProperty("AnswerQueue.Duplicate.Color"), 16).intValue());
+		notCalledInColor =
+				new Color(new BigInteger(properties.getProperty("AnswerQueue.NotCalledIn.Color"), 16).intValue());
 		callingColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Calling.Color"), 16).intValue());
-		incorrectColor = new Color(
-				new BigInteger(properties.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
+		incorrectColor =
+				new Color(new BigInteger(properties.getProperty("AnswerQueue.Incorrect.Color"), 16).intValue());
 		partialColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Partial.Color"), 16).intValue());
 		correctColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Correct.Color"), 16).intValue());
 		agreeColor = new Color(new BigInteger(properties.getProperty("AnswerQueue.Agree.Color"), 16).intValue());
@@ -669,10 +671,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			switch (command) {
 				case "View":
 					queueIndex = Integer.parseInt(this.contextMenu.getName());
-					final int qNumber = trivia.getAnswerQueueQNumber(queueIndex);
-					final int qValue = trivia.getValue(AnswerQueuePanel.this.rNumber, qNumber);
-					final String qText = trivia.getQuestionText(AnswerQueuePanel.this.rNumber, qNumber);
-					final String aText = trivia.getAnswerQueueAnswer(queueIndex);
+					final int qNumber =
+							trivia.getRound(AnswerQueuePanel.this.rNumber).getAnswerQueueQNumber(queueIndex);
+					final int qValue = trivia.getRound(AnswerQueuePanel.this.rNumber).getValue(qNumber);
+					final String qText = trivia.getRound(AnswerQueuePanel.this.rNumber).getQuestionText(qNumber);
+					final String aText =
+							trivia.getRound(AnswerQueuePanel.this.rNumber).getAnswerQueueAnswerText(queueIndex);
 					new ViewAnswerDialog(AnswerQueuePanel.this.rNumber, qNumber, qValue, qText, aText);
 					break;
 				case "Agree":
@@ -697,7 +701,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 						@Override
 						public Void doInBackground() {
 							AnswerQueueSubPanel.this.client
-									.sendMessage(ClientMessageFactory.changeAgreement(queueIndex, agreementF));
+									.sendMessage(new AgreementMessage(rNumber, queueIndex, agreementF));
 							return null;
 						}
 
@@ -739,13 +743,12 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							@Override
 							public Void doInBackground() {
 								AnswerQueueSubPanel.this.client
-										.sendMessage(ClientMessageFactory.markDuplicate(queueIndex));
+										.sendMessage(new MarkAnswerDuplicateMessage(rNumber, queueIndex));
 								return null;
 							}
 
 							@Override
-							public void done() {
-							}
+							public void done() {}
 						} ).execute();
 						break;
 					case "Not Called In":
@@ -753,26 +756,25 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							@Override
 							public Void doInBackground() {
 								AnswerQueueSubPanel.this.client
-										.sendMessage(ClientMessageFactory.markUncalled(queueIndex));
+										.sendMessage(new MarkAnswerUncalledMessage(rNumber, queueIndex));
 								return null;
 							}
 
 							@Override
-							public void done() {
-							}
+							public void done() {}
 						} ).execute();
 						break;
 					case "Calling":
 						( new SwingWorker<Void, Void>() {
 							@Override
 							public Void doInBackground() {
-								AnswerQueueSubPanel.this.client.sendMessage(ClientMessageFactory.callIn(queueIndex));
+								AnswerQueueSubPanel.this.client
+										.sendMessage(new CallInAnswerMessage(rNumber, queueIndex));
 								return null;
 							}
 
 							@Override
-							public void done() {
-							}
+							public void done() {}
 						} ).execute();
 						break;
 					case "Incorrect":
@@ -780,15 +782,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							@Override
 							public Void doInBackground() {
 								AnswerQueueSubPanel.this.client
-										.sendMessage(ClientMessageFactory.markIncorrect(queueIndex));
+										.sendMessage(new MarkAnswerIncorrectMessage(rNumber, queueIndex));
 								return null;
 							}
 
 							@Override
-							public void done() {
-							}
+							public void done() {}
 						} ).execute();
-						new OperatorDialog(this.client, "Marking Answer Incorrect", queueIndex,
+						new OperatorDialog(this.client, "Marking Answer Incorrect", rNumber, queueIndex,
 								( (JComboBox<String>) source ), lastStatus);
 						break;
 					case "Partial":
@@ -796,15 +797,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							@Override
 							public Void doInBackground() {
 								AnswerQueueSubPanel.this.client
-										.sendMessage(ClientMessageFactory.markPartial(queueIndex));
+										.sendMessage(new MarkAnswerPartialMessage(rNumber, queueIndex));
 								return null;
 							}
 
 							@Override
-							public void done() {
-							}
+							public void done() {}
 						} ).execute();
-						new OperatorDialog(this.client, "Marking Answer Partially Correct", queueIndex,
+						new OperatorDialog(this.client, "Marking Answer Partially Correct", rNumber, queueIndex,
 								( (JComboBox<String>) source ), lastStatus);
 						break;
 					case "Correct":
@@ -812,15 +812,14 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 							@Override
 							public Void doInBackground() {
 								AnswerQueueSubPanel.this.client
-										.sendMessage(ClientMessageFactory.markCorrect(queueIndex));
+										.sendMessage(new MarkAnswerCorrectMessage(rNumber, queueIndex));
 								return null;
 							}
 
 							@Override
-							public void done() {
-							}
+							public void done() {}
 						} ).execute();
-						new OperatorDialog(this.client, "Marking Answer Correct", queueIndex,
+						new OperatorDialog(this.client, "Marking Answer Correct", rNumber, queueIndex,
 								( (JComboBox<String>) source ), lastStatus);
 						break;
 					default:
@@ -847,7 +846,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			final QueueSort sortMethod = AnswerQueuePanel.this.gui.getQueueSort();
 
 			// Get the queue data
-			final Answer[] newAnswerQueue = trivia.getAnswerQueue(AnswerQueuePanel.this.rNumber);
+			final Answer[] newAnswerQueue = trivia.getRound(AnswerQueuePanel.this.rNumber).getAnswerQueue();
 
 			switch (sortMethod) {
 				case TIMESTAMP_ASCENDING:
@@ -910,7 +909,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				final int newQueueNumber = this.answerQueue[a].getQueueLocation();
 				final String newTimestamp = this.answerQueue[a].getTimestamp();
 				final int newQNumber = this.answerQueue[a].getQNumber();
-				final String newAnswer = this.answerQueue[a].getAnswer();
+				final String newAnswer = this.answerQueue[a].getAnswerText();
 				final int newConfidence = this.answerQueue[a].getConfidence();
 				final int newAgreement = this.answerQueue[a].getAgreement();
 				final Agreement myAgreement = this.answerQueue[a].getAgreement(user);
@@ -924,7 +923,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.lastStatus.set(a, newStatus);
 				final boolean closed;
 				if (AnswerQueuePanel.this.live) {
-					closed = !trivia.isOpen(newQNumber);
+					closed = !trivia.getCurrentRound().isOpen(newQNumber);
 				} else {
 					closed = false;
 				}
@@ -1410,8 +1409,8 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 			public Component getListCellRendererComponent(JList<? extends String> list, String value, int index,
 					boolean isSelected, boolean cellHasFocus) {
 				final String displayName = String.valueOf(value); // customize here
-				final Component renderer = this.wrapped.getListCellRendererComponent(list, displayName, index,
-						isSelected, cellHasFocus);
+				final Component renderer =
+						this.wrapped.getListCellRendererComponent(list, displayName, index, isSelected, cellHasFocus);
 				if (renderer instanceof JLabel) {
 					Color color = notCalledInColor;
 					switch (value) {
@@ -1503,7 +1502,6 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		}
 
 		@Override
-		public void popupMenuCanceled(PopupMenuEvent e) {
-		}
+		public void popupMenuCanceled(PopupMenuEvent e) {}
 	}
 }

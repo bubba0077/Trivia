@@ -26,7 +26,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.bubbaland.trivia.Trivia;
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
+import net.bubbaland.trivia.messages.SetShowHostMessage;
+import net.bubbaland.trivia.messages.SetShowNameMessage;
 
 /**
  * A panel to select and display any round.
@@ -195,8 +196,8 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 		constraints.weightx = 1.0;
 		constraints.weighty = 1.0;
 
-		final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.roundQuestionPanel,
-				this.answerQueuePanel);
+		final JSplitPane splitPane =
+				new JSplitPane(JSplitPane.VERTICAL_SPLIT, this.roundQuestionPanel, this.answerQueuePanel);
 		splitPane.setResizeWeight(0.0);
 		splitPane.setBorder(BorderFactory.createEmptyBorder());
 		this.add(splitPane, constraints);
@@ -214,17 +215,18 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 		final Trivia trivia = this.client.getTrivia();
 		final int rNumber = ( (Integer) this.roundSpinner.getValue() ).intValue();
 
-		this.roundScoreLabel.setText(trivia.getEarned(rNumber) + " / " + trivia.getValue(rNumber));
+		this.roundScoreLabel
+				.setText(trivia.getRound(rNumber).getEarned() + " / " + trivia.getRound(rNumber).getValue());
 		this.totalScoreLabel.setText(trivia.getCumulativeEarned(rNumber) + " / " + trivia.getCumulativeValue(rNumber));
-		if (trivia.isAnnounced(rNumber)) {
+		if (trivia.getRound(rNumber).isAnnounced()) {
 			this.placeScoreLabel.setText(
-					TriviaGUI.ordinalize(trivia.getAnnouncedPlace(rNumber)) + " / " + trivia.getNTeams() + " ");
+					TriviaGUI.ordinalize(trivia.getRound(rNumber).getPlace()) + " / " + trivia.getNTeams() + " ");
 		} else {
 			this.placeScoreLabel.setText("-- / " + trivia.getNTeams() + " ");
 		}
 
-		this.showNameLabel.setText(trivia.getShowName(rNumber));
-		this.showHostLabel.setText(trivia.getShowHost(rNumber));
+		this.showNameLabel.setText(trivia.getRound(rNumber).getShowName());
+		this.showHostLabel.setText(trivia.getRound(rNumber).getShowHost());
 
 		this.roundQuestionPanel.updateGUI(force);
 		this.answerQueuePanel.updateGUI(force);
@@ -235,12 +237,12 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 		/**
 		 * Colors
 		 */
-		final Color headerBackgroundColor = new Color(
-				new BigInteger(properties.getProperty("History.Header.BackgroundColor"), 16).intValue());
-		final Color roundColor = new Color(
-				new BigInteger(properties.getProperty("History.Header.Round.Color"), 16).intValue());
-		final Color totalColor = new Color(
-				new BigInteger(properties.getProperty("History.Header.Total.Color"), 16).intValue());
+		final Color headerBackgroundColor =
+				new Color(new BigInteger(properties.getProperty("History.Header.BackgroundColor"), 16).intValue());
+		final Color roundColor =
+				new Color(new BigInteger(properties.getProperty("History.Header.Round.Color"), 16).intValue());
+		final Color totalColor =
+				new Color(new BigInteger(properties.getProperty("History.Header.Total.Color"), 16).intValue());
 		final Color placeColor = new Color(new BigInteger(properties.getProperty("Announced.Color"), 16).intValue());
 
 		/**
@@ -309,7 +311,7 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						HistoryPanel.this.client.sendMessage(ClientMessageFactory.setShowName(rNumber, showName));
+						HistoryPanel.this.client.sendMessage(new SetShowNameMessage(rNumber, showName));
 						return null;
 					}
 
@@ -325,7 +327,7 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 				( new SwingWorker<Void, Void>() {
 					@Override
 					public Void doInBackground() {
-						HistoryPanel.this.client.sendMessage(ClientMessageFactory.setShowHost(rNumber, showHost));
+						HistoryPanel.this.client.sendMessage(new SetShowHostMessage(rNumber, showHost));
 						return null;
 					}
 
@@ -371,8 +373,10 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 		private void checkForPopup(MouseEvent event) {
 			final JComponent source = (JComponent) event.getSource();
 			final int rNumber = ( (Integer) HistoryPanel.this.roundSpinner.getValue() ).intValue();
-			HistoryPanel.this.showNameTextField.setText(HistoryPanel.this.client.getTrivia().getShowName(rNumber));
-			HistoryPanel.this.showHostTextField.setText(HistoryPanel.this.client.getTrivia().getShowHost(rNumber));
+			HistoryPanel.this.showNameTextField
+					.setText(HistoryPanel.this.client.getTrivia().getRound(rNumber).getShowName());
+			HistoryPanel.this.showHostTextField
+					.setText(HistoryPanel.this.client.getTrivia().getRound(rNumber).getShowHost());
 			if (event.isPopupTrigger()) {
 				this.menu.show(source, event.getX(), event.getY());
 			}

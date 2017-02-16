@@ -34,7 +34,7 @@ public class TeamComparisonPanel extends TriviaMainPanel {
 	public synchronized void updateGUI(boolean force) {
 		final Trivia trivia = this.client.getTrivia();
 		boolean change;
-		for (change = false; trivia.isAnnounced(this.lastAnnounced + 1); this.lastAnnounced++) {
+		for (change = false; trivia.getRound(this.lastAnnounced + 1).isAnnounced(); this.lastAnnounced++) {
 			change = true;
 		}
 
@@ -60,7 +60,6 @@ public class TeamComparisonPanel extends TriviaMainPanel {
 	}
 
 	@Override
-	protected void loadProperties(Properties properties) {
-	}
+	protected void loadProperties(Properties properties) {}
 
 }

@@ -38,7 +38,7 @@ public class Answer implements Serializable {
 
 	// The answer text
 	@JsonProperty("answer")
-	final private String							answer;
+	final private String							answerText;
 
 	// The confidence in the answer
 	@JsonProperty("confidence")
@@ -115,7 +115,7 @@ public class Answer implements Serializable {
 			@JsonProperty("status") Status status) {
 		this.queueLocation = queueLocation;
 		this.qNumber = qNumber;
-		this.answer = answer;
+		this.answerText = answer;
 		this.confidence = confidence;
 		this.agreement = agreement;
 		this.timestamp = timestamp;
@@ -142,8 +142,8 @@ public class Answer implements Serializable {
 	 *
 	 * @return The answer text
 	 */
-	public String getAnswer() {
-		return this.answer;
+	public String getAnswerText() {
+		return this.answerText;
 	}
 
 	/**
@@ -242,9 +242,8 @@ public class Answer implements Serializable {
 	 * @param caller
 	 *            The caller's user name
 	 */
-	public void markCorrect(String caller) {
+	public void markAnswerCorrect(String caller) {
 		this.caller = caller;
-		// this.operator = "";
 		this.status = Status.CORRECT;
 	}
 
@@ -263,13 +262,9 @@ public class Answer implements Serializable {
 
 	/**
 	 * Mark this answer as incorrect
-	 *
-	 * @param caller
-	 *            The caller's user name
 	 */
 	public void markIncorrect(String caller) {
 		this.caller = caller;
-		// this.operator = "";
 		this.status = Status.INCORRECT;
 	}
 
@@ -345,7 +340,7 @@ public class Answer implements Serializable {
 	}
 
 	public String toString() {
-		return ( "Queue Position " + this.queueLocation + " Q" + this.qNumber + "\n" + this.answer + "\n"
+		return ( "Queue Position " + this.queueLocation + " Q" + this.qNumber + "\n" + this.answerText + "\n"
 				+ "Submitted by " + this.submitter + " at " + this.timestamp + " with confidence " + this.confidence
 				+ "\n" + "Status: " + this.status + " Caller: " + this.caller + " Operator: " + this.operator );
 	}

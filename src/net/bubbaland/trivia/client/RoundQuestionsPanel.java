@@ -29,8 +29,8 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.messages.ReopenQuestionMessage;
 
 /**
  * A panel that shows all of the questions for a round.
@@ -169,14 +169,14 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 		/**
 		 * Colors
 		 */
-		final Color headerColor = new Color(
-				new BigInteger(properties.getProperty("RoundQuestions.Header.Color"), 16).intValue());
+		final Color headerColor =
+				new Color(new BigInteger(properties.getProperty("RoundQuestions.Header.Color"), 16).intValue());
 		final Color headerBackgroundColor = new Color(
 				new BigInteger(properties.getProperty("RoundQuestions.Header.BackgroundColor"), 16).intValue());
-				/**
-				 * Sizes
-				 */
-				final int headerHeight = Integer.parseInt(properties.getProperty("RoundQuestions.Header.Height"));
+		/**
+		 * Sizes
+		 */
+		final int headerHeight = Integer.parseInt(properties.getProperty("RoundQuestions.Header.Height"));
 
 		final int qNumWidth = Integer.parseInt(properties.getProperty("RoundQuestions.QNumber.Width"));
 		final int earnedWidth = Integer.parseInt(properties.getProperty("RoundQuestions.Earned.Width"));
@@ -312,15 +312,15 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 
 				constraints.gridx = 0;
 				constraints.gridy = q;
-				this.qNumberLabels[q] = this.enclosedLabel(( q + 1 ) + "", constraints, SwingConstants.CENTER,
-						SwingConstants.CENTER);
+				this.qNumberLabels[q] =
+						this.enclosedLabel(( q + 1 ) + "", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.qNumberLabels[q].setName(( q + 1 ) + "");
 				this.qNumberLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
 				constraints.gridx = 1;
 				constraints.gridy = q;
-				this.earnedLabels[q] = this.enclosedLabel("", constraints, SwingConstants.CENTER,
-						SwingConstants.CENTER);
+				this.earnedLabels[q] =
+						this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 				this.earnedLabels[q].setName(( q + 1 ) + "");
 				this.earnedLabels[q].addMouseListener(new PopupListener(this.contextMenu));
 
@@ -357,9 +357,9 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 				constraints.gridx = 5;
 				constraints.gridy = q;
 				constraints.weightx = 0.4;
-				this.answerTextAreas[q] = this.scrollableTextArea("", constraints,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				this.answerTextAreas[q] =
+						this.scrollableTextArea("", constraints, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+								ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				this.answerTextAreas[q].setEditable(false);
 				this.answerTextAreas[q].setName(( q + 1 ) + "");
 				this.answerTextAreas[q].addMouseListener(new PopupListener(this.contextMenu));
@@ -368,9 +368,9 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 
 				constraints.gridx = 6;
 				constraints.gridy = q;
-				this.submitterTextPanes[q] = this.scrollableTextPane("", constraints,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				this.submitterTextPanes[q] =
+						this.scrollableTextPane("", constraints, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER,
+								ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				StyleConstants.setAlignment(( (StyledDocument) this.submitterTextPanes[q].getDocument() )
 						.getStyle(StyleContext.DEFAULT_STYLE), StyleConstants.ALIGN_CENTER);
 				DefaultCaret caret = (DefaultCaret) this.submitterTextPanes[q].getCaret();
@@ -412,7 +412,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 					( new SwingWorker<Void, Void>() {
 						@Override
 						public Void doInBackground() {
-							RoundQuestionsPanel.this.client.sendMessage(ClientMessageFactory.reopen(qNumber));
+							RoundQuestionsPanel.this.client.sendMessage(new ReopenQuestionMessage(rNumber, qNumber));
 							return null;
 						}
 
@@ -455,16 +455,16 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 				this.rNumber = trivia.getCurrentRoundNumber();
 			}
 			// Get all of the question data for the current round
-			final int nQuestions = trivia.getNQuestions(this.rNumber);
-			final boolean newSpeed = trivia.isSpeed(this.rNumber);
-			final boolean[] beenOpens = trivia.eachBeenOpen(this.rNumber);
-			final boolean[] opens = trivia.eachOpen(this.rNumber);
-			final boolean[] corrects = trivia.eachCorrect(this.rNumber);
-			final int[] earneds = trivia.getEachEarned(this.rNumber);
-			final int[] values = trivia.getEachValue(this.rNumber);
-			final String[] questions = trivia.getEachQuestionText(this.rNumber);
-			final String[] answers = trivia.getEachAnswerText(this.rNumber);
-			final String[] submitters = trivia.getEachSubmitter(this.rNumber);
+			final int nQuestions = trivia.getRound(this.rNumber).getNQuestions();
+			final boolean newSpeed = trivia.getRound(this.rNumber).isSpeed();
+			final boolean[] beenOpens = trivia.getRound(this.rNumber).eachBeenOpen();
+			final boolean[] opens = trivia.getRound(this.rNumber).eachOpen();
+			final boolean[] corrects = trivia.getRound(this.rNumber).eachCorrect();
+			final int[] earneds = trivia.getRound(this.rNumber).getEachEarned();
+			final int[] values = trivia.getRound(this.rNumber).getEachValue();
+			final String[] questions = trivia.getRound(this.rNumber).getEachQuestionText();
+			final String[] answers = trivia.getRound(this.rNumber).getEachAnswerText();
+			final String[] submitters = trivia.getRound(this.rNumber).getEachSubmitter();
 
 			// Determine which questions have been updated
 			final boolean[] qUpdated = new boolean[nQuestions];
@@ -553,10 +553,10 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 			 */
 			final Color headerBackgroundColor = new Color(
 					new BigInteger(properties.getProperty("RoundQuestions.Header.BackgroundColor"), 16).intValue());
-			final Color oddColor = new Color(
-					new BigInteger(properties.getProperty("RoundQuestions.OddRow.Color"), 16).intValue());
-			final Color evenColor = new Color(
-					new BigInteger(properties.getProperty("RoundQuestions.EvenRow.Color"), 16).intValue());
+			final Color oddColor =
+					new Color(new BigInteger(properties.getProperty("RoundQuestions.OddRow.Color"), 16).intValue());
+			final Color evenColor =
+					new Color(new BigInteger(properties.getProperty("RoundQuestions.EvenRow.Color"), 16).intValue());
 			final Color oddBackgroundColor = new Color(
 					new BigInteger(properties.getProperty("RoundQuestions.OddRow.BackgroundColor"), 16).intValue());
 			final Color evenBackgroundColor = new Color(
@@ -565,7 +565,7 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 			/**
 			 * Sizes
 			 */
-					final int rowHeight = Integer.parseInt(properties.getProperty("RoundQuestions.Row.Height"));
+			final int rowHeight = Integer.parseInt(properties.getProperty("RoundQuestions.Row.Height"));
 
 			final int qNumWidth = Integer.parseInt(properties.getProperty("RoundQuestions.QNumber.Width"));
 			final int earnedWidth = Integer.parseInt(properties.getProperty("RoundQuestions.Earned.Width"));
@@ -631,9 +631,10 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 				if (RoundQuestionsSubPanel.this.live) {
 					RoundQuestionsSubPanel.this.rNumber = trivia.getCurrentRoundNumber();
 				}
-				if (event.isPopupTrigger() && trivia.beenOpen(RoundQuestionsSubPanel.this.rNumber, qNumber)) {
+				if (event.isPopupTrigger()
+						&& trivia.getRound(RoundQuestionsSubPanel.this.rNumber).getQuestion(qNumber).beenOpen()) {
 					if (RoundQuestionsSubPanel.this.live) {
-						RoundQuestionsSubPanel.this.reopenItem.setVisible(!trivia.isOpen(qNumber));
+						RoundQuestionsSubPanel.this.reopenItem.setVisible(!trivia.getCurrentRound().isOpen(qNumber));
 					}
 					this.menu.setName(source.getName());
 					this.menu.show(source, event.getX(), event.getY());

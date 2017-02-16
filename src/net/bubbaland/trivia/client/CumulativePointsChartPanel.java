@@ -61,8 +61,8 @@ public class CumulativePointsChartPanel extends TriviaMainPanel {
 		final int[] newEarneds = new int[this.nRounds];
 		boolean change = false;
 		for (int r = 0; r < this.nRounds; r++) {
-			newValues[r] = trivia.getValue(r + 1);
-			newEarneds[r] = trivia.getEarned(r + 1);
+			newValues[r] = trivia.getRound(r + 1).getValue();
+			newEarneds[r] = trivia.getRound(r + 1).getEarned();
 			change = change || ( newValues[r] != this.values[r] ) || ( newEarneds[r] != this.earneds[r] );
 		}
 
@@ -96,7 +96,6 @@ public class CumulativePointsChartPanel extends TriviaMainPanel {
 	}
 
 	@Override
-	protected void loadProperties(Properties properties) {
-	}
+	protected void loadProperties(Properties properties) {}
 
 }

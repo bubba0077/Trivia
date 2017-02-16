@@ -19,11 +19,20 @@ import javax.websocket.Session;
 
 import org.glassfish.tyrus.client.ClientManager;
 
-import net.bubbaland.trivia.ClientMessage;
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
-import net.bubbaland.trivia.ServerMessage;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.User;
+import net.bubbaland.trivia.messages.ChangeUserMessage;
+import net.bubbaland.trivia.messages.FetchTriviaMessage;
+import net.bubbaland.trivia.messages.Message;
+import net.bubbaland.trivia.messages.SaveListMessage;
+import net.bubbaland.trivia.messages.SetNTeamsMessage;
+import net.bubbaland.trivia.messages.SetNVisualMessage;
+import net.bubbaland.trivia.messages.SetRoleMessage;
+import net.bubbaland.trivia.messages.SetRoundMessage;
+import net.bubbaland.trivia.messages.SetTeamNumberMessage;
+import net.bubbaland.trivia.messages.TriviaDataMessage;
+import net.bubbaland.trivia.messages.UpdateRoundsMessage;
+import net.bubbaland.trivia.messages.UserListMessage;
 
 /**
  * Provides the root functionality for connecting to the trivia server and creating the associated GUI.
@@ -31,7 +40,7 @@ import net.bubbaland.trivia.User;
  * @author Walter Kolczynski
  *
  */
-@ClientEndpoint(decoders = { ServerMessage.MessageDecoder.class }, encoders = { ClientMessage.MessageEncoder.class })
+@ClientEndpoint(decoders = { Message.MessageDecoder.class }, encoders = { Message.MessageEncoder.class })
 public class TriviaClient implements Runnable {
 
 	private volatile User	user;
@@ -139,7 +148,7 @@ public class TriviaClient implements Runnable {
 		( new SwingWorker<Void, Void>() {
 			@Override
 			public Void doInBackground() {
-				TriviaClient.this.sendMessage(ClientMessageFactory.setRole(role));
+				TriviaClient.this.sendMessage(new SetRoleMessage(role));
 				;
 				return null;
 			}
@@ -156,7 +165,7 @@ public class TriviaClient implements Runnable {
 		( new SwingWorker<Void, Void>() {
 			@Override
 			public Void doInBackground() {
-				TriviaClient.this.sendMessage(ClientMessageFactory.changeUser(userName));
+				TriviaClient.this.sendMessage(new ChangeUserMessage(userName));
 				return null;
 			}
 
@@ -168,7 +177,7 @@ public class TriviaClient implements Runnable {
 		this.gui.log("Name set to " + userName);
 	}
 
-	public void sendMessage(ClientMessage message) {
+	public void sendMessage(Message message) {
 		if (SwingUtilities.isEventDispatchThread()) {
 			System.out.println("Trying to send message from Event Dispatch Thread!");
 		}
@@ -185,7 +194,7 @@ public class TriviaClient implements Runnable {
 	public void onOpen(final Session session, EndpointConfig config) {
 		this.gui.log("Connected to trivia server (" + this.serverURL + ").");
 		this.session = session;
-		this.sendMessage(ClientMessageFactory.fetchTrivia());
+		this.sendMessage(new FetchTriviaMessage());
 	}
 
 	@OnError
@@ -194,39 +203,51 @@ public class TriviaClient implements Runnable {
 	}
 
 	@OnMessage
-	public void onMessage(ServerMessage message) {
-		final ServerMessage.ServerCommand command = message.getCommand();
-		switch (command) {
-			case UPDATE_ROUND:
-				this.trivia.updateRounds(message.getRounds());
-				// this.gui.log("Updating data");
+	public void onMessage(Message genericMessage) {
+		String messageType = genericMessage.getClass().getSimpleName();
+		switch (messageType) {
+			case "SetRoundMessage": {
+				SetRoundMessage message = (SetRoundMessage) genericMessage;
+				this.trivia.setCurrentRound(message.getRoundNumber());
 				break;
-			case UPDATE_TRIVIA:
+			}
+			case "TriviaDataMessage": {
+				TriviaDataMessage message = (TriviaDataMessage) genericMessage;
 				this.trivia = message.getTrivia();
-				// this.gui.log("Trivia received");
 				break;
-			case UPDATE_USER_LISTS:
+			}
+			case "UserListMessage": {
+				UserListMessage message = (UserListMessage) genericMessage;
 				this.userList = message.getUserList();
-				// this.gui.log("New user lists received");
 				break;
-			case LIST_SAVES:
-				new LoadStateDialog(this, message.getSaves());
+			}
+			case "SaveListMessage": {
+				SaveListMessage message = (SaveListMessage) genericMessage;
+				new LoadStateDialog(this, message.getSaveFilenames());
 				break;
-			case UPDATE_R_NUMBER:
-				this.trivia.setCurrentRound(message.getRNumber());
+			}
+			case "UpdateRoundsMessage": {
+				UpdateRoundsMessage message = (UpdateRoundsMessage) genericMessage;
+				this.trivia.updateRounds(message.getUpdatedRounds());
 				break;
-			case UPDATE_N_TEAMS:
-				this.trivia.setNTeams(message.getNTeams());
+			}
+			case "SetNTeamsMessage": {
+				SetNTeamsMessage message = (SetNTeamsMessage) genericMessage;
+				this.trivia.setNTeams(message.getnTeams());
 				break;
-			case UPDATE_N_VISUAL:
-				this.trivia.setNVisual(message.getNVisual());
+			}
+			case "SetNVisualMessage": {
+				SetNVisualMessage message = (SetNVisualMessage) genericMessage;
+				this.trivia.setNVisual(message.getnVisual());
 				break;
-			case UPDATE_TEAM_NUMBER:
+			}
+			case "SetTeamNumberMessage": {
+				SetTeamNumberMessage message = (SetTeamNumberMessage) genericMessage;
 				this.trivia.setTeamNumber(message.getTeamNumber());
 				break;
+			}
 			default:
-				System.out.println("Unknown command received: " + command);
-				break;
+				System.out.println("Unexpected message type received by client!");
 		}
 		this.gui.updateGUI(false);
 	}

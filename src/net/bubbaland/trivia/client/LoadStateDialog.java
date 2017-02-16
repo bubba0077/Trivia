@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
-import net.bubbaland.trivia.ClientMessage.ClientMessageFactory;
+import net.bubbaland.trivia.messages.LoadSaveMessage;
 
 /**
  * Creates a dialog that lists the saves and prompts for one to load.
@@ -100,7 +100,7 @@ public class LoadStateDialog extends TriviaDialogPanel {
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
-					LoadStateDialog.this.client.sendMessage(ClientMessageFactory.loadState(saveFile));
+					LoadStateDialog.this.client.sendMessage(new LoadSaveMessage(saveFile));
 					return null;
 				}
 
