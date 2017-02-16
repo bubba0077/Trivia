@@ -185,7 +185,7 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 
 			final int maxScore = standings[0].getScore();
 
-			for (int t = 0; t < this.nTeams; t++) {
+			for (int t = 0; t < standings.length; t++) {
 				ScoreEntry entry = standings[t];
 				String teamName = entry.getTeamName();
 				final int score = entry.getScore();

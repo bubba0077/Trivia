@@ -53,7 +53,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	/**
 	 * GUI Elements that will need to be updated
 	 */
-	private final JPanel		emptyPanel, emptyPanel2, buttonPanel;
+	private final JPanel		emptyPanel, emptyPanel2, speedButtonPanel;
 	private final JLabel		roundHeaderLabel, totalHeaderLabel, teamNameLabel, earnedRowLabel, valueRowLabel;
 	private final JLabel		roundEarnedLabel, roundValueLabel, totalEarnedLabel;
 	private final JLabel		totalValueLabel, announcedLabel, placeLabel;
@@ -169,6 +169,13 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.currentHourLabel = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
+		this.newRoundButton = new JButton("New Round");
+		this.newRoundButton.setMargin(new Insets(0, 0, 0, 0));
+		this.newRoundButton.setVisible(false);
+		this.currentHourLabel.getParent().add(this.newRoundButton, buttonConstraints);
+		this.newRoundButton.setActionCommand("New Round");
+		this.newRoundButton.addActionListener(this);
+
 		constraints.gridx = 5;
 		constraints.gridy = 1;
 		constraints.weightx = 0.5;
@@ -202,22 +209,16 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		constraints.gridx = 4;
 		constraints.gridy = 2;
 		// Put both the speed button and new round button in the same place, we'll hide the one we don't need
-		this.buttonPanel = new JPanel(new GridBagLayout());
-		this.add(this.buttonPanel, constraints);
+		this.speedButtonPanel = new JPanel(new GridBagLayout());
+		this.add(this.speedButtonPanel, constraints);
 
 		this.speedButton = new JToggleButton("");
 		this.speedButton.setMargin(new Insets(0, 0, 0, 0));
 		this.speedButton.setVisible(true);
-		this.buttonPanel.add(this.speedButton, buttonConstraints);
+		this.speedButtonPanel.add(this.speedButton, buttonConstraints);
 		this.speedButton.setActionCommand("Change Speed");
 		this.speedButton.addActionListener(this);
 
-		this.newRoundButton = new JButton("New Round");
-		this.newRoundButton.setMargin(new Insets(0, 0, 0, 0));
-		this.newRoundButton.setVisible(false);
-		this.buttonPanel.add(this.newRoundButton, buttonConstraints);
-		this.newRoundButton.setActionCommand("New Round");
-		this.newRoundButton.addActionListener(this);
 
 		constraints.gridx = 5;
 		constraints.gridy = 2;
@@ -407,7 +408,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		setLabelProperties(this.totalValueLabel, col2width, bottomRowHeight, valueColor, backgroundColor,
 				scoreFontSize);
 
-		setPanelProperties(this.buttonPanel, col3width, bottomRowHeight, backgroundColor);
+		setPanelProperties(this.speedButtonPanel, col3width, bottomRowHeight, backgroundColor);
 		setButtonProperties(this.speedButton, centerButtonWidth, centerButtonHeight, null, labelFontSize);
 		setButtonProperties(this.newRoundButton, centerButtonWidth, centerButtonHeight, null, labelFontSize);
 		this.newRoundButton.setBackground(newRoundColor);
@@ -485,21 +486,27 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		}
 
 		// If the round is over, hide speed round button and show new round button
-		if (trivia.getCurrentRound().roundOver() && trivia.getCurrentRoundNumber() < trivia.getNRounds()) {
-			this.speedButton.setVisible(false);
-			this.newRoundButton.setVisible(true);
+		if (trivia.getCurrentRound().isSpeed()) {
+			this.speedButton.setText("Speed");
+			this.speedButton.setSelected(true);
+			this.speedButton.setForeground(speedColor);
 		} else {
-			this.speedButton.setVisible(true);
+			this.speedButton.setText("Normal");
+			this.speedButton.setSelected(false);
+			this.speedButton.setForeground(Color.BLACK);
+		}
+
+		this.newRoundButton.setVisible(
+				trivia.getCurrentRound().roundOver() && trivia.getCurrentRoundNumber() < trivia.getNRounds());
+		if (trivia.getCurrentRound().roundOver() && trivia.getCurrentRoundNumber() < trivia.getNRounds()) {
+			this.newRoundButton.setVisible(true);
+			this.newRoundButton.setText("Start Rd " + ( trivia.getCurrentRoundNumber() + 1 ));
+			this.currentHourLabel.setText("");
+
+		} else {
 			this.newRoundButton.setVisible(false);
-			if (trivia.getCurrentRound().isSpeed()) {
-				this.speedButton.setText("Speed");
-				this.speedButton.setSelected(true);
-				this.speedButton.setForeground(speedColor);
-			} else {
-				this.speedButton.setText("Normal");
-				this.speedButton.setSelected(false);
-				this.speedButton.setForeground(Color.BLACK);
-			}
+
+
 		}
 		this.userListPanel.updateGUI(force);
 	}
