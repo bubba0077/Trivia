@@ -114,11 +114,11 @@ public class UserListPanel extends TriviaMainPanel {
 		/**
 		 * Colors
 		 */
-		final Color headerBackgroundColor = new Color(
-				Integer.parseInt(properties.getProperty("UserList.Header.BackgroundColor"), 16));
+		final Color headerBackgroundColor =
+				new Color(Integer.parseInt(properties.getProperty("UserList.Header.BackgroundColor"), 16));
 		final Color headerColor = new Color(Integer.parseInt(properties.getProperty("UserList.Header.Color"), 16));
-		final Color backgroundColor = new Color(
-				Integer.parseInt(properties.getProperty("UserList.BackgroundColor"), 16));
+		final Color backgroundColor =
+				new Color(Integer.parseInt(properties.getProperty("UserList.BackgroundColor"), 16));
 		researcherColor = new Color(Integer.parseInt(properties.getProperty("UserList.Researcher.Color"), 16));
 		callerColor = new Color(Integer.parseInt(properties.getProperty("UserList.Caller.Color"), 16));
 		typistColor = new Color(Integer.parseInt(properties.getProperty("UserList.Typist.Color"), 16));
@@ -161,7 +161,7 @@ public class UserListPanel extends TriviaMainPanel {
 		final Duration activeWindow = Duration.ofSeconds(UserListPanel.this.client.getTimeToIdle());
 
 		for (User user : this.client.getUserList()) {
-			final Duration timeSinceLastActive = this.client.getUser().timeSinceLastActive();
+			final Duration timeSinceLastActive = user.timeSinceLastActive();
 			if (!activeWindow.isZero() && timeSinceLastActive.compareTo(activeWindow) > 0) {
 				idleUsers.add(user);
 			} else {
