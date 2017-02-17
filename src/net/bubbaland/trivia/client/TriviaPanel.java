@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
@@ -88,8 +89,7 @@ public class TriviaPanel extends JPanel {
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 					try {
 						Desktop.getDesktop().browse(e.getURL().toURI());
-					} catch (IOException | URISyntaxException exception) {
-					}
+					} catch (IOException | URISyntaxException exception) {}
 				} else if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
 					TriviaPanel.this.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				} else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
@@ -139,8 +139,7 @@ public class TriviaPanel extends JPanel {
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 					try {
 						Desktop.getDesktop().browse(e.getURL().toURI());
-					} catch (IOException | URISyntaxException exception) {
-					}
+					} catch (IOException | URISyntaxException exception) {}
 				} else if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
 					TriviaPanel.this.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				} else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
@@ -392,6 +391,38 @@ public class TriviaPanel extends JPanel {
 	}
 
 	/**
+	 * Adds a space-filling panel with a label to the panel. A reference to the label is returned so the text can be
+	 * changed later.
+	 *
+	 * @param string
+	 *            The string for the label
+	 * @param constraints
+	 *            The GridBag constraints
+	 * @param labelHAlignment
+	 *            The horizontal alignment for the label (JLabel constants)
+	 * @param labelVAlignment
+	 *            The vertical alignment for the label (JLabel constants)
+	 * @return The label inside the panel
+	 */
+	protected JTextField enclosedTextField(String string, GridBagConstraints constraints, int labelHAlignment) {
+		final GridBagConstraints solo = new GridBagConstraints();
+		solo.fill = GridBagConstraints.BOTH;
+		solo.anchor = GridBagConstraints.CENTER;
+		solo.weightx = 1.0;
+		solo.weighty = 1.0;
+		solo.gridx = 0;
+		solo.gridy = 0;
+
+		final JPanel panel = new JPanel(new GridBagLayout());
+		this.add(panel, constraints);
+		final JTextField field = new JTextField(string, labelHAlignment);
+		// field.setVerticalAlignment(labelVAlignment);
+		panel.add(field, solo);
+
+		return field;
+	}
+
+	/**
 	 * Update a button's properties.
 	 *
 	 * @param button
@@ -463,6 +494,14 @@ public class TriviaPanel extends JPanel {
 		setPanelProperties((JPanel) label.getParent(), width, height, background);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		label.setForeground(foreground);
+	}
+
+	protected static void setTextFieldProperties(JTextField field, int width, int height, Color foreground,
+			Color background, float fontSize) {
+		setPanelProperties((JPanel) field.getParent(), width, height, background);
+		field.setFont(field.getFont().deriveFont(fontSize));
+		field.setForeground(foreground);
+		field.setBackground(background);
 	}
 
 	/**

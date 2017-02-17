@@ -2,25 +2,27 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.math.BigInteger;
 import java.util.Properties;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.Painter;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.UIDefaults;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.messages.SetRoundMessage;
@@ -38,7 +40,7 @@ import net.bubbaland.trivia.messages.SetSpeedRoundMessage;
  * @author Walter Kolczynski
  *
  */
-public class SummaryPanel extends TriviaMainPanel implements ActionListener {
+public class SummaryPanel extends TriviaMainPanel implements ActionListener, FocusListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long	serialVersionUID	= 3544918496657028139L;
@@ -53,17 +55,19 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	/**
 	 * GUI Elements that will need to be updated
 	 */
-	private final JPanel		emptyPanel, emptyPanel2, speedButtonPanel;
+	private final JPanel		emptyPanel, emptyPanel2, speedButtonPanel, showButtonPanel, hostButtonPanel;
 	private final JLabel		roundHeaderLabel, totalHeaderLabel, teamNameLabel, earnedRowLabel, valueRowLabel;
 	private final JLabel		roundEarnedLabel, roundValueLabel, totalEarnedLabel;
 	private final JLabel		totalValueLabel, announcedLabel, placeLabel;
 	private final JLabel		announcedBannerLabel, scoreTextLabel, placeTextLabel;
-	private final JLabel		currentHourLabel, showNameLabel, showHostLabel;
+	private final JLabel		currentHourLabel;
 	private final JTextField	showNameTextField, showHostTextField;
-	private final JToggleButton	speedButton;
+	private final JToggleButton	speedButton, showNameButton, showHostButton;
 	private final JButton		newRoundButton, conflictButton;
 	private final UserListPanel	userListPanel;
-	private final JPopupMenu	showNameMenu, showHostMenu;
+
+	private final UIDefaults	textFieldOverrides;
+
 
 	/**
 	 * Instantiates a new header panel.
@@ -74,25 +78,6 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 	public SummaryPanel(TriviaClient client, TriviaFrame parent) {
 
 		super(client, parent);
-
-		/**
-		 * Build context menus
-		 */
-		this.showNameMenu = new JPopupMenu();
-		this.showNameTextField = new JTextField();
-		this.showNameTextField.setPreferredSize(new Dimension(100, 25));
-		this.showNameTextField.setActionCommand("Set Show Name");
-		this.showNameTextField.addActionListener(this);
-		this.showNameMenu.add(this.showNameTextField);
-		this.add(this.showNameMenu);
-
-		this.showHostMenu = new JPopupMenu();
-		this.showHostTextField = new JTextField();
-		this.showHostTextField.setPreferredSize(new Dimension(100, 25));
-		this.showHostTextField.setActionCommand("Set Show Host");
-		this.showHostTextField.addActionListener(this);
-		this.showHostMenu.add(this.showHostTextField);
-		this.add(this.showHostMenu);
 
 		// Set up layout constraints
 		final GridBagConstraints buttonConstraints = new GridBagConstraints();
@@ -109,6 +94,22 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		constraints.weightx = 0.0;
 		constraints.weighty = 1.0;
 
+		// JTextField overrides for disabled state
+		this.textFieldOverrides = new UIDefaults();
+		this.textFieldOverrides.put("TextField[Disabled].backgroundPainter", new Painter<JTextField>() {
+			@Override
+			public void paint(Graphics2D g, JTextField field, int width, int height) {
+				// Don't paint a background when disabled
+			}
+		});
+		this.textFieldOverrides.put("TextField[Disabled].borderPainter", new Painter<JTextField>() {
+			@Override
+			public void paint(Graphics2D g, JTextField field, int width, int height) {
+				// Don't paint a border when disabled
+			}
+		});
+
+
 		/**
 		 * Top row
 		 */
@@ -121,18 +122,20 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		constraints.gridy = 0;
 		this.roundHeaderLabel = this.enclosedLabel("Round", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
+		// Space panel below
+
 		constraints.gridx = 3;
 		constraints.gridy = 0;
 		this.totalHeaderLabel = this.enclosedLabel("Total", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 
 		constraints.gridx = 4;
 		constraints.gridy = 0;
-		constraints.gridwidth = 2;
+		constraints.gridwidth = 3;
 		constraints.weightx = 1.0;
 		this.teamNameLabel = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
 		constraints.weightx = 0.0;
 
-		constraints.gridx = 6;
+		constraints.gridx = 7;
 		constraints.gridy = 0;
 		constraints.gridwidth = 2;
 		this.announcedBannerLabel =
@@ -146,7 +149,6 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.conflictButton.addActionListener(this);
 
 		constraints.gridwidth = 1;
-
 
 		/**
 		 * Middle row
@@ -172,22 +174,37 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.newRoundButton = new JButton("New Round");
 		this.newRoundButton.setMargin(new Insets(0, 0, 0, 0));
 		this.newRoundButton.setVisible(false);
-		this.currentHourLabel.getParent().add(this.newRoundButton, buttonConstraints);
 		this.newRoundButton.setActionCommand("New Round");
 		this.newRoundButton.addActionListener(this);
+		this.currentHourLabel.getParent().add(this.newRoundButton, buttonConstraints);
 
 		constraints.gridx = 5;
 		constraints.gridy = 1;
-		constraints.weightx = 0.5;
-		this.showNameLabel = this.enclosedLabel("Show: ", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
-		this.showNameLabel.addMouseListener(new PopupListener(this.showNameMenu));
-		constraints.weightx = 0.0;
+		this.showButtonPanel = new JPanel(new GridBagLayout());
+		this.add(this.showButtonPanel, constraints);
+		this.showNameButton = new JToggleButton("Show");
+		this.showNameButton.setMargin(new Insets(0, 0, 0, 0));
+		this.showNameButton.setActionCommand("Enter Show Name");
+		this.showNameButton.addActionListener(this);
+		this.showButtonPanel.add(this.showNameButton, buttonConstraints);
 
 		constraints.gridx = 6;
 		constraints.gridy = 1;
-		this.scoreTextLabel = this.enclosedLabel("Points ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+		constraints.weightx = 0.5;
+		this.showNameTextField = this.enclosedTextField("", constraints, SwingConstants.LEFT);
+		this.showNameTextField.setActionCommand("Set Show Name");
+		this.showNameTextField.addActionListener(this);
+		this.showNameTextField.setEnabled(false);
+		this.showNameTextField.addFocusListener(this);
+		this.showNameTextField.putClientProperty("Nimbus.Overrides", this.textFieldOverrides);
+
+		constraints.weightx = 0.0;
 
 		constraints.gridx = 7;
+		constraints.gridy = 1;
+		this.scoreTextLabel = this.enclosedLabel("Points ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+
+		constraints.gridx = 8;
 		constraints.gridy = 1;
 		this.announcedLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
@@ -208,7 +225,6 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 		constraints.gridx = 4;
 		constraints.gridy = 2;
-		// Put both the speed button and new round button in the same place, we'll hide the one we don't need
 		this.speedButtonPanel = new JPanel(new GridBagLayout());
 		this.add(this.speedButtonPanel, constraints);
 
@@ -219,21 +235,34 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		this.speedButton.setActionCommand("Change Speed");
 		this.speedButton.addActionListener(this);
 
-
 		constraints.gridx = 5;
 		constraints.gridy = 2;
-		this.showHostLabel = this.enclosedLabel("Host: ", constraints, SwingConstants.LEFT, SwingConstants.CENTER);
-		this.showHostLabel.addMouseListener(new PopupListener(this.showHostMenu));
+		this.hostButtonPanel = new JPanel(new GridBagLayout());
+		this.add(this.hostButtonPanel, constraints);
+		this.showHostButton = new JToggleButton("Host");
+		this.showHostButton.setMargin(new Insets(0, 0, 0, 0));
+		this.showHostButton.setActionCommand("Enter Host Name");
+		this.showHostButton.addActionListener(this);
+		this.hostButtonPanel.add(this.showHostButton, buttonConstraints);
 
 		constraints.gridx = 6;
 		constraints.gridy = 2;
-		this.placeTextLabel = this.enclosedLabel("Place ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+		this.showHostTextField = this.enclosedTextField("", constraints, SwingConstants.LEFT);
+		this.showHostTextField.setEnabled(false);
+		this.showHostTextField.setActionCommand("Set Show Host");
+		this.showHostTextField.addActionListener(this);
+		this.showHostTextField.addFocusListener(this);
+		this.showHostTextField.putClientProperty("Nimbus.Overrides", this.textFieldOverrides);
 
 		constraints.gridx = 7;
 		constraints.gridy = 2;
-		this.placeLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+		this.placeTextLabel = this.enclosedLabel("Place ", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
 
 		constraints.gridx = 8;
+		constraints.gridy = 2;
+		this.placeLabel = this.enclosedLabel("", constraints, SwingConstants.RIGHT, SwingConstants.CENTER);
+
+		constraints.gridx = 9;
 		constraints.gridy = 0;
 		constraints.gridheight = 3;
 		this.userListPanel = new UserListPanel(client, parent);
@@ -242,11 +271,9 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		constraints.gridx = 2;
 		constraints.gridy = 0;
 		this.emptyPanel2 = new JPanel(new GridBagLayout());
-		this.emptyPanel2.setPreferredSize(new Dimension(10, 0));
 		this.add(this.emptyPanel2, constraints);
 
 		this.loadProperties(TriviaGUI.PROPERTIES);
-
 	}
 
 	/*
@@ -297,7 +324,19 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 			case "Conflict":
 				new ConflictDialog(this.client);
 				break;
+			case "Enter Show Name":
+				this.showNameTextField.setEnabled(this.showNameButton.isSelected());
+				if (this.showNameButton.isSelected()) {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							SummaryPanel.this.showNameTextField.requestFocus();
+						}
+					});
+				}
+				break;
 			case "Set Show Name":
+				this.showNameTextField.setEnabled(false);
+				this.showNameButton.setSelected(false);
 				final String showName = this.showNameTextField.getText();
 				( new SwingWorker<Void, Void>() {
 					@Override
@@ -314,7 +353,19 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 				} ).execute();
 				this.client.log("Changed show name to " + showName);
 				break;
+			case "Enter Host Name":
+				this.showHostTextField.setEnabled(this.showHostButton.isSelected());
+				if (this.showHostButton.isEnabled()) {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							SummaryPanel.this.showHostTextField.requestFocus();
+						}
+					});
+				}
+				break;
 			case "Set Show Host":
+				this.showHostTextField.setEnabled(false);
+				this.showHostButton.setSelected(false);
 				final String showHost = this.showHostTextField.getText();
 				( new SwingWorker<Void, Void>() {
 					@Override
@@ -365,6 +416,8 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		final int col4width = Integer.parseInt(properties.getProperty("Summary.Col4.Width"));
 		final int col5width = Integer.parseInt(properties.getProperty("Summary.Col5.Width"));
 		final int col6width = Integer.parseInt(properties.getProperty("Summary.Col6.Width"));
+		final int col7width = Integer.parseInt(properties.getProperty("Summary.Col7.Width"));
+		final int col8width = Integer.parseInt(properties.getProperty("Summary.Col8.Width"));
 
 		/**
 		 * Font sizes
@@ -375,52 +428,64 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		/**
 		 * Button sizes
 		 */
-		final int centerButtonWidth = Integer.parseInt(properties.getProperty("Summary.CenterButton.Width"));
-		final int centerButtonHeight = Integer.parseInt(properties.getProperty("Summary.CenterButton.Height"));
+		final int speedButtonWidth = Integer.parseInt(properties.getProperty("Summary.SpeedButton.Width"));
+		final int speedButtonHeight = Integer.parseInt(properties.getProperty("Summary.SpeedButton.Height"));
 		final int conflictButtonWidth = Integer.parseInt(properties.getProperty("Summary.ConflictButton.Width"));
 		final int conflictButtonHeight = Integer.parseInt(properties.getProperty("Summary.ConflictButton.Height"));
+		final int showButtonWidth = Integer.parseInt(properties.getProperty("Summary.ShowButton.Width"));
+		final int showButtonHeight = Integer.parseInt(properties.getProperty("Summary.ShowButton.Height"));
 
 		setPanelProperties(this.emptyPanel, col0width, topRowHeight, backgroundColor);
 		setLabelProperties(this.roundHeaderLabel, col1width, topRowHeight, labelColor, backgroundColor, labelFontSize);
-		setLabelProperties(this.totalHeaderLabel, col2width, topRowHeight, labelColor, backgroundColor, labelFontSize);
-		setLabelProperties(this.teamNameLabel, col3width + col4width, topRowHeight, labelColor, backgroundColor,
-				labelFontSize);
-		setLabelProperties(this.announcedBannerLabel, col5width + col6width, topRowHeight, announcedColor,
+		setLabelProperties(this.totalHeaderLabel, col3width, topRowHeight, labelColor, backgroundColor, labelFontSize);
+		setLabelProperties(this.teamNameLabel, col4width + col5width + col6width, topRowHeight, labelColor,
+				backgroundColor, labelFontSize);
+		setLabelProperties(this.announcedBannerLabel, col7width + col8width, topRowHeight, announcedColor,
 				backgroundColor, labelFontSize);
 
 		setLabelProperties(this.earnedRowLabel, col0width, middleRowHeight, earnedColor, backgroundColor,
 				labelFontSize);
 		setLabelProperties(this.roundEarnedLabel, col1width, middleRowHeight, earnedColor, backgroundColor,
 				scoreFontSize);
-		setLabelProperties(this.totalEarnedLabel, col2width, middleRowHeight, earnedColor, backgroundColor,
+		setLabelProperties(this.totalEarnedLabel, col3width, middleRowHeight, earnedColor, backgroundColor,
 				scoreFontSize);
-		setLabelProperties(this.currentHourLabel, col3width, middleRowHeight, labelColor, backgroundColor,
+		setLabelProperties(this.currentHourLabel, col4width, middleRowHeight, labelColor, backgroundColor,
 				labelFontSize);
-		setLabelProperties(this.showNameLabel, col4width, middleRowHeight, labelColor, backgroundColor, labelFontSize);
-		setLabelProperties(this.scoreTextLabel, col5width, middleRowHeight, announcedColor, backgroundColor,
+		setPanelProperties(this.showButtonPanel, col5width, middleRowHeight, backgroundColor);
+		setButtonProperties(this.showNameButton, showButtonWidth, showButtonHeight, backgroundColor, labelFontSize);
+		setTextFieldProperties(this.showNameTextField, col6width, middleRowHeight, labelColor, backgroundColor,
 				labelFontSize);
-		setLabelProperties(this.announcedLabel, col6width, middleRowHeight, announcedColor, backgroundColor,
+		setLabelProperties(this.scoreTextLabel, col7width, middleRowHeight, announcedColor, backgroundColor,
+				labelFontSize);
+		setLabelProperties(this.announcedLabel, col8width, middleRowHeight, announcedColor, backgroundColor,
 				labelFontSize);
 
 		setLabelProperties(this.valueRowLabel, col0width, bottomRowHeight, valueColor, backgroundColor, labelFontSize);
 		setLabelProperties(this.roundValueLabel, col1width, bottomRowHeight, valueColor, backgroundColor,
 				scoreFontSize);
-		setLabelProperties(this.totalValueLabel, col2width, bottomRowHeight, valueColor, backgroundColor,
+		setLabelProperties(this.totalValueLabel, col3width, bottomRowHeight, valueColor, backgroundColor,
 				scoreFontSize);
 
-		setPanelProperties(this.speedButtonPanel, col3width, bottomRowHeight, backgroundColor);
-		setButtonProperties(this.speedButton, centerButtonWidth, centerButtonHeight, null, labelFontSize);
-		setButtonProperties(this.newRoundButton, centerButtonWidth, centerButtonHeight, null, labelFontSize);
+		setPanelProperties(this.speedButtonPanel, col4width, speedButtonHeight, backgroundColor);
+		setButtonProperties(this.speedButton, speedButtonWidth, speedButtonHeight, null, labelFontSize);
+		setButtonProperties(this.newRoundButton, speedButtonWidth, speedButtonHeight, null, labelFontSize);
+
+		setPanelProperties(this.hostButtonPanel, col5width, bottomRowHeight, backgroundColor);
+		setButtonProperties(this.showHostButton, showButtonWidth, showButtonHeight, backgroundColor, labelFontSize);
+		setTextFieldProperties(this.showHostTextField, col6width, middleRowHeight, labelColor, backgroundColor,
+				labelFontSize);
+		setLabelProperties(this.placeTextLabel, col7width, bottomRowHeight, announcedColor, backgroundColor,
+				labelFontSize);
+		setLabelProperties(this.placeLabel, col8width, bottomRowHeight, announcedColor, backgroundColor, labelFontSize);
+
+		this.textFieldOverrides.put("TextField[Disabled].textForeground", labelColor);
+
 		this.newRoundButton.setBackground(newRoundColor);
 		setButtonProperties(this.conflictButton, conflictButtonWidth, conflictButtonHeight, null, labelFontSize);
 
-		setLabelProperties(this.showHostLabel, col4width, bottomRowHeight, labelColor, backgroundColor, labelFontSize);
-		setLabelProperties(this.placeTextLabel, col5width, bottomRowHeight, announcedColor, backgroundColor,
-				labelFontSize);
-		setLabelProperties(this.placeLabel, col6width, bottomRowHeight, announcedColor, backgroundColor, labelFontSize);
-
 		this.userListPanel.setBackground(backgroundColor);
 		this.emptyPanel2.setBackground(backgroundColor);
+		this.emptyPanel2.setPreferredSize(new Dimension(col2width, 0));
 	}
 
 	/*
@@ -439,13 +504,17 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 		// Update all the labels to match the current data
 		this.teamNameLabel
 				.setText(this.client.getTrivia().getTeamName() + " (#" + this.client.getTrivia().getTeamNumber() + ")");
-		this.showNameLabel.setText("Show: " + this.client.getTrivia().getRound(currentRound).getShowName());
-		this.showHostLabel.setText("Host: " + this.client.getTrivia().getRound(currentRound).getShowHost());
+		if (!this.showNameTextField.isEnabled()) {
+			this.showNameTextField.setText(this.client.getTrivia().getRound(currentRound).getShowName());
+		}
+		if (!this.showHostTextField.isEnabled()) {
+			this.showHostTextField.setText(this.client.getTrivia().getRound(currentRound).getShowHost());
+		}
 		this.roundEarnedLabel.setText("" + trivia.getCurrentRound().getEarned());
 		this.totalEarnedLabel.setText("" + trivia.getEarned());
 		this.roundValueLabel.setText("" + trivia.getCurrentRound().getValue());
 		this.totalValueLabel.setText("" + trivia.getValue());
-		this.currentHourLabel.setText("Current Round: " + currentRound);
+		this.currentHourLabel.setText("Round " + currentRound);
 
 		// Only show announced values once they've been announced
 		if (currentRound > 1 && trivia.getRound(currentRound - 1).isAnnounced()) {
@@ -505,46 +574,20 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener {
 
 		} else {
 			this.newRoundButton.setVisible(false);
-
-
 		}
 		this.userListPanel.updateGUI(force);
 	}
 
-	private class PopupListener extends MouseAdapter {
+	@Override
+	public void focusGained(FocusEvent event) {}
 
-		private final JPopupMenu menu;
-
-		public PopupListener(JPopupMenu menu) {
-			this.menu = menu;
+	@Override
+	public void focusLost(FocusEvent event) {
+		final JTextField field = (JTextField) event.getComponent();
+		if (field.isEnabled()) {
+			field.setEnabled(false);
+			field.postActionEvent();
 		}
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			this.checkForPopup(e);
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			this.checkForPopup(e);
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			this.checkForPopup(e);
-		}
-
-		private void checkForPopup(MouseEvent event) {
-			final JComponent source = (JComponent) event.getSource();
-			SummaryPanel.this.showNameTextField
-					.setText(SummaryPanel.this.client.getTrivia().getCurrentRound().getShowName());
-			SummaryPanel.this.showHostTextField
-					.setText(SummaryPanel.this.client.getTrivia().getCurrentRound().getShowHost());
-			if (event.isPopupTrigger()) {
-				this.menu.show(source, event.getX(), event.getY());
-			}
-		}
-
 	}
 
 }

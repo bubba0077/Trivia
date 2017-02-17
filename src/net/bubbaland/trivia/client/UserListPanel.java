@@ -2,7 +2,6 @@ package net.bubbaland.trivia.client;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
 import java.awt.Insets;
@@ -66,7 +65,7 @@ public class UserListPanel extends TriviaMainPanel {
 		final GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new Insets(0, 10, 0, 0);
+		constraints.insets = new Insets(0, 2, 0, 0);
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.0;
 
@@ -94,8 +93,8 @@ public class UserListPanel extends TriviaMainPanel {
 		final JScrollPane pane = new JScrollPane(this.userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		pane.setBorder(BorderFactory.createEmptyBorder());
-		pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		pane.setMinimumSize(new Dimension(WIDTH, HEIGHT));
+		// pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		// pane.setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		this.add(pane, constraints);
 
 		this.loadProperties(TriviaGUI.PROPERTIES);
