@@ -153,7 +153,7 @@ public class UserListPanel extends TriviaMainPanel {
 	 * Update GUI elements
 	 */
 	@Override
-	public void updateGUI(boolean force) {
+	public synchronized void updateGUI(boolean force) {
 		ArrayList<User> activeUsers = new ArrayList<User>();
 		ArrayList<User> idleUsers = new ArrayList<User>();
 
