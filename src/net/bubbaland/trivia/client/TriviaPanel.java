@@ -640,14 +640,15 @@ public class TriviaPanel extends JPanel {
 			final String RR = String.format("%02d", this.getRNumber());
 			String hQuestion = question.replaceFirst(this.visualPattern,
 					"<a href=\"" + TriviaGUI.VISUAL_URL + "$4\">Visual Trivia #$4</a>");
+			hQuestion = hQuestion.replaceFirst("(?<=" + TriviaGUI.VISUAL_URL + ")([0-9])(?![0-9])", "0$1"); // pad
+																											// single-digit
+																											// with zero
 			hQuestion = hQuestion.replaceFirst(this.audioPattern,
 					"<a href=\"" + TriviaGUI.AUDIO_URL + "/Hour_" + RR + "\">Audio Trivia</a>");
 			if (!hQuestion.equals(this.simpleString)) {
 				super.setText(hQuestion);
 				this.simpleString = hQuestion;
 			}
-
-
 		}
 
 		public boolean textEquals(String string) {

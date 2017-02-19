@@ -814,6 +814,7 @@ public class TriviaServer {
 			return null;
 		} catch (final IOException e) {
 			e.printStackTrace();
+			return null;
 		}
 
 		TriviaServer.log("Standings for round " + rNumber + " parsed.");
