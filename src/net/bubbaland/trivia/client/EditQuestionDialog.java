@@ -92,9 +92,9 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		constraints.weightx = 0.5;
-		existingValue = ( 10 < existingValue ) ? existingValue : 10;
+		existingValue = ( 0 < existingValue ) ? existingValue : 0;
 		existingValue = ( 500 > existingValue ) ? existingValue : 500;
-		this.qValueSpinner = new JSpinner(new SpinnerNumberModel(existingValue, 10, 500, 5));
+		this.qValueSpinner = new JSpinner(new SpinnerNumberModel(existingValue, 0, 500, 5));
 		this.qValueSpinner.setFont(this.qValueSpinner.getFont().deriveFont(fontSize));
 		this.addEnterOverride(this.qValueSpinner);
 		this.add(this.qValueSpinner, constraints);
