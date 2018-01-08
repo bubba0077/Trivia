@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.tabpanel;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -17,6 +17,9 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.dialog.TriviaDialog;
+import net.bubbaland.trivia.client.dialog.TriviaDialogPanel;
 import net.bubbaland.trivia.messages.ProposeAnswerMessage;
 
 /**
@@ -137,7 +140,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		this.confidenceSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 5, 0);
 		this.confidenceSlider.setMajorTickSpacing(1);
 		final Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
-		labelTable.put(new Integer(0), new JLabel("—"));
+		labelTable.put(new Integer(0), new JLabel("ï¿½"));
 		labelTable.put(new Integer(1), new JLabel("Guess"));
 		labelTable.put(new Integer(5), new JLabel("Sure"));
 		this.confidenceSlider.setLabelTable(labelTable);

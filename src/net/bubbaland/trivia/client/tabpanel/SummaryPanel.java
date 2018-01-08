@@ -1,30 +1,52 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.tabpanel;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.math.BigInteger;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.Painter;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIDefaults;
 
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.User;
+import net.bubbaland.trivia.User.Role;
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.TriviaFrame;
+import net.bubbaland.trivia.client.TriviaGUI;
+import net.bubbaland.trivia.client.TriviaMainPanel;
+import net.bubbaland.trivia.client.dialog.ConflictDialog;
 import net.bubbaland.trivia.messages.SetRoundMessage;
 import net.bubbaland.trivia.messages.SetShowHostMessage;
 import net.bubbaland.trivia.messages.SetShowNameMessage;
@@ -68,6 +90,47 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener, Foc
 
 	private final UIDefaults	textFieldOverrides;
 
+	/**
+	 * Role Icons
+	 */
+	private static ImageIcon	callerIcon, pencilIcon;
+
+	/**
+	 * Colors
+	 */
+	private static Color		researcherColor;
+
+	/**
+	 * @return the researcherColor
+	 */
+	public static Color getResearcherColor() {
+		return researcherColor;
+	}
+
+	/**
+	 * @return the callerColor
+	 */
+	public static Color getCallerColor() {
+		return callerColor;
+	}
+
+	/**
+	 * @return the typistColor
+	 */
+	public static Color getTypistColor() {
+		return typistColor;
+	}
+
+	/**
+	 * @return the idleColor
+	 */
+	public static Color getIdleColor() {
+		return idleColor;
+	}
+
+	private static Color	callerColor;
+	private static Color	typistColor;
+	private static Color	idleColor;
 
 	/**
 	 * Instantiates a new header panel.
@@ -590,4 +653,260 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener, Foc
 		}
 	}
 
+	private class UserListPanel extends TriviaMainPanel {
+
+		private static final long				serialVersionUID	= 4877267114050120590L;
+
+		/**
+		 * GUI elements that will need to be updated
+		 */
+		private final JLabel					header;
+		private final DefaultListModel<User>	userListModel;
+		private final JList<User>				userList;
+
+		private ScheduledExecutorService		timer;
+
+		public UserListPanel(TriviaClient client, TriviaFrame parent) {
+			super(client, parent);
+
+			// Set up layout constraints
+			final GridBagConstraints constraints = new GridBagConstraints();
+			constraints.fill = GridBagConstraints.BOTH;
+			constraints.anchor = GridBagConstraints.CENTER;
+			constraints.insets = new Insets(0, 2, 0, 0);
+			constraints.weightx = 1.0;
+			constraints.weighty = 0.0;
+
+			// Create the user list header
+			constraints.gridx = 0;
+			constraints.gridy = 0;
+			constraints.weightx = 1.0;
+			constraints.weighty = 0.0;
+			this.header = this.enclosedLabel("", constraints, SwingConstants.CENTER, SwingConstants.CENTER);
+
+			constraints.weightx = 1.0;
+			constraints.weighty = 1.0;
+			constraints.gridx = 0;
+			constraints.gridy = 1;
+
+			// Create the active user list
+			this.userListModel = new DefaultListModel<User>();
+
+			this.userList = new JList<User>(this.userListModel);
+			this.userList.setLayoutOrientation(JList.VERTICAL);
+			this.userList.setVisibleRowCount(-1);
+			this.userList.setForeground(researcherColor);
+			this.userList.setCellRenderer(new UserCellRenderer());
+
+			final JScrollPane pane = new JScrollPane(this.userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			pane.setBorder(BorderFactory.createEmptyBorder());
+			// pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+			// pane.setMinimumSize(new Dimension(WIDTH, HEIGHT));
+			this.add(pane, constraints);
+
+			this.loadProperties(TriviaGUI.PROPERTIES);
+
+			this.timer = Executors.newSingleThreadScheduledExecutor();
+			this.timer.scheduleWithFixedDelay(new Runnable() {
+				@Override
+				public void run() {
+					UserListPanel.this.updateGUI();
+				}
+			}, 5, 5, TimeUnit.SECONDS);
+		}
+
+		@Override
+		public void loadProperties(Properties properties) {
+			/**
+			 * Colors
+			 */
+			final Color headerBackgroundColor =
+					new Color(Integer.parseInt(properties.getProperty("UserList.Header.BackgroundColor"), 16));
+			final Color headerColor = new Color(Integer.parseInt(properties.getProperty("UserList.Header.Color"), 16));
+			final Color backgroundColor =
+					new Color(Integer.parseInt(properties.getProperty("UserList.BackgroundColor"), 16));
+			researcherColor = new Color(Integer.parseInt(properties.getProperty("UserList.Researcher.Color"), 16));
+			callerColor = new Color(Integer.parseInt(properties.getProperty("UserList.Caller.Color"), 16));
+			typistColor = new Color(Integer.parseInt(properties.getProperty("UserList.Typist.Color"), 16));
+			idleColor = new Color(Integer.parseInt(properties.getProperty("UserList.Idle.Color"), 16));
+
+			/**
+			 * Sizes
+			 */
+			final int headerHeight = Integer.parseInt(properties.getProperty("UserList.Header.Height"));
+			final int width = Integer.parseInt(properties.getProperty("UserList.Width"));
+
+			/**
+			 * Font Sizes
+			 */
+			final float headerFontSize = Float.parseFloat(properties.getProperty("UserList.Header.FontSize"));
+			final float fontSize = Float.parseFloat(properties.getProperty("UserList.FontSize"));
+
+			setLabelProperties(this.header, width, headerHeight, headerColor, headerBackgroundColor, headerFontSize);
+			this.userList.setBackground(backgroundColor);
+			this.userList.setFont(this.userList.getFont().deriveFont(fontSize));
+
+			final int fontSizeInt = new Float(fontSize).intValue();
+
+			AnswerQueuePanel.class.getResource("../images/phone.png");
+			new ImageIcon(AnswerQueuePanel.class.getResource("../images/phone.png")).getImage();
+
+			callerIcon = new ImageIcon(new ImageIcon(AnswerQueuePanel.class.getResource("../images/phone.png"))
+					.getImage().getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
+
+			pencilIcon = new ImageIcon(new ImageIcon(AnswerQueuePanel.class.getResource("../images/pencil.png"))
+					.getImage().getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
+
+		}
+
+		/**
+		 * Update GUI elements
+		 */
+		@Override
+		public synchronized void updateGUI(boolean force) {
+			ArrayList<User> activeUsers = new ArrayList<User>();
+			ArrayList<User> idleUsers = new ArrayList<User>();
+
+			final Duration activeWindow = Duration.ofSeconds(UserListPanel.this.client.getTimeToIdle());
+
+			for (User user : this.client.getUserList()) {
+				final Duration timeSinceLastActive = user.timeSinceLastActive();
+				if (!activeWindow.isZero() && timeSinceLastActive.compareTo(activeWindow) > 0) {
+					idleUsers.add(user);
+				} else {
+					activeUsers.add(user);
+				}
+			}
+			this.header.setText("Active (" + activeUsers.size() + ")");
+			if (!activeUsers.isEmpty()) {
+				activeUsers.sort(new CompareActiveUsers());
+			}
+			if (!idleUsers.isEmpty()) {
+				idleUsers.sort(new CompareIdleUsers());
+			}
+
+			this.userListModel.removeAllElements();
+			for (final User user : activeUsers) {
+				this.userListModel.addElement(user);
+			}
+
+			User idleUser = new User();
+			idleUser.setUserName("Idle (" + idleUsers.size() + ")");
+			idleUser.setRole(Role.IDLE);
+			this.userListModel.addElement(idleUser);
+
+			for (final User user : idleUsers) {
+				this.userListModel.addElement(user);
+			}
+		}
+
+		/**
+		 * Sort user names based on role.
+		 *
+		 */
+		public class CompareActiveUsers implements Comparator<User> {
+			@Override
+			public int compare(User s1, User s2) {
+				return s1.compareTo(s2);
+			}
+		}
+
+		/**
+		 * Sort user names based on role.
+		 *
+		 */
+		public class CompareIdleUsers implements Comparator<User> {
+			@Override
+			public int compare(User s1, User s2) {
+				return s1.getUserName().compareTo(s2.getUserName());
+			}
+		}
+
+		/**
+		 * Custom renderer to color user names based on role.
+		 *
+		 */
+		private class UserCellRenderer extends DefaultListCellRenderer {
+
+			private static final long serialVersionUID = -801444128612741125L;
+
+			@Override
+			public Component getListCellRendererComponent(JList<?> list, Object userName, int index, boolean isSelected,
+					boolean cellHasFocus) {
+				super.getListCellRendererComponent(list, userName, index, isSelected, cellHasFocus);
+				Color color = null;
+				ImageIcon icon = null;
+				this.setHorizontalAlignment(LEFT);
+				this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
+
+				// Determine color based on the user role
+				User user = (User) userName;
+
+				switch (user.getRole()) {
+					case CALLER:
+						color = callerColor;
+						icon = callerIcon;
+						break;
+					case TYPIST:
+						color = typistColor;
+						icon = pencilIcon;
+						break;
+					case RESEARCHER:
+						color = researcherColor;
+						break;
+					case IDLE:
+						color = idleColor;
+						this.setHorizontalAlignment(CENTER);
+						break;
+					default:
+						color = idleColor;
+						break;
+				}
+
+				Duration timeSinceLastActive = user.timeSinceLastActive();
+				Duration timeSinceLastRollChange = user.timeSinceLastRollChange();
+				Duration activeWindow = Duration.ofSeconds(UserListPanel.this.client.getTimeToIdle());
+
+				final String activeTimestamp = durationToString(timeSinceLastActive);
+				final String rollTimestamp = durationToString(timeSinceLastRollChange);
+
+				String tooltipText = null;
+
+				if (user.getRole() != Role.IDLE) {
+					// Don't set tooltip for dummy user idle separator
+					if (!activeWindow.isZero() && timeSinceLastActive.compareTo(activeWindow) > 0) {
+						// Idle User
+						tooltipText = "<html>" + userName + "<BR>Idle for " + activeTimestamp + "</html>";
+						color = idleColor;
+					} else {
+						tooltipText = "<html>" + userName + "<BR>Role: " + user.getRole() + "<BR>Idle for "
+								+ activeTimestamp + "<BR>In role for " + rollTimestamp + "</html>";
+					}
+				}
+
+				this.setToolTipText(tooltipText);
+
+				// Set the color
+				this.setForeground(color);
+				this.setIcon(icon);
+				this.setOpaque(true); // otherwise, it's transparent
+
+				return this;
+			}
+		}
+	}
+
+	private static String durationToString(Duration duration) {
+		String durationString = duration.getSeconds() % 60 + "s";
+		if (duration.toMinutes() > 0) {
+			durationString = duration.toMinutes() % 60 + "m " + durationString;
+			if (duration.toHours() > 0) {
+				durationString = duration.toHours() + "h " + durationString;
+			}
+		}
+		return durationString;
+	}
+
 }
+

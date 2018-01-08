@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.dialog;
 
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
@@ -10,6 +10,8 @@ import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
+
+import net.bubbaland.trivia.client.TriviaGUI;
 
 /**
  * Custom dialog that handles setting up a lot of the characteristics used by all trivia dialogs.

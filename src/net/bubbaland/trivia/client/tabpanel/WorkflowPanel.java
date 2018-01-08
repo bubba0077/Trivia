@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.tabpanel;
 
 // imports for GUI
 import java.awt.GridBagConstraints;
@@ -13,6 +13,10 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.TriviaFrame;
+import net.bubbaland.trivia.client.TriviaMainPanel;
+import net.bubbaland.trivia.client.dialog.NewQuestionDialog;
 
 /**
  * A panel for the workflow tab, which contains most of the trivia operations

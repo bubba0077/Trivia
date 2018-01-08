@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.dialog;
 
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
@@ -6,6 +6,8 @@ import java.awt.event.WindowEvent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+
+import net.bubbaland.trivia.client.TriviaGUI;
 
 public class WaitDialog extends TriviaDialogPanel {
 

@@ -46,6 +46,8 @@ import javax.swing.event.ChangeListener;
 
 import javazoom.jl.player.Player;
 import net.bubbaland.trivia.User;
+import net.bubbaland.trivia.client.dialog.UserLoginDialog;
+import net.bubbaland.trivia.client.tabpanel.SummaryPanel;
 import net.bubbaland.trivia.messages.GetSaveListMessage;
 import net.bubbaland.trivia.messages.RestartTimerMessage;
 import net.bubbaland.trivia.messages.SetNVisualMessage;
@@ -183,7 +185,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.researcherMenuItem.setActionCommand("Researcher");
 			this.researcherMenuItem.setMnemonic(KeyEvent.VK_R);
 			this.researcherMenuItem.addActionListener(this);
-			this.researcherMenuItem.setForeground(UserListPanel.researcherColor);
+			this.researcherMenuItem.setForeground(SummaryPanel.getResearcherColor());
 			roleOptions.add(this.researcherMenuItem);
 			roleMenu.add(this.researcherMenuItem);
 
@@ -192,7 +194,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.callerMenuItem.setMnemonic(KeyEvent.VK_C);
 			this.callerMenuItem.addActionListener(this);
 			this.callerMenuItem.setSelected(false);
-			this.callerMenuItem.setForeground(UserListPanel.callerColor);
+			this.callerMenuItem.setForeground(SummaryPanel.getCallerColor());
 			roleOptions.add(this.callerMenuItem);
 			roleMenu.add(this.callerMenuItem);
 
@@ -201,7 +203,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.typistMenuItem.setMnemonic(KeyEvent.VK_T);
 			this.typistMenuItem.addActionListener(this);
 			this.typistMenuItem.setSelected(false);
-			this.typistMenuItem.setForeground(UserListPanel.typistColor);
+			this.typistMenuItem.setForeground(SummaryPanel.getTypistColor());
 			roleOptions.add(this.typistMenuItem);
 			roleMenu.add(this.typistMenuItem);
 

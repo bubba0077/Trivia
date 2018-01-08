@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.dialog;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -21,6 +21,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.TriviaGUI;
 import net.bubbaland.trivia.messages.EditQuestionMessage;
 
 public class EditQuestionDialog extends TriviaDialogPanel implements ActionListener {

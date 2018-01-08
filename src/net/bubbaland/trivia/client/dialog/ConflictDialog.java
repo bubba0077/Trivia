@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.dialog;
 
 import java.awt.GridBagConstraints;
 
@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.client.TriviaClient;
 
 /**
  * Creates a dialog notifying user of a scoring discrepancy between the announced score and the calculated score.

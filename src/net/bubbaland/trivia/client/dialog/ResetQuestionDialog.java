@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.dialog;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -13,6 +13,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
+import net.bubbaland.trivia.client.TriviaClient;
 import net.bubbaland.trivia.messages.ResetQuestionMessage;
 
 public class ResetQuestionDialog extends TriviaDialogPanel {

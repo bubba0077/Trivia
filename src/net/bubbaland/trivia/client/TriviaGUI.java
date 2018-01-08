@@ -38,6 +38,21 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import net.bubbaland.trivia.TriviaChartFactory;
 import net.bubbaland.trivia.client.TristateCheckBox.TristateState;
+import net.bubbaland.trivia.client.dialog.TriviaDialog;
+import net.bubbaland.trivia.client.dialog.TriviaDialogPanel;
+import net.bubbaland.trivia.client.dialog.UserLoginDialog;
+import net.bubbaland.trivia.client.dialog.WaitDialog;
+import net.bubbaland.trivia.client.tabpanel.AnswerQueuePanel;
+import net.bubbaland.trivia.client.tabpanel.CumulativePointsChartPanel;
+import net.bubbaland.trivia.client.tabpanel.HistoryPanel;
+import net.bubbaland.trivia.client.tabpanel.OpenQuestionsPanel;
+import net.bubbaland.trivia.client.tabpanel.PlaceChartPanel;
+import net.bubbaland.trivia.client.tabpanel.RoundPanel;
+import net.bubbaland.trivia.client.tabpanel.ScoreByRoundChartPanel;
+import net.bubbaland.trivia.client.tabpanel.ScoreByRoundPanel;
+import net.bubbaland.trivia.client.tabpanel.StandingsPanel;
+import net.bubbaland.trivia.client.tabpanel.TeamComparisonPanel;
+import net.bubbaland.trivia.client.tabpanel.WorkflowPanel;
 
 public class TriviaGUI implements WindowListener {
 
@@ -546,7 +561,7 @@ public class TriviaGUI implements WindowListener {
 	/**
 	 * Add the current window contents to properties, then save the properties to the settings file and exit.
 	 */
-	protected void endProgram() {
+	public void endProgram() {
 		// Remove previously saved windows
 		for (int f = 0; TriviaGUI.PROPERTIES.getProperty("Window" + f) != null; f++) {
 			PROPERTIES.remove("Window" + f);
@@ -617,12 +632,12 @@ public class TriviaGUI implements WindowListener {
 		this.updateGUI(true);
 	}
 
-	void resetNumberFilter() {
+	public void resetNumberFilter() {
 		this.qNumberFilter = new ArrayList<Integer>(0);
 		this.updateGUI(true);
 	}
 
-	void resetTextFilter() {
+	public void resetTextFilter() {
 		this.filterTextPattern = Pattern.compile("");
 		this.updateGUI(true);
 	}
@@ -635,7 +650,7 @@ public class TriviaGUI implements WindowListener {
 		return this.qNumberFilter;
 	}
 
-	void showNumberFilterDialog() {
+	public void showNumberFilterDialog() {
 		new NumberFilterDialog();
 	}
 

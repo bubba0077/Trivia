@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.dialog;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -15,6 +15,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.client.TriviaClient;
 import net.bubbaland.trivia.messages.OpenQuestionMessage;
 import net.bubbaland.trivia.messages.RemapQuestionMessage;
 import net.bubbaland.trivia.messages.ResetQuestionMessage;

@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.tabpanel;
 
 import java.awt.GridBagConstraints;
 import java.util.Properties;
@@ -8,34 +8,37 @@ import org.jfree.chart.JFreeChart;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaChartFactory;
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.TriviaFrame;
+import net.bubbaland.trivia.client.TriviaMainPanel;
 
 /**
- * A panel that displays a stacked bar chart showing the score in each round.
+ * A panel with a stacked XY plot that shows the cumulative score by round.
  *
  * @author Walter Kolczynski
  *
  */
-public class ScoreByRoundChartPanel extends TriviaMainPanel {
+public class CumulativePointsChartPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long	serialVersionUID	= -5408662436975410795L;
+	private static final long	serialVersionUID	= -6171512617495834445L;
+
+	/** The chart panel */
+	private ChartPanel			chartPanel;
 
 	/** Data */
 	final private int			nRounds;
-	private int[]				values;
-	private int[]				earneds;
-
-	/** The chart panel. */
-	private ChartPanel			chartPanel;
+	private int[]				values, earneds;
 
 	/**
-	 * Instantiates a new score by round chart panel.
+	 * Instantiates a new chart panel
 	 *
 	 * @param client
-	 *            the client application
+	 *            The local trivia client
+	 *
 	 */
-	public ScoreByRoundChartPanel(TriviaClient client, TriviaFrame parent) {
-		super(client, parent);
+	public CumulativePointsChartPanel(TriviaClient client, TriviaFrame frame) {
+		super(client, frame);
 
 		this.nRounds = client.getTrivia().getNRounds();
 
@@ -56,7 +59,7 @@ public class ScoreByRoundChartPanel extends TriviaMainPanel {
 		// Get the current Trivia data object
 		final Trivia trivia = this.client.getTrivia();
 
-		// Get the scores for each round and check if they are updated
+		// Read score data and determine if there have been any changes
 		final int[] newValues = new int[this.nRounds];
 		final int[] newEarneds = new int[this.nRounds];
 		boolean change = false;
@@ -69,18 +72,20 @@ public class ScoreByRoundChartPanel extends TriviaMainPanel {
 		this.values = newValues;
 		this.earneds = newEarneds;
 
-		// If the data has changed, remake the chart
+		// If there has been a change, remake the chart
 		if (change || force) {
-			final JFreeChart chart = TriviaChartFactory.makeScoreByRoundChart(trivia);
+			// Create the Stacked XY plot
+			final JFreeChart chart = TriviaChartFactory.makeCumulativePointChart(trivia);
 
-			// If a chart panel already exists, remove it
+			// Remove the old chart if it exists
 			if (this.chartPanel != null) {
 				this.remove(this.chartPanel);
 			}
-			// Add new chart panel
+
+			// Create a new chart panel
 			this.chartPanel = new ChartPanel(chart);
 
-			// Add the chart to the panel
+			// Add the new chart to the panel
 			final GridBagConstraints solo = new GridBagConstraints();
 			solo.fill = GridBagConstraints.BOTH;
 			solo.anchor = GridBagConstraints.CENTER;
@@ -89,7 +94,6 @@ public class ScoreByRoundChartPanel extends TriviaMainPanel {
 			solo.gridx = 0;
 			solo.gridy = 0;
 			this.add(this.chartPanel, solo);
-
 		}
 
 	}

@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.dialog;
 
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import net.bubbaland.trivia.client.TriviaClient;
 import net.bubbaland.trivia.messages.LoadSaveMessage;
 
 /**

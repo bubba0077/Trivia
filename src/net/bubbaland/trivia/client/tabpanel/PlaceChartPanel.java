@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.tabpanel;
 
 
 import java.awt.GridBagConstraints;
@@ -9,6 +9,9 @@ import org.jfree.chart.JFreeChart;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaChartFactory;
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.TriviaFrame;
+import net.bubbaland.trivia.client.TriviaMainPanel;
 
 /**
  * A panel with a chart showing announced place by round.

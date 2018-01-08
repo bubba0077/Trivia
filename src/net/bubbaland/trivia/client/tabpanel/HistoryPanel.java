@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.tabpanel;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -26,6 +26,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.TriviaFrame;
+import net.bubbaland.trivia.client.TriviaGUI;
+import net.bubbaland.trivia.client.TriviaMainPanel;
 import net.bubbaland.trivia.messages.SetShowHostMessage;
 import net.bubbaland.trivia.messages.SetShowNameMessage;
 

@@ -54,6 +54,8 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.bubbaland.trivia.client.dialog.AddTabDialog;
+
 public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionListener, ChangeListener {
 	public static final long						serialVersionUID	= 1L;
 	private static final int						LINEWIDTH			= 3;

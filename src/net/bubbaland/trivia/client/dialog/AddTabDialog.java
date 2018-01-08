@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.dialog;
 
 import java.awt.GridBagConstraints;
 import java.awt.event.ItemEvent;
@@ -14,6 +14,11 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+
+import net.bubbaland.trivia.client.DnDTabbedPane;
+import net.bubbaland.trivia.client.TriviaFrame;
+import net.bubbaland.trivia.client.TriviaGUI;
+import net.bubbaland.trivia.client.TriviaMainPanel;
 
 /**
  * Creates a dialog that allows the user to select a tab to be added to the tabbed pane.

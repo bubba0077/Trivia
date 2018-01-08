@@ -323,7 +323,7 @@ public class TriviaPanel extends JPanel {
 	 *            The vertical alignment for the label (JLabel constants)
 	 * @return The label inside the panel
 	 */
-	protected JLabel enclosedLabel(String string, GridBagConstraints constraints, int labelHAlignment,
+	public JLabel enclosedLabel(String string, GridBagConstraints constraints, int labelHAlignment,
 			int labelVAlignment) {
 		final GridBagConstraints solo = new GridBagConstraints();
 		solo.fill = GridBagConstraints.BOTH;
@@ -366,7 +366,7 @@ public class TriviaPanel extends JPanel {
 	 *            The vertical alignment for the label (JLabel constants)
 	 * @return The label inside the panel
 	 */
-	protected JLabel enclosedLabel(String string, int width, int height, Color foreground, Color background,
+	public JLabel enclosedLabel(String string, int width, int height, Color foreground, Color background,
 			GridBagConstraints constraints, float fontSize, int labelHAlignment, int labelVAlignment) {
 		final GridBagConstraints solo = new GridBagConstraints();
 		solo.fill = GridBagConstraints.BOTH;

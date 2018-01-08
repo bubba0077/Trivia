@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.tabpanel;
 
 // imports for GUI
 import java.awt.Color;
@@ -52,7 +52,13 @@ import javax.swing.text.StyledDocument;
 import net.bubbaland.trivia.Answer;
 import net.bubbaland.trivia.Answer.Agreement;
 import net.bubbaland.trivia.Trivia;
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.TriviaFrame;
+import net.bubbaland.trivia.client.TriviaGUI;
+import net.bubbaland.trivia.client.TriviaMainPanel;
 import net.bubbaland.trivia.client.TriviaGUI.QueueSort;
+import net.bubbaland.trivia.client.dialog.OperatorDialog;
+import net.bubbaland.trivia.client.dialog.ViewAnswerDialog;
 import net.bubbaland.trivia.messages.AgreementMessage;
 import net.bubbaland.trivia.messages.CallInAnswerMessage;
 import net.bubbaland.trivia.messages.MarkAnswerCorrectMessage;
@@ -78,9 +84,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	/** Sort icons */
 	private static final ImageIcon			upArrow				=
-			new ImageIcon(AnswerQueuePanel.class.getResource("images/upArrow.png"));
+			new ImageIcon(AnswerQueuePanel.class.getResource("../images/upArrow.png"));
 	private static final ImageIcon			downArrow			=
-			new ImageIcon(AnswerQueuePanel.class.getResource("images/downArrow.png"));
+			new ImageIcon(AnswerQueuePanel.class.getResource("../images/downArrow.png"));
 
 	private static int						nBlinks;
 	private static int						blinkSpeed;
@@ -999,7 +1005,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 					this.answerTextAreas.get(a).setName("" + ( newQueueNumber - 1 ));
 
 					if (newConfidence == 0) {
-						this.confidenceLabels.get(a).setText("—");
+						this.confidenceLabels.get(a).setText("ï¿½");
 					} else {
 						this.confidenceLabels.get(a).setText(newConfidence + "");
 					}

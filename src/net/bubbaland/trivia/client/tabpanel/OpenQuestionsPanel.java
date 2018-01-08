@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.tabpanel;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -31,6 +31,15 @@ import javax.swing.SwingWorker;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.User;
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.TriviaFrame;
+import net.bubbaland.trivia.client.TriviaGUI;
+import net.bubbaland.trivia.client.TriviaMainPanel;
+import net.bubbaland.trivia.client.TriviaPanel;
+import net.bubbaland.trivia.client.dialog.CloseQuestionDialog;
+import net.bubbaland.trivia.client.dialog.NewQuestionDialog;
+import net.bubbaland.trivia.client.dialog.ResetQuestionDialog;
+import net.bubbaland.trivia.client.dialog.ViewQuestionDialog;
 import net.bubbaland.trivia.messages.SetEffortMessage;
 import net.bubbaland.trivia.Question;
 
@@ -170,7 +179,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	@Override
 	public synchronized void updateGUI(boolean force) {
 		final Trivia trivia = this.client.getTrivia();
-		final int currentRound = trivia.getCurrentRoundNumber();
 		final int nMaxQuestions = trivia.getMaxQuestions();
 		final int nQuestions = trivia.getCurrentRound().getNQuestions();
 		final int diff = nMaxQuestions - nQuestions;

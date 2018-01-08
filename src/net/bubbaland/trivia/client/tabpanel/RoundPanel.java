@@ -1,7 +1,11 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.tabpanel;
 
 import java.awt.GridBagConstraints;
 import java.util.Properties;
+
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.TriviaFrame;
+import net.bubbaland.trivia.client.TriviaMainPanel;
 
 /**
  * A panel for the current round data.

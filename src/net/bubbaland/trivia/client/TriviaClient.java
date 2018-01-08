@@ -21,6 +21,7 @@ import org.glassfish.tyrus.client.ClientManager;
 
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.User;
+import net.bubbaland.trivia.client.dialog.LoadStateDialog;
 import net.bubbaland.trivia.messages.ChangeUserMessage;
 import net.bubbaland.trivia.messages.FetchTriviaMessage;
 import net.bubbaland.trivia.messages.Message;

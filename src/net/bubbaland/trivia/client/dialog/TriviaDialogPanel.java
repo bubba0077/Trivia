@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.dialog;
 
 import java.awt.Color;
 import java.awt.GridBagLayout;
@@ -17,6 +17,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+
+import net.bubbaland.trivia.client.TriviaPanel;
 
 /**
  * Super-class for most of the dialog box panels in the trivia GUI.

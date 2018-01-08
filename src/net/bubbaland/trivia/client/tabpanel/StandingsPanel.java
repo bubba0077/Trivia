@@ -1,4 +1,4 @@
-package net.bubbaland.trivia.client;
+package net.bubbaland.trivia.client.tabpanel;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -20,6 +20,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.bubbaland.trivia.ScoreEntry;
+import net.bubbaland.trivia.client.TriviaClient;
+import net.bubbaland.trivia.client.TriviaFrame;
+import net.bubbaland.trivia.client.TriviaGUI;
+import net.bubbaland.trivia.client.TriviaMainPanel;
 
 public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 
@@ -190,7 +194,7 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 				String teamName = entry.getTeamName();
 				final int score = entry.getScore();
 				if (t > 0 && entry.getPlace() == standings[t - 1].getPlace()) {
-					this.placeLabels[t].setText("—");
+					this.placeLabels[t].setText("ï¿½");
 				} else {
 					this.placeLabels[t].setText(entry.getPlace() + "");
 				}
