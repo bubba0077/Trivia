@@ -2,11 +2,13 @@ package net.bubbaland.trivia.client.tabpanel;
 
 
 import java.awt.GridBagConstraints;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
+import net.bubbaland.trivia.ScoreEntry;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaChartFactory;
 import net.bubbaland.trivia.client.TriviaClient;
@@ -22,13 +24,12 @@ import net.bubbaland.trivia.client.TriviaMainPanel;
 public class PlaceChartPanel extends TriviaMainPanel {
 
 	/** The Constant serialVersionUID. */
-	final private static long	serialVersionUID	= -4937894497657719097L;
-
-	/** Data */
-	private int[]				places;
+	final private static long		serialVersionUID	= -4937894497657719097L;
 
 	/** The chart panel */
-	private ChartPanel			chartPanel;
+	private ChartPanel				chartPanel;
+
+	private ArrayList<ScoreEntry[]>	lastStandings;
 
 	/**
 	 * Instantiates a new place chart
@@ -38,13 +39,9 @@ public class PlaceChartPanel extends TriviaMainPanel {
 	 *
 	 */
 	public PlaceChartPanel(TriviaClient client, TriviaFrame parent) {
-
 		super(client, parent);
-
-		this.places = new int[this.client.getTrivia().getNRounds()];
-
 		this.chartPanel = null;
-
+		this.lastStandings = new ArrayList<ScoreEntry[]>();
 	}
 
 	/*
@@ -54,24 +51,12 @@ public class PlaceChartPanel extends TriviaMainPanel {
 	 */
 	@Override
 	public synchronized void updateGUI(boolean force) {
-
 		// Get the current Trivia data object
 		final Trivia trivia = this.client.getTrivia();
 
-		final int nRounds = trivia.getNRounds();
-
-		// Load the round data and determine if there are any changes
-		final int[] newPlaces = new int[nRounds];
-		boolean change = false;
-		for (int r = 0; r < nRounds; r++) {
-			newPlaces[r] = trivia.getRound(r + 1).getPlace();
-			change = change || ( newPlaces[r] != this.places[r] );
-		}
-
-		this.places = newPlaces;
-
 		// If there are changes, remake the plot
-		if (change || force) {
+		if (trivia.standingsDifferent(this.lastStandings) || force) {
+			this.lastStandings = trivia.getFullStandings();
 			final JFreeChart chart = TriviaChartFactory.makePlaceChart(trivia);
 
 			// If there is an old chart panel, remove it

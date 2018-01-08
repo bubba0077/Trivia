@@ -2,6 +2,7 @@ package net.bubbaland.trivia;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -265,10 +266,18 @@ public class Trivia implements Serializable {
 
 	public ArrayList<ScoreEntry[]> getFullStandings() {
 		ArrayList<ScoreEntry[]> fullStandings = new ArrayList<ScoreEntry[]>();
-		for (int r = 1; r < this.getLastAnnounced(); r++) {
+		for (int r = 1; r <= this.getLastAnnounced(); r++) {
 			fullStandings.add(this.getRound(r).getStandings());
 		}
 		return fullStandings;
+	}
+
+	public boolean standingsDifferent(ArrayList<ScoreEntry[]> oldStandings) {
+		final ArrayList<ScoreEntry[]> standings = this.getFullStandings();
+		final int lastAnnounced = standings.size();
+		return oldStandings.size() != lastAnnounced
+				|| !IntStream.range(0, lastAnnounced).parallel().allMatch(r -> IntStream.range(0, standings.size())
+						.parallel().allMatch(t -> oldStandings.get(r)[t].equals(standings.get(r)[t])));
 	}
 
 	/**

@@ -1,11 +1,12 @@
 package net.bubbaland.trivia.client.tabpanel;
 
 import java.awt.GridBagConstraints;
+import java.util.ArrayList;
 import java.util.Properties;
-
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
+import net.bubbaland.trivia.ScoreEntry;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.TriviaChartFactory;
 import net.bubbaland.trivia.client.TriviaClient;
@@ -18,30 +19,26 @@ import net.bubbaland.trivia.client.TriviaMainPanel;
  * @author Walter Kolczynski
  *
  */
-
 public class TeamComparisonPanel extends TriviaMainPanel {
 
-	private static final long	serialVersionUID	= 0xaa5a61f8f351d0b3L;
+	private static final long		serialVersionUID	= 0xaa5a61f8f351d0b3L;
 
 	/** Data */
-	private int					lastAnnounced;
-	private ChartPanel			chartPanel;
+	private ChartPanel				chartPanel;
+	private ArrayList<ScoreEntry[]>	lastStandings;
 
 	public TeamComparisonPanel(TriviaClient client, TriviaFrame parent) {
 		super(client, parent);
-		this.lastAnnounced = 0;
 		this.chartPanel = null;
+		this.lastStandings = new ArrayList<ScoreEntry[]>();
 	}
 
 	@Override
 	public synchronized void updateGUI(boolean force) {
 		final Trivia trivia = this.client.getTrivia();
-		boolean change;
-		for (change = false; trivia.getRound(this.lastAnnounced + 1).isAnnounced(); this.lastAnnounced++) {
-			change = true;
-		}
+		if (force || trivia.standingsDifferent(this.lastStandings)) {
+			this.lastStandings = trivia.getFullStandings();
 
-		if (force || change) {
 			// Make a new team comparison chart
 			final JFreeChart chart = TriviaChartFactory.makeTeamComparisonChart(trivia);
 

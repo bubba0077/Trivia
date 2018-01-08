@@ -42,6 +42,10 @@ public class ScoreEntry implements Comparable<ScoreEntry>, Serializable {
 		}
 	}
 
+	public boolean equals(ScoreEntry s) {
+		return this.teamName.equals(s.teamName) && this.score == s.score && this.place == s.place;
+	}
+
 	public static ScoreEntry[] alphabetize(ScoreEntry[] standings) {
 		Arrays.sort(standings, new TeamNameComparator());
 		return standings;
