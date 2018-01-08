@@ -80,6 +80,7 @@ public class TriviaClient implements Runnable {
 		final ClientManager clientManager = ClientManager.createClient();
 		try {
 			clientManager.connectToServer(this, URI.create(this.serverURL));
+			TriviaClient.this.setUserName(this.user.getUserName());
 		} catch (DeploymentException | IOException exception) {
 			this.gui.disconnected();
 		}
