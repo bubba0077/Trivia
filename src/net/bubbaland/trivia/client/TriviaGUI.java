@@ -420,12 +420,7 @@ public class TriviaGUI implements WindowListener {
 	 */
 	public void updateGUI(final boolean force) {
 		for (final TriviaFrame frame : TriviaGUI.this.windowList) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					frame.updateGUI(force);
-				}
-			});
+			frame.updateGUIonEDT(force);
 		}
 	}
 

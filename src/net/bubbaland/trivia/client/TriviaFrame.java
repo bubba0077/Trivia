@@ -39,6 +39,7 @@ import javax.swing.MenuSelectionManager;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
@@ -888,7 +889,15 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		}
 	}
 
-	public void updateGUI(boolean forceUpdate) {
+	public void updateGUIonEDT(final boolean forceUpdate) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				TriviaFrame.this.updateGUI(forceUpdate);
+			}
+		});
+	}
+
+	private void updateGUI(boolean forceUpdate) {
 		while (!this.initComplete) {
 			try {
 				Thread.sleep(10);
@@ -922,7 +931,6 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 		// Propagate update to tabs
 		while (this.tabbedPane == null) {
-			// System.out.println("Awaiting tabbed pane");
 			try {
 				Thread.sleep(50);
 			} catch (final InterruptedException exception) {}
