@@ -54,6 +54,7 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 			placeLabel, blank0, blank1, showLabel, showNameLabel, hostLabel, showHostLabel;
 	private final JPopupMenu			showNameMenu, showHostMenu;
 	private final JTextField			showNameTextField, showHostTextField;
+	private boolean						autoRound;
 
 	/**
 	 * Data
@@ -74,6 +75,7 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 
 		this.roundQuestionPanel = new RoundQuestionsPanel(client, parent, false, 1);
 		this.answerQueuePanel = new AnswerQueuePanel(client, parent, 1);
+		this.autoRound = false;
 
 		/**
 		 * Build context menus
@@ -127,7 +129,8 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 		for (int r = 0; r < this.nRounds; r++) {
 			rNumbers[r] = ( r + 1 ) + "";
 		}
-		this.roundSpinner = new JSpinner(new SpinnerNumberModel(1, 1, this.nRounds, 1));
+		final int startingRound = Math.max(this.client.getCurrentRoundNumber() - 1, 1);
+		this.roundSpinner = new JSpinner(new SpinnerNumberModel(startingRound, 1, this.nRounds, 1));
 		this.roundSpinner.addChangeListener(this);
 		panel.add(this.roundSpinner, solo);
 
@@ -213,6 +216,9 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 	@Override
 	public synchronized void updateGUI(boolean force) {
 		final Trivia trivia = this.client.getTrivia();
+		if (this.autoRound) {
+			this.roundSpinner.setValue(Math.max(trivia.getCurrentRoundNumber() - 1, 1));
+		}
 		final int rNumber = ( (Integer) this.roundSpinner.getValue() ).intValue();
 
 		this.roundScoreLabel
@@ -387,6 +393,8 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 	@Override
 	public void stateChanged(ChangeEvent event) {
 		final int rNumber = ( (Integer) this.roundSpinner.getValue() ).intValue();
+		this.autoRound = rNumber == Math.max(this.client.getCurrentRoundNumber() - 1, 1);
+		System.out.println("round: " + rNumber + "  auto:" + this.autoRound);
 		this.roundQuestionPanel.setRound(rNumber);
 		this.answerQueuePanel.setRoundNumber(rNumber);
 		this.updateGUI();
