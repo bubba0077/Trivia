@@ -88,8 +88,8 @@ public class SaveMediator {
 			final Element triviaElement = doc.getDocumentElement();
 
 			// Read/set the trivia parameters
-			trivia.setNTeams(
-					Integer.parseInt(triviaElement.getElementsByTagName("Number_of_Teams").item(0).getTextContent()));
+			// trivia.setNTeams(
+			// Integer.parseInt(triviaElement.getElementsByTagName("Number_of_Teams").item(0).getTextContent()));
 			try {
 				trivia.setNVisual(Integer.parseInt(
 						triviaElement.getElementsByTagName("Number_of_Visual_Trivia").item(0).getTextContent()));

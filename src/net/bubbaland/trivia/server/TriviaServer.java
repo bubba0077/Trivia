@@ -38,7 +38,6 @@ import net.bubbaland.trivia.messages.CloseQuestionMessage;
 import net.bubbaland.trivia.messages.EditQuestionMessage;
 import net.bubbaland.trivia.messages.SetDiscrepencyTextMessage;
 import net.bubbaland.trivia.messages.SetEffortMessage;
-import net.bubbaland.trivia.messages.SetNTeamsMessage;
 import net.bubbaland.trivia.messages.SetNVisualMessage;
 import net.bubbaland.trivia.messages.SetOperatorMessage;
 import net.bubbaland.trivia.messages.SetQuestionAnswerMessage;
@@ -234,8 +233,6 @@ public class TriviaServer {
 							if (standings != null) {
 								TriviaServer.this.trivia.getRound(r).setStandings(standings,
 										TriviaServer.this.trivia.getTeamName());
-								TriviaServer.this
-										.broadcastMessage(new SetNTeamsMessage(TriviaServer.this.trivia.getNTeams()));
 								TriviaServer.this.broadcastChangedRounds();
 							}
 						}
@@ -868,8 +865,6 @@ public class TriviaServer {
 							if (standings != null) {
 								TriviaServer.this.trivia.getRound(r).setStandings(standings,
 										TriviaServer.this.trivia.getTeamName());
-								TriviaServer.this
-										.broadcastMessage(new SetNTeamsMessage(TriviaServer.this.trivia.getNTeams()));
 								TriviaServer.this.broadcastChangedRounds();
 							}
 						}

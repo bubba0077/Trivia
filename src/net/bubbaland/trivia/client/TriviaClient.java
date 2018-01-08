@@ -26,7 +26,6 @@ import net.bubbaland.trivia.messages.ChangeUserMessage;
 import net.bubbaland.trivia.messages.FetchTriviaMessage;
 import net.bubbaland.trivia.messages.Message;
 import net.bubbaland.trivia.messages.SaveListMessage;
-import net.bubbaland.trivia.messages.SetNTeamsMessage;
 import net.bubbaland.trivia.messages.SetNVisualMessage;
 import net.bubbaland.trivia.messages.SetRoleMessage;
 import net.bubbaland.trivia.messages.SetRoundMessage;
@@ -230,11 +229,6 @@ public class TriviaClient implements Runnable {
 			case "UpdateRoundsMessage": {
 				UpdateRoundsMessage message = (UpdateRoundsMessage) genericMessage;
 				this.trivia.updateRounds(message.getUpdatedRounds());
-				break;
-			}
-			case "SetNTeamsMessage": {
-				SetNTeamsMessage message = (SetNTeamsMessage) genericMessage;
-				this.trivia.setNTeams(message.getnTeams());
 				break;
 			}
 			case "SetNVisualMessage": {

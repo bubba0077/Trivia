@@ -208,7 +208,8 @@ public class Trivia implements Serializable {
 	 * @return The number of teams
 	 */
 	public int getNTeams() {
-		return this.nTeams;
+		ScoreEntry[] round1Standings = this.getRound(1).getStandings();
+		return round1Standings != null ? round1Standings.length : 1;
 	}
 
 	/**
@@ -262,6 +263,14 @@ public class Trivia implements Serializable {
 		return versions;
 	}
 
+	public ArrayList<ScoreEntry[]> getFullStandings() {
+		ArrayList<ScoreEntry[]> fullStandings = new ArrayList<ScoreEntry[]>();
+		for (int r = 1; r < this.getLastAnnounced(); r++) {
+			fullStandings.add(this.getRound(r).getStandings());
+		}
+		return fullStandings;
+	}
+
 	/**
 	 * Start a new round.
 	 */
@@ -289,16 +298,6 @@ public class Trivia implements Serializable {
 	 */
 	public void setCurrentRound(int rNumber) {
 		this.rNumber = rNumber;
-	}
-
-	/**
-	 * Sets the number of teams.
-	 *
-	 * @param nTeams
-	 *            The new number of teams
-	 */
-	public void setNTeams(int nTeams) {
-		this.nTeams = nTeams;
 	}
 
 	public void setNVisual(int nVisual) {
