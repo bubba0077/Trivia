@@ -125,7 +125,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		for (final String tabName : initialTabs) {
 			TriviaMainPanel newTab = gui.getTab(this, tabName.replaceFirst(" \\([0-9]*\\)", ""));
 			this.tabbedPane.addTab(tabName, newTab);
-			newTab.updateGUI(true);
+			newTab.updateGUIonEDT(true);
 		}
 		this.tabbedPane.setSelectedIndex(0);
 		this.tabbedPane.addChangeListener(this);
@@ -159,7 +159,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			private static final long serialVersionUID = -3431542881790392652L;
 
 			@Override
-			public void updateGUI(boolean forceUpdate) {}
+			protected void updateGUI(boolean forceUpdate) {}
 
 			@Override
 			protected void loadProperties(Properties properties) {}
@@ -931,7 +931,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			final int index = this.tabbedPane.indexOfTab(tabName);
 			final Component component = this.tabbedPane.getComponentAt(index);
 			if (component instanceof TriviaMainPanel) {
-				( (TriviaMainPanel) this.tabbedPane.getComponentAt(index) ).updateGUI(forceUpdate);
+				( (TriviaMainPanel) this.tabbedPane.getComponentAt(index) ).updateGUIonEDT(forceUpdate);
 			}
 		}
 	}

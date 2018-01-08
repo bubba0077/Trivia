@@ -285,7 +285,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 		this.loadProperties(TriviaGUI.PROPERTIES);
 
-		this.updateGUI(true);
+		this.updateGUIonEDT(true);
 	}
 
 	public void setRoundNumber(int newRoundNumber) {
@@ -412,7 +412,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.frame.setSort(QueueSort.STATUS_ASCENDING);
 			}
 		}
-		this.updateGUI();
+		this.updateGUIonEDT();
 	}
 
 	@Override
@@ -453,7 +453,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 		} else {
 			this.answerLabel.setText("Proposed Answer (filtered by: \"" + this.gui.getFilterTextPattern() + "\")");
 		}
-		this.answerQueueSubPanel.updateGUI(force);
+		this.answerQueueSubPanel.updateGUIonEDT(force);
 		final QueueSort sortMethod = this.frame.getQueueSort();
 
 		switch (sortMethod) {

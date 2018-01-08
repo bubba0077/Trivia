@@ -65,8 +65,8 @@ public class RoundPanel extends TriviaMainPanel {
 	 */
 	@Override
 	public synchronized void updateGUI(boolean force) {
-		this.roundHeaderPanel.updateGUI(force);
-		this.roundQlistPanel.updateGUI(force);
+		this.roundHeaderPanel.updateGUIonEDT(force);
+		this.roundQlistPanel.updateGUIonEDT(force);
 	}
 
 	@Override

@@ -253,7 +253,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 		}
 
-		this.openQuestionsSubPanel.updateGUI(force);
+		this.openQuestionsSubPanel.updateGUIonEDT(force);
 	}
 
 	@Override

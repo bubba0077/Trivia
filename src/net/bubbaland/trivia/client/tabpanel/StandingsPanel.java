@@ -157,7 +157,7 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 
 			this.loadProperties(TriviaGUI.PROPERTIES);
 
-			updateGUI();
+			updateGUIonEDT();
 
 		}
 
@@ -336,7 +336,7 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 			this.roundSpinner.setValue(this.lastAnnounced);
 			forceUpdate = true;
 		}
-		this.standingsSubPanel.updateGUI(forceUpdate);
+		this.standingsSubPanel.updateGUIonEDT(forceUpdate);
 	}
 
 	@Override
@@ -396,7 +396,7 @@ public class StandingsPanel extends TriviaMainPanel implements ChangeListener {
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		this.updateGUI(false);
+		this.updateGUIonEDT(false);
 	}
 
 

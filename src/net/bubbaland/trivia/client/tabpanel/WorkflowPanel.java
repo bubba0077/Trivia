@@ -103,9 +103,9 @@ public class WorkflowPanel extends TriviaMainPanel {
 	 */
 	@Override
 	public synchronized void updateGUI(boolean force) {
-		this.workflowHeaderPanel.updateGUI(force);
-		this.workflowQlistPanel.updateGUI(force);
-		this.workflowQueuePanel.updateGUI(force);
+		this.workflowHeaderPanel.updateGUIonEDT(force);
+		this.workflowQlistPanel.updateGUIonEDT(force);
+		this.workflowQueuePanel.updateGUIonEDT(force);
 	}
 
 	@Override

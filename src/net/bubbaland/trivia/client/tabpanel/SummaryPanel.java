@@ -15,6 +15,7 @@ import java.awt.event.FocusListener;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -38,7 +39,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIDefaults;
-
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.User;
 import net.bubbaland.trivia.User.Role;
@@ -638,7 +638,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener, Foc
 		} else {
 			this.newRoundButton.setVisible(false);
 		}
-		this.userListPanel.updateGUI(force);
+		this.userListPanel.updateGUIonEDT(force);
 	}
 
 	@Override
@@ -709,9 +709,10 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener, Foc
 
 			this.timer = Executors.newSingleThreadScheduledExecutor();
 			this.timer.scheduleWithFixedDelay(new Runnable() {
+
 				@Override
 				public void run() {
-					UserListPanel.this.updateGUI();
+					UserListPanel.this.updateGUIonEDT();
 				}
 			}, 5, 5, TimeUnit.SECONDS);
 		}
@@ -765,6 +766,11 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener, Foc
 		 */
 		@Override
 		public synchronized void updateGUI(boolean force) {
+			if (!SwingUtilities.isEventDispatchThread()) {
+				System.out.println("UserListPanel update not on EDT!");
+				System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()).replaceAll(", ", "\n   "));
+			}
+
 			ArrayList<User> activeUsers = new ArrayList<User>();
 			ArrayList<User> idleUsers = new ArrayList<User>();
 

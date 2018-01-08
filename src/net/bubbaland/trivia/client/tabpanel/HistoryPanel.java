@@ -238,8 +238,8 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 		this.showNameLabel.setText(trivia.getRound(rNumber).getShowName());
 		this.showHostLabel.setText(trivia.getRound(rNumber).getShowHost());
 
-		this.roundQuestionPanel.updateGUI(force);
-		this.answerQueuePanel.updateGUI(force);
+		this.roundQuestionPanel.updateGUIonEDT(force);
+		this.answerQueuePanel.updateGUIonEDT(force);
 	}
 
 	@Override
@@ -398,9 +398,8 @@ public class HistoryPanel extends TriviaMainPanel implements ActionListener, Cha
 	public void stateChanged(ChangeEvent event) {
 		final int rNumber = ( (Integer) this.roundSpinner.getValue() ).intValue();
 		this.autoRound = rNumber == Math.max(this.client.getCurrentRoundNumber() - 1, 1);
-		System.out.println("round: " + rNumber + "  auto:" + this.autoRound);
 		this.roundQuestionPanel.setRound(rNumber);
 		this.answerQueuePanel.setRoundNumber(rNumber);
-		this.updateGUI();
+		this.updateGUIonEDT();
 	}
 }

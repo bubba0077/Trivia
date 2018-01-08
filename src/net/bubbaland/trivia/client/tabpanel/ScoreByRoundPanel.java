@@ -191,7 +191,7 @@ public class ScoreByRoundPanel extends TriviaMainPanel {
 	 */
 	@Override
 	public void updateGUI(boolean force) {
-		this.internalScrollPanel.updateGUI(force);
+		this.internalScrollPanel.updateGUIonEDT(force);
 	}
 
 	@Override
