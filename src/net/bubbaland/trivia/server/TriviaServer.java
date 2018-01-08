@@ -224,18 +224,26 @@ public class TriviaServer {
 				String saveName = message.getSaveName();
 				this.trivia = this.saveMediator.loadState(this.trivia, userName, saveName);
 				log("Loaded state from " + message.getSaveName());
+				this.broadcastMessage(new TriviaDataMessage(trivia));
 
-				for (int r = 1; r < trivia.getCurrentRoundNumber(); r++) {
-					// For each past round, try to get announced standings if we don't have them
-					if (!trivia.getRound(r).isAnnounced()) {
-						final ScoreEntry[] standings = this.fetchStandings(r);
-						if (standings != null) {
-							trivia.getRound(r).setStandings(standings, trivia.getTeamName());
+				try {
+					for (int r = 1; r < TriviaServer.this.trivia.getCurrentRoundNumber(); r++) {
+						// For each past round, try to get announced standings if we don't have them
+						if (!TriviaServer.this.trivia.getRound(r).isAnnounced()) {
+							final ScoreEntry[] standings = TriviaServer.this.fetchStandings(r);
+							if (standings != null) {
+								TriviaServer.this.trivia.getRound(r).setStandings(standings,
+										TriviaServer.this.trivia.getTeamName());
+								TriviaServer.this
+										.broadcastMessage(new SetNTeamsMessage(TriviaServer.this.trivia.getNTeams()));
+								TriviaServer.this.broadcastChangedRounds();
+							}
 						}
 					}
+				} catch (final Exception e) {
+					e.printStackTrace();
 				}
 
-				this.broadcastMessage(new TriviaDataMessage(trivia));
 				log(userName + " loaded save from file " + saveName);
 				break;
 			}
