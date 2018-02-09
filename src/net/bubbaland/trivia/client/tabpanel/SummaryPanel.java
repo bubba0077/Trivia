@@ -750,14 +750,13 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener, Foc
 
 			final int fontSizeInt = new Float(fontSize).intValue();
 
-			AnswerQueuePanel.class.getResource("../images/phone.png");
-			new ImageIcon(AnswerQueuePanel.class.getResource("../images/phone.png")).getImage();
+			callerIcon = new ImageIcon(
+					new ImageIcon(AnswerQueuePanel.class.getResource("/net/bubbaland/trivia/client/images/phone.png"))
+							.getImage().getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
 
-			callerIcon = new ImageIcon(new ImageIcon(AnswerQueuePanel.class.getResource("../images/phone.png"))
-					.getImage().getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
-
-			pencilIcon = new ImageIcon(new ImageIcon(AnswerQueuePanel.class.getResource("../images/pencil.png"))
-					.getImage().getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
+			pencilIcon = new ImageIcon(
+					new ImageIcon(AnswerQueuePanel.class.getResource("/net/bubbaland/trivia/client/images/pencil.png"))
+							.getImage().getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
 
 		}
 
@@ -842,7 +841,7 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener, Foc
 					boolean cellHasFocus) {
 				super.getListCellRendererComponent(list, userName, index, isSelected, cellHasFocus);
 				Color color = null;
-				ImageIcon icon = null;
+				ImageIcon icon = new ImageIcon();
 				this.setHorizontalAlignment(LEFT);
 				this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
 

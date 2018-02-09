@@ -84,9 +84,9 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 
 	/** Sort icons */
 	private static final ImageIcon			upArrow				=
-			new ImageIcon(AnswerQueuePanel.class.getResource("../images/upArrow.png"));
+			new ImageIcon(AnswerQueuePanel.class.getResource("/net/bubbaland/trivia/client/images/upArrow.png"));
 	private static final ImageIcon			downArrow			=
-			new ImageIcon(AnswerQueuePanel.class.getResource("../images/downArrow.png"));
+			new ImageIcon(AnswerQueuePanel.class.getResource("/net/bubbaland/trivia/client/images/downArrow.png"));
 
 	private static int						nBlinks;
 	private static int						blinkSpeed;
