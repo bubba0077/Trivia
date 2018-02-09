@@ -65,7 +65,7 @@ public class TriviaGUI implements WindowListener {
 	final static protected String	KVSC_URL					= "http://www.kvsc.org/trivia_news.php";
 	// URL base for Visual Trivia Pages
 	final static protected String	VISUAL_URL					=
-			"https://sites.google.com/a/kneedeepintheses.org/information/trivia-2017/visual-trivia-2017/visual-trivia-";
+			"https://sites.google.com/a/kneedeepintheses.org/information/trivia-2018/visual-trivia-2018/visual-trivia-";
 	// URL for audio trivia
 	final static protected String	AUDIO_URL					= "http://trivia.bgsh.org/audio";
 	// File name of font
@@ -75,7 +75,7 @@ public class TriviaGUI implements WindowListener {
 	// File name to store window positions
 	final static private String		SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String		SETTINGS_VERSION			= "29";
+	final static private String		SETTINGS_VERSION			= "30";
 	// Format for log timestamps
 	static private SimpleDateFormat	TIMESTAMP_FORMAT;
 
