@@ -115,17 +115,17 @@ public class Round implements Serializable {
 	 *
 	 * @param rNumber
 	 *            The round number
+	 * @param nQuestionsNormal
+	 *            The number of questions in a normal round
 	 * @param nQuestionsSpeed
 	 *            The number of questions in a speed round
-	 * @param nQuestions
-	 *            The number of questions in a normal round
 	 */
-	public Round(int rNumber, int nQuestionsSpeed, int nQuestions) {
+	public Round(int rNumber, int nQuestionsNormal, int nQuestionsSpeed) {
 
 		this.speed = false;
 		this.rNumber = rNumber;
 		this.nQuestionsSpeed = nQuestionsSpeed;
-		this.nQuestions = nQuestions;
+		this.nQuestions = nQuestionsNormal;
 		this.questions = new Question[nQuestionsSpeed];
 		this.announced = false;
 		this.announcedPoints = 0;
@@ -480,7 +480,7 @@ public class Round implements Serializable {
 		return submitters;
 	}
 
-	public void changeName(String oldName, String newName) {
+	public void changeUserName(String oldName, String newName) {
 		for (final Answer answer : this.answerQueue) {
 			answer.changeName(oldName, newName);
 		}

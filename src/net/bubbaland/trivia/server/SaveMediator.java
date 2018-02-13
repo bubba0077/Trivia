@@ -104,7 +104,7 @@ public class SaveMediator {
 				trivia.setTeamNumber(0);
 			}
 
-			trivia.setCurrentRound(
+			trivia.setCurrentRoundNumber(
 					Integer.parseInt(triviaElement.getElementsByTagName("Current_Round").item(0).getTextContent()));
 
 			// Get a list of the round elements

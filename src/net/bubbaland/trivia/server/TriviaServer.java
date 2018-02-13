@@ -265,10 +265,11 @@ public class TriviaServer {
 				ChangeUserMessage message = (ChangeUserMessage) genericMessage;
 				String newUserName = message.getNewUserName();
 				user.setUserName(newUserName);
-				this.trivia.changeName(userName, newUserName);
+				this.trivia.changeUserName(userName, newUserName);
 				log(userName + " changed hir name to " + newUserName);
 				break;
 			}
+
 			case "SetRoleMessage": {
 				SetRoleMessage message = (SetRoleMessage) genericMessage;
 				Role newRole = message.getNewRole();
@@ -283,7 +284,7 @@ public class TriviaServer {
 			case "SetRoundMessage": {
 				SetRoundMessage message = (SetRoundMessage) genericMessage;
 				int rNumber = message.getRoundNumber();
-				this.trivia.setCurrentRound(rNumber);
+				this.trivia.setCurrentRoundNumber(rNumber);
 				this.broadcastMessage(message);
 				log(userName + " set the current round to " + rNumber);
 				break;

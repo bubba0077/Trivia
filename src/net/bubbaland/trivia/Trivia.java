@@ -2,8 +2,8 @@ package net.bubbaland.trivia;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.IntStream;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -32,25 +32,20 @@ public class Trivia implements Serializable {
 	final private int			nRounds;
 
 	// The number of questions in a normal round
-	@JsonProperty("nQuestions")
-	final private int			nQuestions;
+	@JsonProperty("nQuestionsNormal")
+	final private int			nQuestionsNormal;
 
 	// The number of questions in a speed round
 	@JsonProperty("nQuestionsSpeed")
 	final private int			nQuestionsSpeed;
-
-	// The number of teams in the contest
-	@JsonProperty("nTeams")
-	private volatile int		nTeams;
 
 	// Number of visual trivias
 	@JsonProperty("nVisual")
 	private volatile int		nVisual;
 
 	// The current round
-	// private volatile Round currentRound;
 	@JsonProperty("rNumber")
-	private volatile int		rNumber;
+	private volatile int		currentRoundNumber;
 
 	// Array of all the rounds in the contest
 	@JsonProperty("rounds")
@@ -70,30 +65,26 @@ public class Trivia implements Serializable {
 		this.teamName = teamName;
 		this.teamNumber = teamNumber;
 		this.nRounds = nRounds;
-		this.nQuestions = nQuestions;
+		this.nQuestionsNormal = nQuestions;
 		this.nQuestionsSpeed = nQuestionsSpeed;
 		this.rounds = new Round[nRounds];
-		for (int r = 0; r < nRounds; r++) {
-			this.rounds[r] = new Round(r + 1, nQuestionsSpeed, nQuestions);
-		}
-		this.rNumber = 1;
-		this.nTeams = 100;
-		this.nVisual = 50;
+		IntStream.rangeClosed(1, nRounds).parallel()
+				.forEach(r -> this.rounds[r - 1] = new Round(r + 1, nQuestions, nQuestionsSpeed));
+		this.currentRoundNumber = 1;
+		this.nVisual = 1;
 	}
 
 	@JsonCreator
 	private Trivia(@JsonProperty("teamName") String teamName, @JsonProperty("teamNumber") int teamNumber,
-			@JsonProperty("nRounds") int nRounds, @JsonProperty("nQuestions") int nQuestions,
-			@JsonProperty("nQuestionsSpeed") int nQuestionsSpeed, @JsonProperty("nTeams") int nTeams,
-			@JsonProperty("nVisual") int nVisuals, @JsonProperty("rNumber") int rNumber,
-			@JsonProperty("rounds") Round[] rounds) {
+			@JsonProperty("nRounds") int nRounds, @JsonProperty("nQuestionsNormal") int nQuestionsNormal,
+			@JsonProperty("nQuestionsSpeed") int nQuestionsSpeed, @JsonProperty("nVisual") int nVisuals,
+			@JsonProperty("rNumber") int rNumber, @JsonProperty("rounds") Round[] rounds) {
 		this.teamName = teamName;
 		this.teamNumber = teamNumber;
 		this.nRounds = nRounds;
-		this.nQuestions = nQuestions;
+		this.nQuestionsNormal = nQuestionsNormal;
 		this.nQuestionsSpeed = nQuestionsSpeed;
-		this.nTeams = nTeams;
-		this.rNumber = rNumber;
+		this.currentRoundNumber = rNumber;
 		this.rounds = rounds;
 		this.nVisual = nVisuals;
 	}
@@ -106,16 +97,8 @@ public class Trivia implements Serializable {
 	 * @return An array of all the rounds that have newer versions.
 	 */
 	public Round[] getChangedRounds(int[] oldVersions) {
-		final ArrayList<Round> changedRoundList = new ArrayList<Round>(0);
-		for (int r = 0; r < this.nRounds; r++) {
-			final Round round = this.rounds[r];
-			if (oldVersions[r] != round.getVersion()) {
-				changedRoundList.add(round);
-			}
-		}
-		final Round[] changedRounds = new Round[changedRoundList.size()];
-		changedRoundList.toArray(changedRounds);
-		return changedRounds;
+		return Arrays.stream(this.rounds).parallel().filter(r -> oldVersions[r.getRoundNumber() - 1] != r.getVersion())
+				.toArray(Round[]::new);
 	}
 
 	/**
@@ -126,11 +109,16 @@ public class Trivia implements Serializable {
 	 * @return The cumulative number of points earned
 	 */
 	public int getCumulativeEarned(int rNumber) {
-		int earned = 0;
-		for (int r = 0; r < rNumber; r++) {
-			earned += this.rounds[r].getEarned();
-		}
-		return earned;
+		return Arrays.stream(this.rounds).parallel().mapToInt(r -> r.getEarned()).sum();
+	}
+
+	/**
+	 * Gets the total points earned for the contest.
+	 *
+	 * @return The number of points earned
+	 */
+	public int getEarned() {
+		return this.getCumulativeEarned(currentRoundNumber);
 	}
 
 	/**
@@ -141,11 +129,7 @@ public class Trivia implements Serializable {
 	 * @return The cumulative value
 	 */
 	public int getCumulativeValue(int rNumber) {
-		int value = 0;
-		for (int r = 0; r < rNumber; r++) {
-			value += this.rounds[r].getValue();
-		}
-		return value;
+		return Arrays.stream(this.rounds).parallel().mapToInt(r -> r.getValue()).sum();
 	}
 
 	/**
@@ -154,25 +138,11 @@ public class Trivia implements Serializable {
 	 * @return The current round number
 	 */
 	public int getCurrentRoundNumber() {
-		return this.rNumber;
+		return this.currentRoundNumber;
 	}
 
 	public Round getCurrentRound() {
-		return this.rounds[this.rNumber - 1];
-	}
-
-
-	/**
-	 * Gets the total points earned for the contest.
-	 *
-	 * @return The number of points earned
-	 */
-	public int getEarned() {
-		int earned = 0;
-		for (final Round r : this.rounds) {
-			earned += r.getEarned();
-		}
-		return earned;
+		return this.rounds[this.currentRoundNumber - 1];
 	}
 
 	/**
@@ -194,13 +164,8 @@ public class Trivia implements Serializable {
 	}
 
 	public int getLastAnnounced() {
-		int nAnnounced = 0;
-		for (Round round : this.rounds) {
-			if (round.isAnnounced()) {
-				nAnnounced = round.getRoundNumber();
-			}
-		}
-		return nAnnounced;
+		return Arrays.stream(this.rounds).filter(r -> r.isAnnounced()).mapToInt(r -> r.getRoundNumber()).max()
+				.orElse(0);
 	}
 
 	/**
@@ -236,19 +201,22 @@ public class Trivia implements Serializable {
 	 * @return The total value
 	 */
 	public int getValue() {
-		int value = 0;
-		for (final Round r : this.rounds) {
-			value += r.getValue();
-		}
-		return value;
+		return this.getCumulativeValue(this.currentRoundNumber);
 	}
 
-	public Round getRound(int r) {
-		return this.rounds[r - 1];
+	public Round getRound(int rNumber) {
+		if (rNumber < 1 || rNumber > this.nRounds) {
+			return null;
+		}
+		return this.rounds[rNumber - 1];
 	}
 
 	public Round[] getRounds() {
 		return this.rounds;
+	}
+
+	private void setRound(Round r) {
+		this.rounds[r.getRoundNumber() - 1] = r;
 	}
 
 	/**
@@ -257,11 +225,7 @@ public class Trivia implements Serializable {
 	 * @return The version number for each round
 	 */
 	public int[] getVersions() {
-		final int[] versions = new int[this.nRounds];
-		for (int r = 0; r < this.nRounds; r++) {
-			versions[r] = this.rounds[r].getVersion();
-		}
-		return versions;
+		return Arrays.stream(this.rounds).parallel().mapToInt(r -> r.getVersion()).toArray();
 	}
 
 	public ArrayList<ScoreEntry[]> getFullStandings() {
@@ -285,8 +249,8 @@ public class Trivia implements Serializable {
 	 */
 	public void newRound() {
 		if (this.getCurrentRound().nOpen() == 0 && this.getCurrentRound().nUnopened() == 0
-				&& this.rNumber + 1 <= this.nRounds) {
-			this.rNumber++;
+				&& this.currentRoundNumber + 1 <= this.nRounds) {
+			this.currentRoundNumber++;
 		}
 	}
 
@@ -294,9 +258,9 @@ public class Trivia implements Serializable {
 	 * Reset the entire trivia contest.
 	 */
 	public void reset() {
-		for (int r = 0; r < this.nRounds; r++) {
-			this.rounds[r] = new Round(r + 1, this.nQuestionsSpeed, this.nQuestions);
-		}
+		Arrays.parallelSetAll(this.rounds,
+				(index) -> new Round(index + 1, Trivia.this.nQuestionsNormal, Trivia.this.nQuestionsSpeed));
+		this.currentRoundNumber = 1;
 	}
 
 	/**
@@ -305,8 +269,8 @@ public class Trivia implements Serializable {
 	 * @param rNumber
 	 *            The new current round number
 	 */
-	public void setCurrentRound(int rNumber) {
-		this.rNumber = rNumber;
+	public void setCurrentRoundNumber(int rNumber) {
+		this.currentRoundNumber = rNumber;
 	}
 
 	public void setNVisual(int nVisual) {
@@ -319,13 +283,11 @@ public class Trivia implements Serializable {
 
 	public boolean[] getVisualTriviaUsed() {
 		boolean[] visualTriviaUsed = new boolean[this.nVisual];
-		for (Round r : rounds) {
-			for (Question q : r.getQuestions()) {
-				if (q.getVisualTrivia() != 0 && q.getVisualTrivia() <= this.nVisual) {
-					visualTriviaUsed[q.getVisualTrivia() - 1] = true;
-				}
+		Arrays.stream(rounds).parallel().forEach(r -> Arrays.stream(r.getQuestions()).parallel().forEach(q -> {
+			if (q.getVisualTrivia() != 0 && q.getVisualTrivia() <= this.nVisual) {
+				visualTriviaUsed[q.getVisualTrivia() - 1] = true;
 			}
-		}
+		}));
 		return visualTriviaUsed;
 	}
 
@@ -336,27 +298,19 @@ public class Trivia implements Serializable {
 	 *            The rounds with updated versions
 	 */
 	public synchronized void updateRounds(Round[] newRounds) {
-		final int nNew = newRounds.length;
-		for (int r = 0; r < nNew; r++) {
-			final Round newRound = newRounds[r];
-			final int rNumber = newRound.getRoundNumber();
-			this.rounds[rNumber - 1] = newRound;
-			if (newRound.isAnnounced()) {
-				this.nTeams = newRound.getStandings().length;
-			}
-		}
+		Arrays.stream(newRounds).parallel().forEach(r -> this.setRound(r));
 	}
 
-	public void changeName(String oldName, String newName) {
-		this.getCurrentRound().changeName(oldName, newName);
+	public void changeUserName(String oldName, String newName) {
+		Arrays.stream(this.rounds).parallel().forEach(r -> r.changeUserName(oldName, newName));
 	}
 
 	public String toString() {
 		String s = "Data dump for entire Trivia object\n";
-		s = s + "Team Name: " + this.teamName + "  #Teams: " + this.nTeams + "\n";
-		s = s + "nRounds: " + this.nRounds + " nQuestions: " + this.nQuestions + "nQuestions(speed): "
+		s = s + "Team Name: " + this.teamName + "  #Teams: " + this.getNTeams() + "\n";
+		s = s + "nRounds: " + this.nRounds + " nQuestions: " + this.nQuestionsNormal + "nQuestions(speed): "
 				+ this.nQuestionsSpeed + "\n";
-		s = s + "Current round: " + this.rNumber + "\n";
+		s = s + "Current round: " + this.currentRoundNumber + "\n";
 		for (Round r : this.rounds) {
 			s = s + r.toString();
 		}
