@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 /**
  * A data structure for questions.
@@ -20,7 +21,7 @@ public class Question implements Serializable {
 
 	private static final long	serialVersionUID	= 5230169250657519692L;
 
-	public final Pattern		visualPattern		= Pattern.compile("([Vv]isual )([Tt]rivia )?(#)?([0-9]+)");
+	public static final Pattern	VISUAL_PATTERN		= Pattern.compile("([Vv]isual )([Tt]rivia )?(#)?([0-9]+)");
 
 	// The question number
 	@JsonProperty("qNumber")
@@ -250,7 +251,7 @@ public class Question implements Serializable {
 	 */
 	protected void setQuestionText(String question) {
 		this.question = question;
-		Matcher matcher = visualPattern.matcher(this.question);
+		Matcher matcher = VISUAL_PATTERN.matcher(this.question);
 		this.visualTrivia = matcher.find() ? Integer.parseInt(matcher.group(4)) : 0;
 		if (this.visualTrivia != 0) {
 			System.out.println("Visual trivia " + this.visualTrivia + " detected");
@@ -287,7 +288,7 @@ public class Question implements Serializable {
 		this.correct = question.correct;
 	}
 
-	protected void changeName(String oldName, String newName) {
+	protected void changeUserName(String oldName, String newName) {
 		if (this.submitter.equals(oldName)) {
 			this.submitter = newName;
 		}
@@ -316,6 +317,10 @@ public class Question implements Serializable {
 		return ( "Q#" + this.qNumber + " worth " + this.value + "\n" + "Open: " + this.isOpen + " Been Open: "
 				+ this.beenOpen + " Correct: " + this.correct + "(" + this.submitter + ")" + "\n" + "Q: "
 				+ this.question + "\n" + "A: " + this.answer + "\n" + "Visual Trivia: " + this.visualTrivia + "\n" );
+	}
+
+	public boolean equals(Question question) {
+		return EqualsBuilder.reflectionEquals(this, question);
 	}
 
 }

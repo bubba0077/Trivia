@@ -69,7 +69,7 @@ public class Trivia implements Serializable {
 		this.nQuestionsSpeed = nQuestionsSpeed;
 		this.rounds = new Round[nRounds];
 		IntStream.rangeClosed(1, nRounds).parallel()
-				.forEach(r -> this.rounds[r - 1] = new Round(r + 1, nQuestions, nQuestionsSpeed));
+				.forEach(r -> this.rounds[r - 1] = new Round(r, nQuestions, nQuestionsSpeed));
 		this.currentRoundNumber = 1;
 		this.nVisual = 1;
 	}

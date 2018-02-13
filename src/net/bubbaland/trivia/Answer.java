@@ -325,7 +325,7 @@ public class Answer implements Serializable {
 		return agreement;
 	}
 
-	public void changeName(String oldName, String newName) {
+	public void changeUserName(String oldName, String newName) {
 		if (this.submitter.equals(oldName)) {
 			this.submitter = newName;
 		}

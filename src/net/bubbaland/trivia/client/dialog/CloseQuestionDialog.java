@@ -55,7 +55,7 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 		this.qNumber = qNumber;
 
 		// Get the question text
-		final String qText = trivia.getCurrentRound().getQuestionText(qNumber);
+		final String qText = trivia.getCurrentRound().getQuestion(qNumber).getQuestionText();
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();

@@ -29,6 +29,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
+import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.client.TriviaClient;
 import net.bubbaland.trivia.client.TriviaFrame;
@@ -462,9 +463,9 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 			// Get all of the question data for the current round
 			final int nQuestions = trivia.getRound(this.rNumber).getNQuestions();
 			final boolean newSpeed = trivia.getRound(this.rNumber).isSpeed();
-			final boolean[] beenOpens = trivia.getRound(this.rNumber).eachBeenOpen();
-			final boolean[] opens = trivia.getRound(this.rNumber).eachOpen();
-			final boolean[] corrects = trivia.getRound(this.rNumber).eachCorrect();
+			final Boolean[] beenOpens = trivia.getRound(this.rNumber).eachBeenOpen();
+			final Boolean[] opens = trivia.getRound(this.rNumber).eachOpen();
+			final Boolean[] corrects = trivia.getRound(this.rNumber).eachCorrect();
 			final int[] earneds = trivia.getRound(this.rNumber).getEachEarned();
 			final int[] values = trivia.getRound(this.rNumber).getEachValue();
 			final String[] questions = trivia.getRound(this.rNumber).getEachQuestionText();
@@ -636,10 +637,10 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 				if (RoundQuestionsSubPanel.this.live) {
 					RoundQuestionsSubPanel.this.rNumber = trivia.getCurrentRoundNumber();
 				}
-				if (event.isPopupTrigger()
-						&& trivia.getRound(RoundQuestionsSubPanel.this.rNumber).getQuestion(qNumber).beenOpen()) {
+				final Round round = trivia.getRound(RoundQuestionsSubPanel.this.rNumber);
+				if (event.isPopupTrigger() && round.getQuestion(qNumber).beenOpen()) {
 					if (RoundQuestionsSubPanel.this.live) {
-						RoundQuestionsSubPanel.this.reopenItem.setVisible(!trivia.getCurrentRound().isOpen(qNumber));
+						RoundQuestionsSubPanel.this.reopenItem.setVisible(!round.getQuestion(qNumber).isOpen());
 					}
 					this.menu.setName(source.getName());
 					this.menu.show(source, event.getX(), event.getY());
