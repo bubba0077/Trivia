@@ -3,6 +3,7 @@ package net.bubbaland.trivia;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -240,8 +241,10 @@ public class Trivia implements Serializable {
 		final ArrayList<ScoreEntry[]> standings = this.getFullStandings();
 		final int lastAnnounced = standings.size();
 		return oldStandings.size() != lastAnnounced
-				|| !IntStream.range(0, lastAnnounced).parallel().allMatch(r -> IntStream.range(0, standings.size())
-						.parallel().allMatch(t -> oldStandings.get(r)[t].equals(standings.get(r)[t])));
+				|| !IntStream.range(0, lastAnnounced).parallel().filter(r -> oldStandings.get(r) != null)
+						.allMatch(r -> IntStream.range(0, standings.size()).parallel()
+								.filter(t -> oldStandings.get(r)[t] != null)
+								.allMatch(t -> oldStandings.get(r)[t].equals(standings.get(r)[t])));
 	}
 
 	/**
@@ -289,6 +292,15 @@ public class Trivia implements Serializable {
 			}
 		}));
 		return visualTriviaUsed;
+	}
+
+	public ArrayList<String> getOperators() {
+		ArrayList<String> allAnswers = new ArrayList<String>();
+		Arrays.stream(rounds).forEach(r -> Arrays.stream(r.getAnswerQueue()).parallel().forEach(a -> {
+			allAnswers.add(a.getOperator());
+		}));
+		return allAnswers.stream().distinct().filter(s -> s != null).sorted(String.CASE_INSENSITIVE_ORDER)
+				.collect(Collectors.toCollection(ArrayList<String>::new));
 	}
 
 	/**
