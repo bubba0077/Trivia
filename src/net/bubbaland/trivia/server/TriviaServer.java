@@ -226,7 +226,7 @@ public class TriviaServer {
 				this.broadcastMessage(new TriviaDataMessage(trivia));
 
 				try {
-					for (int r = 1; r < TriviaServer.this.trivia.getCurrentRoundNumber(); r++) {
+					for (int r = 1; r <= TriviaServer.this.trivia.getCurrentRoundNumber(); r++) {
 						// For each past round, try to get announced standings if we don't have them
 						if (!TriviaServer.this.trivia.getRound(r).isAnnounced()) {
 							final ScoreEntry[] standings = TriviaServer.this.fetchStandings(r);
