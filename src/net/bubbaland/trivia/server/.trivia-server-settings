@@ -12,6 +12,7 @@ Chart.Height=600
 nRounds=50
 nQuestionsNormal=9
 nQuestionsSpeed=18
+nQuestionsMax=36
 TeamName=Knee Deep In Theses
 TeamNumber=0
 ServerURL=localhost

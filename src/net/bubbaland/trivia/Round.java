@@ -3,6 +3,7 @@ package net.bubbaland.trivia;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -46,7 +47,7 @@ public class Round implements Serializable {
 
 	// The array holding the questions
 	@JsonProperty("questions")
-	final private Question[]			questions;
+	final private ArrayList<Question>	questions;
 
 	// Whether this is a speed round
 	@JsonProperty("speed")
@@ -130,8 +131,7 @@ public class Round implements Serializable {
 		this.rNumber = rNumber;
 		this.nQuestionsSpeed = nQuestionsSpeed;
 		this.nQuestionsNormal = nQuestionsNormal;
-		this.nQuestions = this.nQuestionsNormal;
-		this.questions = new Question[nQuestionsSpeed];
+		this.questions = new ArrayList<Question>(0);
 		this.announced = false;
 		this.announcedPoints = 0;
 		this.place = 1;
@@ -139,18 +139,14 @@ public class Round implements Serializable {
 		this.showName = "";
 		this.showHost = "";
 		this.version = 0;
-
-		for (int q = 0; q < nQuestionsSpeed; q++) {
-			this.questions[q] = new Question(q + 1);
-		}
-
+		this.setNQuestions(this.nQuestionsNormal);
 		this.answerQueue = new ArrayList<Answer>(0);
 	}
 
 	@JsonCreator
 	private Round(@JsonProperty("version") int version, @JsonProperty("rNumber") int rNumber,
 			@JsonProperty("nQuestionsSpeed") int nQuestionsSpeed, @JsonProperty("nQuestionsNormal") int nQuestions,
-			@JsonProperty("questions") Question[] questions, @JsonProperty("speed") boolean speed,
+			@JsonProperty("questions") ArrayList<Question> questions, @JsonProperty("speed") boolean speed,
 			@JsonProperty("announced") boolean announced, @JsonProperty("announcedPoints") int announcedPoints,
 			@JsonProperty("place") int place, @JsonProperty("standings") ScoreEntry[] standings,
 			@JsonProperty("answerQueue") ArrayList<Answer> answerQueue, @JsonProperty("showName") String showName,
@@ -211,7 +207,7 @@ public class Round implements Serializable {
 	 * @return Array indicating whether each question has been open
 	 */
 	public Boolean[] eachBeenOpen() {
-		return IntStream.rangeClosed(1, this.nQuestionsSpeed).parallel().mapToObj(q -> this.getQuestion(q).beenOpen())
+		return IntStream.rangeClosed(1, this.nQuestions).parallel().mapToObj(q -> this.getQuestion(q).beenOpen())
 				.toArray(Boolean[]::new);
 	}
 
@@ -221,7 +217,7 @@ public class Round implements Serializable {
 	 * @return Array indicating whether each question is correct
 	 */
 	public Boolean[] eachCorrect() {
-		return IntStream.rangeClosed(1, this.nQuestionsSpeed).parallel().mapToObj(q -> this.getQuestion(q).isCorrect())
+		return IntStream.rangeClosed(1, this.nQuestions).parallel().mapToObj(q -> this.getQuestion(q).isCorrect())
 				.toArray(Boolean[]::new);
 	}
 
@@ -231,7 +227,7 @@ public class Round implements Serializable {
 	 * @return Array indicating whether each question is open
 	 */
 	public Boolean[] eachOpen() {
-		return IntStream.rangeClosed(1, this.nQuestionsSpeed).parallel().mapToObj(q -> this.getQuestion(q).isOpen())
+		return IntStream.rangeClosed(1, this.nQuestions).parallel().mapToObj(q -> this.getQuestion(q).isOpen())
 				.toArray(Boolean[]::new);
 	}
 
@@ -299,7 +295,7 @@ public class Round implements Serializable {
 	}
 
 	public void changeUserName(String oldName, String newName) {
-		Arrays.stream(this.questions).parallel().forEach(q -> q.changeUserName(oldName, newName));
+		this.questions.stream().parallel().forEach(q -> q.changeUserName(oldName, newName));
 		this.answerQueue.parallelStream().forEach(a -> a.changeUserName(oldName, newName));
 	}
 
@@ -319,7 +315,7 @@ public class Round implements Serializable {
 	 * @return Array of answers
 	 */
 	public String[] getEachAnswerText() {
-		return Arrays.stream(this.questions).map(q -> q.getAnswerText()).toArray(String[]::new);
+		return this.questions.stream().map(q -> q.getAnswerText()).toArray(String[]::new);
 	}
 
 	/**
@@ -328,7 +324,7 @@ public class Round implements Serializable {
 	 * @return Array of points earned
 	 */
 	public int[] getEachEarned() {
-		return Arrays.stream(this.questions).mapToInt(a -> a.getEarned()).toArray();
+		return this.questions.stream().mapToInt(a -> a.getEarned()).toArray();
 	}
 
 	/**
@@ -337,7 +333,7 @@ public class Round implements Serializable {
 	 * @return Array of question text
 	 */
 	public String[] getEachQuestionText() {
-		return Arrays.stream(this.questions).map(q -> q.getQuestionText()).toArray(String[]::new);
+		return this.questions.stream().map(q -> q.getQuestionText()).toArray(String[]::new);
 	}
 
 	/**
@@ -346,7 +342,7 @@ public class Round implements Serializable {
 	 * @return Array of submitter names
 	 */
 	public String[] getEachSubmitter() {
-		return Arrays.stream(this.questions).map(q -> q.getSubmitter()).toArray(String[]::new);
+		return this.questions.stream().map(q -> q.getSubmitter()).toArray(String[]::new);
 	}
 
 	/**
@@ -355,7 +351,7 @@ public class Round implements Serializable {
 	 * @return Array of question values
 	 */
 	public int[] getEachValue() {
-		return Arrays.stream(this.questions).mapToInt(q -> q.getQuestionValue()).toArray();
+		return this.questions.stream().mapToInt(q -> q.getQuestionValue()).toArray();
 	}
 
 	/**
@@ -364,7 +360,7 @@ public class Round implements Serializable {
 	 * @return The total points earned
 	 */
 	public int getEarned() {
-		return Arrays.stream(this.questions).parallel().mapToInt(q -> q.getEarned()).sum();
+		return this.questions.stream().parallel().mapToInt(q -> q.getEarned()).sum();
 	}
 
 
@@ -395,7 +391,7 @@ public class Round implements Serializable {
 	 * @return The Question
 	 */
 	public Question getQuestion(int qNumber) {
-		return this.questions[qNumber - 1];
+		return this.questions.get(qNumber - 1);
 	}
 
 
@@ -424,7 +420,7 @@ public class Round implements Serializable {
 	 * @return The total value of this round
 	 */
 	public int getValue() {
-		return Arrays.stream(this.questions).mapToInt(q -> q.getQuestionValue()).sum();
+		return this.questions.stream().mapToInt(q -> q.getQuestionValue()).sum();
 	}
 
 	public int getVersion() {
@@ -637,16 +633,13 @@ public class Round implements Serializable {
 		this.version++;
 	}
 
-	// public int getAgreement(int queueIndex) {
-	// return this.answerQueue.get(queueIndex).getAgreement();
-	// }
-
 	public Agreement getAgreement(String user, int queueIndex) {
 		return this.answerQueue.get(queueIndex).getAgreement(user);
 	}
 
 	public Question[] getQuestions() {
-		return this.questions;
+		return this.questions.parallelStream().filter(q -> q.getQuestionNumber() <= this.nQuestions)
+				.collect(Collectors.toList()).toArray(new Question[this.nQuestions]);
 	}
 
 	/**
@@ -655,7 +648,7 @@ public class Round implements Serializable {
 	 * @return The number of correct answers
 	 */
 	public int nCorrect() {
-		return (int) Arrays.stream(this.questions).parallel().filter(q -> q.isCorrect()).count();
+		return (int) this.questions.stream().parallel().filter(q -> q.isCorrect()).count();
 	}
 
 	/**
@@ -664,7 +657,7 @@ public class Round implements Serializable {
 	 * @return The question number that should be opened next
 	 */
 	public int nextToOpen() {
-		return Arrays.stream(this.questions).parallel()
+		return this.questions.stream().parallel()
 				.filter(q -> this.getNQuestions() >= q.getQuestionNumber() && !q.beenOpen())
 				.mapToInt(q -> q.getQuestionNumber()).min().orElse(this.getNQuestions());
 	}
@@ -675,11 +668,11 @@ public class Round implements Serializable {
 	 * @return The number of open questions
 	 */
 	public int nOpen() {
-		return (int) Arrays.stream(this.questions).filter(q -> q.isOpen()).count();
+		return (int) this.questions.stream().filter(q -> q.isOpen()).count();
 	}
 
 	public int nUnopened() {
-		return (int) Arrays.stream(this.questions).filter(q -> !q.beenOpen()).count();
+		return (int) this.questions.stream().filter(q -> !q.beenOpen()).count();
 	}
 
 	/**
@@ -760,7 +753,7 @@ public class Round implements Serializable {
 	 * @return true, if the round is over
 	 */
 	public boolean roundOver() {
-		return Arrays.stream(this.questions).parallel().filter(q -> q.beenOpen() && !q.isOpen()).count() == this
+		return this.questions.stream().parallel().filter(q -> q.beenOpen() && !q.isOpen()).count() == this
 				.getNQuestions();
 	}
 
@@ -804,9 +797,11 @@ public class Round implements Serializable {
 	}
 
 	public synchronized void setNQuestions(int nQuestions) {
-		if (nQuestions > 0 && nQuestions <= this.nQuestionsSpeed) {
-			this.nQuestions = nQuestions;
+		while (nQuestions > this.questions.size()) {
+			this.questions.add(new Question(this.questions.size() + 1));
 		}
+		this.nQuestions = nQuestions;
+		this.version++;
 	}
 
 	/**
@@ -843,8 +838,7 @@ public class Round implements Serializable {
 	 */
 	public synchronized void setSpeed(boolean isSpeed) {
 		this.speed = isSpeed;
-		this.nQuestions = isSpeed ? this.nQuestionsSpeed : this.nQuestionsNormal;
-		this.version++;
+		this.setNQuestions(isSpeed ? this.nQuestionsSpeed : this.nQuestionsNormal);
 	}
 
 	/**
@@ -975,7 +969,7 @@ public class Round implements Serializable {
 	 * @return Array of the open Questions
 	 */
 	public Question[] getOpenQuestions() {
-		return Arrays.stream(this.questions).parallel().filter(q -> q.isOpen()).toArray(Question[]::new);
+		return this.questions.stream().parallel().filter(q -> q.isOpen()).toArray(Question[]::new);
 	}
 
 }

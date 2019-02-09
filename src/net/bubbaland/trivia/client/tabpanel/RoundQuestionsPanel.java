@@ -461,16 +461,17 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 				this.rNumber = trivia.getCurrentRoundNumber();
 			}
 			// Get all of the question data for the current round
-			final int nQuestions = trivia.getRound(this.rNumber).getNQuestions();
-			final boolean newSpeed = trivia.getRound(this.rNumber).isSpeed();
-			final Boolean[] beenOpens = trivia.getRound(this.rNumber).eachBeenOpen();
-			final Boolean[] opens = trivia.getRound(this.rNumber).eachOpen();
-			final Boolean[] corrects = trivia.getRound(this.rNumber).eachCorrect();
-			final int[] earneds = trivia.getRound(this.rNumber).getEachEarned();
-			final int[] values = trivia.getRound(this.rNumber).getEachValue();
-			final String[] questions = trivia.getRound(this.rNumber).getEachQuestionText();
-			final String[] answers = trivia.getRound(this.rNumber).getEachAnswerText();
-			final String[] submitters = trivia.getRound(this.rNumber).getEachSubmitter();
+			final Round round = trivia.getRound(this.rNumber);
+			final int nQuestions = round.getNQuestions();
+			final boolean newSpeed = round.isSpeed();
+			final Boolean[] beenOpens = round.eachBeenOpen();
+			final Boolean[] opens = round.eachOpen();
+			final Boolean[] corrects = round.eachCorrect();
+			final int[] earneds = round.getEachEarned();
+			final int[] values = round.getEachValue();
+			final String[] questions = round.getEachQuestionText();
+			final String[] answers = round.getEachAnswerText();
+			final String[] submitters = round.getEachSubmitter();
 
 			// Determine which questions have been updated
 			final boolean[] qUpdated = new boolean[nQuestions];
@@ -536,18 +537,19 @@ public class RoundQuestionsPanel extends TriviaMainPanel {
 				}
 			}
 
-			// Hide rows for speed questions in non-speed rounds
-			for (int q = nQuestions; q < this.maxQuestions; q++) {
-				this.qNumberLabels[q].getParent().setVisible(false);
-				this.earnedLabels[q].getParent().setVisible(false);
-				this.valueLabels[q].getParent().setVisible(false);
-				this.questionTextPane[q].setVisible(false);
-				this.separators[q].setVisible(false);
-				this.answerTextAreas[q].setVisible(false);
-				this.questionTextPane[q].getParent().getParent().setVisible(false);
-				this.answerTextAreas[q].getParent().getParent().setVisible(false);
-				this.submitterTextPanes[q].setVisible(false);
-				this.submitterTextPanes[q].getParent().getParent().setVisible(false);
+			// Hide rows for questions not being used
+			for (int q = 0; q < this.maxQuestions; q++) {
+				boolean visible = q < nQuestions;
+				this.qNumberLabels[q].getParent().setVisible(visible);
+				this.earnedLabels[q].getParent().setVisible(visible);
+				this.valueLabels[q].getParent().setVisible(visible);
+				this.questionTextPane[q].setVisible(visible);
+				this.separators[q].setVisible(visible);
+				this.answerTextAreas[q].setVisible(visible);
+				this.questionTextPane[q].getParent().getParent().setVisible(visible);
+				this.answerTextAreas[q].getParent().getParent().setVisible(visible);
+				this.submitterTextPanes[q].setVisible(visible);
+				this.submitterTextPanes[q].getParent().getParent().setVisible(visible);
 			}
 		}
 

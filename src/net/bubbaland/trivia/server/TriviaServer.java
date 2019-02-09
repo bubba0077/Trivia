@@ -38,6 +38,7 @@ import net.bubbaland.trivia.messages.CloseQuestionMessage;
 import net.bubbaland.trivia.messages.EditQuestionMessage;
 import net.bubbaland.trivia.messages.SetDiscrepencyTextMessage;
 import net.bubbaland.trivia.messages.SetEffortMessage;
+import net.bubbaland.trivia.messages.SetNQuestionsMessage;
 import net.bubbaland.trivia.messages.SetNVisualMessage;
 import net.bubbaland.trivia.messages.SetOperatorMessage;
 import net.bubbaland.trivia.messages.SetQuestionAnswerMessage;
@@ -91,6 +92,8 @@ public class TriviaServer {
 	private int											nQuestionsNormal;
 	// The number of questions in a speed round
 	private int											nQuestionsSpeed;
+	// The maximum number of questions allowed
+	private int											nQuestionsMax;
 	// The number of rounds
 	private int											nRounds;
 	// Directory to hold backups (must exist)
@@ -172,6 +175,7 @@ public class TriviaServer {
 		this.nRounds = Integer.parseInt(this.properties.getProperty("nRounds"));
 		this.nQuestionsNormal = Integer.parseInt(this.properties.getProperty("nQuestionsNormal"));
 		this.nQuestionsSpeed = Integer.parseInt(this.properties.getProperty("nQuestionsSpeed"));
+		this.nQuestionsMax = Integer.parseInt(this.properties.getProperty("nQuestionsMax"));
 		this.teamName = this.properties.getProperty("TeamName");
 		this.teamNumber = Integer.parseInt(this.properties.getProperty("TeamNumber"));
 		this.serverURL = this.properties.getProperty("ServerURL");
@@ -187,8 +191,8 @@ public class TriviaServer {
 		/**
 		 * Create a new trivia data object and list of connected clients
 		 */
-		this.trivia =
-				new Trivia(this.teamName, this.teamNumber, this.nRounds, this.nQuestionsNormal, this.nQuestionsSpeed);
+		this.trivia = new Trivia(this.teamName, this.teamNumber, this.nRounds, this.nQuestionsNormal,
+				this.nQuestionsSpeed, this.nQuestionsMax);
 		this.sessionList = new Hashtable<Session, TriviaServerEndpoint>(0);
 		this.isRunning = false;
 
@@ -344,6 +348,15 @@ public class TriviaServer {
 				this.trivia.getRound(rNumber).setShowHost(showHost);
 				this.broadcastChangedRounds();
 				log(userName + " set the show host for round " + rNumber + " to " + showHost);
+				break;
+			}
+			case "SetNQuestionsMessage": {
+				SetNQuestionsMessage message = (SetNQuestionsMessage) genericMessage;
+				int rNumber = message.getRoundNumber();
+				int nQuestions = message.getNQuestions();
+				this.trivia.getRound(rNumber).setNQuestions(nQuestions);
+				this.broadcastChangedRounds();
+				log(userName + " set the number of questions for round " + rNumber + " to " + nQuestions);
 				break;
 			}
 

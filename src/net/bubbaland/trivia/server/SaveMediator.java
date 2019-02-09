@@ -122,6 +122,11 @@ public class SaveMediator {
 				trivia.getRound(rNumber).setSpeed(isSpeed);
 
 				try {
+					trivia.getRound(rNumber).setNQuestions(Integer.parseInt(
+							roundElement.getElementsByTagName("Number_of_Questions").item(0).getTextContent()));
+				} catch (NullPointerException e) {}
+
+				try {
 					trivia.getRound(rNumber)
 							.setShowName(roundElement.getElementsByTagName("Show_Name").item(0).getTextContent());
 				} catch (NullPointerException e) {
@@ -269,6 +274,11 @@ public class SaveMediator {
 				element = doc.createElement("Speed");
 				element.appendChild(doc.createTextNode(r.isSpeed() + ""));
 				roundElement.appendChild(element);
+
+				// Number of questions
+				attribute = doc.createAttribute("Number_of_Questions");
+				attribute.setValue(r.getNQuestions() + "");
+				roundElement.setAttributeNode(attribute);
 
 				// Whether the score has been announced for this round
 				element = doc.createElement("Announced");

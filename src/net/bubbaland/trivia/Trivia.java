@@ -40,6 +40,10 @@ public class Trivia implements Serializable {
 	@JsonProperty("nQuestionsSpeed")
 	final private int			nQuestionsSpeed;
 
+	// The maximum number of questions allowed
+	@JsonProperty("nQuestionsMax")
+	final private int			nQuestionsMax;
+
 	// Number of visual trivias
 	@JsonProperty("nVisual")
 	private volatile int		nVisual;
@@ -61,13 +65,16 @@ public class Trivia implements Serializable {
 	 *            The number of questions in a normal round
 	 * @param nQuestionsSpeed
 	 *            The number of questions in a speed round
+	 * @param nQuestionsMax
 	 */
-	public Trivia(String teamName, int teamNumber, int nRounds, int nQuestions, int nQuestionsSpeed) {
+	public Trivia(String teamName, int teamNumber, int nRounds, int nQuestions, int nQuestionsSpeed,
+			int nQuestionsMax) {
 		this.teamName = teamName;
 		this.teamNumber = teamNumber;
 		this.nRounds = nRounds;
 		this.nQuestionsNormal = nQuestions;
 		this.nQuestionsSpeed = nQuestionsSpeed;
+		this.nQuestionsMax = nQuestionsMax;
 		this.rounds = new Round[nRounds];
 		IntStream.rangeClosed(1, nRounds).parallel()
 				.forEach(r -> this.rounds[r - 1] = new Round(r, nQuestions, nQuestionsSpeed));
@@ -78,13 +85,15 @@ public class Trivia implements Serializable {
 	@JsonCreator
 	private Trivia(@JsonProperty("teamName") String teamName, @JsonProperty("teamNumber") int teamNumber,
 			@JsonProperty("nRounds") int nRounds, @JsonProperty("nQuestionsNormal") int nQuestionsNormal,
-			@JsonProperty("nQuestionsSpeed") int nQuestionsSpeed, @JsonProperty("nVisual") int nVisuals,
-			@JsonProperty("rNumber") int rNumber, @JsonProperty("rounds") Round[] rounds) {
+			@JsonProperty("nQuestionsSpeed") int nQuestionsSpeed, @JsonProperty("nQuestionsMax") int nQuestionsMax,
+			@JsonProperty("nVisual") int nVisuals, @JsonProperty("rNumber") int rNumber,
+			@JsonProperty("rounds") Round[] rounds) {
 		this.teamName = teamName;
 		this.teamNumber = teamNumber;
 		this.nRounds = nRounds;
 		this.nQuestionsNormal = nQuestionsNormal;
 		this.nQuestionsSpeed = nQuestionsSpeed;
+		this.nQuestionsMax = nQuestionsMax;
 		this.currentRoundNumber = rNumber;
 		this.rounds = rounds;
 		this.nVisual = nVisuals;
@@ -286,11 +295,14 @@ public class Trivia implements Serializable {
 
 	public boolean[] getVisualTriviaUsed() {
 		boolean[] visualTriviaUsed = new boolean[this.nVisual];
-		Arrays.stream(rounds).parallel().forEach(r -> Arrays.stream(r.getQuestions()).parallel().forEach(q -> {
-			if (q.getVisualTrivia() != 0 && q.getVisualTrivia() <= this.nVisual) {
-				visualTriviaUsed[q.getVisualTrivia() - 1] = true;
-			}
-		}));
+
+
+		Arrays.stream(rounds).parallel().filter(r -> r != null)
+				.forEach(r -> Arrays.stream(r.getQuestions()).parallel().forEach(q -> {
+					if (q.getVisualTrivia() != 0 && q.getVisualTrivia() <= this.nVisual) {
+						visualTriviaUsed[q.getVisualTrivia() - 1] = true;
+					}
+				}));
 		return visualTriviaUsed;
 	}
 
