@@ -75,7 +75,7 @@ public class TriviaGUI implements WindowListener {
 	// File name to store window positions
 	final static private String		SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String		SETTINGS_VERSION			= "30";
+	final static private String		SETTINGS_VERSION			= "31";
 	// Format for log timestamps
 	static private SimpleDateFormat	TIMESTAMP_FORMAT;
 
