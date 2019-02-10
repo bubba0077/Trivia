@@ -139,7 +139,8 @@ public class Trivia implements Serializable {
 	 * @return The cumulative value
 	 */
 	public int getCumulativeValue(int rNumber) {
-		return Arrays.stream(this.rounds).parallel().mapToInt(r -> r.getValue()).sum();
+		return Arrays.stream(this.rounds).parallel().filter(r -> r.getRoundNumber() <= rNumber)
+				.mapToInt(r -> r.getValue()).sum();
 	}
 
 	/**
