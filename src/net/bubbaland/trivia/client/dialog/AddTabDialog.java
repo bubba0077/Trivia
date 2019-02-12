@@ -114,15 +114,16 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 			SORT_ORDER = new Hashtable<String, Integer>(0);
 			SORT_ORDER.put("Workflow", 0);
 			SORT_ORDER.put("Current", 1);
-			SORT_ORDER.put("History", 2);
-			SORT_ORDER.put("By Round", 3);
-			SORT_ORDER.put("Standings", 4);
-			SORT_ORDER.put("Place Chart", 5);
-			SORT_ORDER.put("Score Chart", 6);
-			SORT_ORDER.put("Cumul. Score Chart", 7);
-			SORT_ORDER.put("Team Comparison", 8);
-			SORT_ORDER.put("*Open Questions", 9);
-			SORT_ORDER.put("*Answer Queue", 10);
+			SORT_ORDER.put("Search", 2);
+			SORT_ORDER.put("History", 3);
+			SORT_ORDER.put("By Round", 4);
+			SORT_ORDER.put("Standings", 5);
+			SORT_ORDER.put("Place Chart", 6);
+			SORT_ORDER.put("Score Chart", 7);
+			SORT_ORDER.put("Cumul. Score Chart", 8);
+			SORT_ORDER.put("Team Comparison", 9);
+			SORT_ORDER.put("*Open Questions", 10);
+			SORT_ORDER.put("*Answer Queue", 11);
 		}
 
 		@Override
@@ -147,7 +148,7 @@ public class AddTabDialog extends TriviaDialogPanel implements ItemListener {
 				newTabs.add((String) this.tabSelector.getSelectedItem());
 				break;
 			}
-				// Add all tabs that don't start with a * and are not already in the tabbed pane
+			// Add all tabs that don't start with a * and are not already in the tabbed pane
 			case "Add All":
 				for (final String tabName : tabNameSet) {
 					if (!tabName.startsWith("*") && pane.indexOfTab(tabName) == -1) {

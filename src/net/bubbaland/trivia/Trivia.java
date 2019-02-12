@@ -3,6 +3,10 @@ package net.bubbaland.trivia;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -309,11 +313,61 @@ public class Trivia implements Serializable {
 
 	public ArrayList<String> getOperators() {
 		ArrayList<String> allAnswers = new ArrayList<String>();
-		Arrays.stream(rounds).forEach(r -> Arrays.stream(r.getAnswerQueue()).parallel().forEach(a -> {
+		Arrays.stream(rounds).forEach(r -> Arrays.stream(r.getAnswerQueue()).sequential().forEach(a -> {
 			allAnswers.add(a.getOperator());
 		}));
 		return allAnswers.stream().distinct().filter(s -> s != null).sorted(String.CASE_INSENSITIVE_ORDER)
 				.collect(Collectors.toCollection(ArrayList<String>::new));
+	}
+
+	public LinkedHashMap<Question, Round> search(String regex, boolean searchQuestions, boolean searchAnswers) {
+		ArrayList<Integer> rNumbers =
+				new ArrayList<Integer>(IntStream.rangeClosed(1, this.nRounds).boxed().collect(Collectors.toList()));
+		return search(regex, searchQuestions, searchAnswers, rNumbers);
+	}
+
+	public LinkedHashMap<Question, Round> search(String regex, boolean searchQuestions, boolean searchAnswers,
+			ArrayList<Integer> rNumbers) {
+		Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+
+		ArrayList<Round> rounds = (ArrayList<Round>) Arrays.stream(this.rounds)
+				.filter(r -> rNumbers.contains(r.getRoundNumber())).collect(Collectors.toList());
+		LinkedHashMap<Question, Round> results = new LinkedHashMap<Question, Round>();
+		for (Round r : rounds) {
+			for (Question q : r.getQuestions()) {
+				if (searchQuestions) {
+					if (pattern.matcher(q.getQuestionText()).find()) {
+						results.put(q, r);
+					}
+				}
+				if (searchAnswers) {
+					if (pattern.matcher(q.getAnswerText()).find()) {
+						results.put(q, r);
+					}
+				}
+			}
+		}
+
+		results.entrySet().stream().sorted(new Comparator<Entry<Question, Round>>() {
+			@Override
+			public int compare(Entry<Question, Round> o1, Entry<Question, Round> o2) {
+
+				int r1 = o1.getValue().getRoundNumber();
+				int r2 = o2.getValue().getRoundNumber();
+				int q1 = o1.getKey().getQuestionNumber();
+				int q2 = o2.getKey().getQuestionNumber();
+
+				int rCompare = Integer.compare(r1, r2);
+				if (rCompare != 0) {
+					return rCompare;
+				} else {
+					return Integer.compare(q1, q2);
+				}
+			}
+
+		});
+
+		return results;
 	}
 
 	/**

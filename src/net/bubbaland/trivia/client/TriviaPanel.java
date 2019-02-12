@@ -8,13 +8,16 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.LayoutManager;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -22,6 +25,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -697,6 +701,27 @@ public class TriviaPanel extends JPanel {
 			}
 			super.processMouseWheelEvent(e);
 		}
+	}
+
+
+	/**
+	 * Override the default behavior of the text area to click the OK button of the option pane on enter and insert a
+	 * line break on shift-enter
+	 *
+	 * @param component
+	 *            The text are whose behavior we want to change
+	 */
+	public void addEnterOverride(JComponent component, JButton button) {
+		component.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "Text Submit");
+		component.getInputMap().put(KeyStroke.getKeyStroke("shift ENTER"), "insert-break");
+		component.getActionMap().put("Text Submit", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				button.doClick();
+			}
+		});
 	}
 
 }

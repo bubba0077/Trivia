@@ -50,6 +50,7 @@ import net.bubbaland.trivia.client.tabpanel.PlaceChartPanel;
 import net.bubbaland.trivia.client.tabpanel.RoundPanel;
 import net.bubbaland.trivia.client.tabpanel.ScoreByRoundChartPanel;
 import net.bubbaland.trivia.client.tabpanel.ScoreByRoundPanel;
+import net.bubbaland.trivia.client.tabpanel.SearchPanel;
 import net.bubbaland.trivia.client.tabpanel.StandingsPanel;
 import net.bubbaland.trivia.client.tabpanel.TeamComparisonPanel;
 import net.bubbaland.trivia.client.tabpanel.WorkflowPanel;
@@ -75,7 +76,7 @@ public class TriviaGUI implements WindowListener {
 	// File name to store window positions
 	final static private String		SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String		SETTINGS_VERSION			= "31";
+	final static private String		SETTINGS_VERSION			= "32";
 	// Format for log timestamps
 	static private SimpleDateFormat	TIMESTAMP_FORMAT;
 
@@ -161,6 +162,7 @@ public class TriviaGUI implements WindowListener {
 		TAB_DESCRIPTION_HASH.put("Workflow", "Main tab with summary information, open questions, and answer queue.");
 		TAB_DESCRIPTION_HASH.put("Current", "Tab showing question data for the current round.");
 		TAB_DESCRIPTION_HASH.put("History", "Tab that can show question data for any round.");
+		TAB_DESCRIPTION_HASH.put("Search", "Search questions and answers.");
 		TAB_DESCRIPTION_HASH.put("By Round", "Tab that displays score information for every round.");
 		TAB_DESCRIPTION_HASH.put("Standings", "Tab that displays standings information for any round");
 		TAB_DESCRIPTION_HASH.put("Place Chart", "Chart showing the team's place in time");
@@ -311,6 +313,9 @@ public class TriviaGUI implements WindowListener {
 				break;
 			case "History":
 				panel = new HistoryPanel(this.client, frame);
+				break;
+			case "Search":
+				panel = new SearchPanel(this.client, frame);
 				break;
 			case "By Round":
 				panel = new ScoreByRoundPanel(this.client, frame);
@@ -779,14 +784,14 @@ public class TriviaGUI implements WindowListener {
 		}
 
 		private void uncheckAll() {
-			for (final JCheckBox checkboxe : this.checkboxes) {
-				checkboxe.setSelected(false);
+			for (final JCheckBox checkbox : this.checkboxes) {
+				checkbox.setSelected(false);
 			}
 		}
 
 		private void checkAll() {
-			for (final JCheckBox checkboxe : this.checkboxes) {
-				checkboxe.setSelected(true);
+			for (final JCheckBox checkbox : this.checkboxes) {
+				checkbox.setSelected(true);
 			}
 		}
 	}
