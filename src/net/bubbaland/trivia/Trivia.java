@@ -123,7 +123,8 @@ public class Trivia implements Serializable {
 	 * @return The cumulative number of points earned
 	 */
 	public int getCumulativeEarned(int rNumber) {
-		return Arrays.stream(this.rounds).parallel().mapToInt(r -> r.getEarned()).sum();
+		return Arrays.stream(this.rounds).parallel().filter(r -> r.getRoundNumber() <= rNumber)
+				.mapToInt(r -> r.getEarned()).sum();
 	}
 
 	/**
