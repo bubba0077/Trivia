@@ -81,7 +81,7 @@ public class TriviaGUI implements WindowListener {
 	static private SimpleDateFormat	TIMESTAMP_FORMAT;
 
 	//
-	final static protected String	NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
+	final static protected String	NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.mp3";
 
 	// The Hide Closed menu item
 	// private volatile boolean hideClosed, hideDuplicates, mute;
