@@ -208,7 +208,7 @@ public class TriviaClient implements Runnable {
 		switch (messageType) {
 			case "SetRoundMessage": {
 				SetRoundMessage message = (SetRoundMessage) genericMessage;
-				this.trivia.setCurrentRound(message.getRoundNumber());
+				this.trivia.setCurrentRoundNumber(message.getRoundNumber());
 				break;
 			}
 			case "TriviaDataMessage": {

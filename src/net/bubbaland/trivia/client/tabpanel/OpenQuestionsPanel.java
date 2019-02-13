@@ -14,7 +14,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.function.IntPredicate;
+import java.util.stream.IntStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -42,6 +42,7 @@ import net.bubbaland.trivia.client.dialog.ResetQuestionDialog;
 import net.bubbaland.trivia.client.dialog.ViewQuestionDialog;
 import net.bubbaland.trivia.messages.SetEffortMessage;
 import net.bubbaland.trivia.Question;
+import net.bubbaland.trivia.Round;
 
 /**
  * A panel which displays a list of the current open questions.
@@ -189,11 +190,12 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		for (int q = diff; q < nMaxQuestions; q++) {
 			final int qNumber = q + 1 - diff;
 			this.statusLabels[q].setText(qNumber + "");
-			if (trivia.getCurrentRound().getQuestion(qNumber).beenOpen()) {
-				if (trivia.getCurrentRound().isOpen(qNumber)) {
+			Question question = trivia.getCurrentRound().getQuestion(qNumber);
+			if (question.beenOpen()) {
+				if (question.isOpen()) {
 					this.statusLabels[q].setForeground(this.headerColor);
 				} else {
-					if (trivia.getCurrentRound().isCorrect(qNumber)) {
+					if (question.isCorrect()) {
 						this.statusLabels[q].setForeground(this.correctColor);
 					} else {
 						this.statusLabels[q].setForeground(this.incorrectColor);
@@ -353,6 +355,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		 * Data sources
 		 */
 		private final TriviaClient		client;
+		private ArrayList<Question>		displayedQuestions;
 
 		/**
 		 * Instantiates a new workflow q list sub panel.
@@ -367,6 +370,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			super(client, parent);
 
 			this.client = client;
+			this.displayedQuestions = new ArrayList<Question>();
 			this.nQuestionsMax = client.getTrivia().getMaxQuestions();
 			this.lastEffort = new ArrayList<User[]>();
 
@@ -507,25 +511,31 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				case "Open":
 					this.open();
 					break;
-				case "Edit":
+				case "Edit": {
 					qNumber = Integer.parseInt(this.contextMenu.getName());
-					int qValue = trivia.getRound(rNumber).getValue(qNumber);
-					String qText = trivia.getRound(rNumber).getQuestionText(qNumber);
+					Question question = trivia.getRound(rNumber).getQuestion(qNumber);
+					int qValue = question.getQuestionValue();
+					String qText = question.getQuestionText();
 					final int nQuestions = trivia.getRound(rNumber).getNQuestions();
 					new NewQuestionDialog(this.client, rNumber, nQuestions, qNumber, qValue, qText, false);
 					break;
-				case "Delete":
+				}
+				case "Delete": {
 					qNumber = Integer.parseInt(this.contextMenu.getName());
-					qValue = trivia.getRound(rNumber).getValue(qNumber);
-					qText = trivia.getRound(rNumber).getQuestionText(qNumber);
+					Question question = trivia.getRound(rNumber).getQuestion(qNumber);
+					int qValue = question.getQuestionValue();
+					String qText = question.getQuestionText();
 					new ResetQuestionDialog(this.client, rNumber, qNumber, qValue, qText);
 					break;
-				case "View":
+				}
+				case "View": {
 					qNumber = Integer.parseInt(this.contextMenu.getName());
-					qValue = trivia.getRound(rNumber).getValue(qNumber);
-					qText = trivia.getRound(rNumber).getQuestionText(qNumber);
+					Question question = trivia.getRound(rNumber).getQuestion(qNumber);
+					int qValue = question.getQuestionValue();
+					String qText = question.getQuestionText();
 					new ViewQuestionDialog(rNumber, qNumber, qValue, qText);
 					break;
+				}
 				case "Set Effort":
 					JToggleButton source = (JToggleButton) event.getSource();
 					qNumber = source.isSelected() ? Integer.parseInt(source.getName()) : 0;
@@ -564,73 +574,59 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			final Trivia trivia = this.client.getTrivia();
 
 			// Get the data for any open questions
-			final int[] openQuestionNumbers = trivia.getCurrentRound().getOpenQuestionNumbers();
-			final String[] openQuestionText = trivia.getCurrentRound().getOpenQuestionText();
-			final String[] openQuestionValues = trivia.getCurrentRound().getOpenQuestionValues();
 			final Question[] openQuestions = trivia.getCurrentRound().getOpenQuestions();
 			final User[] userList = client.getUserList();
-			final int nOpen = openQuestionNumbers.length;
+
+			final int nOpen = openQuestions.length;
 
 			// Check if there were any changes to the list of open questions
-			final boolean[] qUpdated = new boolean[nOpen];
-			boolean anyUpdate = false;
-			for (int q = 0; q < nOpen; q++) {
-				qUpdated[q] = !( this.qNumberButtons[q].getText().equals(openQuestionNumbers[q] + "")
-						&& this.qValueLabels[q].getText().equals(openQuestionValues[q] + "")
-						&& this.qTextPanes[q].textEquals(openQuestionText[q])
-						&& this.lastEffort.get(q) == openQuestions[q].getEffort(userList) );
-				anyUpdate = anyUpdate || qUpdated[q];
-			}
+			final Boolean[] qUpdated = IntStream.range(0, nOpen).mapToObj(
+					n -> n >= this.displayedQuestions.size() || openQuestions[n].equals(this.displayedQuestions.get(n)))
+					.toArray(Boolean[]::new);
 
-
-			if (!Arrays.stream(openQuestionNumbers).anyMatch(new IntPredicate() {
-				@Override
-				public boolean test(int i) {
-					return i == OpenQuestionsSubPanel.this.client.getUser().getEffort();
-				}
-			})) {
+			if (!Arrays.stream(openQuestions).mapToInt(q -> q.getQuestionNumber())
+					.anyMatch(i -> i == OpenQuestionsSubPanel.this.client.getUser().getEffort())) {
 				this.client.getUser().setEffort(0);
 			}
 
-			// Show data for open questions
-			for (int q = 0; q < nOpen; q++) {
-				if (qUpdated[q] || force) {
-					this.lastEffort.set(q, openQuestions[q].getEffort(userList));
-					final int nEffort = openQuestions[q].getEffort(userList) == null ? 0 : openQuestions[q]
-							.getEffort(userList).length;
-					String lastEffortString =
-							"<html><div align=center>" + nEffort + ( nEffort == 1 ? " User" : " Users" )
-									+ " Working on Q" + openQuestionNumbers[q] + "</div>";
-					if (this.lastEffort.get(q) != null) {
-						for (User user : this.lastEffort.get(q)) {
-							lastEffortString = lastEffortString + user.getUserName() + "<BR/>";
-						}
+			this.displayedQuestions = new ArrayList<Question>(Arrays.asList(openQuestions));
+
+			IntStream.range(0, nOpen).filter(q -> qUpdated[q]).forEach(q -> {
+				Question question = openQuestions[q];
+				int qNumber = question.getQuestionNumber();
+				this.lastEffort.set(q, question.getEffort(userList));
+				final int nEffort = question.getEffort(userList) == null ? 0 : question.getEffort(userList).length;
+				String lastEffortString = "<html><div align=center>" + nEffort + ( nEffort == 1 ? " User" : " Users" )
+						+ " Working on Q" + qNumber + "</div>";
+				if (this.lastEffort.get(q) != null) {
+					for (User user : this.lastEffort.get(q)) {
+						lastEffortString = lastEffortString + user.getUserName() + "<BR/>";
 					}
-					lastEffortString = lastEffortString + "</html>";
-
-					this.qNumberButtons[q].setText(openQuestionNumbers[q] + "");
-					this.qNumberButtons[q].setEnabled(true);
-					this.qNumberButtons[q].setSelected(this.client.getUser().getEffort() == openQuestionNumbers[q]);
-					this.effortLabels[q].setText(nEffort + "");
-					this.effortLabels[q].setToolTipText(lastEffortString);
-					this.qValueLabels[q].setText(openQuestionValues[q]);
-					this.qTextPanes[q].setText(openQuestionText[q]);
-					this.answerButtons[q].setText("Answer");
-					this.answerButtons[q].setName(openQuestionNumbers[q] + "");
-					this.answerButtons[q].setVisible(true);
-					this.closeButtons[q].setText("Close");
-					this.closeButtons[q].setActionCommand("Close");
-					this.closeButtons[q].setName(openQuestionNumbers[q] + "");
-					this.closeButtons[q].setVisible(true);
-
-					this.qNumberButtons[q].setName(openQuestionNumbers[q] + "");
-					this.qValueLabels[q].setName(openQuestionNumbers[q] + "");
-					this.qTextPanes[q].setName(openQuestionNumbers[q] + "");
 				}
-			}
+				lastEffortString = lastEffortString + "</html>";
+
+				this.qNumberButtons[q].setText(qNumber + "");
+				this.qNumberButtons[q].setEnabled(true);
+				this.qNumberButtons[q].setSelected(this.client.getUser().getEffort() == qNumber);
+				this.effortLabels[q].setText(nEffort + "");
+				this.effortLabels[q].setToolTipText(lastEffortString);
+				this.qValueLabels[q].setText(question.getQuestionValue() + "");
+				this.qTextPanes[q].setText(question.getQuestionText());
+				this.answerButtons[q].setText("Answer");
+				this.answerButtons[q].setName(qNumber + "");
+				this.answerButtons[q].setVisible(true);
+				this.closeButtons[q].setText("Close");
+				this.closeButtons[q].setActionCommand("Close");
+				this.closeButtons[q].setName(qNumber + "");
+				this.closeButtons[q].setVisible(true);
+
+				this.qNumberButtons[q].setName(qNumber + "");
+				this.qValueLabels[q].setName(qNumber + "");
+				this.qTextPanes[q].setName(qNumber + "");
+			});
 
 			// Blank unused lines and hide buttons (except one Open button)
-			for (int q = nOpen; q < this.nQuestionsMax; q++) {
+			IntStream.range(nOpen, this.nQuestionsMax).forEach(q -> {
 				this.effortLabels[q].setText("");
 				this.qValueLabels[q].setText("");
 				this.answerButtons[q].setText("");
@@ -653,7 +649,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				this.qNumberButtons[q].setName("");
 				this.qValueLabels[q].setName("");
 				this.qTextPanes[q].setName("");
-			}
+			});
 
 			int nQuestionsShow;
 			if (trivia.getCurrentRound().nUnopened() > 0) {
@@ -663,7 +659,8 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			}
 
 			// Show rows equal to the greater of the number of questions to show and the number of open questions
-			for (int q = 0; q < nQuestionsShow; q++) {
+			// for (int q = 0; q < nQuestionsShow; q++) {
+			IntStream.range(0, nQuestionsShow).forEach(q -> {
 				this.qNumberButtons[q].setVisible(true);
 				this.effortLabels[q].setVisible(true);
 				this.qValueLabels[q].setVisible(true);
@@ -677,10 +674,10 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				this.qTextPanes[q].getParent().getParent().setVisible(true);
 				this.answerButtons[q].getParent().setVisible(true);
 				this.closeButtons[q].getParent().setVisible(true);
-			}
+			});
 
 			// Hide the rest of the rows
-			for (int q = nQuestionsShow; q < this.nQuestionsMax; q++) {
+			IntStream.range(nQuestionsShow, this.nQuestionsMax).forEach(q -> {
 				this.qNumberButtons[q].setVisible(false);
 				this.effortLabels[q].setVisible(false);
 				this.qValueLabels[q].setVisible(false);
@@ -694,8 +691,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 				this.qTextPanes[q].getParent().getParent().setVisible(false);
 				this.answerButtons[q].getParent().setVisible(false);
 				this.closeButtons[q].getParent().setVisible(false);
-			}
-
+			});
 		}
 
 		@Override
@@ -787,13 +783,15 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 			final Trivia trivia = this.client.getTrivia();
 
-			final int nQuestions = trivia.getCurrentRound().getNQuestions();
-			final int nextToOpen = trivia.getCurrentRound().nextToOpen();
-			final int rNumber = trivia.getCurrentRoundNumber();
+			final Round currentRound = trivia.getCurrentRound();
+
+			final int nQuestions = currentRound.getNQuestions();
+			final int nextToOpen = currentRound.nextToOpen();
+			final int rNumber = currentRound.getRoundNumber();
 
 			if (trivia.getRound(rNumber).isSpeed() && nextToOpen > 1) {
 				new NewQuestionDialog(this.client, rNumber, nQuestions, nextToOpen,
-						trivia.getRound(rNumber).getValue(nextToOpen - 1), true);
+						currentRound.getQuestion(nextToOpen - 1).getQuestionValue(), true);
 			} else {
 				new NewQuestionDialog(this.client, rNumber, nQuestions, nextToOpen, true);
 			}

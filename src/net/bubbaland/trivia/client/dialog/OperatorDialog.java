@@ -2,13 +2,15 @@ package net.bubbaland.trivia.client.dialog;
 
 import java.awt.GridBagConstraints;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import net.bubbaland.trivia.client.TriviaClient;
 import net.bubbaland.trivia.messages.CallInAnswerMessage;
 import net.bubbaland.trivia.messages.MarkAnswerCorrectMessage;
@@ -26,12 +28,12 @@ import net.bubbaland.trivia.messages.SetOperatorMessage;
 public class OperatorDialog extends TriviaDialogPanel {
 
 	/** The Constant serialVersionUID. */
-	private static final long	serialVersionUID	= -8974614016214193902L;
+	private static final long		serialVersionUID	= -8974614016214193902L;
 
-	private final TriviaClient	client;
-	private final int			rNumber, queueIndex;
-	private final JTextField	operatorTextField;
-	private final String		previousStatus;
+	private final TriviaClient		client;
+	private final int				rNumber, queueIndex;
+	private final JComboBox<String>	operatorComboBox;
+	private final String			previousStatus;
 
 	/**
 	 * Creates a new dialog box and prompts for response
@@ -72,10 +74,13 @@ public class OperatorDialog extends TriviaDialogPanel {
 		c.gridy = 1;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
-		this.operatorTextField = new JTextField("", 15);
-		this.operatorTextField.setFont(this.operatorTextField.getFont().deriveFont(fontSize));
-		this.operatorTextField.addAncestorListener(this);
-		this.add(this.operatorTextField, c);
+		this.operatorComboBox = new JComboBox<String>();
+		this.operatorComboBox.setFont(this.operatorComboBox.getFont().deriveFont(fontSize));
+		this.operatorComboBox.addAncestorListener(this);
+		ArrayList<String> opList = this.client.getTrivia().getOperators();
+		String[] ops = opList.toArray(new String[opList.size()]);
+		AutoCompleteSupport.install(operatorComboBox, GlazedLists.eventListOf(ops));
+		this.add(this.operatorComboBox, c);
 
 		// Display the dialog box
 		this.dialog =
@@ -94,7 +99,8 @@ public class OperatorDialog extends TriviaDialogPanel {
 				public Void doInBackground() {
 					OperatorDialog.this.client.sendMessage(
 							new SetOperatorMessage(OperatorDialog.this.client.getTrivia().getCurrentRoundNumber(),
-									OperatorDialog.this.queueIndex, OperatorDialog.this.operatorTextField.getText()));
+									OperatorDialog.this.queueIndex,
+									(String) OperatorDialog.this.operatorComboBox.getSelectedItem()));
 					return null;
 				}
 

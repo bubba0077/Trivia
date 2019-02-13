@@ -61,7 +61,7 @@ public class AnswerEntryPanel extends TriviaDialogPanel {
 		final Trivia trivia = client.getTrivia();
 
 		// Get the question text
-		final String qText = trivia.getCurrentRound().getQuestionText(qNumber);
+		final String qText = trivia.getCurrentRound().getQuestion(qNumber).getQuestionText();
 
 		// Set up layout constraints
 		final GridBagConstraints constraints = new GridBagConstraints();

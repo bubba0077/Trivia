@@ -51,6 +51,7 @@ import net.bubbaland.trivia.client.dialog.UserLoginDialog;
 import net.bubbaland.trivia.client.tabpanel.SummaryPanel;
 import net.bubbaland.trivia.messages.GetSaveListMessage;
 import net.bubbaland.trivia.messages.RestartTimerMessage;
+import net.bubbaland.trivia.messages.SetNQuestionsMessage;
 import net.bubbaland.trivia.messages.SetNVisualMessage;
 import net.bubbaland.trivia.messages.SetTeamNumberMessage;
 
@@ -76,7 +77,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 	final private JMenuItem				sortStatusAscendingMenuItem;
 	final private JMenuItem				sortStatusDescendingMenuItem;
 	final private JMenuItem				muteMenuItem;
-	final private SpinnerMenuItem		idleSpinner, nVisualSpinner, teamNumberSpinner;
+	final private SpinnerMenuItem		idleSpinner, nVisualSpinner, nQuestionsSpinner, teamNumberSpinner;
 
 	// The status bar at the bottom
 	final private JLabel				statusBar;
@@ -439,6 +440,15 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			this.nVisualSpinner.addChangeListener(this);
 			nVisualMenu.add(this.nVisualSpinner);
 			menu.add(nVisualMenu);
+
+			final JMenu nQuestionsMenu = new JMenu("Set # Questions");
+			this.nQuestionsSpinner = new SpinnerMenuItem(
+					new SpinnerNumberModel(this.client.getTrivia().getCurrentRound().getNQuestions(), 1,
+							this.client.getTrivia().getMaxQuestions(), 1));
+			this.nQuestionsSpinner.setName("nQuestions Spinner");
+			this.nQuestionsSpinner.addChangeListener(this);
+			nQuestionsMenu.add(this.nQuestionsSpinner);
+			menu.add(nQuestionsMenu);
 
 			menuItem = new JMenuItem("Restart Timer", KeyEvent.VK_T);
 			menuItem.setActionCommand("Restart Timer");
@@ -877,6 +887,22 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 					public Void doInBackground() {
 						TriviaFrame.this.client.sendMessage(new SetNVisualMessage(nVisual));
 						TriviaFrame.this.gui.log("Number of visual trivia changed to " + nVisual);
+						return null;
+					}
+
+					@Override
+					public void done() {}
+				} ).execute();
+				break;
+			case "nQuestions Spinner":
+				final int rNumber = this.client.getTrivia().getCurrentRoundNumber();
+				final int nQuestions = ( (Integer) this.nQuestionsSpinner.getValue() ).intValue();
+				( new SwingWorker<Void, Void>() {
+					@Override
+					public Void doInBackground() {
+						TriviaFrame.this.client.sendMessage(new SetNQuestionsMessage(rNumber, nQuestions));
+						TriviaFrame.this.gui
+								.log("Number of questions for round " + rNumber + " changed to " + nQuestions);
 						return null;
 					}
 

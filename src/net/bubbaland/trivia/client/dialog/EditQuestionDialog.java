@@ -20,6 +20,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingWorker;
 
+import net.bubbaland.trivia.Question;
+import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.client.TriviaClient;
 import net.bubbaland.trivia.client.TriviaGUI;
@@ -52,12 +54,14 @@ public class EditQuestionDialog extends TriviaDialogPanel implements ActionListe
 
 		// Get all of the current data for the question
 		final Trivia trivia = client.getTrivia();
+		final Round round = trivia.getRound(rNumber);
+		final Question question = round.getQuestion(qNumber);
 
-		final boolean existingCorrect = trivia.getRound(rNumber).isCorrect(qNumber);
-		int existingValue = trivia.getRound(rNumber).getValue(qNumber);
-		final String existingQText = trivia.getRound(rNumber).getQuestionText(qNumber);
-		final String existingAText = trivia.getRound(rNumber).getAnswerText(qNumber);
-		final String existingSubmitter = trivia.getRound(rNumber).getSubmitter(qNumber);
+		final boolean existingCorrect = question.isCorrect();
+		int existingValue = question.getQuestionValue();
+		final String existingQText = question.getQuestionText();
+		final String existingAText = question.getAnswerText();
+		final String existingSubmitter = question.getSubmitter();
 		// final String existingOperator = trivia.getOperator(rNumber, qNumber);
 
 		// Set up layout constraints

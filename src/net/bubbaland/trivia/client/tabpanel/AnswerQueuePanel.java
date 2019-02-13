@@ -51,6 +51,8 @@ import javax.swing.text.StyledDocument;
 
 import net.bubbaland.trivia.Answer;
 import net.bubbaland.trivia.Answer.Agreement;
+import net.bubbaland.trivia.Question;
+import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.client.TriviaClient;
 import net.bubbaland.trivia.client.TriviaFrame;
@@ -673,16 +675,17 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				AnswerQueuePanel.this.rNumber = trivia.getCurrentRoundNumber();
 			}
 			final String command = event.getActionCommand();
+			final Round round = trivia.getRound(AnswerQueuePanel.this.rNumber);
 			final int queueIndex;
 			switch (command) {
 				case "View":
 					queueIndex = Integer.parseInt(this.contextMenu.getName());
-					final int qNumber =
-							trivia.getRound(AnswerQueuePanel.this.rNumber).getAnswerQueueQNumber(queueIndex);
-					final int qValue = trivia.getRound(AnswerQueuePanel.this.rNumber).getValue(qNumber);
-					final String qText = trivia.getRound(AnswerQueuePanel.this.rNumber).getQuestionText(qNumber);
-					final String aText =
-							trivia.getRound(AnswerQueuePanel.this.rNumber).getAnswerQueueAnswerText(queueIndex);
+					final Answer answer = round.getAnswerQueue()[queueIndex];
+					final int qNumber = answer.getQNumber();
+					final Question question = round.getQuestion(qNumber);
+					final int qValue = question.getQuestionValue();
+					final String qText = question.getQuestionText();
+					final String aText = answer.getAnswerText();
 					new ViewAnswerDialog(AnswerQueuePanel.this.rNumber, qNumber, qValue, qText, aText);
 					break;
 				case "Agree":
@@ -932,7 +935,7 @@ public class AnswerQueuePanel extends TriviaMainPanel implements MouseListener, 
 				this.lastStatus.set(a, newStatus);
 				final boolean closed;
 				if (AnswerQueuePanel.this.live) {
-					closed = !trivia.getCurrentRound().isOpen(newQNumber);
+					closed = !trivia.getCurrentRound().getQuestion(newQNumber).isOpen();
 				} else {
 					closed = false;
 				}

@@ -3,7 +3,8 @@ package net.bubbaland.trivia;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,12 +38,16 @@ public class Round implements Serializable {
 	final private int					nQuestionsSpeed;
 
 	// The number of questions in a normal round
+	@JsonProperty("nQuestionsNormal")
+	final private int					nQuestionsNormal;
+
+	// The number of questions in this round
 	@JsonProperty("nQuestions")
-	final private int					nQuestions;
+	private volatile int				nQuestions;
 
 	// The array holding the questions
 	@JsonProperty("questions")
-	final private Question[]			questions;
+	final private ArrayList<Question>	questions;
 
 	// Whether this is a speed round
 	@JsonProperty("speed")
@@ -74,6 +79,9 @@ public class Round implements Serializable {
 
 	@JsonProperty("showName")
 	private volatile String				showName;
+
+	@JsonProperty("showHost")
+	private volatile String				showHost;
 
 	/**
 	 * @return the showName
@@ -107,26 +115,23 @@ public class Round implements Serializable {
 		this.version++;
 	}
 
-	@JsonProperty("showHost")
-	private volatile String showHost;
-
 	/**
 	 * Creates a new round.
 	 *
 	 * @param rNumber
 	 *            The round number
+	 * @param nQuestionsNormal
+	 *            The number of questions in a normal round
 	 * @param nQuestionsSpeed
 	 *            The number of questions in a speed round
-	 * @param nQuestions
-	 *            The number of questions in a normal round
 	 */
-	public Round(int rNumber, int nQuestionsSpeed, int nQuestions) {
+	public Round(int rNumber, int nQuestionsNormal, int nQuestionsSpeed) {
 
 		this.speed = false;
 		this.rNumber = rNumber;
 		this.nQuestionsSpeed = nQuestionsSpeed;
-		this.nQuestions = nQuestions;
-		this.questions = new Question[nQuestionsSpeed];
+		this.nQuestionsNormal = nQuestionsNormal;
+		this.questions = new ArrayList<Question>(0);
 		this.announced = false;
 		this.announcedPoints = 0;
 		this.place = 1;
@@ -134,18 +139,14 @@ public class Round implements Serializable {
 		this.showName = "";
 		this.showHost = "";
 		this.version = 0;
-
-		for (int q = 0; q < nQuestionsSpeed; q++) {
-			this.questions[q] = new Question(q + 1);
-		}
-
+		this.setNQuestions(this.nQuestionsNormal);
 		this.answerQueue = new ArrayList<Answer>(0);
 	}
 
 	@JsonCreator
 	private Round(@JsonProperty("version") int version, @JsonProperty("rNumber") int rNumber,
-			@JsonProperty("nQuestionsSpeed") int nQuestionsSpeed, @JsonProperty("nQuestions") int nQuestions,
-			@JsonProperty("questions") Question[] questions, @JsonProperty("speed") boolean speed,
+			@JsonProperty("nQuestionsSpeed") int nQuestionsSpeed, @JsonProperty("nQuestionsNormal") int nQuestions,
+			@JsonProperty("questions") ArrayList<Question> questions, @JsonProperty("speed") boolean speed,
 			@JsonProperty("announced") boolean announced, @JsonProperty("announcedPoints") int announcedPoints,
 			@JsonProperty("place") int place, @JsonProperty("standings") ScoreEntry[] standings,
 			@JsonProperty("answerQueue") ArrayList<Answer> answerQueue, @JsonProperty("showName") String showName,
@@ -153,7 +154,7 @@ public class Round implements Serializable {
 		this.version = version;
 		this.rNumber = rNumber;
 		this.nQuestionsSpeed = nQuestionsSpeed;
-		this.nQuestions = nQuestions;
+		this.nQuestionsNormal = nQuestions;
 		this.questions = questions;
 		this.speed = speed;
 		this.announced = announced;
@@ -180,7 +181,7 @@ public class Round implements Serializable {
 		answer.callIn(caller);
 		final int qNumber = answer.getQNumber();
 		if (oldStatus == Answer.Status.CORRECT) {
-			this.questions[qNumber - 1].openQuestion("");
+			this.getQuestion(qNumber).openQuestion("");
 		}
 		this.version++;
 	}
@@ -193,11 +194,9 @@ public class Round implements Serializable {
 	 * @param userList
 	 */
 	public synchronized void close(int qNumber, User[] userList) {
-		this.questions[qNumber - 1].closeQuestion();
+		this.getQuestion(qNumber).closeQuestion();
 		if (userList != null) {
-			for (User user : userList) {
-				user.endEffort(qNumber);
-			}
+			Arrays.stream(userList).parallel().forEach(u -> u.endEffort(qNumber));
 		}
 		this.version++;
 	}
@@ -207,12 +206,9 @@ public class Round implements Serializable {
 	 *
 	 * @return Array indicating whether each question has been open
 	 */
-	public boolean[] eachBeenOpen() {
-		final boolean[] beenOpens = new boolean[this.nQuestionsSpeed];
-		for (int q = 0; q < beenOpens.length; q++) {
-			beenOpens[q] = this.questions[q].beenOpen();
-		}
-		return beenOpens;
+	public Boolean[] eachBeenOpen() {
+		return IntStream.rangeClosed(1, this.nQuestions).parallel().mapToObj(q -> this.getQuestion(q).beenOpen())
+				.toArray(Boolean[]::new);
 	}
 
 	/**
@@ -220,12 +216,9 @@ public class Round implements Serializable {
 	 *
 	 * @return Array indicating whether each question is correct
 	 */
-	public boolean[] eachCorrect() {
-		final boolean[] corrects = new boolean[this.nQuestionsSpeed];
-		for (int q = 0; q < corrects.length; q++) {
-			corrects[q] = this.questions[q].isCorrect();
-		}
-		return corrects;
+	public Boolean[] eachCorrect() {
+		return IntStream.rangeClosed(1, this.nQuestions).parallel().mapToObj(q -> this.getQuestion(q).isCorrect())
+				.toArray(Boolean[]::new);
 	}
 
 	/**
@@ -233,12 +226,9 @@ public class Round implements Serializable {
 	 *
 	 * @return Array indicating whether each question is open
 	 */
-	public boolean[] eachOpen() {
-		final boolean[] opens = new boolean[this.nQuestionsSpeed];
-		for (int q = 0; q < opens.length; q++) {
-			opens[q] = this.questions[q].isOpen();
-		}
-		return opens;
+	public Boolean[] eachOpen() {
+		return IntStream.rangeClosed(1, this.nQuestions).parallel().mapToObj(q -> this.getQuestion(q).isOpen())
+				.toArray(Boolean[]::new);
 	}
 
 	/**
@@ -286,138 +276,13 @@ public class Round implements Serializable {
 	}
 
 	public Answer[] getAnswerQueue() {
-		final Answer[] queue = new Answer[this.getAnswerQueueSize()];
+		final Answer[] queue = new Answer[this.answerQueue.size()];
 		this.answerQueue.toArray(queue);
 		return queue;
 	}
 
 	public Answer getAnswer(int queueIndex) {
 		return this.answerQueue.get(queueIndex);
-	}
-
-	/**
-	 * Gets the proposed answer text of an answer in the queue.
-	 *
-	 * @param queueIndex
-	 *            The index in the queue of the answer
-	 * @return The proposed answer
-	 */
-	public String getAnswerQueueAnswerText(int queueIndex) {
-		return this.answerQueue.get(queueIndex).getAnswerText();
-	}
-
-	/**
-	 * Gets the proposed answers in the queue.
-	 *
-	 * @return Array of the proposed answers
-	 */
-	public String[] getAnswerQueueAnswers() {
-		final int nAnswers = this.getAnswerQueueSize();
-		final String[] answers = new String[nAnswers];
-		for (int a = 0; a < nAnswers; a++) {
-			answers[a] = this.answerQueue.get(a).getAnswerText();
-		}
-		return answers;
-	}
-
-	/**
-	 * Gets the caller of an answer in the queue. An uncalled answer return an empty string.
-	 *
-	 * @param queueIndex
-	 *            The index in the queue of the answer
-	 * @return The caller's name
-	 */
-	public String getAnswerQueueCaller(int queueIndex) {
-		return this.answerQueue.get(queueIndex).getCaller();
-	}
-
-	/**
-	 * Gets the callers of answers in the queue. Uncalled answers return empty strings.
-	 *
-	 * @return Array of caller names
-	 */
-	public String[] getAnswerQueueCallers() {
-		final int nAnswers = this.getAnswerQueueSize();
-		final String[] callers = new String[nAnswers];
-		for (int a = 0; a < nAnswers; a++) {
-			callers[a] = this.answerQueue.get(a).getCaller();
-		}
-		return callers;
-	}
-
-	/**
-	 * Gets the confidence of an answer in the queue.
-	 *
-	 * @param queueIndex
-	 *            The index in the queue of the answer
-	 * @return The confidence
-	 */
-	public int getAnswerQueueConfidence(int queueIndex) {
-		return this.answerQueue.get(queueIndex).getConfidence();
-	}
-
-	/**
-	 * Gets the confidences of answers in the queue.
-	 *
-	 * @return Array of confidences
-	 */
-	public int[] getAnswerQueueConfidences() {
-		final int nAnswers = this.getAnswerQueueSize();
-		final int[] confidences = new int[nAnswers];
-		for (int a = 0; a < nAnswers; a++) {
-			confidences[a] = this.answerQueue.get(a).getConfidence();
-		}
-		return confidences;
-	}
-
-	/**
-	 * Gets the operator of an answer in the queue. A non-correct answer returns an empty string.
-	 *
-	 * @param queueIndex
-	 *            The index in the queue of the answer
-	 * @return The operator
-	 */
-	public String getAnswerQueueOperator(int queueIndex) {
-		return this.answerQueue.get(queueIndex).getOperator();
-	}
-
-	/**
-	 * Gets the operators who accepted correct answers in the queue. Non-correct answers return empty strings.
-	 *
-	 * @return Array of operators
-	 */
-	public String[] getAnswerQueueOperators() {
-		final int nAnswers = this.getAnswerQueueSize();
-		final String[] operators = new String[nAnswers];
-		for (int a = 0; a < nAnswers; a++) {
-			operators[a] = this.answerQueue.get(a).getOperator();
-		}
-		return operators;
-	}
-
-	/**
-	 * Gets the question number of an answer in the queue.
-	 *
-	 * @param queueIndex
-	 *            The index in the queue of the answer
-	 * @return The question number
-	 */
-	public int getAnswerQueueQNumber(int queueIndex) {
-		return this.answerQueue.get(queueIndex).getQNumber();
-	}
-
-	/**
-	 * Gets the question number of answers in the queue.
-	 *
-	 * @return Array of question numbers
-	 */
-	public int[] getAnswerQueueQNumbers() {
-		final int nAnswers = this.getAnswerQueueSize();
-		final int[] qNumbers = new int[nAnswers];
-		for (int a = 0; a < nAnswers; a++) {
-			qNumbers[a] = this.answerQueue.get(a).getQNumber();
-		}
-		return qNumbers;
 	}
 
 	/**
@@ -429,101 +294,11 @@ public class Round implements Serializable {
 		return this.answerQueue.size();
 	}
 
-	/**
-	 * Gets the status of each answer in the queue.
-	 *
-	 * @return Array of statuses
-	 */
-	public String[] getAnswerQueueStatus() {
-		final int nAnswers = this.getAnswerQueueSize();
-		final String[] statuses = new String[nAnswers];
-		for (int a = 0; a < nAnswers; a++) {
-			statuses[a] = this.answerQueue.get(a).getStatusString();
-		}
-		return statuses;
+	public void changeUserName(String oldName, String newName) {
+		this.questions.stream().parallel().forEach(q -> q.changeUserName(oldName, newName));
+		this.answerQueue.parallelStream().forEach(a -> a.changeUserName(oldName, newName));
 	}
 
-	/**
-	 * Gets the status of an answer in the queue.
-	 *
-	 * @param queueIndex
-	 *            The index in the queue of the answer
-	 * @return The status
-	 */
-	public String getAnswerQueueStatus(int queueIndex) {
-		final String status = this.answerQueue.get(queueIndex).getStatusString();
-		return status;
-	}
-
-	/**
-	 * Gets the submitter of an answer in the queue.
-	 *
-	 * @param queueIndex
-	 *            The index in the queue of the answer
-	 * @return The submitter's name
-	 */
-	public String getAnswerQueueSubmitter(int queueIndex) {
-		return this.answerQueue.get(queueIndex).getSubmitter();
-	}
-
-	/**
-	 * Gets the submitters of answers in the queue.
-	 *
-	 * @return Array of answer submitters
-	 */
-	public String[] getAnswerQueueSubmitters() {
-		final int nAnswers = this.getAnswerQueueSize();
-		final String[] submitters = new String[nAnswers];
-		for (int a = 0; a < nAnswers; a++) {
-			submitters[a] = this.answerQueue.get(a).getSubmitter();
-		}
-		return submitters;
-	}
-
-	public void changeName(String oldName, String newName) {
-		for (final Answer answer : this.answerQueue) {
-			answer.changeName(oldName, newName);
-		}
-		for (final Question question : this.questions) {
-			question.changeName(oldName, newName);
-		}
-	}
-
-	/**
-	 * Gets the timestamp of an answer in the queue.
-	 *
-	 * @param queueIndex
-	 *            The index in the queue of the answer
-	 * @return The timestamp
-	 */
-	public String getAnswerQueueTimestamp(int queueIndex) {
-		return this.answerQueue.get(queueIndex).getTimestamp();
-	}
-
-	/**
-	 * Gets the timestamp of each answer in the queue.
-	 *
-	 * @return Array of timestamps
-	 */
-	public String[] getAnswerQueueTimestamps() {
-		final int nAnswers = this.getAnswerQueueSize();
-		final String[] timestamps = new String[nAnswers];
-		for (int a = 0; a < nAnswers; a++) {
-			timestamps[a] = this.answerQueue.get(a).getTimestamp();
-		}
-		return timestamps;
-	}
-
-	/**
-	 * Gets the correct answer for a question.
-	 *
-	 * @param qNumber
-	 *            The question number
-	 * @return the answer text
-	 */
-	public String getAnswerText(int qNumber) {
-		return this.questions[qNumber - 1].getAnswerText();
-	}
 
 	/**
 	 * Gets the discrepancy text for this round.
@@ -540,11 +315,7 @@ public class Round implements Serializable {
 	 * @return Array of answers
 	 */
 	public String[] getEachAnswerText() {
-		final String[] answers = new String[this.nQuestionsSpeed];
-		for (int q = 0; q < answers.length; q++) {
-			answers[q] = this.questions[q].getAnswerText();
-		}
-		return answers;
+		return this.questions.stream().map(q -> q.getAnswerText()).toArray(String[]::new);
 	}
 
 	/**
@@ -553,25 +324,8 @@ public class Round implements Serializable {
 	 * @return Array of points earned
 	 */
 	public int[] getEachEarned() {
-		final int[] earneds = new int[this.nQuestionsSpeed];
-		for (int q = 0; q < earneds.length; q++) {
-			earneds[q] = this.questions[q].getEarned();
-		}
-		return earneds;
+		return this.questions.stream().mapToInt(a -> a.getEarned()).toArray();
 	}
-
-	// /**
-	// * Gets the operator for each correct answer in this round.
-	// *
-	// * @return Array of operators
-	// */
-	// public String[] getEachOperator() {
-	// final String[] operators = new String[this.nQuestionsSpeed];
-	// for (int q = 0; q < operators.length; q++) {
-	// operators[q] = this.questions[q].getOperator();
-	// }
-	// return operators;
-	// }
 
 	/**
 	 * Gets the text for each question in this round.
@@ -579,11 +333,7 @@ public class Round implements Serializable {
 	 * @return Array of question text
 	 */
 	public String[] getEachQuestionText() {
-		final String[] questions = new String[this.nQuestionsSpeed];
-		for (int q = 0; q < questions.length; q++) {
-			questions[q] = this.questions[q].getQuestionText();
-		}
-		return questions;
+		return this.questions.stream().map(q -> q.getQuestionText()).toArray(String[]::new);
 	}
 
 	/**
@@ -592,11 +342,7 @@ public class Round implements Serializable {
 	 * @return Array of submitter names
 	 */
 	public String[] getEachSubmitter() {
-		final String[] submitters = new String[this.nQuestionsSpeed];
-		for (int q = 0; q < submitters.length; q++) {
-			submitters[q] = this.questions[q].getSubmitter();
-		}
-		return submitters;
+		return this.questions.stream().map(q -> q.getSubmitter()).toArray(String[]::new);
 	}
 
 	/**
@@ -605,11 +351,7 @@ public class Round implements Serializable {
 	 * @return Array of question values
 	 */
 	public int[] getEachValue() {
-		final int[] values = new int[this.nQuestionsSpeed];
-		for (int q = 0; q < values.length; q++) {
-			values[q] = this.questions[q].getQuestionValue();
-		}
-		return values;
+		return this.questions.stream().mapToInt(q -> q.getQuestionValue()).toArray();
 	}
 
 	/**
@@ -618,23 +360,9 @@ public class Round implements Serializable {
 	 * @return The total points earned
 	 */
 	public int getEarned() {
-		int value = 0;
-		for (final Question q : this.questions) {
-			value += q.getEarned();
-		}
-		return value;
+		return this.questions.stream().parallel().mapToInt(q -> q.getEarned()).sum();
 	}
 
-	/**
-	 * Gets the points earned for a question.
-	 *
-	 * @param qNumber
-	 *            The question number
-	 * @return The points earned
-	 */
-	public int getEarned(int qNumber) {
-		return this.questions[qNumber - 1].getEarned();
-	}
 
 	/**
 	 * Gets the number of questions in this round.
@@ -642,69 +370,9 @@ public class Round implements Serializable {
 	 * @return The number of questions in this round
 	 */
 	public int getNQuestions() {
-		if (this.speed)
-			return this.nQuestionsSpeed;
-		else
-			return this.nQuestions;
+		return this.nQuestions;
 	}
 
-	/**
-	 * Gets the question numbers of currently open questions.
-	 *
-	 * @return Array of open question numbers
-	 */
-	public int[] getOpenQuestionNumbers() {
-		final Question[] questions = this.getOpenQuestions();
-		final int nOpen = questions.length;
-		final int[] qNumbers = new int[nOpen];
-		for (int q = 0; q < nOpen; q++) {
-			qNumbers[q] = questions[q].getQuestionNumber();
-		}
-		return qNumbers;
-	}
-
-	/**
-	 * Gets the text of currently open questions.
-	 *
-	 * @return Array of text for open questions
-	 */
-	public String[] getOpenQuestionText() {
-		final Question[] questions = this.getOpenQuestions();
-		final int nOpen = questions.length;
-		final String[] questionText = new String[nOpen];
-		for (int q = 0; q < nOpen; q++) {
-			questionText[q] = questions[q].getQuestionText();
-		}
-		return questionText;
-	}
-
-	/**
-	 * Gets the values of currently open questions.
-	 *
-	 * @return Array of the values for open questions
-	 */
-	public String[] getOpenQuestionValues() {
-		final Question[] questions = this.getOpenQuestions();
-		final int nOpen = questions.length;
-		final String[] questionValues = new String[nOpen];
-		for (int q = 0; q < nOpen; q++) {
-			questionValues[q] = "" + questions[q].getQuestionValue();
-		}
-		return questionValues;
-	}
-
-	/**
-	 * Gets the operator who accepted the correct answer for a question.
-	 *
-	 * @param qNumber
-	 *            The question number
-	 * @return The operator
-	 */
-	public String getOperator(int queueIndex) {
-		final Answer answer = this.answerQueue.get(queueIndex);
-		return answer.getOperator();
-		// return this.questions[qNumber - 1].getOperator();
-	}
 
 	/**
 	 * Gets the announced place for this round.
@@ -723,18 +391,7 @@ public class Round implements Serializable {
 	 * @return The Question
 	 */
 	public Question getQuestion(int qNumber) {
-		return this.questions[qNumber - 1];
-	}
-
-	/**
-	 * Gets the question text for a question.
-	 *
-	 * @param qNumber
-	 *            The question number
-	 * @return the question text
-	 */
-	public String getQuestionText(int qNumber) {
-		return this.questions[qNumber - 1].getQuestionText();
+		return this.questions.get(qNumber - 1);
 	}
 
 
@@ -758,39 +415,12 @@ public class Round implements Serializable {
 
 
 	/**
-	 * Gets the submitter of the correct answer for a question.
-	 *
-	 * @param qNumber
-	 *            The question number
-	 * @return The submitter's user name
-	 */
-	public String getSubmitter(int qNumber) {
-		return this.questions[qNumber - 1].getSubmitter();
-	}
-
-	/**
 	 * Gets the total value of questions in this round.
 	 *
 	 * @return The total value of this round
 	 */
 	public int getValue() {
-		int value = 0;
-		for (final Question q : this.questions) {
-			value += q.getQuestionValue();
-		}
-		return value;
-	}
-
-
-	/**
-	 * Gets the value of a question.
-	 *
-	 * @param qNumber
-	 *            The question number
-	 * @return The value of the question
-	 */
-	public int getValue(int qNumber) {
-		return this.questions[qNumber - 1].getQuestionValue();
+		return this.questions.stream().mapToInt(q -> q.getQuestionValue()).sum();
 	}
 
 	public int getVersion() {
@@ -815,7 +445,7 @@ public class Round implements Serializable {
 	 * @return true, if the question is correct
 	 */
 	public boolean isCorrect(int qNumber) {
-		return this.questions[qNumber - 1].isCorrect();
+		return this.getQuestion(qNumber).isCorrect();
 	}
 
 	/**
@@ -824,20 +454,22 @@ public class Round implements Serializable {
 	 * @return true, if there is a mismatch
 	 */
 	public boolean isMismatch() {
-		if (this.announcedPoints != -1) return ( this.announcedPoints != this.getValue() );
-		return false;
+		if (this.announcedPoints == -1) {
+			return false;
+		}
+		return ( this.announcedPoints != this.getValue() );
 	}
 
-	/**
-	 * Checks if a question is currently open
-	 *
-	 * @param qNumber
-	 *            The question number
-	 * @return true, if the question is open
-	 */
-	public boolean isOpen(int qNumber) {
-		return this.questions[qNumber - 1].isOpen();
-	}
+	// /**
+	// * Checks if a question is currently open
+	// *
+	// * @param qNumber
+	// * The question number
+	// * @return true, if the question is open
+	// */
+	// public boolean isOpen(int qNumber) {
+	// return this.getQuestion(qNumber).isOpen();
+	// }
 
 	/**
 	 * Checks if this is a speed round.
@@ -866,11 +498,9 @@ public class Round implements Serializable {
 		final int qNumber = answer.getQNumber();
 		final String answerText = answer.getAnswerText();
 		final String submitter = answer.getSubmitter();
-		this.questions[qNumber - 1].markQuestionCorrect(answerText, submitter);
+		this.getQuestion(qNumber).markQuestionCorrect(answerText, submitter);
 		if (userList != null) {
-			for (User user : userList) {
-				user.endEffort(qNumber);
-			}
+			Arrays.stream(userList).parallel().forEach(u -> u.endEffort(qNumber));
 		}
 		this.version++;
 	}
@@ -889,7 +519,7 @@ public class Round implements Serializable {
 	 *
 	 */
 	public synchronized void markCorrect(int qNumber, String answerText, String submitter) {
-		this.questions[qNumber - 1].markQuestionCorrect(answerText, submitter);
+		this.getQuestion(qNumber).markQuestionCorrect(answerText, submitter);
 		this.version++;
 	}
 
@@ -905,13 +535,11 @@ public class Round implements Serializable {
 		answer.markDuplicate();
 		final String aText = answer.getAnswerText().replaceAll("\\s+", "");
 		final int qNumber = answer.getQNumber();
-		for (final Answer answerCheck : this.answerQueue) {
-			if (answerCheck.getQueueLocation() != queueIndex + 1 && answerCheck.getQNumber() == qNumber
-					&& answerCheck.getAnswerText().replaceAll("\\s+", "").equalsIgnoreCase(aText)
-					&& answerCheck.getStatus() != Status.DUPLICATE) {
-				answerCheck.changeAgreement(answer.getSubmitter(), Agreement.AGREE);
-			}
-		}
+		this.answerQueue.parallelStream()
+				.filter(a -> a.getQueueLocation() != queueIndex + 1 && a.getQNumber() == qNumber
+						&& a.getAnswerText().replaceAll("\\s+", "").equalsIgnoreCase(aText)
+						&& a.getStatus() != Status.DUPLICATE)
+				.forEach(a -> a.changeAgreement(a.getSubmitter(), Agreement.AGREE));
 		this.version++;
 	}
 
@@ -922,7 +550,7 @@ public class Round implements Serializable {
 	 *            The question number
 	 */
 	public synchronized void markQuestionIncorrect(int qNumber) {
-		this.questions[qNumber - 1].markQuestionIncorrect();
+		this.getQuestion(qNumber).markQuestionIncorrect();
 		this.version++;
 	}
 
@@ -939,10 +567,9 @@ public class Round implements Serializable {
 		final Answer.Status oldStatus = answer.getStatus();
 		final int qNumber = answer.getQNumber();
 		if (oldStatus == Answer.Status.CORRECT) {
-			this.questions[qNumber - 1].openQuestion("");
+			this.getQuestion(qNumber).openQuestion("");
 		}
 		this.version++;
-		System.out.println("test");
 	}
 
 	/**
@@ -959,10 +586,9 @@ public class Round implements Serializable {
 		answer.markIncorrect(caller);
 		final int qNumber = answer.getQNumber();
 		if (oldStatus == Answer.Status.CORRECT) {
-			this.questions[qNumber - 1].openQuestion("");
+			this.getQuestion(qNumber).openQuestion("");
 		}
 		this.version++;
-		System.out.println("test");
 	}
 
 	/**
@@ -979,7 +605,7 @@ public class Round implements Serializable {
 		answer.markPartial(caller);
 		final int qNumber = answer.getQNumber();
 		if (oldStatus == Answer.Status.CORRECT) {
-			this.questions[qNumber - 1].openQuestion("");
+			this.getQuestion(qNumber).openQuestion("");
 		}
 		this.version++;
 	}
@@ -997,7 +623,7 @@ public class Round implements Serializable {
 		answer.markUncalled();
 		final int qNumber = answer.getQNumber();
 		if (oldStatus == Answer.Status.CORRECT) {
-			this.questions[qNumber - 1].openQuestion("");
+			this.getQuestion(qNumber).openQuestion("");
 		}
 		this.version++;
 	}
@@ -1007,16 +633,13 @@ public class Round implements Serializable {
 		this.version++;
 	}
 
-	public int getAgreement(int queueIndex) {
-		return this.answerQueue.get(queueIndex).getAgreement();
-	}
-
 	public Agreement getAgreement(String user, int queueIndex) {
 		return this.answerQueue.get(queueIndex).getAgreement(user);
 	}
 
 	public Question[] getQuestions() {
-		return this.questions;
+		return this.questions.parallelStream().filter(q -> q.getQuestionNumber() <= this.nQuestions)
+				.collect(Collectors.toList()).toArray(new Question[this.nQuestions]);
 	}
 
 	/**
@@ -1025,13 +648,7 @@ public class Round implements Serializable {
 	 * @return The number of correct answers
 	 */
 	public int nCorrect() {
-		int nCorrect = 0;
-		for (final Question q : this.questions) {
-			if (q.isCorrect()) {
-				nCorrect++;
-			}
-		}
-		return nCorrect;
+		return (int) this.questions.stream().parallel().filter(q -> q.isCorrect()).count();
 	}
 
 	/**
@@ -1040,17 +657,9 @@ public class Round implements Serializable {
 	 * @return The question number that should be opened next
 	 */
 	public int nextToOpen() {
-		int nextToOpen = 18;
-		for (final Question q : this.questions) {
-			if (!q.beenOpen()) {
-				nextToOpen = q.getQuestionNumber();
-				break;
-			}
-		}
-		if (nextToOpen > this.getNQuestions())
-			return this.getNQuestions();
-		else
-			return nextToOpen;
+		return this.questions.stream().parallel()
+				.filter(q -> this.getNQuestions() >= q.getQuestionNumber() && !q.beenOpen())
+				.mapToInt(q -> q.getQuestionNumber()).min().orElse(this.getNQuestions());
 	}
 
 	/**
@@ -1059,23 +668,11 @@ public class Round implements Serializable {
 	 * @return The number of open questions
 	 */
 	public int nOpen() {
-		int nOpen = 0;
-		for (final Question q : this.questions) {
-			if (q.isOpen()) {
-				nOpen++;
-			}
-		}
-		return nOpen;
+		return (int) this.questions.stream().filter(q -> q.isOpen()).count();
 	}
 
 	public int nUnopened() {
-		int nUnopened = 0;
-		for (int q = 0; q < this.getNQuestions(); q++) {
-			if (!this.questions[q].beenOpen()) {
-				nUnopened++;
-			}
-		}
-		return nUnopened;
+		return (int) this.questions.stream().filter(q -> !q.beenOpen()).count();
 	}
 
 	/**
@@ -1091,17 +688,15 @@ public class Round implements Serializable {
 	 *            The text of the question
 	 */
 	public synchronized void open(String user, int qNumber) {
-		this.questions[qNumber - 1].openQuestion(user);
+		this.getQuestion(qNumber).openQuestion(user);
 		this.version++;
 	}
 
 	public synchronized void reopen(int qNumber) {
-		this.questions[qNumber - 1].openQuestion("");
-		for (final Answer a : this.answerQueue) {
-			if (a.getQNumber() == qNumber && a.getStatus() == Answer.Status.CORRECT) {
-				a.markUncalled();
-			}
-		}
+		this.getQuestion(qNumber).openQuestion("");
+		this.answerQueue.parallelStream()
+				.filter(a -> a.getQNumber() == qNumber && a.getStatus() == Answer.Status.CORRECT)
+				.forEach(a -> a.markUncalled());
 		this.version++;
 	}
 
@@ -1119,28 +714,22 @@ public class Round implements Serializable {
 	 */
 	public synchronized void proposeAnswer(int qNumber, String answer, String submitter, int confidence) {
 		final int queueIndex = this.answerQueue.size();
+		boolean isDuplicate = this.answerQueue.parallelStream()
+				.anyMatch(a -> a.getQNumber() == qNumber
+						&& a.getAnswerText().replaceAll("\\s+", "").equalsIgnoreCase(answer.replaceAll("\\s+", ""))
+						&& a.getStatus() != Status.DUPLICATE);
 		this.answerQueue.add(new Answer(queueIndex + 1, qNumber, answer, submitter, confidence));
-		this.version++;
-		for (final Answer answerCheck : this.answerQueue) {
-			if (answerCheck.getQueueLocation() != queueIndex + 1 && answerCheck.getQNumber() == qNumber
-					&& answerCheck.getAnswerText().replaceAll("\\s+", "")
-							.equalsIgnoreCase(answer.replaceAll("\\s+", ""))
-					&& answerCheck.getStatus() != Status.DUPLICATE) {
-				this.markDuplicate(queueIndex);
-				// System.out.println("Automatically marked answer #" + ( queueIndex + 1 ) + " as duplicate.");
-				return;
-			}
+		if (isDuplicate) {
+			this.markDuplicate(queueIndex);
 		}
+		this.version++;
 	}
 
 	public synchronized void remapQuestion(int oldQNumber, int newQNumber) {
-		this.questions[newQNumber - 1].copy(this.getQuestion(oldQNumber));
-		this.questions[oldQNumber - 1].resetQuestion();
-		for (final Answer a : this.answerQueue) {
-			if (a.getQNumber() == oldQNumber) {
-				a.setQNumber(newQNumber);
-			}
-		}
+		this.getQuestion(newQNumber).copy(this.getQuestion(oldQNumber));
+		this.getQuestion(oldQNumber).resetQuestion();
+		this.answerQueue.parallelStream().filter(a -> a.getQNumber() == oldQNumber)
+				.forEach(a -> a.setQNumber(newQNumber));
 		this.version++;
 	}
 
@@ -1151,16 +740,10 @@ public class Round implements Serializable {
 	 *            The question number
 	 */
 	public synchronized void resetQuestion(int qNumber) {
-		this.questions[qNumber - 1].resetQuestion();
-		final Iterator<Answer> i = this.answerQueue.iterator();
-		while (i.hasNext()) {
-			if (i.next().getQNumber() == qNumber) {
-				i.remove();
-			}
-		}
-		for (int a = 0; a < this.answerQueue.size(); a++) {
-			this.answerQueue.get(a).setQueueLocation(a + 1);
-		}
+		this.getQuestion(qNumber).resetQuestion();
+		this.answerQueue.parallelStream().filter(a -> a.getQNumber() == qNumber)
+				.forEach(a -> this.answerQueue.remove(a));
+		IntStream.range(1, this.answerQueue.size()).forEach(a -> this.answerQueue.get(a - 1).setQueueLocation(a));
 		this.version++;
 	}
 
@@ -1170,11 +753,8 @@ public class Round implements Serializable {
 	 * @return true, if the round is over
 	 */
 	public boolean roundOver() {
-		boolean roundOver = true;
-		for (final Question q : Arrays.copyOfRange(this.questions, 0, this.getNQuestions())) {
-			roundOver = roundOver && ( q.beenOpen() && !q.isOpen() );
-		}
-		return roundOver;
+		return this.questions.stream().parallel().filter(q -> q.beenOpen() && !q.isOpen()).count() == this
+				.getNQuestions();
 	}
 
 	/**
@@ -1201,7 +781,7 @@ public class Round implements Serializable {
 	 *            The correct answer
 	 */
 	public synchronized void setAnswerText(int qNumber, String answer) {
-		this.questions[qNumber - 1].setAnswerText(answer);
+		this.getQuestion(qNumber).setAnswerText(answer);
 		this.version++;
 	}
 
@@ -1213,6 +793,14 @@ public class Round implements Serializable {
 	 */
 	public synchronized void setDiscrepencyText(String discrepancyText) {
 		this.discrepancyText = discrepancyText;
+		this.version++;
+	}
+
+	public synchronized void setNQuestions(int nQuestions) {
+		while (nQuestions > this.questions.size()) {
+			this.questions.add(new Question(this.questions.size() + 1));
+		}
+		this.nQuestions = nQuestions;
 		this.version++;
 	}
 
@@ -1239,7 +827,7 @@ public class Round implements Serializable {
 	 *            The new value
 	 */
 	public synchronized void setQuestionText(int qNumber, String question) {
-		this.questions[qNumber - 1].setQuestionText(question);
+		this.getQuestion(qNumber).setQuestionText(question);
 		this.version++;
 	}
 
@@ -1250,7 +838,7 @@ public class Round implements Serializable {
 	 */
 	public synchronized void setSpeed(boolean isSpeed) {
 		this.speed = isSpeed;
-		this.version++;
+		this.setNQuestions(isSpeed ? this.nQuestionsSpeed : this.nQuestionsNormal);
 	}
 
 	/**
@@ -1280,7 +868,7 @@ public class Round implements Serializable {
 	 *            the submitter
 	 */
 	public synchronized void setSubmitter(int qNumber, String submitter) {
-		this.questions[qNumber - 1].setSubmitter(submitter);
+		this.getQuestion(qNumber).setSubmitter(submitter);
 		this.version++;
 	}
 
@@ -1293,7 +881,7 @@ public class Round implements Serializable {
 	 *            The new value
 	 */
 	public synchronized void setValue(int qNumber, int value) {
-		this.questions[qNumber - 1].setValue(value);
+		this.getQuestion(qNumber).setValue(value);
 		this.version++;
 	}
 
@@ -1308,7 +896,7 @@ public class Round implements Serializable {
 	public String toString() {
 		String s = "=== Data for round " + this.rNumber + " ===\n";
 		// s = s + "Team name: " + this.teamName + "\n";
-		s = s + "Version: " + this.version + " nQuestions: " + this.nQuestions + " nQuestions(speed): "
+		s = s + "Version: " + this.version + " nQuestions: " + this.nQuestionsNormal + " nQuestions(speed): "
 				+ this.nQuestionsSpeed + "\n";
 		s = s + "Speed Round: " + this.speed + "\n";
 		s = s + "Announced: " + this.announced + " Announced Place: " + this.place + " Announced Score: "
@@ -1381,16 +969,7 @@ public class Round implements Serializable {
 	 * @return Array of the open Questions
 	 */
 	public Question[] getOpenQuestions() {
-		final int nOpen = this.nOpen();
-		final Question[] questions = new Question[nOpen];
-		int q1 = 0;
-		for (final Question q : this.questions) {
-			if (q.isOpen()) {
-				questions[q1] = q;
-				q1++;
-			}
-		}
-		return questions;
+		return this.questions.stream().parallel().filter(q -> q.isOpen()).toArray(Question[]::new);
 	}
 
 }

@@ -14,6 +14,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingWorker;
 
+import net.bubbaland.trivia.Question;
+import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.Trivia;
 import net.bubbaland.trivia.client.TriviaClient;
 import net.bubbaland.trivia.messages.OpenQuestionMessage;
@@ -191,17 +193,18 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 		final int option = ( (Integer) this.dialog.getValue() ).intValue();
 		// Get the current Trivia data object
 		final Trivia trivia = this.client.getTrivia();
-		final int currentRound = trivia.getCurrentRoundNumber();
+		final Round currentRound = trivia.getCurrentRound();
 
 		if (option == JOptionPane.OK_OPTION) {
 			// Get the input data
 			final int qNumber = (int) this.qNumberSpinner.getValue();
 			final int qValue = (int) this.qValueSpinner.getValue();
 			final String qText = this.qTextArea.getText();
+			final Question question = currentRound.getQuestion(qNumber);
 
 			// Get the existing question data
-			final int existingQValue = trivia.getRound(currentRound).getValue(qNumber);
-			final String existingQText = trivia.getRound(currentRound).getQuestionText(qNumber);
+			final int existingQValue = question.getQuestionValue();
+			final String existingQText = question.getQuestionText();
 
 			if (this.qNumberStart == qNumber) {
 				// Open question

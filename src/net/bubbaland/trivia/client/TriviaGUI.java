@@ -50,6 +50,7 @@ import net.bubbaland.trivia.client.tabpanel.PlaceChartPanel;
 import net.bubbaland.trivia.client.tabpanel.RoundPanel;
 import net.bubbaland.trivia.client.tabpanel.ScoreByRoundChartPanel;
 import net.bubbaland.trivia.client.tabpanel.ScoreByRoundPanel;
+import net.bubbaland.trivia.client.tabpanel.SearchPanel;
 import net.bubbaland.trivia.client.tabpanel.StandingsPanel;
 import net.bubbaland.trivia.client.tabpanel.TeamComparisonPanel;
 import net.bubbaland.trivia.client.tabpanel.WorkflowPanel;
@@ -65,7 +66,7 @@ public class TriviaGUI implements WindowListener {
 	final static protected String	KVSC_URL					= "http://www.kvsc.org/trivia_news.php";
 	// URL base for Visual Trivia Pages
 	final static protected String	VISUAL_URL					=
-			"https://sites.google.com/a/kneedeepintheses.org/information/trivia-2018/visual-trivia-2018/visual-trivia-";
+			"https://sites.google.com/a/kneedeepintheses.org/information/trivia-2019/visual-trivia-2019/visual-trivia-";
 	// URL for audio trivia
 	final static protected String	AUDIO_URL					= "http://trivia.bgsh.org/audio";
 	// File name of font
@@ -75,12 +76,12 @@ public class TriviaGUI implements WindowListener {
 	// File name to store window positions
 	final static private String		SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
-	final static private String		SETTINGS_VERSION			= "30";
+	final static private String		SETTINGS_VERSION			= "32";
 	// Format for log timestamps
 	static private SimpleDateFormat	TIMESTAMP_FORMAT;
 
 	//
-	final static protected String	NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.wav";
+	final static protected String	NEW_ANSWER_SOUND_FILENAME	= "audio/NewAnswerSound.mp3";
 
 	// The Hide Closed menu item
 	// private volatile boolean hideClosed, hideDuplicates, mute;
@@ -161,6 +162,7 @@ public class TriviaGUI implements WindowListener {
 		TAB_DESCRIPTION_HASH.put("Workflow", "Main tab with summary information, open questions, and answer queue.");
 		TAB_DESCRIPTION_HASH.put("Current", "Tab showing question data for the current round.");
 		TAB_DESCRIPTION_HASH.put("History", "Tab that can show question data for any round.");
+		TAB_DESCRIPTION_HASH.put("Search", "Search questions and answers.");
 		TAB_DESCRIPTION_HASH.put("By Round", "Tab that displays score information for every round.");
 		TAB_DESCRIPTION_HASH.put("Standings", "Tab that displays standings information for any round");
 		TAB_DESCRIPTION_HASH.put("Place Chart", "Chart showing the team's place in time");
@@ -311,6 +313,9 @@ public class TriviaGUI implements WindowListener {
 				break;
 			case "History":
 				panel = new HistoryPanel(this.client, frame);
+				break;
+			case "Search":
+				panel = new SearchPanel(this.client, frame);
 				break;
 			case "By Round":
 				panel = new ScoreByRoundPanel(this.client, frame);
@@ -779,14 +784,14 @@ public class TriviaGUI implements WindowListener {
 		}
 
 		private void uncheckAll() {
-			for (final JCheckBox checkboxe : this.checkboxes) {
-				checkboxe.setSelected(false);
+			for (final JCheckBox checkbox : this.checkboxes) {
+				checkbox.setSelected(false);
 			}
 		}
 
 		private void checkAll() {
-			for (final JCheckBox checkboxe : this.checkboxes) {
-				checkboxe.setSelected(true);
+			for (final JCheckBox checkbox : this.checkboxes) {
+				checkbox.setSelected(true);
 			}
 		}
 	}

@@ -104,7 +104,7 @@ public class SaveMediator {
 				trivia.setTeamNumber(0);
 			}
 
-			trivia.setCurrentRound(
+			trivia.setCurrentRoundNumber(
 					Integer.parseInt(triviaElement.getElementsByTagName("Current_Round").item(0).getTextContent()));
 
 			// Get a list of the round elements
@@ -120,6 +120,11 @@ public class SaveMediator {
 				final boolean isSpeed =
 						roundElement.getElementsByTagName("Speed").item(0).getTextContent().equals("true");
 				trivia.getRound(rNumber).setSpeed(isSpeed);
+
+				try {
+					trivia.getRound(rNumber).setNQuestions(Integer.parseInt(
+							roundElement.getElementsByTagName("Number_of_Questions").item(0).getTextContent()));
+				} catch (NullPointerException e) {}
 
 				try {
 					trivia.getRound(rNumber)
@@ -269,6 +274,11 @@ public class SaveMediator {
 				element = doc.createElement("Speed");
 				element.appendChild(doc.createTextNode(r.isSpeed() + ""));
 				roundElement.appendChild(element);
+
+				// Number of questions
+				attribute = doc.createAttribute("Number_of_Questions");
+				attribute.setValue(r.getNQuestions() + "");
+				roundElement.setAttributeNode(attribute);
 
 				// Whether the score has been announced for this round
 				element = doc.createElement("Announced");
