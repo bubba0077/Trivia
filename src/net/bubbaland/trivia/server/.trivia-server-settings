@@ -1,10 +1,10 @@
 #Trivia
 #Sat Oct 26 03:52:30 PDT 2013
-Value.Color=1E90FF
-Earned.Color=008000
-Announced.Color=FFA500
+Value.Color=008B8B
+Earned.Color=1E90FF
+Announced.Color=7B68EE
 Chart.BackgroundColor=000000
-Chart.Label.Color=FF0000
+Chart.Label.Color=DCDCDC
 Chart.ByRound.MaxPoints=750
 Chart.Axis.FontSize=16.0
 Chart.Width=800
