@@ -37,7 +37,7 @@ public abstract class Message {
 			final StringWriter writer = new StringWriter();
 			final ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
+			mapper.setVisibility(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
 			mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 			JsonGenerator jsonGen;
 			try {
@@ -63,7 +63,7 @@ public abstract class Message {
 			// System.out.println("Decoding ClientMessage");
 			final ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
+			mapper.setVisibility(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
 			mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 			Message message = null;
 			try {
