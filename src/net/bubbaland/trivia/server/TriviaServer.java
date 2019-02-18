@@ -126,6 +126,8 @@ public class TriviaServer {
 		this.properties = new Properties();
 		this.loadSettings();
 		this.saveMediator = new SaveMediator(this.saveDirectory, this.chartDirectory);
+		// Create timer that will make save files
+		this.restartTimer();
 		this.server = new Server(this.serverURL, this.serverPort, "/", null, TriviaServerEndpoint.class);
 	}
 
@@ -195,9 +197,6 @@ public class TriviaServer {
 				this.nQuestionsSpeed, this.nQuestionsMax);
 		this.sessionList = new Hashtable<Session, TriviaServerEndpoint>(0);
 		this.isRunning = false;
-
-		// Create timer that will make save files
-		this.restartTimer();
 	}
 
 	public User[] getUserList() {
@@ -517,7 +516,10 @@ public class TriviaServer {
 				SetOperatorMessage message = (SetOperatorMessage) genericMessage;
 				int rNumber = message.getRoundNumber();
 				int queueIndex = message.getQueueIndex();
-				String operator = message.getOperator();
+				String operator = "";
+				if (message.getOperator() != null) {
+					operator = message.getOperator();
+				}
 				this.trivia.getRound(rNumber).setOperator(queueIndex, operator);
 				this.broadcastChangedRounds();
 				log(userName + " set the operator for round " + rNumber + " index " + queueIndex + " to " + operator);
@@ -652,6 +654,9 @@ public class TriviaServer {
 
 	private void restartTimer() {
 		// Create timer that will make save files
+		if (this.saveTimer != null) {
+			this.saveTimer.shutdown();
+		}
 		this.saveTimer = Executors.newSingleThreadScheduledExecutor();
 		this.saveTimer.scheduleWithFixedDelay(new Runnable() {
 			@Override
