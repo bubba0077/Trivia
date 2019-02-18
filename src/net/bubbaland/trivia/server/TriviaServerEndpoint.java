@@ -27,9 +27,13 @@ import net.bubbaland.trivia.messages.Message;
 @ServerEndpoint(decoders = { Message.MessageDecoder.class }, encoders = { Message.MessageEncoder.class }, value = "/")
 public class TriviaServerEndpoint {
 
-	private static TriviaServer	server	= new TriviaServer();
+	private static final TriviaServer server = new TriviaServer();
 
-	private User				user;
+	protected static TriviaServer getServer() {
+		return TriviaServerEndpoint.server;
+	}
+
+	private User user;
 
 	/**
 	 * Creates a new trivia server endpoint.
