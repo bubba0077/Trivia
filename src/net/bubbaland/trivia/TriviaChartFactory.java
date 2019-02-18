@@ -23,7 +23,6 @@ import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.xy.DefaultTableXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -374,6 +373,7 @@ public class TriviaChartFactory {
 		// Get the plot renderer
 		final DeviationRenderer renderer = new DeviationRenderer(true, false);
 		chart.getXYPlot().setRenderer(renderer);
+		int minY = 0, maxY = 0;
 		for (int t = 0; t < nTeams; t++) {
 			final String team = scores.get(0)[t].getTeamName();
 			final YIntervalSeries series = new YIntervalSeries(team, true, false);
@@ -384,7 +384,9 @@ public class TriviaChartFactory {
 						continue;
 					}
 					final int ourScore = trivia.getRound(r + 1).getAnnouncedPoints();
-					series.add(r + 1, 0, -ourScore, trivia.getCumulativeValue(r + 1) - ourScore);
+					minY = -ourScore;
+					maxY = trivia.getCumulativeValue(r + 1) - ourScore;
+					series.add(r + 1, 0, minY, maxY);
 				}
 				renderer.setSeriesStroke(t, new BasicStroke(3F));
 				renderer.setSeriesPaint(t, Color.WHITE);
@@ -426,7 +428,10 @@ public class TriviaChartFactory {
 		yAxis.setNumberFormatOverride(format);
 		yAxis.setLabelFont(yAxis.getLabelFont().deriveFont(axisFontSize));
 		yAxis.setTickLabelFont(yAxis.getTickLabelFont().deriveFont(axisFontSize));
-		yAxis.setRangeWithMargins(DatasetUtilities.findRangeBounds(dataset, false));
+		xAxis.setRange(0.5D, nRounds + 0.5D);
+		xAxis.setAutoRange(false);
+		yAxis.setRangeWithMargins(minY, maxY);
+		yAxis.setAutoRange(false);
 		plot.setBackgroundPaint(backgroundColor);
 		chart.setBackgroundPaint(backgroundColor);
 
