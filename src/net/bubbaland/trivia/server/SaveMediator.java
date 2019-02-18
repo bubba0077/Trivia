@@ -10,6 +10,7 @@ import java.util.Date;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -236,6 +237,7 @@ public class SaveMediator {
 			final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			final Document doc = docBuilder.newDocument();
 
+
 			// Create the top-level element
 			final Element triviaElement = doc.createElement("Trivia");
 			doc.appendChild(triviaElement);
@@ -426,6 +428,8 @@ public class SaveMediator {
 			final Transformer transformer = transformerFactory.newTransformer();
 			final DOMSource source = new DOMSource(doc);
 			final StreamResult result = new StreamResult(new File(filename));
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 			transformer.transform(source, result);
 
 			TriviaServer.log("Saved state to " + filename);
