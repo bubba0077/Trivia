@@ -97,10 +97,13 @@ public class OperatorDialog extends TriviaDialogPanel {
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {
+					String operator = "";
+					if (OperatorDialog.this.operatorComboBox.getSelectedItem() != null) {
+						operator = OperatorDialog.this.operatorComboBox.getSelectedItem().toString();
+					}
 					OperatorDialog.this.client.sendMessage(
 							new SetOperatorMessage(OperatorDialog.this.client.getTrivia().getCurrentRoundNumber(),
-									OperatorDialog.this.queueIndex,
-									(String) OperatorDialog.this.operatorComboBox.getSelectedItem()));
+									OperatorDialog.this.queueIndex, operator));
 					return null;
 				}
 
