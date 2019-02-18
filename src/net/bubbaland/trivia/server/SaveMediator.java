@@ -213,6 +213,11 @@ public class SaveMediator {
 	 */
 	void saveState(final Trivia trivia) {
 
+		if (trivia.getValue() == 0) {
+			TriviaServer.log("Not saving new trivia object");
+			return;
+		}
+
 		// The current date/time
 		final Date time = new Date();
 
@@ -427,6 +432,7 @@ public class SaveMediator {
 
 		} catch (final ParserConfigurationException | TransformerException e) {
 			TriviaServer.log("Couldn't save data to file " + filename);
+			e.printStackTrace();
 		}
 
 	}
