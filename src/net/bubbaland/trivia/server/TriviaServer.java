@@ -574,7 +574,7 @@ public class TriviaServer {
 	 *             A remote exception
 	 */
 	public static void main(String args[]) {
-		final TriviaServer server = new TriviaServer();
+		TriviaServer server = TriviaServerEndpoint.getServer();
 		try {
 			server.start();
 			server.isRunning = true;
@@ -671,6 +671,9 @@ public class TriviaServer {
 			}
 		}, this.saveFrequency, this.saveFrequency, TimeUnit.SECONDS);
 
+		if (this.standingsTimer != null) {
+			this.standingsTimer.shutdown();
+		}
 		this.standingsTimer = Executors.newSingleThreadScheduledExecutor();
 		this.standingsTimer.scheduleWithFixedDelay(new Runnable() {
 			@Override

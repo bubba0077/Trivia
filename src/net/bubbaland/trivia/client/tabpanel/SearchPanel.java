@@ -493,7 +493,7 @@ public class SearchPanel extends TriviaMainPanel implements ActionListener {
 		private void updateResults(String query, LinkedHashMap<Question, Round> results) {
 			this.results = results;
 
-			Pattern pattern = Pattern.compile(query);
+			Pattern pattern = Pattern.compile(query, Pattern.CASE_INSENSITIVE);
 
 			int nResults = results.size();
 
