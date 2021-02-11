@@ -1,5 +1,4 @@
 #Trivia
-#Sat Oct 26 03:52:30 PDT 2013
 Value.Color=008B8B
 Earned.Color=1E90FF
 Announced.Color=7B68EE
@@ -9,16 +8,16 @@ Chart.ByRound.MaxPoints=750
 Chart.Axis.FontSize=16.0
 Chart.Width=800
 Chart.Height=600
-nRounds=50
+nRounds=33
 nQuestionsNormal=9
 nQuestionsSpeed=18
 nQuestionsMax=36
-TeamName=Knee Deep In Theses
+TeamName=Knee Deep in Theses
 TeamNumber=0
 ServerURL=localhost
 SaveFrequency=300
 StandingsFrequency=60
-SaveDir=saves
-ChartDir=charts
+SaveDir=data/saves
+ChartDir=data/charts
 StandingsURL=http://www.kvsc.org/trivia/points/hour
 Server.Port=1099

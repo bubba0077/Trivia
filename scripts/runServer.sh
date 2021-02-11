@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -jar triviaServer.jar >& server.log &
+java -jar triviaServer.jar >& server.log
