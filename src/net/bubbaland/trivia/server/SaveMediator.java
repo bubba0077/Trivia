@@ -55,6 +55,11 @@ public class SaveMediator {
 				return false;
 			}
 		});
+		if (files == null) {
+			final String[] empty = { "" };
+			System.out.println("No files found in " + this.saveDirectory);
+			return empty;
+		}
 		final int nFiles = files.length;
 		final String[] filenames = new String[nFiles];
 		for (int f = 0; f < nFiles; f++) {
