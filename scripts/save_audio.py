@@ -11,7 +11,7 @@ destination_root = "data/audio"
 stream_source = "http://corn.kvsc.org:8000/broadband"
 clip_length = 330 # in seconds
 
-event_start = datetime.fromisoformat("2021-02-12T17:00:00-05:00")
+event_start = datetime.fromisoformat("2021-02-12T18:00:00-05:00")
 break1_start = datetime.fromisoformat("2021-02-13T00:00:00-05:00")
 break1_end = datetime.fromisoformat("2021-02-13T08:00:00-05:00")
 break2_start = datetime.fromisoformat("2021-02-14T00:00:00-05:00")
