@@ -69,7 +69,7 @@ public class TriviaGUI implements WindowListener {
 			"https://sites.google.com/a/kneedeepintheses.org/information/trivia-2021/visual-trivia-2021/visual-trivia-";
 	// URL for audio trivia
 	// final static protected String AUDIO_URL = "http://trivia.bgsh.org/audio";
-	final static protected String	AUDIO_URL					= "https://bubbaland.net/trivia/data/audio";
+	final static protected String	AUDIO_URL					= "http://trivia.bgsh.org/data/audio";
 	// File name of font
 	final static private String		FONT_FILENAME				= "fonts/tahoma.ttf";
 	// File name to store window positions
