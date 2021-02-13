@@ -2,7 +2,7 @@
 
 import os
 import subprocess
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from contextlib import suppress
 from functools import partial
 from shutil import which
@@ -11,11 +11,11 @@ destination_root = f"{os.path.dirname(__file__)}/../data/audio"
 stream_source = "http://corn.kvsc.org:8000/broadband"
 clip_length = 330  # in seconds
 
-event_start = datetime.fromisoformat("2021-02-12T19:00:00-04:00")
-break1_start = datetime.fromisoformat("2021-02-13T01:00:00-04:00")
-break1_end = datetime.fromisoformat("2021-02-13T09:00:00-04:00")
-break2_start = datetime.fromisoformat("2021-02-14T01:00:00-04:00")
-break2_end = datetime.fromisoformat("2021-02-14T09:00:00-04:00")
+event_start = datetime.fromisoformat("2021-02-12T18:00:00-06:00")
+break1_start = datetime.fromisoformat("2021-02-13T00:00:00-06:00")
+break1_end = datetime.fromisoformat("2021-02-13T08:00:00-06:00")
+break2_start = datetime.fromisoformat("2021-02-14T00:00:00-06:00")
+break2_end = datetime.fromisoformat("2021-02-14T08:00:00-06:00")
 
 # Make sure print statements are flushed immediately, otherwise
 #   print statements may be out-of-order with subprocess output
@@ -60,14 +60,14 @@ def capture_stream(stream_source: str, destination_root: str, hours: int, minute
 
 
 if __name__ == '__main__':
-    now = datetime.now(tz=timezone(timedelta(hours=-5)))
+    now = datetime.now().astimezone()
     if (now < event_start - timedelta(hours=1)):
         print("Skipping save before event start")
         quit(0)
 
     if((now > break1_start and now < break1_end) or (now > break2_start and now < break2_end)):
         print("Skipping save during breaks")
-        # quit(0)
+        quit(0)
 
     diff = get_time_elapsed(now)
 
