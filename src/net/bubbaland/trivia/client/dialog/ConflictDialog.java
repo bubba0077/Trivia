@@ -52,7 +52,7 @@ public class ConflictDialog extends TriviaDialogPanel {
 
 		constraints.gridx = 0;
 		constraints.gridy = 2;
-		label = new JLabel("Point dispute line: (320) 308-4748", SwingConstants.CENTER);
+		label = new JLabel("Point dispute line: (320) 299-2615, Press 2", SwingConstants.CENTER);
 		label.setFont(label.getFont().deriveFont(fontSize));
 		this.add(label, constraints);
 		constraints.gridwidth = 1;
