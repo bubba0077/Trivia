@@ -5,16 +5,17 @@ import subprocess
 from datetime import datetime, timedelta, timezone
 from contextlib import suppress
 from functools import partial
+from shutil import which
 
-destination_root = "data/audio"
+destination_root = f"{os.path.dirname(__file__)}/../data/audio"
 stream_source = "http://corn.kvsc.org:8000/broadband"
 clip_length = 330  # in seconds
 
-event_start = datetime.fromisoformat("2021-02-12T18:00:00-05:00")
-break1_start = datetime.fromisoformat("2021-02-13T00:00:00-05:00")
-break1_end = datetime.fromisoformat("2021-02-13T08:00:00-05:00")
-break2_start = datetime.fromisoformat("2021-02-14T00:00:00-05:00")
-break2_end = datetime.fromisoformat("2021-02-14T08:00:00-05:00")
+event_start = datetime.fromisoformat("2021-02-12T19:00:00-04:00")
+break1_start = datetime.fromisoformat("2021-02-13T01:00:00-04:00")
+break1_end = datetime.fromisoformat("2021-02-13T09:00:00-04:00")
+break2_start = datetime.fromisoformat("2021-02-14T01:00:00-04:00")
+break2_end = datetime.fromisoformat("2021-02-14T09:00:00-04:00")
 
 # Make sure print statements are flushed immediately, otherwise
 #   print statements may be out-of-order with subprocess output
@@ -22,6 +23,14 @@ print = partial(print, flush=True)
 
 break1_length = break1_end - break1_start
 break2_length = break2_end - break2_start
+
+
+def determine_capture_program():
+    for exe in "ffmpeg", "avconv":
+        if which(exe) is not None:
+            return exe
+    print("FATAL ERROR: Could not find any capture program")
+    exit(1)
 
 
 def delta_to_hours_mins(duration: timedelta) -> (int, int):
@@ -47,8 +56,7 @@ def capture_stream(stream_source: str, destination_root: str, hours: int, minute
     destination = f'{destination_root}/Hour_{hours:02d}/{hours:02d}h_{minutes:02d}m.mp3'
     with suppress(FileExistsError):
         os.mkdir(f'{destination_root}/Hour_{hours:02d}')
-    # subprocess.call(f"ffmpeg -v quiet -i {stream_source} -acodec copy -t {length} {destination}", shell=True)
-    subprocess.call(f"avconv -v quiet -i {stream_source} -acodec copy -t {length} {destination}", shell=True)
+    subprocess.call(f"{determine_capture_program()} -v quiet -i {stream_source} -acodec copy -t {length} {destination}", shell=True)
 
 
 if __name__ == '__main__':
@@ -59,7 +67,7 @@ if __name__ == '__main__':
 
     if((now > break1_start and now < break1_end) or (now > break2_start and now < break2_end)):
         print("Skipping save during breaks")
-        quit(0)
+        # quit(0)
 
     diff = get_time_elapsed(now)
 
