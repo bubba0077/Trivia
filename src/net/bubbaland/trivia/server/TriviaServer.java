@@ -598,9 +598,10 @@ public class TriviaServer {
 
 		// The URL where the file is hosted
 		final String urlString = this.standingsBaseURL + String.format("%02d", rNumber) + ".htm";
+		log("Trying to retrieve standings from: " + urlString);
 		try {
 			// Try to read the URL
-			final org.jsoup.nodes.Document htmlDoc = Jsoup.connect(urlString).get();
+			final org.jsoup.nodes.Document htmlDoc = Jsoup.connect(urlString).userAgent("Mozilla/5.0").get();
 			// Parse the table with the standings from the HTML file
 			final Elements table = htmlDoc.select("table");
 			// Get all rows after the first one (which is the header row)
@@ -630,7 +631,8 @@ public class TriviaServer {
 
 		} catch (final HttpStatusException e) {
 			// The file doesn't exist yet
-			// log("Standings for round " + rNumber + " not available yet.");
+			log("Standings for round " + rNumber + " not available yet.");
+			// e.printStackTrace();
 			return null;
 		} catch (final IOException e) {
 			e.printStackTrace();
