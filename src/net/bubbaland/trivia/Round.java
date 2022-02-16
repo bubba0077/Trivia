@@ -800,6 +800,9 @@ public class Round implements Serializable {
 		while (nQuestions > this.questions.size()) {
 			this.questions.add(new Question(this.questions.size() + 1));
 		}
+		while (nQuestions < this.questions.size()) {
+			this.questions.remove(this.getQuestion(this.questions.size()));
+		}
 		this.nQuestions = nQuestions;
 		this.version++;
 	}
@@ -969,6 +972,8 @@ public class Round implements Serializable {
 	 * @return Array of the open Questions
 	 */
 	public Question[] getOpenQuestions() {
+		this.questions.stream().parallel()
+				.forEach(q -> System.out.println("Q" + q.getQuestionNumber() + ": " + q.isOpen()));
 		return this.questions.stream().parallel().filter(q -> q.isOpen()).toArray(Question[]::new);
 	}
 

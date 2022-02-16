@@ -659,7 +659,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			}
 
 			// Show rows equal to the greater of the number of questions to show and the number of open questions
-			// for (int q = 0; q < nQuestionsShow; q++) {
 			IntStream.range(0, nQuestionsShow).forEach(q -> {
 				this.qNumberButtons[q].setVisible(true);
 				this.effortLabels[q].setVisible(true);
