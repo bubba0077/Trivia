@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Trivia Client">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="C:/Users/Walter/Documents/Eclipse"/>
+    <property name="dir.jarfile" value="C:/Apache/htdocs/trivia"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/triviaClient.jar" filesetmanifest="mergewithoutmain" duplicate="preserve">
+            <manifest>
+                <attribute name="Main-Class" value="net.bubbaland.trivia.client.TriviaGUI"/>
+                <attribute name="Class-Path" value="."/>
+            	<attribute name="Application-Name" value="Trivia Client"/>
+            	<attribute name="Codebase" value="trivia.bgsh.org www.bubbaland.net"/>
+            </manifest>
+            <fileset dir="C:/Users/Walter/git/Trivia/target/classes"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/glassfish/tyrus/tyrus-server/1.9/tyrus-server-1.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/glassfish/tyrus/tyrus-container-grizzly-client/1.9/tyrus-container-grizzly-client-1.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.10.0/jackson-databind-2.10.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.10.0/jackson-annotations-2.10.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.10.0/jackson-core-2.10.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/javax/websocket/javax.websocket-api/1.0/javax.websocket-api-1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/glassfish/tyrus/tyrus-container-grizzly-server/1.9/tyrus-container-grizzly-server-1.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/glassfish/grizzly/grizzly-framework/2.3.15-gfa/grizzly-framework-2.3.15-gfa.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/glassfish/grizzly/grizzly-http-server/2.3.15-gfa/grizzly-http-server-2.3.15-gfa.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/glassfish/grizzly/grizzly-http/2.3.15-gfa/grizzly-http-2.3.15-gfa.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/jfree/jfreechart/1.0.19/jfreechart-1.0.19.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/jfree/jcommon/1.0.23/jcommon-1.0.23.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/jsoup/jsoup/1.14.2/jsoup-1.14.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/javazoom/jlayer/1.0.1/jlayer-1.0.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/glassfish/tyrus/tyrus-client/1.9/tyrus-client-1.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/glassfish/tyrus/tyrus-core/1.9/tyrus-core-1.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/glassfish/tyrus/tyrus-spi/1.9/tyrus-spi-1.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.10.0/jackson-datatype-jsr310-2.10.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/org/apache/commons/commons-lang3/3.7/commons-lang3-3.7.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Walter/.m2/repository/com/glazedlists/glazedlists/1.11.0/glazedlists-1.11.0.jar"/>
+        </jar>
+    </target>
+</project>
