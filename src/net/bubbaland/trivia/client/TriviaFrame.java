@@ -954,6 +954,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 		this.qFilterTextField.setText(this.gui.getFilterTextPattern().toString());
 		this.hiddenQFilterTextField.setText(this.gui.getFilterTextPattern().toString());
+		int nQuestions = this.client.getTrivia().getCurrentRound().getNQuestions();
+
+		if (( (Integer) this.nQuestionsSpinner.getValue() ).intValue() != nQuestions) {
+			this.nQuestionsSpinner.setValue(nQuestions);
+		}
 
 		// Propagate update to tabs
 		while (this.tabbedPane == null) {
