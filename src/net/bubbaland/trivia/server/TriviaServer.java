@@ -367,6 +367,10 @@ public class TriviaServer {
 				OpenQuestionMessage message = (OpenQuestionMessage) genericMessage;
 				int rNumber = message.getRoundNumber();
 				int qNumber = message.getQuestionNumber();
+				if (this.trivia.getCurrentRoundNumber() != rNumber) {
+					log("Refusing to open question from previous round requested by " + user + ": round " + rNumber
+							+ " question " + qNumber);
+				}
 				this.trivia.getRound(rNumber).open(userName, qNumber);
 				this.broadcastChangedRounds();
 				log(userName + " opened round " + rNumber + " question " + qNumber);
@@ -385,6 +389,10 @@ public class TriviaServer {
 				ReopenQuestionMessage message = (ReopenQuestionMessage) genericMessage;
 				int rNumber = message.getRoundNumber();
 				int qNumber = message.getQuestionNumber();
+				if (this.trivia.getCurrentRoundNumber() != rNumber) {
+					log("Refusing to reopen question from previous round requested by " + user + ": round " + rNumber
+							+ " question " + qNumber);
+				}
 				this.trivia.getRound(rNumber).reopen(qNumber);
 				this.broadcastChangedRounds();
 				log(userName + " reopened round " + rNumber + " question " + qNumber);
@@ -394,6 +402,10 @@ public class TriviaServer {
 				ResetQuestionMessage message = (ResetQuestionMessage) genericMessage;
 				int rNumber = message.getRoundNumber();
 				int qNumber = message.getQuestionNumber();
+				if (this.trivia.getCurrentRoundNumber() != rNumber) {
+					log("Refusing to reset question from previous round requested by " + user + ": round " + rNumber
+							+ " question " + qNumber);
+				}
 				this.trivia.getRound(rNumber).resetQuestion(qNumber);
 				this.broadcastChangedRounds();
 				log(userName + " reset round " + rNumber + " question " + qNumber);

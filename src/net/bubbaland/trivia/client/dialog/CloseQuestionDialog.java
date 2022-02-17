@@ -139,6 +139,12 @@ public class CloseQuestionDialog extends TriviaDialogPanel {
 				}
 			} ).execute();
 		} else {
+			if (this.client.getTrivia().getCurrentRoundNumber() != this.rNumber) {
+				this.client.log("Refusing to reopen question from previous round");
+				JOptionPane.showMessageDialog(this,
+						"Cannot reopen question from a previous round\n(possibly a stale dialog?)");
+				return;
+			}
 			( new SwingWorker<Void, Void>() {
 				@Override
 				public Void doInBackground() {

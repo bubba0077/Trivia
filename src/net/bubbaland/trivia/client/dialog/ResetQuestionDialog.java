@@ -79,6 +79,11 @@ public class ResetQuestionDialog extends TriviaDialogPanel {
 	public void windowClosed(WindowEvent event) {
 		super.windowClosed(event);
 		final int confirm = ( (Integer) this.dialog.getValue() ).intValue();
+		if (this.client.getTrivia().getCurrentRoundNumber() != this.rNumber) {
+			this.client.log("Refusing to change open status of question from previous round");
+			JOptionPane.showMessageDialog(this, "Cannot reset question from a previous round");
+			return;
+		}
 		if (confirm == JOptionPane.OK_OPTION) {
 			( new SwingWorker<Void, Void>() {
 				@Override

@@ -230,20 +230,28 @@ public class NewQuestionDialog extends TriviaDialogPanel {
 					this.confirmNumberChange(this.qNumberStart, qNumber, qValue, qText);
 				}
 			}
-		} else if (this.newOpen) {
-			( new SwingWorker<Void, Void>() {
-				@Override
-				public Void doInBackground() {
-					NewQuestionDialog.this.client.sendMessage(new ResetQuestionMessage(NewQuestionDialog.this.rNumber,
-							NewQuestionDialog.this.qNumberStart));
-					return null;
-				}
+		} else {
+			if (trivia.getCurrentRoundNumber() != this.rNumber) {
+				this.client.log("Refusing to reopen question from previous round");
+				JOptionPane.showMessageDialog(this,
+						"Cannot reset a question from a previous round\n(possibly a stale dialog?)");
+				return;
+			}
+			if (this.newOpen) {
+				( new SwingWorker<Void, Void>() {
+					@Override
+					public Void doInBackground() {
+						NewQuestionDialog.this.client.sendMessage(new ResetQuestionMessage(
+								NewQuestionDialog.this.rNumber, NewQuestionDialog.this.qNumberStart));
+						return null;
+					}
 
-				@Override
-				public void done() {
+					@Override
+					public void done() {
 
-				}
-			} ).execute();
+					}
+				} ).execute();
+			}
 		}
 	}
 
