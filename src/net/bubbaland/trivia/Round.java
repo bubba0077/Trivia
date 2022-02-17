@@ -638,8 +638,7 @@ public class Round implements Serializable {
 	}
 
 	public Question[] getQuestions() {
-		return this.questions.parallelStream().filter(q -> q.getQuestionNumber() <= this.nQuestions)
-				.collect(Collectors.toList()).toArray(new Question[this.nQuestions]);
+		return this.questions.parallelStream().collect(Collectors.toList()).toArray(new Question[this.nQuestions]);
 	}
 
 	/**
@@ -657,9 +656,18 @@ public class Round implements Serializable {
 	 * @return The question number that should be opened next
 	 */
 	public int nextToOpen() {
-		return this.questions.stream().parallel()
-				.filter(q -> this.getNQuestions() >= q.getQuestionNumber() && !q.beenOpen())
-				.mapToInt(q -> q.getQuestionNumber()).min().orElse(this.getNQuestions());
+		return this.questions.stream().parallel().filter(q -> !q.beenOpen()).mapToInt(q -> q.getQuestionNumber()).min()
+				.orElse(this.getNQuestions());
+	}
+
+	/**
+	 * Get the highest question number that has been opened.
+	 *
+	 * @return Highest question that has been opened
+	 */
+	public int maxBeenOpen() {
+		return this.questions.stream().parallel().filter(q -> q.beenOpen()).mapToInt(q -> q.getQuestionNumber()).max()
+				.orElse(0);
 	}
 
 	/**

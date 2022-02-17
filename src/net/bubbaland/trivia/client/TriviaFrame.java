@@ -46,6 +46,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import javazoom.jl.player.Player;
+import net.bubbaland.trivia.Round;
 import net.bubbaland.trivia.User;
 import net.bubbaland.trivia.client.dialog.UserLoginDialog;
 import net.bubbaland.trivia.client.tabpanel.SummaryPanel;
@@ -954,11 +955,14 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 		this.qFilterTextField.setText(this.gui.getFilterTextPattern().toString());
 		this.hiddenQFilterTextField.setText(this.gui.getFilterTextPattern().toString());
-		int nQuestions = this.client.getTrivia().getCurrentRound().getNQuestions();
+		Round currentRound = this.client.getTrivia().getCurrentRound();
+		int nQuestions = currentRound.getNQuestions();
 
 		if (( (Integer) this.nQuestionsSpinner.getValue() ).intValue() != nQuestions) {
 			this.nQuestionsSpinner.setValue(nQuestions);
 		}
+
+		this.nQuestionsSpinner.getModel().setMinimum(currentRound.maxBeenOpen());
 
 		// Propagate update to tabs
 		while (this.tabbedPane == null) {
@@ -1036,7 +1040,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 			super();
 		}
 
-		private SpinnerMenuItem(SpinnerModel model) {
+		private SpinnerMenuItem(SpinnerNumberModel model) {
 			super(model);
 		}
 
@@ -1048,6 +1052,11 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		@Override
 		public MenuElement[] getSubElements() {
 			return new MenuElement[0];
+		}
+
+		@Override
+		public SpinnerNumberModel getModel() {
+			return (SpinnerNumberModel) super.getModel();
 		}
 
 		@Override
