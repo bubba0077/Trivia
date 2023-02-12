@@ -11,11 +11,11 @@ destination_root = f"{os.path.dirname(__file__)}/../data/audio"
 stream_source = "http://corn.kvsc.org:8000/broadband"
 clip_length = 330  # in seconds
 
-event_start = datetime.fromisoformat("2022-02-18T18:00:00-06:00")
-break1_start = datetime.fromisoformat("2022-02-20T08:00:00-06:00")
-break1_end = datetime.fromisoformat("2022-02-20T08:00:00-06:00")
-break2_start = datetime.fromisoformat("2022-02-20T08:00:00-06:00")
-break2_end = datetime.fromisoformat("2022-02-20T08:00:00-06:00")
+event_start = datetime.fromisoformat("2023-02-17T18:00:00-06:00")
+break1_start = datetime.fromisoformat("2023-02-19T19:00:00-06:00")
+break1_end = datetime.fromisoformat("2023-02-19T19:00:00-06:00")
+break2_start = datetime.fromisoformat("2023-02-19T19:00:00-06:00")
+break2_end = datetime.fromisoformat("2023-02-19T19:00:00-06:00")
 
 # Make sure print statements are flushed immediately, otherwise
 #   print statements may be out-of-order with subprocess output
