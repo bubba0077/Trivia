@@ -269,7 +269,8 @@ public class TriviaServer {
 				String newUserName = message.getNewUserName();
 				user.setUserName(newUserName);
 				this.trivia.changeUserName(userName, newUserName);
-				log(userName + " changed hir name to " + newUserName);
+				log(userName + " changed their name to " + newUserName);
+				this.broadcastMessage(new UserListMessage(this.getUserList()));
 				break;
 			}
 
@@ -574,7 +575,6 @@ public class TriviaServer {
 			}
 		}
 
-		this.broadcastMessage(new UserListMessage(this.getUserList()));
 	}
 
 	/**
