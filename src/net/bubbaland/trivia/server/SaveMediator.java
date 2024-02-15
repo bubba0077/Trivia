@@ -78,6 +78,7 @@ public class SaveMediator {
 	public Trivia loadState(final Trivia trivia, String user, String stateFile) {
 		// The full qualified file name
 		stateFile = this.saveDirectory + "/" + stateFile;
+		System.out.println("Loading save from " + stateFile);
 
 		// Clear all data from the trivia contest
 		trivia.reset();
@@ -123,9 +124,13 @@ public class SaveMediator {
 				TriviaServer.log("Reading data for round " + rNumber);
 
 				// Read/set if the round is a speed round
-				final boolean isSpeed =
-						roundElement.getElementsByTagName("Speed").item(0).getTextContent().equals("true");
-				trivia.getRound(rNumber).setSpeed(isSpeed);
+				try {
+					final boolean isSpeed =
+							roundElement.getElementsByTagName("Speed").item(0).getTextContent().equals("true");
+					trivia.getRound(rNumber).setSpeed(isSpeed);
+				} catch (NullPointerException e) {
+					trivia.getRound(rNumber).setSpeed(false);
+				}
 
 				try {
 					trivia.getRound(rNumber).setNQuestions(Integer.parseInt(
@@ -209,7 +214,10 @@ public class SaveMediator {
 				}
 			}
 
-		} catch (final ParserConfigurationException | SAXException | IOException e) {}
+		} catch (final ParserConfigurationException | SAXException | IOException e) {
+			System.out.println("Failed to load save file:");
+			e.printStackTrace();
+		}
 
 		return trivia;
 	}
