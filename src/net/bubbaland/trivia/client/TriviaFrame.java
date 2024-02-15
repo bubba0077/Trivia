@@ -958,11 +958,13 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 		Round currentRound = this.client.getTrivia().getCurrentRound();
 		int nQuestions = currentRound.getNQuestions();
 
+		this.nQuestionsSpinner.removeChangeListener(this);
 		if (( (Integer) this.nQuestionsSpinner.getValue() ).intValue() != nQuestions) {
 			this.nQuestionsSpinner.setValue(nQuestions);
 		}
 
 		this.nQuestionsSpinner.getModel().setMinimum(currentRound.maxBeenOpen());
+		this.nQuestionsSpinner.addChangeListener(this);
 
 		// Propagate update to tabs
 		while (this.tabbedPane == null) {
