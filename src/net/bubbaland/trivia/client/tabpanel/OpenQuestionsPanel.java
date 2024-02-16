@@ -181,16 +181,19 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 	public synchronized void updateGUI(boolean force) {
 		final Trivia trivia = this.client.getTrivia();
 		final int nMaxQuestions = trivia.getMaxQuestions();
-		final int nQuestions = trivia.getCurrentRound().getNQuestions();
+		final Round currentRound = trivia.getCurrentRound();
+		final int nQuestions = currentRound.getNQuestions();
 		final int diff = nMaxQuestions - nQuestions;
 		for (int q = 0; q < diff; q++) {
 			this.statusLabels[q].setText("");
 		}
 
+
+		// Current round question status bar
 		for (int q = diff; q < nMaxQuestions; q++) {
 			final int qNumber = q + 1 - diff;
 			this.statusLabels[q].setText(qNumber + "");
-			Question question = trivia.getCurrentRound().getQuestion(qNumber);
+			Question question = currentRound.getQuestion(qNumber);
 			if (question.beenOpen()) {
 				if (question.isOpen()) {
 					this.statusLabels[q].setForeground(this.headerColor);
@@ -206,6 +209,7 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			}
 		}
 
+		// Visual trivia status bar
 		final boolean[] visualTriviaUsed = trivia.getVisualTriviaUsed();
 		final int nVisualTrivia = trivia.getNVisual();
 		if (this.visualTriviaLabels == null || visualTriviaUsed.length != this.visualTriviaLabels.length) {
@@ -245,14 +249,13 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 		for (int v = 0; v < nVisualTrivia; v++) {
 			Color color = visualTriviaUsed[v] ? this.usedColor : this.unusedColor;
-			for (Question q : trivia.getCurrentRound().getOpenQuestions()) {
+			for (Question q : currentRound.getOpenQuestions()) {
 				if (q.getVisualTrivia() == v + 1) {
 					color = this.activeColor;
 				}
 			}
 
 			this.visualTriviaLabels[v].setForeground(color);
-
 		}
 
 		this.openQuestionsSubPanel.updateGUIonEDT(force);
@@ -355,7 +358,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 		 * Data sources
 		 */
 		private final TriviaClient		client;
-		private ArrayList<Question>		displayedQuestions;
 
 		/**
 		 * Instantiates a new workflow q list sub panel.
@@ -370,7 +372,6 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 			super(client, parent);
 
 			this.client = client;
-			this.displayedQuestions = new ArrayList<Question>();
 			this.nQuestionsMax = client.getTrivia().getMaxQuestions();
 			this.lastEffort = new ArrayList<User[]>();
 
@@ -579,19 +580,12 @@ public class OpenQuestionsPanel extends TriviaMainPanel {
 
 			final int nOpen = openQuestions.length;
 
-			// Check if there were any changes to the list of open questions
-			final Boolean[] qUpdated = IntStream.range(0, nOpen).mapToObj(
-					n -> n >= this.displayedQuestions.size() || openQuestions[n].equals(this.displayedQuestions.get(n)))
-					.toArray(Boolean[]::new);
-
 			if (!Arrays.stream(openQuestions).mapToInt(q -> q.getQuestionNumber())
 					.anyMatch(i -> i == OpenQuestionsSubPanel.this.client.getUser().getEffort())) {
 				this.client.getUser().setEffort(0);
 			}
 
-			this.displayedQuestions = new ArrayList<Question>(Arrays.asList(openQuestions));
-
-			IntStream.range(0, nOpen).filter(q -> qUpdated[q]).forEach(q -> {
+			IntStream.range(0, nOpen).forEach(q -> {
 				Question question = openQuestions[q];
 				int qNumber = question.getQuestionNumber();
 				this.lastEffort.set(q, question.getEffort(userList));
