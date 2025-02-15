@@ -2,3 +2,5 @@
 /server.log
 /triviaServer.jar
 /keystore.jks
+/triviaClient.jar
+/triviaServer.jar.sig

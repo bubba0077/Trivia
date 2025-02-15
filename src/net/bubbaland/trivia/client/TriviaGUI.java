@@ -68,12 +68,11 @@ public class TriviaGUI implements WindowListener {
 	final static protected String	VISUAL_URL					=
 			"https://sites.google.com/view/kneedeepintheses-information/visual-trivia/visual-trivia-";
 	// URL for audio trivia
-	// final static protected String AUDIO_URL = "http://trivia.bgsh.org/audio";
-	final static protected String	AUDIO_URL					= "http://trivia.bgsh.org/audio";
+	final static protected String	AUDIO_URL					= "https://bubbaland.net/trivia/audio";
 	// File name of font
 	final static private String		FONT_FILENAME				= "fonts/tahoma.ttf";
 	// File name to store window positions
-	final static private String		DEFAULTS_FILENAME			= ".trivia-defaults";
+	final static private String		DEFAULTS_FILENAME			= "settings/.trivia-defaults";
 	// File name to store window positions
 	final static private String		SETTINGS_FILENAME			= ".trivia-settings";
 	// Settings version to force reloading defaults
@@ -108,7 +107,7 @@ public class TriviaGUI implements WindowListener {
 							Font font;
 							try {
 								font = Font.createFont(Font.TRUETYPE_FONT,
-										TriviaClient.class.getResourceAsStream(FONT_FILENAME));
+										TriviaGUI.class.getClassLoader().getResourceAsStream(FONT_FILENAME));
 								ret.put("defaultFont", font.deriveFont(12f));
 							} catch (FontFormatException | IOException exception) {
 								exception.printStackTrace();
@@ -497,7 +496,7 @@ public class TriviaGUI implements WindowListener {
 	 */
 	public static void loadDefaults() {
 		PROPERTIES.clear();
-		final InputStream defaults = TriviaClient.class.getResourceAsStream(DEFAULTS_FILENAME);
+		final InputStream defaults = TriviaGUI.class.getClassLoader().getResourceAsStream(DEFAULTS_FILENAME);
 		try {
 			PROPERTIES.load(defaults);
 		} catch (final IOException e) {

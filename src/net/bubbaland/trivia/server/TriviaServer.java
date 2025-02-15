@@ -145,7 +145,7 @@ public class TriviaServer {
 
 	private void loadSettings() {
 		// Get default properties from the package
-		this.defaults = TriviaServerEndpoint.class.getResourceAsStream(this.SETTINGS_FILENAME);
+		this.defaults = getClass().getClassLoader().getResourceAsStream("settings/" + this.SETTINGS_FILENAME);
 
 		/**
 		 * Default properties
@@ -161,7 +161,7 @@ public class TriviaServer {
 		/**
 		 * Load saved properties from file
 		 */
-		final File file = new File(System.getProperty("user.home") + "/" + this.SETTINGS_FILENAME);
+		final File file = new File(this.SETTINGS_FILENAME);
 		try {
 			final BufferedReader fileBuffer = new BufferedReader(new FileReader(file));
 			this.properties.load(fileBuffer);

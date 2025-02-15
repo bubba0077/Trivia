@@ -60,8 +60,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	public static final long						serialVersionUID	= 1L;
 	private static final int						LINEWIDTH			= 3;
 	private static final String						NAME				= "TabTransferData";
-	private final DataFlavor						FLAVOR				= new DataFlavor(
-			DataFlavor.javaJVMLocalObjectMimeType, NAME);
+	private final DataFlavor						FLAVOR				=
+			new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType, NAME);
 	private static GhostGlassPane					s_glassPane			= new GhostGlassPane();
 	private final TearAwayTab						tearTab;
 
@@ -80,8 +80,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	private final TriviaFrame						frame;
 	private final JPanel							blankPanel;
 
-	private static final ImageIcon					addTabIcon			= new ImageIcon(
-			DnDTabbedPane.class.getResource("images/plus.png"));
+	private static final ImageIcon					addTabIcon			=
+			new ImageIcon(DnDTabbedPane.class.getClassLoader().getResource("images/plus.png"));
 
 	public DnDTabbedPane(TriviaClient client, TriviaGUI gui, TriviaFrame frame) {
 		super();
@@ -117,12 +117,10 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 			}
 
 			@Override
-			public void dragOver(DragSourceDragEvent e) {
-			}
+			public void dragOver(DragSourceDragEvent e) {}
 
 			@Override
-			public void dropActionChanged(DragSourceDragEvent e) {
-			}
+			public void dropActionChanged(DragSourceDragEvent e) {}
 		};
 
 		final DragGestureListener dgl = new DragGestureListener() {
@@ -170,8 +168,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 
 		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
 			final UIDefaults defaults = new UIDefaults();
-			final Painter<?> painter = (Painter<?>) UIManager
-					.get("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter");
+			final Painter<?> painter =
+					(Painter<?>) UIManager.get("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter");
 			defaults.put("TabbedPane:TabbedPaneTab[Disabled].backgroundPainter", painter);
 			this.putClientProperty("Nimbus.Overrides", defaults);
 			this.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
@@ -258,20 +256,16 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
+	public void mouseEntered(MouseEvent e) {}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
-	}
+	public void mouseExited(MouseEvent e) {}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-	}
+	public void mousePressed(MouseEvent e) {}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
-	}
+	public void mouseReleased(MouseEvent e) {}
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -375,8 +369,8 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 	 * @return returns potential index for drop.
 	 */
 	int getTargetTabIndex(Point a_point) {
-		final boolean isTopOrBottom = this.getTabPlacement() == SwingConstants.TOP
-				|| this.getTabPlacement() == SwingConstants.BOTTOM;
+		final boolean isTopOrBottom =
+				this.getTabPlacement() == SwingConstants.TOP || this.getTabPlacement() == SwingConstants.BOTTOM;
 
 		// if the pane is empty, the target index is always zero.
 		if (this.getTabCount() == 0) return 0;
@@ -441,8 +435,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		try {
 			final TabTransferData data = (TabTransferData) a_event.getTransferable().getTransferData(this.FLAVOR);
 			return data;
-		} catch (final Exception e) {
-		}
+		} catch (final Exception e) {}
 
 		return null;
 	}
@@ -604,8 +597,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		}
 
 		@Override
-		public void dropActionChanged(DropTargetDragEvent e) {
-		}
+		public void dropActionChanged(DropTargetDragEvent e) {}
 
 		public boolean isDragAcceptable(DropTargetDragEvent e) {
 			final Transferable t = e.getTransferable();
@@ -674,8 +666,7 @@ public class DnDTabbedPane extends JTabbedPane implements MouseListener, ActionL
 		private DnDTabbedPane	m_tabbedPane	= null;
 		private int				m_tabIndex		= -1;
 
-		public TabTransferData() {
-		}
+		public TabTransferData() {}
 
 		public TabTransferData(DnDTabbedPane a_tabbedPane, int a_tabIndex) {
 			this.m_tabbedPane = a_tabbedPane;

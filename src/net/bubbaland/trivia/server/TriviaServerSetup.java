@@ -46,18 +46,22 @@ public class TriviaServerSetup {
 	// "tyrus-container-grizzly-server-1.9", "tyrus-core-1.9", "tyrus-server-1.9", "tyrus-spi-1.9" };
 	private static boolean		showGUI;
 
-	private static final String	welcomeMsg			= "This program will download all of the files necessary to host the trivia server and configure the necessary settings.\n\n"
-			+ "Before continuing, please make sure you have all of the following required components set up:\n"
-			+ "1) An internet-facing html server for the webstart files\n"
-			+ "2) Another available internet-facing port for the trivia server (default is 1099)";
+	private static final String	welcomeMsg			=
+			"This program will download all of the files necessary to host the trivia server and configure the necessary settings.\n\n"
+					+ "Before continuing, please make sure you have all of the following required components set up:\n"
+					+ "1) An internet-facing html server for the webstart files\n"
+					+ "2) Another available internet-facing port for the trivia server (default is 1099)";
 
-	private static final String	requestHTML			= "Enter local html root directory. A folder named trivia will be created there which will serve the trivia files.";
+	private static final String	requestHTML			=
+			"Enter local html root directory. A folder named trivia will be created there which will serve the trivia files.";
 	private static final String	defaultHTML			= "/var/www/trivia";
 
-	private static final String	requestURL			= "Enter domain name where the jars and java webstart files will be hosted. Do not include a protocol.";
+	private static final String	requestURL			=
+			"Enter domain name where the jars and java webstart files will be hosted. Do not include a protocol.";
 	private static final String	defaultURL			= "www.bubbaland.net";
 
-	private static final String	requestPort			= "Enter port to use for server. The port must be accept connections from the internet.";
+	private static final String	requestPort			=
+			"Enter port to use for server. The port must be accept connections from the internet.";
 	private static final int	defaultPort			= 1099;
 
 	public static void main(String args[]) {
@@ -121,8 +125,7 @@ public class TriviaServerSetup {
 					textArea.append("Setup cancelled, exiting!\n");
 					try {
 						Thread.sleep(1000);
-					} catch (final InterruptedException exception) {
-					}
+					} catch (final InterruptedException exception) {}
 					System.exit(0);
 				}
 			}
@@ -163,8 +166,7 @@ public class TriviaServerSetup {
 				textArea.append("Setup cancelled, exiting!\n");
 				try {
 					Thread.sleep(1000);
-				} catch (final InterruptedException exception) {
-				}
+				} catch (final InterruptedException exception) {}
 				System.exit(0);
 			}
 		}
@@ -194,8 +196,7 @@ public class TriviaServerSetup {
 					textArea.append("Setup cancelled, exiting!\n");
 					try {
 						Thread.sleep(1000);
-					} catch (final InterruptedException exception1) {
-					}
+					} catch (final InterruptedException exception1) {}
 					System.exit(0);
 				}
 			} catch (final IOException exception) {
@@ -315,8 +316,7 @@ public class TriviaServerSetup {
 				textArea.append("Exiting...");
 				try {
 					Thread.sleep(5000);
-				} catch (final InterruptedException exception1) {
-				}
+				} catch (final InterruptedException exception1) {}
 			} else {
 				System.out.println("Couldn't download " + SOURCE_URL + "/" + filename + "!");
 				System.out.println("Exiting...");
@@ -490,7 +490,7 @@ public class TriviaServerSetup {
 		/**
 		 * Default properties
 		 */
-		final InputStream defaults = TriviaServerSetup.class.getResourceAsStream(SETTINGS_FILENAME);
+		final InputStream defaults = TriviaServerSetup.class.getClassLoader().getResourceAsStream(SETTINGS_FILENAME);
 		try {
 			properties.load(defaults);
 		} catch (final IOException e) {

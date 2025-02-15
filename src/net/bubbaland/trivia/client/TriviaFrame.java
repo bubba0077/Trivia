@@ -1080,7 +1080,7 @@ public class TriviaFrame extends JFrame implements ChangeListener, ActionListene
 
 		public void play() {
 			try {
-				final Player player = new Player(TriviaGUI.class.getResourceAsStream(this.filename));
+				final Player player = new Player(TriviaGUI.class.getClassLoader().getResourceAsStream(this.filename));
 				new Thread() {
 					@Override
 					public void run() {

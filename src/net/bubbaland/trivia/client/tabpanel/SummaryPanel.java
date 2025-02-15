@@ -750,13 +750,13 @@ public class SummaryPanel extends TriviaMainPanel implements ActionListener, Foc
 
 			final int fontSizeInt = new Float(fontSize).intValue();
 
-			callerIcon = new ImageIcon(
-					new ImageIcon(AnswerQueuePanel.class.getResource("/net/bubbaland/trivia/client/images/phone.png"))
+			callerIcon =
+					new ImageIcon(new ImageIcon(AnswerQueuePanel.class.getClassLoader().getResource("images/phone.png"))
 							.getImage().getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
 
 			pencilIcon = new ImageIcon(
-					new ImageIcon(AnswerQueuePanel.class.getResource("/net/bubbaland/trivia/client/images/pencil.png"))
-							.getImage().getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
+					new ImageIcon(AnswerQueuePanel.class.getClassLoader().getResource("images/pencil.png")).getImage()
+							.getScaledInstance(fontSizeInt, fontSizeInt, Image.SCALE_SMOOTH));
 
 		}
 
