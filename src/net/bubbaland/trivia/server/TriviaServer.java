@@ -609,15 +609,16 @@ public class TriviaServer {
 		final ArrayList<ScoreEntry> standingsList = new ArrayList<ScoreEntry>(0);
 
 		// The URL where the file is hosted
-		final String urlString = this.standingsBaseURL + String.format("%02d", rNumber) + ".htm";
+		final String urlString = this.standingsBaseURL + rNumber + ".htm";
 		log("Trying to retrieve standings from: " + urlString);
 		try {
 			// Try to read the URL
 			final org.jsoup.nodes.Document htmlDoc = Jsoup.connect(urlString).userAgent("Mozilla/5.0").get();
 			// Parse the table with the standings from the HTML file
-			final Elements table = htmlDoc.select("table");
+			final Elements table = htmlDoc.select("table").select("tbody");
 			// Get all rows after the first one (which is the header row)
-			for (final org.jsoup.nodes.Element row : table.select("tr:gt(0)")) {
+			for (final org.jsoup.nodes.Element row : table.select("tr")) {
+				System.out.println(row);
 				// Get all of the columns in the row
 				final Elements rowData = row.select("td");
 				// Parse the zeroth element as the place
